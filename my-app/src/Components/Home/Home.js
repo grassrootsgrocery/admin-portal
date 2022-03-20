@@ -4,7 +4,7 @@ import CurrentEvent from './CurrentEvent';
 import UpcomingEvents from './UpcomingEvents';
 import PreviousEvents from './PreviousEvents';
 
-function Events() {
+function Home() {
   return (
     <div>
         <EventOptions/>
@@ -15,4 +15,4 @@ function Events() {
   )
 }
 
-export default Events;
+export default Home;

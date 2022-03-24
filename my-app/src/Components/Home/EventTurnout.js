@@ -20,19 +20,26 @@ function EventTurnout() {
         </div>
     ));
 
+    const dropdownStyle = {
+        color: 'blue',
+        width: '280px',
+        border: 'none',
+        borderRadius: '0px 0px 22px 22px',
+    };
+
     const CustomMenu = React.forwardRef(
         ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
       
           return (
             <div
-              ref={ref}
-              style={style}
-              className={className}
-              aria-labelledby={labeledBy}
+            ref={ref}
+            style={dropdownStyle}
+            className={className}
+            aria-labelledby={labeledBy}
             >
-              <ul className="list-unstyled">
-                {React.Children.toArray(children)}
-              </ul>
+                <ul className="list-unstyled">
+                    {React.Children.toArray(children)}
+                </ul>
             </div>
           );
         },

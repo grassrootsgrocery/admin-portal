@@ -1,5 +1,5 @@
 import React from 'react';
-import EventOptions from './EventOptions';
+import EventOptions from './EventOptions/EventOptions';
 import CurrentEvent from './CurrentEvent';
 import UpcomingEvents from './UpcomingEvents';
 import PreviousEvents from './PreviousEvents';

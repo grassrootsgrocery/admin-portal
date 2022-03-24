@@ -26,7 +26,6 @@
     width: 40px;
     font-size: 22px;
     border-radius: 0px 22px 22px 0px;
-    z-index: 5;
     position: relative;
 }
 
@@ -39,7 +38,6 @@
 }
 
 .dropdown-menu.show {
-    z-index: 0;
     height: 70px;
     overflow: scroll;
 }

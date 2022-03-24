@@ -1,8 +1,11 @@
 import React from 'react';
 import { Dropdown } from 'react-bootstrap';
-import './EventTurnout.css'
+import './EventDropdown.css'
 
-function EventTurnout() {
+function EventDropdown(props) {
+    const title = props.title;
+    const items = props.items
+
     const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
         <div className="options-menu">
             <p className="menu-title">{children}</p>
@@ -49,17 +52,17 @@ function EventTurnout() {
         <div>
             <Dropdown>
                 <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
-                    Recruit Participants 
+                    {title}
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu as={CustomMenu}>
-                    <Dropdown.Item eventKey="1">One</Dropdown.Item>
-                    <Dropdown.Item eventKey="2">Two</Dropdown.Item>
-                    <Dropdown.Item eventKey="3">Three</Dropdown.Item>
+                    {items.map((item, index) => (
+                        <Dropdown.Item eventKey={index}>{item}</Dropdown.Item>
+                    ))}
                 </Dropdown.Menu>
             </Dropdown>
         </div>
     )
 }
 
-export default EventTurnout;
+export default EventDropdown;

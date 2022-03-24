@@ -28,7 +28,6 @@ function Navbar() {
                         <Link className="nav-brand" to="/">
                             <div>Mott Haven Fridge</div>
                         </Link>
-                        
                     </Navigation.Brand>
                     <Link className="coordinator" to="/event-coordinator">
                         <div>Event Coordinator</div>

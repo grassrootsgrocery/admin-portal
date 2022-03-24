@@ -1,5 +1,5 @@
 .navbar-page {
-    padding-bottom: 70px;
+    padding-bottom: 100px;
 }
 
 nav.navbar {
@@ -20,6 +20,8 @@ nav.navbar {
     display: flex;
     align-items: center;
     text-decoration: none !important;
+    background-color: white;
+    padding: 17px 10px;
 }
   
 .nav-brand img {
@@ -28,27 +30,30 @@ nav.navbar {
 
 .nav-brand div {
     color: black;
-    font-weight: 600;
-    font-size: 18px;
+    font-weight: 300;
+    font-size: 17px;
     text-transform: uppercase;
     transition: ease .1s;
     text-decoration: none;
-    margin-left: 10px;
 }
 
 .coordinator {
     color: black;
     font-weight: 600;
-    font-size: 18px;
+    font-size: 17px;
     text-transform: uppercase;
     transition: ease .1s;
     text-decoration: none;
 }
 
+.coordinator:hover {
+    color: black;
+}
+
 #basic-navbar-nav .nav-link {
     color: black;
     font-weight: 600;
-    font-size: 18px;
+    font-size: 17px;
     text-transform: uppercase;
     margin-left: 50px;
     transition: ease .1s;

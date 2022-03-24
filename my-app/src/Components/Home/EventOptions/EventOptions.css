@@ -1,0 +1,34 @@
+.event-options {
+    background: rgba(208, 208, 208, 0.6);
+    width: 380px;
+    height: 432px;
+    margin-left: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 10px;
+}
+
+.create {
+    background-color: white;
+    width: 280px;
+    height: 88px;
+    border: none;
+    border-radius: 22px;
+    margin: 10px 0px;
+}
+
+.message {
+    background-color: white;
+    width: 280px;
+    height: 64px;
+    border: none;
+    border-radius: 22px;
+    margin: 10px 0px;
+}
+
+.options-event {
+    color: rgba(0, 0, 0, 0.38);
+}
+

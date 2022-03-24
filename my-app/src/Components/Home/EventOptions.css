@@ -1,0 +1,99 @@
+.event-options {
+    background: rgba(208, 208, 208, 0.6);
+    width: 380px;
+    height: 432px;
+    margin-left: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 10px;
+}
+
+.create {
+    background-color: white;
+    width: 280px;
+    height: 88px;
+    border: none;
+    border-radius: 22px;
+    margin: 10px 0px;
+}
+
+.message {
+    background-color: white;
+    width: 280px;
+    height: 64px;
+    border: none;
+    border-radius: 22px;
+    margin: 10px 0px;
+}
+
+.options-event {
+    color: rgba(0, 0, 0, 0.38);
+}
+
+/* .dropdown-toggle.btn.btn-primary {
+    background-color: white;
+    color: black;
+    border: none;
+    width: 280px;
+    height: 44px;
+    padding: 0;
+    border-radius: 22px;
+}
+
+.dropdown-toggle.btn.btn-primary[aria-expanded="true"]{
+    background-color: white;
+    color: black;
+}
+
+.dropdown-menu.show{
+    width: 20px;
+    padding: 0;
+    margin: 0;
+    background-color: blue;
+}
+
+button#dropdown-basic-button.dropdown-toggle.btn.btn-primary::after {
+    background-color: rgba(208, 208, 208, 0.38);
+    height: 100%;
+    right: 0;
+} */
+
+.btn.btn-success {
+    background-color: white;
+    border: none;
+    color: black;
+    border-radius: 22px;
+    width: 240px;
+}
+
+.btn.btn-success:hover {
+    background-color: white;
+    border: none;
+    color: black;
+    cursor: default;
+}
+
+.btn.btn-success:hover:focus {
+    background-color: white;
+    border: none;
+    color: black;
+    cursor: default;
+}
+
+
+.dropdown-toggle.dropdown-toggle-split.btn.btn-success {
+    background-color: rgba(208, 208, 208, 0.38);
+    border: none;
+    width: 40px;
+}
+
+.dropdown-toggle.dropdown-toggle-split.btn.btn-success:hover {
+    cursor: pointer;
+}
+
+/* .dropdown-toggle.dropdown-toggle-split.btn.btn-success[aria-expanded="true"] {
+    background-color: rgba(208, 208, 208, 0.38);
+    border: none;
+} */

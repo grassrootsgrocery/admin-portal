@@ -18,9 +18,10 @@
     border-radius: 10px;
     /* overflow: hidden;
     text-overflow: clip; */
+    margin-bottom: 24px;
 }
 .event_two{
-    /* background-color: aquamarine; */
+    background-color: aquamarine;
 }
 
 .event_one > .right_col {
@@ -43,18 +44,24 @@
     /* position: relative; */
     font-size: 28px;
     font-weight: bold;
+    /* border: solid 10px yellow; */
+
 }
 
 .event_one > .left_col > .group{
     /* background-color: green; */
     text-align: left;
+    line-height: 40%;
+    margin-bottom: 45px;
 }
 
 .event_one > .left_col > .pickup{
     /* background-color: blueviolet; */
     text-align: left;
+    line-height: 40%;
     /* display: inline-block;
     position: relative; */
+    margin-bottom: 32px;
 }
 
 .event_one > .right_col > .turnout{
@@ -63,16 +70,17 @@
     margin-left: 5%;
     font-size: 20px;
     font-weight: bold;
+    margin-top: 32px;
 
     /* border: solid 10px yellow; */
 }
-.event_one > .right_col > .group_drivers{
+/* .event_one > .right_col > .group_drivers{
 
 }
 
 .event_one > .right_col > .general_drivers{
     
-}
+} */
 .container > .see_more{
     font-size: 14px;
     line-height: 16px;

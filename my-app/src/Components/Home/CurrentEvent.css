@@ -1,0 +1,31 @@
+.container {
+  display: flex;
+}
+
+/* leftbox {
+    float:left;
+    width:180px;
+    height:160px;
+    background-color:white;
+    border:solid black;
+    padding: 50px 75px 75px 75px;
+  }
+  
+  middlebox {
+    float:left;
+    width:180px;
+    height:160px;
+    background-color:white;
+    border:solid black;
+    margin-left: 25px;
+    padding: 50px 75px 75px 75px;
+  }
+  
+  rightbox {
+    float:right;
+    width:180px;
+    height:160px;
+    background-color:white;
+    border:solid black;
+    padding: 50px 75px 75px 75px;
+  } */

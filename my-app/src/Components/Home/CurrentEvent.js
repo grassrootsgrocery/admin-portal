@@ -1,27 +1,37 @@
 import React from 'react';
+import './CurrentEvent.css'
 
 function CurrentEvent(props){
+  const vol_group = 'Hack4Impact';
+  const pickup_loc = 'Lighthouse';
+  const num_drivers_needed = 25;
+  const date = 'March 14th, 2022';
+  const drivers_have = 16;
+  const volunteers_have = 14;
   return( 
-    <div>
+    <div style={{padding: 10}}>
       <Active />
-      <div color='blue' style= "border-style='double'">
-      <Date />
-      <div class='container'>
-        <VolunteerGroup/>
-        <PickupLocation/>
-        <DriversNeeded/>
-      </div>
-      <div class = 'container'>
+      <div className='Mcontainer'>
+        <div className='vertical'>
+          <Date date = {date}/>
+          <div className='container'>
+            <EventInfo type = 'Volunteer Group' value= {vol_group}/>
+            <EventInfo type = 'Pickup Location' value= {pickup_loc}/>
+            <EventInfo type = 'Drivers Needed' value= {num_drivers_needed}/>
+          </div>
+        </div>
+      
+      <div className = 'container'>
         <h5>Participants: </h5>
-        <Drivers/>
-        <Volunteers/>
+        <Counter name= 'Drivers' num={drivers_have}/>
+        <Counter name= 'Volunteers' num={volunteers_have}/>
       </div>
-      {/* <VolunteerTable/>
-      <div>
-      <Manage/>
-      <Recruit/>
-      <VisitWebpage/>
-      </div> */}
+      <VolunteerTable/>
+      <div className='container'>
+      <Link name = 'Manage'/>
+      <Link name = 'Recruit'/>
+      <Link name = 'Visit Webpage'/>
+      </div>
       </div>
     </div>
   );
@@ -31,12 +41,15 @@ function CurrentEvent(props){
 class Active extends React.Component{
   render(){
     let active = true;
-    if(active){
-      return(<div><circle color='28E42A'/>
+    if(!active){
+      return(<div className='rowC'>
+      <div className='Rcircle'></div>
       <h2>No active events</h2>
-      </div>)
+      </div>
+      )
     } else {
-      return(<div><circle color='E82F2F'/>
+      return(<div className='rowC'>
+      <div className='Gcircle'></div>
       <h2>An event is currently active</h2>
       </div>)
     }
@@ -45,52 +58,40 @@ class Active extends React.Component{
 }
 
 function Date(props) {
-  return(<h1 class= 'w3-container'>Monday, March 14th</h1>)
+  return(<div><h1>{props.date}</h1></div>)
 }
 
-function VolunteerGroup(props) {
+function EventInfo(props){
+  const type = props.type;
+  const value = props.value;
   return(
-    <div id= 'leftbox'>  
-    <h5>Volunteer Group</h5>
-    <h3>Hack4Impact</h3>
+    <div className='eventInfo'>
+    <h5>{type}</h5>
+    <h3>{value}</h3>
     </div>
   )
 }
 
-function PickupLocation(props) {
+function Counter(props){
+  const num = props.num;
+  const name = props.name;
   return(
-    <div id= 'middlebox'>  
-    <h5>Pickup Location</h5>
-    <h3>Start Lighthouse</h3>
+    <div className='drivers'>
+      <h4>{name}</h4>
+      <div className='driversNum'>{num}</div>
     </div>
   )
 }
 
-function DriversNeeded(props) {
+function VolunteerTable(props){
   return(
-    <div id= 'rightbox'>  
-    <h5>Drivers Needed</h5>
-    <h3>25</h3>
-    </div>
+    <div className='table'>I am a table</div>
   )
 }
 
-function Drivers(props){
-  return(
-    <div>
-      <h4>Drivers</h4>
-      <h4>16</h4>
-    </div>
-  )
-}
-
-function Volunteers(props){
-  return(
-    <div>
-      <h4>Volunteers</h4>
-      <h4>14</h4>
-    </div>
-  )
+function Link(props) {
+  const name = props.name;
+  return(<h5>{name}</h5>)
 }
 
 export default CurrentEvent;

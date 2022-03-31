@@ -1,5 +1,5 @@
 .navbar-page {
-    padding-bottom: 100px;
+    padding-bottom: 150px;
 }
 
 nav.navbar {
@@ -10,6 +10,7 @@ nav.navbar {
     left: 0;
     right: 0;
     font-family: Arial, Helvetica, sans-serif;
+    height: 100px;
 }
   
 .menu-toggle {
@@ -25,13 +26,13 @@ nav.navbar {
 }
   
 .nav-brand img {
-    height: 40px;
+    height: 20px;
 }
 
 .nav-brand div {
     color: black;
     font-weight: 300;
-    font-size: 17px;
+    font-size: 18px;
     text-transform: uppercase;
     transition: ease .1s;
     text-decoration: none;
@@ -40,7 +41,7 @@ nav.navbar {
 .coordinator {
     color: black;
     font-weight: 600;
-    font-size: 17px;
+    font-size: 18px;
     text-transform: uppercase;
     transition: ease .1s;
     text-decoration: none;
@@ -53,7 +54,7 @@ nav.navbar {
 #basic-navbar-nav .nav-link {
     color: black;
     font-weight: 600;
-    font-size: 17px;
+    font-size: 18px;
     text-transform: uppercase;
     margin-left: 50px;
     transition: ease .1s;

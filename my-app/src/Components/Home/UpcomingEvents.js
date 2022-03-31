@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../upcomingEvents.css';
+import './upcomingEvents.css';
 import { Link } from 'react-router-dom';
 
 // Upcoming event has component like day, participants, drivers, volunteers, location, volunteer group, people needed
@@ -9,19 +9,19 @@ import { Link } from 'react-router-dom';
 function Event(props) {
   return(
   <>
-  <div class="eventInfo">
-    <h2> {props.date}</h2>
-      <div class = "primaryInfoSection">  <b>Volunteer Group</b> <br/> {props.group}</div>
-      <div class = "primaryInfoSection"> <b>Pickup Location</b> <br/> {props.location}</div>
-      <div class = "primaryInfoSection"> <b>Drivers Needed</b> <br/> {props.needed}</div>
-      <div>
-        <br/>
-        Participants:  &nbsp;
-        <span class="participantInfo">Drivers: <span class="participantAmount">{props.drivers} </span></span> &nbsp;
-        <span class="participantInfo">Volunteers: <span class="participantAmount">{props.volunteers} </span></span>
-      </div>
-  </div>
-  <br/>
+    <div class="eventInfo">
+      <h2> {props.date}</h2>
+        <div class = "primaryInfoSection">  <b>Volunteer Group</b> <br/> {props.group}</div>
+        <div class = "primaryInfoSection"> <b>Pickup Location</b> <br/> {props.location}</div>
+        <div class = "primaryInfoSection"> <b>Drivers Needed</b> <br/> {props.needed}</div>
+        <div>
+          <br/>
+          Participants:  &nbsp;
+          <span class="participantInfo">Drivers: <span class="participantAmount">{props.drivers} </span></span> &nbsp;
+          <span class="participantInfo">Volunteers: <span class="participantAmount">{props.volunteers} </span></span>
+        </div>
+    </div>
+    <br/>
   </>
   )
 }

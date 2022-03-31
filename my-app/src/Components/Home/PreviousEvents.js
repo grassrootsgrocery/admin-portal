@@ -3,7 +3,7 @@ import "./Prev.css";
 
 function PreviousEvents() {
   function addEvent(){
-
+    
   }
   return (
     <div className="container"> 

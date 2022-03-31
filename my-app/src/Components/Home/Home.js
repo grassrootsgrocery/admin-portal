@@ -3,12 +3,15 @@ import EventOptions from './EventOptions/EventOptions';
 import CurrentEvent from './CurrentEvent';
 import UpcomingEvents from './UpcomingEvents';
 import PreviousEvents from './PreviousEvents';
+import "./Home.css";
 
 function Home() {
   return (
-    <div>
-        <EventOptions/>
-        <CurrentEvent/>
+    <div className="home">
+        <div className="top-row">
+          <EventOptions/>
+          <CurrentEvent/>
+        </div>
         <UpcomingEvents/>
         <PreviousEvents/>
     </div>

@@ -1,3 +1,11 @@
+.Mcontainer {
+  background-color: #1b85a5e5;
+  border-style: double;
+  border-width: 1em;
+  border-radius: 5px;
+  padding: 20px;
+}
+
 .container {
   display: flex;
   justify-content: space-evenly;
@@ -31,12 +39,29 @@
   border-radius: 50%;
 }
 
-.Mcontainer {
-  background-color: #1b85a5;
-  border-style: double;
-  border-width: 1em;
-  border-radius: 5px;
-  padding: 20px;
+.activeText {
+  padding-left: 10px;
+  padding-bottom: 5px;
+  font-size: 1.75em;
+  font-weight: bold;
+  opacity: 0.6;
+}
+
+.date {
+  padding: 20px 50px;
+  font-size: 30px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  grid-template-rows: 1fr 3fr;
+  justify-items: start;
+  justify-content: center;
+  padding: 0px 50px;
+  column-gap: 30px;
 }
 
 .drivers {
@@ -70,15 +95,5 @@
   left: 20px;
   right: 20px;
   display: block-table;
-}
-
-.vertical {
-  display: flex;
-  flex-direction: column;
-}
-
-.eventInfo {
-  display: inline-block;
-  /* flex-direction: column; */
-  text-align: left;
+  padding: 25px;
 }

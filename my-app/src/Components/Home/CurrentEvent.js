@@ -12,15 +12,8 @@ function CurrentEvent(props){
     <div style={{padding: 10}}>
       <Active />
       <div className='Mcontainer'>
-        <div className='vertical'>
-          <Date date = {date}/>
-          <div className='container'>
-            <EventInfo type = 'Volunteer Group' value= {vol_group}/>
-            <EventInfo type = 'Pickup Location' value= {pickup_loc}/>
-            <EventInfo type = 'Drivers Needed' value= {num_drivers_needed}/>
-          </div>
-        </div>
-      
+          <div className='date'>{date}</div>
+          <EventInfo org = {vol_group} loc = {pickup_loc} drivers_needed = {num_drivers_needed}/>
       <div className = 'container'>
         <h5>Participants: </h5>
         <Counter name= 'Drivers' num={drivers_have}/>
@@ -44,30 +37,31 @@ class Active extends React.Component{
     if(!active){
       return(<div className='rowC'>
       <div className='Rcircle'></div>
-      <h2>No active events</h2>
+      <div className='activeText'>No active events</div>
       </div>
       )
     } else {
       return(<div className='rowC'>
       <div className='Gcircle'></div>
-      <h2>An event is currently active</h2>
+      <div className='activeText'>An event is currently active</div>
       </div>)
     }
 
   }
 }
 
-function Date(props) {
-  return(<div><h1>{props.date}</h1></div>)
-}
-
 function EventInfo(props){
-  const type = props.type;
-  const value = props.value;
+  const org = props.org;
+  const loc = props.loc;
+  const drivers_needed = props.drivers_needed
   return(
-    <div className='eventInfo'>
-    <h5>{type}</h5>
-    <h3>{value}</h3>
+    <div className='grid'>
+        <text style={{gridColumn: 1, gridRow: 1}}>Volunteer Group</text>
+        <text style={{gridColumn: 2, gridRow: 1}}>Pickup Location</text>
+        <text style={{gridColumn: 3, gridRow: 1}}>Drivers Needed</text>
+        <text style={{gridColumn: 1, gridRow: 2, fontSize: 20, fontWeight: 'bold'}}>{org}</text>
+        <text style={{gridColumn: 2, gridRow: 2, fontSize: 20, fontWeight: 'bold'}}>{loc}</text>
+        <text style={{gridColumn: 3, gridRow: 2, fontSize: 20, fontWeight: 'bold'}}>{drivers_needed}</text>
     </div>
   )
 }
@@ -91,7 +85,7 @@ function VolunteerTable(props){
 
 function Link(props) {
   const name = props.name;
-  return(<h5>{name}</h5>)
+  return(<text style={{fontSize: 12, paddingTop: 15}}>{name}</text>)
 }
 
 export default CurrentEvent;

@@ -1,0 +1,10 @@
+.schedule{
+  background-color: #D0D0D0;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 15px;
+  padding: 5%;
+  text-align: left;
+  display: block;
+}

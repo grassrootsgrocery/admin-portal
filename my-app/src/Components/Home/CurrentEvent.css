@@ -1,0 +1,100 @@
+.Mcontainer {
+  background-color: #1b85a5e5;
+  border-style: double;
+  border-width: 1em;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.container {
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row;
+  right: 20px;
+  left: 20px;
+  align-items: center;
+}
+
+.rowC {
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items: center;
+  text-align: left;
+}
+
+.Gcircle {
+  display: flex;
+  width: 15px;
+  height: 15px;
+  background-color: green;
+  border-radius: 50%;
+}
+
+.Rcircle {
+  display: flex;
+  width: 15px;
+  height: 15px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+.activeText {
+  padding-left: 10px;
+  padding-bottom: 5px;
+  font-size: 1.75em;
+  font-weight: bold;
+  opacity: 0.6;
+}
+
+.date {
+  padding: 0px 50px 20px;
+  font-size: 30px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  grid-template-rows: 1fr 3fr;
+  justify-items: start;
+  justify-content: center;
+  padding: 0px 50px;
+  column-gap: 30px;
+}
+
+.drivers {
+  background-color: #48b9db;
+  border-radius: 10px;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding-right: 50px;
+  padding-left: 20px;
+  position: relative;
+  height: 25px;
+  align-items: center;
+  width: 70px;
+}
+
+.driversNum {
+  background-color: #abe1f1;
+  border-radius: 10px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  left: 75%;
+  position: absolute;
+  text-align: center;
+}
+
+.table {
+  background-color: #abe1f1;
+  border-radius: 8px;
+  left: 20px;
+  right: 20px;
+  display: block-table;
+  padding: 25px;
+}

@@ -1,5 +1,6 @@
 import React from 'react';
 import "./EventOverview.css";
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 function EventOverview() {
   return (
@@ -26,7 +27,14 @@ function EventOverview() {
             <b>www.motthavenfridge.com/event</b>
           </div>
         </div>
-        <div className="graphic">Graphic</div>
+        <div className="graphic">
+          Current Drivers <br/>
+          <ProgressBar>
+            <ProgressBar variant={"special"} label={15} now={60} key={1} />
+            <ProgressBar variant={"general"} label={5} now={20} key={2} />
+            <ProgressBar variant={"needed"} label={5} now={20} key={3} />
+          </ProgressBar>
+        </div>
       </div>
     </div>
   )

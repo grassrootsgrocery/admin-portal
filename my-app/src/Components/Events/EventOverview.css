@@ -20,5 +20,28 @@
 }
 
 .graphic {
-  margin: 30px;
+  margin: 20px;
+}
+
+.progress-bar.bg-special {
+  background-color: #B9C4FF;
+  font-size: 20px;
+  color: black;
+}
+
+.progress-bar.bg-general {
+  background-color: #E8C2FF;
+  font-size: 20px;
+  color: black;
+}
+
+.progress-bar.bg-needed {
+  background-color: #FFBADB;
+  font-size: 20px;
+  color: black;
+}
+
+.progress {
+  width: 300px;
+  height: 42px !important;
 }

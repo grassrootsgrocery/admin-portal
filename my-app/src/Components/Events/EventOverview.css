@@ -8,9 +8,10 @@
   border-radius: 15px;
   padding-left: 3%;
   padding-right: 3%;
+  flex-wrap: wrap;
 }
 
-.overview-info{
+.overview-info {
   text-align: left;
   display: block;
 }
@@ -21,18 +22,33 @@
 
 .graphic {
   margin: 20px;
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;
+}
+
+.graphic > p {
+  text-align: left;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.progress {
+  border: 1px solid black;
 }
 
 .progress-bar.bg-special {
   background-color: #B9C4FF;
   font-size: 20px;
   color: black;
+  border-right: 1px solid black;
 }
 
 .progress-bar.bg-general {
   background-color: #E8C2FF;
   font-size: 20px;
   color: black;
+  border-right: 1px solid black;
 }
 
 .progress-bar.bg-needed {
@@ -44,4 +60,36 @@
 .progress {
   width: 300px;
   height: 42px !important;
+  margin-bottom: 20px;
+}
+
+.label {
+  width: 25px;
+  height: 25px;
+  border-radius: 8px;
+  border: 1px solid black;
+}
+
+.special {
+  background-color: #B9C4FF;
+}
+
+.general {
+  background-color: #E8C2FF;
+}
+
+.needed {
+  background-color: #FFBADB;
+}
+
+.legend {
+  display: flex;
+}
+
+.legend > div {
+  margin-right: 15px;
+}
+
+.legend > p {
+  font-size: 18px;
 }

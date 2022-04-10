@@ -30,12 +30,24 @@ function EventOverview() {
           </div>
         </div>
         <div className="graphic">
-          Current Drivers <br/>
+          <p>Current Drivers</p>
           <ProgressBar>
             <ProgressBar variant={"special"} label={15} now={60} key={1}/>
             <ProgressBar variant={"general"} label={5} now={20} key={2}/>
             <ProgressBar variant={"needed"} label={5} now={20} key={3}/>
           </ProgressBar>
+          <div className="legend">
+            <div className="label special"></div>
+            <p>Special Group Drivers</p>
+          </div>
+          <div className="legend">
+            <div className="label general"></div>
+            <p>General Volunteer Drivers</p>
+          </div>
+          <div className="legend">
+            <div className="label needed"></div>
+            <p>Drivers Still Needed</p>
+          </div>
         </div>
       </div>
     </div>

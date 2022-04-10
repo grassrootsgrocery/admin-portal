@@ -3,6 +3,8 @@ import "./EventOverview.css";
 import ProgressBar from 'react-bootstrap/ProgressBar';
 
 function EventOverview() {
+  // state variables
+
   return (
     <div className="event-container">
       <div className="event-title">
@@ -30,9 +32,9 @@ function EventOverview() {
         <div className="graphic">
           Current Drivers <br/>
           <ProgressBar>
-            <ProgressBar variant={"special"} label={15} now={60} key={1} />
-            <ProgressBar variant={"general"} label={5} now={20} key={2} />
-            <ProgressBar variant={"needed"} label={5} now={20} key={3} />
+            <ProgressBar variant={"special"} label={15} now={60} key={1}/>
+            <ProgressBar variant={"general"} label={5} now={20} key={2}/>
+            <ProgressBar variant={"needed"} label={5} now={20} key={3}/>
           </ProgressBar>
         </div>
       </div>

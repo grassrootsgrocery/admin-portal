@@ -5,6 +5,10 @@ import Airtable from 'airtable';
 
 function EventOverview() {
   // state variables
+  const [date, setDate] = useState('')
+  const [group, setGroup] = useState('')
+  const [location, setLocation] = useState('')
+  const [link, setLink] = useState('')
   const [general, setGeneral] = useState('')
   const [needed, setNeeded] = useState('')
 
@@ -13,9 +17,21 @@ function EventOverview() {
   const getRecord = () => {
     base('🚛 Supplier Pickup Events').find('recJgNdhgq8BlqcBj', function(err, record) {
         if (err) { console.error(err); return; }
+
+        setLocation(record.fields["Pickup Address (from 🥑 Supplier CRM)"]);
+        setDate(record.fields["Date"]);
+        setLink(record.fields["Shortened Link to Special Event Signup Form"]);
         setGeneral(record.fields["Total Count of Drivers for Event"]);
         setNeeded(record.fields["Count of Driving Slots Available"]);
         console.log('Retrieved', record.id);
+
+        if(record.fields["Volunteer Group"]) {
+          base('Volunteer Groups').find(record.fields["Volunteer Group"], function(err, group) {
+            if (err) { console.error(err); return; }
+            setGroup(group.fields["Name"]);
+            console.log('Retrieved', group.id[0]);
+          });
+        }
     });
   }
 
@@ -34,19 +50,19 @@ function EventOverview() {
         <div className="overview-info">
           <div className="info">
             Event Date<br/> 
-            <b>Saturday, March 12th</b>
+            <b>{date}</b>
           </div>
           <div className="info">
             Group<br/> 
-            <b>Hack4Impact</b>
+            <b>{group}</b>
           </div>
           <div className="info">
             Pickup Location<br/> 
-            <b>Start Lighthouse</b>
+            <b>{location}</b>
           </div>
           <div className="info">
             Event Website Link<br/> 
-            <b>www.motthavenfridge.com/event</b>
+            <b><a href={link}>{link}</a></b>
           </div>
         </div>
         <div className="graphic">

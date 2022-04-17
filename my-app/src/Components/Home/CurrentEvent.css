@@ -48,7 +48,7 @@
 }
 
 .date {
-  padding: 20px 50px;
+  padding: 0px 50px 20px;
   font-size: 30px;
   font-weight: bold;
   text-align: left;
@@ -76,6 +76,7 @@
   position: relative;
   height: 25px;
   align-items: center;
+  width: 70px;
 }
 
 .driversNum {

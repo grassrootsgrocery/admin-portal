@@ -1,0 +1,24 @@
+.overview{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #D0D0D0;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 15px;
+  padding-left: 3%;
+  padding-right: 3%;
+}
+
+.overview-info{
+  text-align: left;
+  display: block;
+}
+
+.info {
+  margin: 30px;
+}
+
+.graphic {
+  margin: 30px;
+}

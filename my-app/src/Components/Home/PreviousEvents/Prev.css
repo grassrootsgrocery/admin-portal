@@ -6,7 +6,7 @@
   padding: 20px;
   margin-bottom: 24px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   text-align: left;
 }
 .title {
@@ -15,15 +15,16 @@
   line-height: 56px;
 }
 .left_col {
+  margin-left: 14%;
   /* position: relative; */
   /* left: 140px; */
   /* margin-left: 140px; */
-  margin-right: 6%;
+  /* margin-right: 6%; */
   /* border: solid 10px yellow; */
 }
 .right_col {
-  /* margin-right: 21px; */
-  margin-left: 40px;
+  margin-right: 14%;
+  /* margin-left: 40px; */
   /* position:relative; */
   /* left: 300px; */
   font-size: 22px;
@@ -55,7 +56,7 @@
   font-weight: bold;
 }
 .turnout {
-  margin-top: 6%;
+  margin-top: 4%;
   font-weight: bold;
 }
 .driver_amount {

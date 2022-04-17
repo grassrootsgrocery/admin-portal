@@ -22,7 +22,10 @@ function EventOverview() {
         setDate(record.fields["Date"]);
         setLink(record.fields["Shortened Link to Special Event Signup Form"]);
         setGeneral(record.fields["Total Count of Drivers for Event"]);
+        var [month,day,year] = String(record.fields["Date"]).split('/');
+        var date_object = new Date(+year, month - 1, +day);
         setNeeded(record.fields["Count of Driving Slots Available"]);
+        setDate(date_object.toDateString());
         console.log('Retrieved', record.id);
 
         if(record.fields["Volunteer Group"]) {

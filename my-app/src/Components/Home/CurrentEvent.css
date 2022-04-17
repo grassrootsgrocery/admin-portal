@@ -1,12 +1,21 @@
-.Mcontainer {
-  background-color: #1b85a5e5;
-  border-style: double;
-  border-width: 1em;
+.eventBox {
+  background-color: #D0D0D0;
+  width: 680px;
+  height: 432px;
+  border: solid black 2px;
   border-radius: 5px;
-  padding: 20px;
+  padding: 70px;
 }
 
-.container {
+.currentEventDate {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 43px;
+  text-align: left;
+}
+
+.eventAttributes {
   display: flex;
   justify-content: space-evenly;
   flex-direction: row;
@@ -15,42 +24,53 @@
   align-items: center;
 }
 
+.activeText {
+  text-align: left;
+  color: #50C3C9;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 28px;
+}
+
+.eventAttributes {
+  display: flex;
+  justify-content: space-between;
+}
+
+.eventAttributesLeft {
+  display: flex;
+  flex-direction: column;
+}
+
+.eventAttributesLeft > div {
+  border: solid black 1px;
+  text-align: left;
+  height: 100px;
+}
+
+.attributeTitle {
+  font-weight: 500;
+  font-size: 16px;
+  margin: 0px;
+}
+
+.attributeValue {
+  font-weight: 700;
+  font-size: 20px;
+  margin: 0px;
+}
+
+.eventAttributesRight {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 
 .rowC {
   display: flex;
   flex-direction: row;
   justify-content:flex-start;
   align-items: center;
-  text-align: left;
-}
-
-.Gcircle {
-  display: flex;
-  width: 15px;
-  height: 15px;
-  background-color: green;
-  border-radius: 50%;
-}
-
-.Rcircle {
-  display: flex;
-  width: 15px;
-  height: 15px;
-  background-color: red;
-  border-radius: 50%;
-}
-
-.activeText {
-  padding-left: 10px;
-  padding-bottom: 5px;
-  font-size: 1.75em;
-  font-weight: bold;
-  opacity: 0.6;
-}
-
-.date {
-  padding: 0px 50px 20px;
-  font-size: 30px;
-  font-weight: bold;
   text-align: left;
 }
 
@@ -98,3 +118,9 @@
   display: block-table;
   padding: 25px;
 }
+
+.currentEventOptions {
+  text-decoration: underline;
+  color: pink;
+  cursor: pointer;
+} */

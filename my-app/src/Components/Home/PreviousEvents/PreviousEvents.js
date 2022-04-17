@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Prev.css";
+import { Link } from 'react-router-dom';
 
 function Event(props) {
   return (
@@ -10,11 +11,15 @@ function Event(props) {
         </div>
         <div className="group">
           <p>Volunteer Group</p>
-          <h3>{props.group}</h3>
+          <p>
+            <span className="group_name">{props.group}</span>
+          </p>
         </div>
         <div className="pickup">
           <p>Pickup Location</p>
-          <h3>{props.pickup}</h3>
+          <p>
+            <span className="pickup_name">{props.pickup}</span>
+          </p>
         </div>
       </div>
       <div className="right_col">
@@ -33,7 +38,7 @@ function Event(props) {
         </div>
         <div className="total_drivers">
           <p>
-            <span className="driver_amount">{props.total_drivers}</span> Total of {props.needed_drivers} Needed
+            <span className="needed_background"><span className="driver_amount">{props.total_drivers}</span> Total of {props.needed_drivers} Needed</span>
           </p>
         </div>
       </div>
@@ -64,7 +69,7 @@ function PreviousEvents() {
   return (
     <div className="container">
       <div className="title">
-        <h1>Previous Events</h1>
+        <p>Previous Events</p>
       </div>
       {events.map(e => (
         <Event
@@ -77,7 +82,7 @@ function PreviousEvents() {
           needed_drivers={e.needed_drivers}
         />
       ))}
-      <button className="see_more">See More</button>
+      <Link className="see_more" to="/">See more</Link>
     </div>
   );
 }

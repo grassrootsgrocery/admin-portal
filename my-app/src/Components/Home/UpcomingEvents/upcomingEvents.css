@@ -1,5 +1,5 @@
 .eventInfo {
-  background-color: #d0d0d0;
+  background-color: white;
   width: 80%;
   margin-left: auto;
   margin-right: auto;
@@ -7,6 +7,7 @@
   display: inline-flex;
   flex-direction: column;
   margin-bottom: 24px;
+  border: solid #EDEEED 2px;
 }
 .upcomingDate{
   margin-top: 10px;
@@ -24,16 +25,6 @@
   border-radius: 15px;
   display: block; 
 }
-.participantInfo {
-  background: rgba(245, 247, 255, 0.68);
-  margin-left: auto;
-  margin-right: auto;
-  display: inline-block; 
-  border-radius: 14px;
-  width: 215px;
-  font-size: 18px;
-  text-align: center;
-}
 
 .participantAmount {
   background-color: #F5F7FF;
@@ -44,14 +35,7 @@
   width: 75px;
 }
 
-.participantInfoDiv{
-  text-align: left;
-  margin-left: 18%;
-  /* line-height: 25%; */
-  padding-bottom: 40px;
-}
 .primaryInfoSection {
-    /* display: inline-block; */
     padding-left: 18px;
     padding-right: 18px;
     border-radius: 10px;
@@ -87,4 +71,36 @@
   text-decoration-line: underline;
 
   color: rgba(0, 0, 0, 0.38);
+}
+
+.upcomingAttributes {
+  display: flex;
+  justify-content: center;
+}
+
+.upcomingCount {
+  background: #1D8F3F;
+  border-radius: 14px;
+  width: 185px;
+  height: 32px;
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 10px;
+}
+
+.upcomingCountText {
+  color: white;
+  text-align: left;
+  padding-left: 20px;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.upcomingCountValue {
+  background: #80C241;
+  border-radius: 14px;
+  width: 69px;
+  height: 32px;
+  font-weight: 700;
+  font-size: 18px;
 }

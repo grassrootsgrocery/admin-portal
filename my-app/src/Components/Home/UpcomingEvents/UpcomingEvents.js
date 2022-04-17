@@ -16,19 +16,23 @@ function Event(props) {
         <div class = "primaryInfoSection"> Pickup Location <br/> <b>{props.location}</b></div>
         <div class = "primaryInfoSection"> Drivers Needed <br/> <b>{props.needed}</b></div>
       </div>
-        <div class="participantInfoDiv">
-          <br/>
-          Participants:  &nbsp;
-          <span class="participantInfo">Drivers: <span class="participantAmount">{props.drivers} </span></span> &nbsp;
-          <span class="participantInfo">Volunteers: <span class="participantAmount">{props.volunteers} </span></span>
+      <div className="upcomingAttributes">
+        <div className="upcomingCount">
+            <p className="upcomingCountText">Drivers</p>
+            <p className="upcomingCountValue">{props.drivers}</p>
         </div>
+        <div className="upcomingCount">
+          <p className="upcomingCountText">Volunteers</p>
+          <p className="upcomingCountValue">{props.volunteers}</p>
+        </div>
+      </div>
     </div>
     <br/>
   </>
   )
 }
 function UpcomingEvents() {
-  const [events, setState] = useState([{date:"Wednesday, March 23rd", group:"Hack4Impact", location:"9 Million Resources", needed:30, drivers:10, volunteers: 7},
+  const [events, setState] = useState([{date:"Wednesday, March 23rd", group:"Hack4Impact", location:"9 Million Reasons", needed:30, drivers:10, volunteers: 7},
 {date:"Sunday, April 3rd", group:"Hack4Impact", location:"Rap 4 Bronx", needed:6, drivers:4, volunteers: 2}])
   return (
     <>

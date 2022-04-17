@@ -38,7 +38,7 @@ function Navbar() {
                       </div>
                     </div>
                     <Navigation.Collapse id="basic-navbar-nav" className="justify-content-end" onClick={toggleNav}>
-                        <Nav className="">
+                        <Nav>
                             {links.map(link =>
                                 <Link key={link.name} to={link.path} className="nav-link">{link.name}</Link>
                             )}

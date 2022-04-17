@@ -10,11 +10,13 @@ function Event(props) {
   return(
   <>
     <div class="eventInfo">
-      <h2> {props.date}</h2>
-        <div class = "primaryInfoSection">  <b>Volunteer Group</b> <br/> {props.group}</div>
-        <div class = "primaryInfoSection"> <b>Pickup Location</b> <br/> {props.location}</div>
-        <div class = "primaryInfoSection"> <b>Drivers Needed</b> <br/> {props.needed}</div>
-        <div>
+      <div class="upcomingDate"><p> <b>{props.date}</b></p></div>
+      <div class = "primaryInfoDiv"> 
+        <div class = "primaryInfoSection">  Volunteer Group <br/> <b>{props.group}</b></div>
+        <div class = "primaryInfoSection"> Pickup Location <br/> <b>{props.location}</b></div>
+        <div class = "primaryInfoSection"> Drivers Needed <br/> <b>{props.needed}</b></div>
+      </div>
+        <div class="participantInfoDiv">
           <br/>
           Participants:  &nbsp;
           <span class="participantInfo">Drivers: <span class="participantAmount">{props.drivers} </span></span> &nbsp;
@@ -25,18 +27,17 @@ function Event(props) {
   </>
   )
 }
-
 function UpcomingEvents() {
-  const [events, setState] = useState([{date:"Wednsday, March 23", group:"Hack4Impact", location:"Stamp", needed:30, drivers:10, volunteers: 5},
-{date:"Wednsday, March 26", group:"UMD", location:"ESJ", needed:6, drivers:4, volunteers: 5}])
+  const [events, setState] = useState([{date:"Wednesday, March 23rd", group:"Hack4Impact", location:"9 Million Resources", needed:30, drivers:10, volunteers: 7},
+{date:"Sunday, April 3rd", group:"Hack4Impact", location:"Rap 4 Bronx", needed:6, drivers:4, volunteers: 2}])
   return (
     <>
     <div id="upcomingEvents">
-      <h1>Upcoming Events</h1>
+      <div class="upcomingEventsHeader"><p><b>Upcoming Events</b></p></div>
 
       {events.map(event => <Event date={event.date} group={event.group} location={event.location} 
       needed={event.needed} drivers={event.drivers} volunteers={event.volunteers} />)}
-      <Link to="/">See more</Link>
+      <Link className="see_more" to="/">See more</Link>
     </div>
     </>
   )

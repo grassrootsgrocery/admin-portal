@@ -1,0 +1,90 @@
+.eventInfo {
+  background-color: #d0d0d0;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10px;
+  display: inline-flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+}
+.upcomingDate{
+  margin-top: 10px;
+  font-size: 36px;
+  margin-left: 18%;
+  text-align: left;
+  margin-bottom: -20px;
+
+}
+.participants {
+  background-color: #d0d0d1;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 15px;
+  display: block; 
+}
+.participantInfo {
+  background: rgba(245, 247, 255, 0.68);
+  margin-left: auto;
+  margin-right: auto;
+  display: inline-block; 
+  border-radius: 14px;
+  width: 215px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.participantAmount {
+  background-color: #F5F7FF;
+  margin-left: auto;
+  margin-right: auto;
+  display: inline-block; 
+  border-radius: 14px;
+  width: 75px;
+}
+
+.participantInfoDiv{
+  text-align: left;
+  margin-left: 18%;
+  /* line-height: 25%; */
+  padding-bottom: 40px;
+}
+.primaryInfoSection {
+    /* display: inline-block; */
+    padding-left: 18px;
+    padding-right: 18px;
+    border-radius: 10px;
+    font-size: 18px;
+}
+
+.primaryInfoDiv{
+  display: flex;
+  flex-direction: row;
+  justify-content:center;
+  text-align: left;
+  margin-top:10px;
+}
+#upcomingEvents {
+  text-align: center;
+  width: 70%;
+  border-radius: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.upcomingEventsHeader{
+  font-size: 48px;
+
+}
+
+.see_more {
+  width: 59px;
+  height: 16px;
+
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  text-decoration-line: underline;
+
+  color: rgba(0, 0, 0, 0.38);
+}

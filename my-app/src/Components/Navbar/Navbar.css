@@ -3,7 +3,7 @@
 }
 
 nav.navbar {
-    background-color: #D0D0D0;
+    background-color: #21A749;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
     position: absolute;
     z-index: 1;
@@ -39,7 +39,7 @@ nav.navbar {
 }
 
 .coordinator {
-    color: black;
+    color: white;
     font-weight: 600;
     font-size: 18px;
     text-transform: uppercase;
@@ -58,6 +58,7 @@ nav.navbar {
     text-transform: uppercase;
     margin-left: 50px;
     transition: ease .1s;
+    color: white;
 }
 
 #basic-navbar-nav .nav-link:hover {

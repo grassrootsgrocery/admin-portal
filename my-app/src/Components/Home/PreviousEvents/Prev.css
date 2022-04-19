@@ -57,27 +57,54 @@
 
 .pickup_name {
   font-size: 18px;
+  font-style: normal;
   font-weight: bold;
 }
 
 .turnout {
   margin-top: 4%;
+  font-family: 'Roboto', sans-serif;
   font-weight: bold;
+}
+
+.group_drivers > p {
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.general_drivers > p {
+  font-weight: 500;
+  font-size: 18px;
 }
 
 .driver_amount {
   background-color: #80C241;
   display: inline-block;
   border-radius: 30px;
-  width: 59px;
+  width: 69px;
   text-align: center;
+  font-style: normal;
+  font-weight: 700;
+  color: black;
+  padding: 5px 0px;
+  font-size: 18px;
+}
+
+.needed_text {
+  margin-left: 10px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.needed_text > span {
+  text-decoration: underline;
 }
 
 .needed_background {
   background: #1D8F3F;
-  border-radius: 14px;
+  border-radius: 30px;
   display: inline-block;
-  width: 260px;
+  width: 250px;
   color: white;
 }
 
@@ -89,4 +116,5 @@
   line-height: 16px;
   text-decoration-line: underline;
   color: rgba(0, 0, 0, 0.38);
+  font-family: 'Roboto', sans-serif;
 }

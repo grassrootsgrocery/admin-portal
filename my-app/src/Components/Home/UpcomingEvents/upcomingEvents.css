@@ -41,6 +41,7 @@
     padding-right: 18px;
     border-radius: 10px;
     font-size: 18px;
+    font-weight: 500;
 }
 
 .primaryInfoDiv{
@@ -73,6 +74,7 @@
   line-height: 16px;
   text-decoration-line: underline;
   color: rgba(0, 0, 0, 0.38);
+  font-family: 'Roboto', sans-serif;
 }
 
 .upcomingAttributes {

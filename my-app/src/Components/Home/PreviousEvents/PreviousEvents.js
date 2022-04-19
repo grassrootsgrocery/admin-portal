@@ -38,7 +38,10 @@ function Event(props) {
         </div>
         <div className="total_drivers">
           <p>
-            <span className="needed_background"><span className="driver_amount">{props.total_drivers}</span> Total of {props.needed_drivers} Needed</span>
+            <span className="needed_background">
+              <span className="driver_amount">{props.total_drivers}</span>
+              <span className="needed_text">Total of <span>{props.needed_drivers} Needed</span></span>
+            </span>
           </p>
         </div>
       </div>

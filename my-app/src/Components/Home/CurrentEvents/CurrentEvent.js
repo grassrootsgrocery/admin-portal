@@ -59,10 +59,12 @@ function Active(props){
     <>
       {isActive
       ? <div className="activeText">
+          <div className="blueCircle"></div>
           <div>This event is currently active</div>
         </div>
       : <div className="activeText">
-          <div>No active events</div>
+          <div className="blueCircle"></div>
+          <div>Event not currently active</div>
         </div>
       }
     </>

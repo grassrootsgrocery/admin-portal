@@ -18,25 +18,24 @@ const Login = () => {
 
     return (
         <Flex minH={'90vh'} align={'center'} justify={'center'} >
-            
             <Stack>
-                <img src = {"login-logo.png"} width = {360} alt = {"Grassroots Grocery Logo"} />
-
-                <br/>
+                <img src = "login-logo.png" width = {450} alt = "Grassroots Grocery Logo" />
 
                 <FormControl>
-                    <Input placeholder = 'Username' />
+                    <Input placeholder = 'Username' className = 'loginInfo'/>
                 </FormControl>
 
                 <FormControl>
-                    <Input placeholder = 'Password' type = 'password'/>
+                    <Input placeholder = 'Password' type = 'password' className = 'loginInfo'/>
                 </FormControl>
                 
                 <br/>
 
-                <Button onClick = {onSubmit} borderRadius = {"7px"}>
-                    Login 
-                </Button>
+                <div className = 'loginButton'>
+                    <Button onClick = {onSubmit} className = 'loginButton'>
+                        Login 
+                    </Button>
+                </div>
 
             </Stack>
             

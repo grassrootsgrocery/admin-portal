@@ -1,3 +1,7 @@
+.prev_events {
+  margin-bottom: 15px;
+}
+
 .event {
   background: white;
   width: 780px;
@@ -76,7 +80,7 @@
   color: white;
 }
 
-.see_more {
+.prev_see_more {
   width: 59px;
   height: 16px;
   font-weight: 400;

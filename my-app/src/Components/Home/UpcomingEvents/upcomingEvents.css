@@ -7,6 +7,7 @@
   margin-bottom: 24px;
   border: solid #EDEEED 2px;
 }
+
 .upcomingDate{
   margin-top: 10px;
   font-size: 36px;
@@ -15,6 +16,7 @@
   margin-bottom: -20px;
 
 }
+
 .participants {
   background-color: #d0d0d1;
   width: 80%;
@@ -47,27 +49,28 @@
   text-align: left;
   margin-top:10px;
 }
+
 #upcomingEvents {
   text-align: center;
   width: 70%;
   border-radius: 15px;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 15px;
 }
+
 .upcomingEventsHeader{
   font-size: 48px;
 
 }
 
-.see_more {
+.upcoming_see_more {
   width: 59px;
   height: 16px;
-
   font-weight: 400;
   font-size: 14px;
   line-height: 16px;
   text-decoration-line: underline;
-
   color: rgba(0, 0, 0, 0.38);
 }
 

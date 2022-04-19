@@ -67,7 +67,7 @@ function PreviousEvents() {
     },
   ]);
   return (
-    <div className="container">
+    <div className="prev_events">
       <div className="title">
         <p>Previous Events</p>
       </div>
@@ -82,7 +82,7 @@ function PreviousEvents() {
           needed_drivers={e.needed_drivers}
         />
       ))}
-      <Link className="see_more" to="/">See more</Link>
+      <Link className="prev_see_more" to="/">See more</Link>
     </div>
   );
 }

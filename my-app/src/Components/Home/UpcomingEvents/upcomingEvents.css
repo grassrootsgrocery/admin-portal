@@ -84,7 +84,7 @@
 
 .upcomingCount {
   background: #1D8F3F;
-  border-radius: 14px;
+  border-radius: 20px;
   width: 185px;
   height: 32px;
   display: flex;
@@ -98,13 +98,15 @@
   padding-left: 20px;
   font-weight: 500;
   font-size: 18px;
+  margin: auto 0px;
 }
 
 .upcomingCountValue {
   background: #80C241;
-  border-radius: 14px;
+  border-radius: 20px;
   width: 69px;
   height: 32px;
   font-weight: 700;
   font-size: 18px;
+  padding: 2px 0px;
 }

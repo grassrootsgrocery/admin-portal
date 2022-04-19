@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import './CurrentEvent.css'
+import {FiExternalLink} from 'react-icons/fi';
 
 function CurrentEvent(props){
   const [volunteerGroup, setVolunteerGroup] = useState('Hack4Impact');
@@ -44,7 +45,7 @@ function CurrentEvent(props){
         </div>
         <div className="currentEventOptions">
           <Link to="/" className="currentEventOption">Manage This Event</Link>
-          <Link to="/" className="currentEventOption">Visit Webpage</Link>
+          <Link to="/" className="currentEventOption">Visit Webpage<FiExternalLink className="linkIcon"/></Link>
         </div>
       </div>
     </div>

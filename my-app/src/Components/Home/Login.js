@@ -3,7 +3,6 @@ import "./Login.css"
 import { useNavigate } from 'react-router-dom'; 
 import {
     Flex,
-    Box,
     FormControl,
     Input,
     Stack,
@@ -21,7 +20,7 @@ const Login = () => {
         <Flex minH={'90vh'} align={'center'} justify={'center'} >
             
             <Stack>
-                <img src={"login-logo.png"} width={360} />
+                <img src = {"login-logo.png"} width = {360} alt = {"Grassroots Grocery Logo"} />
 
                 <br/>
 
@@ -30,7 +29,7 @@ const Login = () => {
                 </FormControl>
 
                 <FormControl>
-                    <Input placeholder = 'Password' />
+                    <Input placeholder = 'Password' type = 'password'/>
                 </FormControl>
                 
                 <br/>

@@ -12,7 +12,7 @@ function Event(props) {
     <div class="eventInfo">
       <div class="upcomingDate"><p> <b>{props.date}</b></p></div>
       <div class = "primaryInfoDiv"> 
-        <div class = "primaryInfoSection">  Volunteer Group <br/> <b>{props.group}</b></div>
+        <div class = "primaryInfoSection"> Volunteer Group <br/> <b>{props.group}</b></div>
         <div class = "primaryInfoSection"> Pickup Location <br/> <b>{props.location}</b></div>
         <div class = "primaryInfoSection"> Drivers Needed <br/> <b>{props.needed}</b></div>
       </div>
@@ -41,7 +41,7 @@ function UpcomingEvents() {
 
       {events.map(event => <Event date={event.date} group={event.group} location={event.location} 
       needed={event.needed} drivers={event.drivers} volunteers={event.volunteers} />)}
-      <Link className="see_more" to="/">See more</Link>
+      <Link className="upcoming_see_more" to="/">See More</Link>
     </div>
     </>
   )

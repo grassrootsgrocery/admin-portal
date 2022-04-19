@@ -9,8 +9,9 @@ nav.navbar {
     z-index: 1;
     left: 0;
     right: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    height: 100px;
+    font-family: 'General Sans', sans-serif;
+    font-style: normal;
+    font-weight: 700;
 }
   
 .menu-toggle {
@@ -20,20 +21,18 @@ nav.navbar {
 .nav-brand {
     display: flex;
     align-items: center;
-    text-decoration: none !important;
-    background-color: white;
-    padding: 17px 10px;
+    padding: 0px 10px;
 }
-  
-.nav-brand img {
-    height: 20px;
+
+.nav-brand > img {
+    width: 110px;
+    height: auto;
 }
 
 .nav-brand div {
     color: black;
     font-weight: 300;
     font-size: 18px;
-    text-transform: uppercase;
     transition: ease .1s;
     text-decoration: none;
 }
@@ -42,27 +41,25 @@ nav.navbar {
     color: white;
     font-weight: 600;
     font-size: 18px;
-    text-transform: uppercase;
     transition: ease .1s;
     text-decoration: none;
 }
 
 .coordinator:hover {
-    color: black;
+    color: white;
 }
 
 #basic-navbar-nav .nav-link {
     color: black;
     font-weight: 600;
     font-size: 18px;
-    text-transform: uppercase;
     margin-left: 50px;
     transition: ease .1s;
     color: white;
 }
 
 #basic-navbar-nav .nav-link:hover {
-    color: #00161D;
+    color: white;
 }
 
 nav.navbar .fas {
@@ -78,6 +75,7 @@ nav.navbar .fas:hover {
 .toggle {
     margin-bottom: 5px;
     font-size: 22px;
+    color: white;
 }
   
 @media screen and (max-width: 991px) {

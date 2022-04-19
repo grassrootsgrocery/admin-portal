@@ -5,6 +5,7 @@
   border: solid #EDEEED 2px;
   border-radius: 5px;
   padding: 70px;
+  font-family: 'General Sans', sans-serif;
 }
 
 .currentEventDate {
@@ -29,7 +30,17 @@
   color: #50C3C9;
   font-weight: 700;
   font-size: 24px;
+  display: flex;
   line-height: 28px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.blueCircle {
+  width: 12px;
+  height: 12px;
+  background: #50C3C9;
+  border-radius: 50%;
+  margin: auto 10px;
 }
 
 .eventAttributes {
@@ -76,7 +87,7 @@
 
 .countContainer {
   background: #21A749;
-  border-radius: 14px;
+  border-radius: 20px;
   width: 185px;
   height: 32px;
   display: flex;
@@ -90,13 +101,19 @@
   padding-left: 20px;
   font-weight: 500;
   font-size: 18px;
+  margin: auto 0px;
 }
 
 .countValue {
   background: #80C241;
-  border-radius: 14px;
+  border-radius: 20px;
   width: 69px;
   height: 32px;
   font-weight: 700;
   font-size: 18px;
+  padding: 2px 0px;
+}
+
+.linkIcon {
+  margin: 0px 0px 2px 5px;
 }

@@ -1,14 +1,14 @@
 .eventInfo {
   background-color: white;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 780px;
   border-radius: 10px;
   display: inline-flex;
   flex-direction: column;
   margin-bottom: 24px;
   border: solid #EDEEED 2px;
+  font-family: 'General Sans', sans-serif;
 }
+
 .upcomingDate{
   margin-top: 10px;
   font-size: 36px;
@@ -17,6 +17,7 @@
   margin-bottom: -20px;
 
 }
+
 .participants {
   background-color: #d0d0d1;
   width: 80%;
@@ -40,6 +41,7 @@
     padding-right: 18px;
     border-radius: 10px;
     font-size: 18px;
+    font-weight: 500;
 }
 
 .primaryInfoDiv{
@@ -49,28 +51,30 @@
   text-align: left;
   margin-top:10px;
 }
+
 #upcomingEvents {
   text-align: center;
   width: 70%;
   border-radius: 15px;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 15px;
 }
+
 .upcomingEventsHeader{
   font-size: 48px;
-
+  font-family: 'General Sans', sans-serif;
 }
 
-.see_more {
+.upcoming_see_more {
   width: 59px;
   height: 16px;
-
   font-weight: 400;
   font-size: 14px;
   line-height: 16px;
   text-decoration-line: underline;
-
   color: rgba(0, 0, 0, 0.38);
+  font-family: 'Roboto', sans-serif;
 }
 
 .upcomingAttributes {
@@ -80,7 +84,7 @@
 
 .upcomingCount {
   background: #1D8F3F;
-  border-radius: 14px;
+  border-radius: 20px;
   width: 185px;
   height: 32px;
   display: flex;
@@ -94,13 +98,15 @@
   padding-left: 20px;
   font-weight: 500;
   font-size: 18px;
+  margin: auto 0px;
 }
 
 .upcomingCountValue {
   background: #80C241;
-  border-radius: 14px;
+  border-radius: 20px;
   width: 69px;
   height: 32px;
   font-weight: 700;
   font-size: 18px;
+  padding: 2px 0px;
 }

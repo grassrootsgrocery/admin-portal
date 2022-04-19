@@ -38,7 +38,10 @@ function Event(props) {
         </div>
         <div className="total_drivers">
           <p>
-            <span className="needed_background"><span className="driver_amount">{props.total_drivers}</span> Total of {props.needed_drivers} Needed</span>
+            <span className="needed_background">
+              <span className="driver_amount">{props.total_drivers}</span>
+              <span className="needed_text">Total of <span>{props.needed_drivers} Needed</span></span>
+            </span>
           </p>
         </div>
       </div>
@@ -67,7 +70,7 @@ function PreviousEvents() {
     },
   ]);
   return (
-    <div className="container">
+    <div className="prev_events">
       <div className="title">
         <p>Previous Events</p>
       </div>
@@ -82,7 +85,7 @@ function PreviousEvents() {
           needed_drivers={e.needed_drivers}
         />
       ))}
-      <Link className="see_more" to="/">See more</Link>
+      <Link className="prev_see_more" to="/">See More</Link>
     </div>
   );
 }

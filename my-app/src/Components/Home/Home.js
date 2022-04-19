@@ -13,6 +13,7 @@ function Home() {
           <CurrentEvent/>
         </div>
         <UpcomingEvents/>
+        <div className="divider"></div>
         <PreviousEvents/>
     </div>
   )

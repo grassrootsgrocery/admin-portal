@@ -25,7 +25,7 @@ function Navbar() {
             <Navigation expand="lg" expanded={navActive}>
                 <Container>
                     <Navigation.Brand>
-                        <Link className="nav-brand" to="/">
+                        <Link className="nav-brand" to="/home">
                             <div>Mott Haven Fridge</div>
                         </Link>
                     </Navigation.Brand>

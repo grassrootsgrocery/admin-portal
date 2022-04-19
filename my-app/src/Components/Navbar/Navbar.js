@@ -26,7 +26,7 @@ function Navbar() {
                 <Container>
                     <Navigation.Brand>
                         <Link className="nav-brand" to="/">
-                            <div>Mott Haven Fridge</div>
+                            <img src="./Mott Haven Logo.png" alt="Mott Haven Logo"></img>
                         </Link>
                     </Navigation.Brand>
                     <Link className="coordinator" to="/event-coordinator">
@@ -34,7 +34,7 @@ function Navbar() {
                     </Link>
                     <div className={navActive ? "menu-toggle active" : "menu-toggle"} onClick={toggleNav}>
                       <div className="toggle" onClick={toggleNav}>
-                        {navActive ? <FaTimes></FaTimes> : <FaBars></FaBars> }
+                        {navActive ? <FaTimes/> : <FaBars/>}
                       </div>
                     </div>
                     <Navigation.Collapse id="basic-navbar-nav" className="justify-content-end" onClick={toggleNav}>

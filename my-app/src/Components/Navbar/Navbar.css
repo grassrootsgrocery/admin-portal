@@ -9,8 +9,11 @@ nav.navbar {
     z-index: 1;
     left: 0;
     right: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'General Sans', sans-serif;
     height: 100px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
 }
   
 .menu-toggle {
@@ -33,7 +36,6 @@ nav.navbar {
     color: black;
     font-weight: 300;
     font-size: 18px;
-    text-transform: uppercase;
     transition: ease .1s;
     text-decoration: none;
 }
@@ -42,7 +44,6 @@ nav.navbar {
     color: white;
     font-weight: 600;
     font-size: 18px;
-    text-transform: uppercase;
     transition: ease .1s;
     text-decoration: none;
 }
@@ -55,7 +56,6 @@ nav.navbar {
     color: black;
     font-weight: 600;
     font-size: 18px;
-    text-transform: uppercase;
     margin-left: 50px;
     transition: ease .1s;
     color: white;

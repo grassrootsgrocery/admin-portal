@@ -82,7 +82,7 @@ function PreviousEvents() {
           needed_drivers={e.needed_drivers}
         />
       ))}
-      <Link className="prev_see_more" to="/">See more</Link>
+      <Link className="prev_see_more" to="/">See More</Link>
     </div>
   );
 }

@@ -6,6 +6,7 @@
   flex-direction: column;
   margin-bottom: 24px;
   border: solid #EDEEED 2px;
+  font-family: 'General Sans', sans-serif;
 }
 
 .upcomingDate{
@@ -61,7 +62,7 @@
 
 .upcomingEventsHeader{
   font-size: 48px;
-
+  font-family: 'General Sans', sans-serif;
 }
 
 .upcoming_see_more {

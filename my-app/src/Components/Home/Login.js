@@ -31,8 +31,8 @@ const Login = () => {
                 
                 <br/>
 
-                <div className = 'loginButton'>
-                    <Button onClick = {onSubmit} className = 'loginButton'>
+                <div>
+                    <Button onClick = {onSubmit} className = 'loginButton' width = '400px' borderRadius = '7px'>
                         Login 
                     </Button>
                 </div>

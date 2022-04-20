@@ -26,7 +26,7 @@ function Navbar() {
                 <Container>
                     <Navigation.Brand>
                         <Link className="nav-brand" to="/">
-                            <img src="./Mott Haven Logo.png" alt="Mott Haven Logo"></img>
+                            <img src="./Jicama White_Logo_SquareLockup.png" alt="Mott Haven Logo"></img>
                         </Link>
                     </Navigation.Brand>
                     <Link className="coordinator" to="/event-coordinator">

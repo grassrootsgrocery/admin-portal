@@ -16,7 +16,6 @@ function Navbar() {
     const links = [
         { name: 'Events', path: '/events'}, 
         { name: 'Volunteers', path: '/volunteers'}, 
-        { name: 'Cleaning', path: '/cleaning'}, 
         { name: 'Contact', path: '/contact'},
     ];
 

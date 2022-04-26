@@ -17,7 +17,7 @@ const Login = () => {
     }
 
     return (
-        <Flex minH={'90vh'} align={'center'} justify={'center'} >
+        <Flex minH={'100vh'} align={'center'} justify={'center'} >
             <Stack>
                 <img src = "login-logo.png" width = {450} alt = "Grassroots Grocery Logo" />
 

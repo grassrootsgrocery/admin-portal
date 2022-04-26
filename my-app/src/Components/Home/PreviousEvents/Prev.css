@@ -1,0 +1,120 @@
+.prev_events {
+  margin-bottom: 15px;
+  font-family: 'General Sans', sans-serif;
+}
+
+.event {
+  background: white;
+  width: 780px;
+  margin: auto;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  text-align: left;
+  border: solid #EDEEED 2px;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: bold;
+  line-height: 56px;
+}
+
+.left_col {
+  margin-left: 14%;
+}
+
+.right_col {
+  margin-right: 14%;
+  font-size: 22px;
+  line-height: 100%;
+}
+
+.date {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 25px;
+}
+
+.group {
+  line-height: 50%;
+  margin-bottom: 45px;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.group_name {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.pickup {
+  font-size: 16px;
+  line-height: 50%;
+}
+
+.pickup_name {
+  font-size: 18px;
+  font-style: normal;
+  font-weight: bold;
+}
+
+.turnout {
+  margin-top: 4%;
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+}
+
+.group_drivers > p {
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.general_drivers > p {
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.driver_amount {
+  background-color: #80C241;
+  display: inline-block;
+  border-radius: 30px;
+  width: 69px;
+  text-align: center;
+  font-style: normal;
+  font-weight: 700;
+  color: black;
+  padding: 5px 0px;
+  font-size: 18px;
+}
+
+.needed_text {
+  margin-left: 10px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.needed_text > span {
+  text-decoration: underline;
+}
+
+.needed_background {
+  background: #1D8F3F;
+  border-radius: 30px;
+  display: inline-block;
+  width: 250px;
+  color: white;
+}
+
+.prev_see_more {
+  width: 59px;
+  height: 16px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  text-decoration-line: underline;
+  color: rgba(0, 0, 0, 0.38);
+  font-family: 'Roboto', sans-serif;
+}

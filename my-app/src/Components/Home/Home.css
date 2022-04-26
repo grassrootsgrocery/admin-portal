@@ -6,5 +6,14 @@
 .top-row {
     display: flex;
     justify-content: space-around;
-    margin: 30px 0px;
+    flex-wrap: wrap;
+    margin: 30px 10px;
+}
+
+.divider {
+    border-top: 2px dashed;
+    color: rgba(208, 208, 208, 0.6);
+    height: 2px;
+    width: 780px;
+    margin: 50px auto;
 }

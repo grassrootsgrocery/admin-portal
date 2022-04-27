@@ -24,7 +24,7 @@ function Navbar() {
             <Navigation expand="lg" expanded={navActive}>
                 <Container>
                     <Navigation.Brand>
-                        <Link className="nav-brand" to="/">
+                        <Link className="nav-brand" to="/home">
                             <img src="./Jicama White_Logo_SquareLockup.png" alt="Mott Haven Logo"></img>
                         </Link>
                     </Navigation.Brand>

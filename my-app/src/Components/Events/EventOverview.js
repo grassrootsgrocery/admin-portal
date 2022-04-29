@@ -14,6 +14,9 @@ function EventOverview() {
 
   const api_key = process.env.REACT_APP_API_KEY
 
+
+  // make a api call to get a sample event 'recJgNdhgq8BlqcBj' and set the state variables declared above.
+  // the variables record contains the returned sample event
   const getRecord = () => {
     base('🚛 Supplier Pickup Events').find('recJgNdhgq8BlqcBj', function(err, record) {
         if (err) { console.error(err); return; }
@@ -22,12 +25,15 @@ function EventOverview() {
         setDate(record.fields["Date"]);
         setLink(record.fields["Shortened Link to Special Event Signup Form"]);
         setGeneral(record.fields["Total Count of Drivers for Event"]);
+        // Turn the date from a string to a date object and format it
         var [month,day,year] = String(record.fields["Date"]).split('/');
         var date_object = new Date(+year, month - 1, +day);
         setNeeded(record.fields["Count of Driving Slots Available"]);
         setDate(date_object.toDateString());
         console.log('Retrieved', record.id);
 
+        /* If the record has an associated volunteer group make an api call to get the volunteer
+        group name */
         if(record.fields["Volunteer Group"]) {
           base('Volunteer Groups').find(record.fields["Volunteer Group"], function(err, group) {
             if (err) { console.error(err); return; }
@@ -39,7 +45,9 @@ function EventOverview() {
   }
 
   const base = new Airtable({apiKey: api_key}).base('appCVXBrL5oceApI4');
-  
+
+  /* run getRecord on page load, the second argument [] specifies that we only want to use
+   an effect and clean it up only once (on mount and unmount) */
   useEffect(() => {
     getRecord();
   }, [])
@@ -71,6 +79,7 @@ function EventOverview() {
         <div className="graphic">
           <p>Current Drivers</p>
           <ProgressBar>
+            {/* Logic for creating a progress bar that is spaced out proportional to driver amounts*/}
             <ProgressBar variant={"special"} label={0} now={0} key={1}/>
             <ProgressBar variant={"general"} label={general} now={(general / (general + needed)) * 100} key={2}/>
             <ProgressBar variant={"needed"} label={needed} now={(needed / (general + needed)) * 100} key={3}/>

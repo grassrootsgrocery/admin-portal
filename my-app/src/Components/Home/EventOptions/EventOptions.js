@@ -9,7 +9,10 @@ function EventOptions() {
   return (
     <div className="event-options">
       <button className="create">Create New Event</button>
+      <button className="message">Message Volunteers</button>
       <EventDropdown title="Event Turnout" items={turnoutOptions}/>
+      <p className="options-event">for Hack4Impact, March 10th</p>
+      <EventDropdown title="Recruit Participants" items={participantOptions}/>
       <p className="options-event">for Hack4Impact, March 10th</p>
     </div>
   )

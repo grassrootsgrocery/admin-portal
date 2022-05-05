@@ -77,6 +77,10 @@
   font-family: 'Roboto', sans-serif;
 }
 
+.upcoming_see_more:hover {
+  color: rgba(0, 0, 0, 0.38);
+}
+
 .upcomingAttributes {
   display: flex;
   justify-content: center;

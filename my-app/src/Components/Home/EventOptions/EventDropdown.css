@@ -3,7 +3,7 @@
     justify-content: space-between;
     width: 280px;
     height: 44px;
-    background-color: rgba(123, 210, 8, 0.6);
+    background-color: #F24C27;
     border-radius: 22px;
 }
 
@@ -22,7 +22,7 @@
 .dropdown-btn {
     color: black;
     text-decoration: none;
-    background-color: rgba(15, 166, 68, 0.38);
+    background-color: #F2A156;
     width: 40px;
     font-size: 22px;
     border-radius: 0px 22px 22px 0px;
@@ -40,7 +40,7 @@
 .dropdown-menu.show {
     height: 70px;
     overflow: scroll;
-    border: solid 2px rgba(123, 210, 8, 0.6) !important;
+    border: solid 2px #F24C27 !important;
 }
 
 .list-unstyled {

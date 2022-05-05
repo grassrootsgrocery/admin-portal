@@ -1,9 +1,9 @@
 .eventBox {
-  background-color: white;
+  background-color: #FFFEF9;
   width: 680px;
   height: 432px;
-  border: solid #EDEEED 2px;
-  border-radius: 5px;
+  border: solid black 4px;
+  border-radius: 16px;
   padding: 70px;
   font-family: 'General Sans', sans-serif;
 }
@@ -27,18 +27,20 @@
 
 .activeText {
   text-align: left;
-  color: #50C3C9;
+  color: #0083FD;
   font-weight: 700;
   font-size: 24px;
   display: flex;
-  line-height: 28px;
   font-family: 'Roboto', sans-serif;
+  margin-bottom: -16px;
+  padding-bottom: 19px;
+  margin-top: -16px;
 }
 
 .blueCircle {
   width: 12px;
   height: 12px;
-  background: #50C3C9;
+  background: #0083FD;
   border-radius: 50%;
   margin: auto 10px;
 }
@@ -86,7 +88,7 @@
 }
 
 .countContainer {
-  background: #21A749;
+  background: #F24C27;
   border-radius: 20px;
   width: 185px;
   height: 32px;
@@ -105,7 +107,7 @@
 }
 
 .countValue {
-  background: #80C241;
+  background: #F2A156;
   border-radius: 20px;
   width: 69px;
   height: 32px;

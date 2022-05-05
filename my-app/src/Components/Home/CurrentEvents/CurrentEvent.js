@@ -60,7 +60,7 @@ function Active(props){
       {isActive
       ? <div className="activeText">
           <div className="blueCircle"></div>
-          <div>This event is currently active</div>
+          <div>An event is currently active</div>
         </div>
       : <div className="activeText">
           <div className="blueCircle"></div>

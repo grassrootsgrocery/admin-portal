@@ -17,10 +17,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
 }
 
 .dropdown-btn {
-    color: black;
+    color: white;
     text-decoration: none;
     background-color: #F2A156;
     width: 40px;
@@ -34,7 +38,7 @@
 }
 
 .dropdown-btn:hover {
-    color: black;
+    color: white;
 }
 
 .dropdown-menu.show {

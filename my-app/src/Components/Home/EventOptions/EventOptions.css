@@ -18,6 +18,10 @@
     border: none;
     border-radius: 22px;
     margin: 10px 0px;
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
 }
 
 .message {
@@ -27,6 +31,10 @@
     border: none;
     border-radius: 22px;
     margin: 10px 0px;
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
 }
 
 .options-event {

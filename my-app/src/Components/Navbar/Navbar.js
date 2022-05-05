@@ -16,7 +16,6 @@ function Navbar() {
     const links = [
         { name: 'Events', path: '/events'}, 
         { name: 'Volunteers', path: '/volunteers'}, 
-        { name: 'Cleaning', path: '/cleaning'}, 
         { name: 'Contact', path: '/contact'},
     ];
 
@@ -25,8 +24,8 @@ function Navbar() {
             <Navigation expand="lg" expanded={navActive}>
                 <Container>
                     <Navigation.Brand>
-                        <Link className="nav-brand" to="/">
-                            <div>Mott Haven Fridge</div>
+                        <Link className="nav-brand" to="/home">
+                            <img src="./Jicama White_Logo_SquareLockup.png" alt="Mott Haven Logo"></img>
                         </Link>
                     </Navigation.Brand>
                     <Link className="coordinator" to="/event-coordinator">
@@ -34,11 +33,11 @@ function Navbar() {
                     </Link>
                     <div className={navActive ? "menu-toggle active" : "menu-toggle"} onClick={toggleNav}>
                       <div className="toggle" onClick={toggleNav}>
-                        {navActive ? <FaTimes></FaTimes> : <FaBars></FaBars> }
+                        {navActive ? <FaTimes/> : <FaBars/>}
                       </div>
                     </div>
                     <Navigation.Collapse id="basic-navbar-nav" className="justify-content-end" onClick={toggleNav}>
-                        <Nav className="">
+                        <Nav>
                             {links.map(link =>
                                 <Link key={link.name} to={link.path} className="nav-link">{link.name}</Link>
                             )}

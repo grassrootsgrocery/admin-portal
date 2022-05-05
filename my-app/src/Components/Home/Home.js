@@ -1,8 +1,8 @@
 import React from 'react';
 import EventOptions from './EventOptions/EventOptions';
-import CurrentEvent from './CurrentEvent';
-import UpcomingEvents from './UpcomingEvents';
-import PreviousEvents from './PreviousEvents';
+import CurrentEvent from './CurrentEvents/CurrentEvent';
+import UpcomingEvents from './UpcomingEvents/UpcomingEvents';
+import PreviousEvents from './PreviousEvents/PreviousEvents';
 import "./Home.css";
 
 function Home() {
@@ -13,6 +13,7 @@ function Home() {
           <CurrentEvent/>
         </div>
         <UpcomingEvents/>
+        <div className="divider"></div>
         <PreviousEvents/>
     </div>
   )

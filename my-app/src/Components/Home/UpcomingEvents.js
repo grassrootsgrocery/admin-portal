@@ -36,7 +36,7 @@ function UpcomingEvents() {
 
       {events.map(event => <Event date={event.date} group={event.group} location={event.location} 
       needed={event.needed} drivers={event.drivers} volunteers={event.volunteers} />)}
-      <Link to="/">See more</Link>
+      <Link to="/home">See more</Link>
     </div>
     </>
   )

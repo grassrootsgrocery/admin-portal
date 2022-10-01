@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import "./EventParticipants.css";
 
 function EventParticipants() {
@@ -11,7 +11,7 @@ function EventParticipants() {
         <h2>Insert airtable of event participants</h2>
       </div>
     </div>
-  )
+  );
 }
 
 export default EventParticipants;

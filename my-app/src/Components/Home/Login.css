@@ -1,21 +1,21 @@
 .loginInfo {
-    text-align: center;
-    width: 400px;
-    height: 50px;
-    background-color: #ECECEC73;
-    font-size: 20px;
-    border-width: 1px;
-    border-color: #edeeed5f;
-    border-radius: 7px;
-    outline-color: #21A749;
+  text-align: center;
+  width: 400px;
+  height: 50px;
+  background-color: #ECECEC73;
+  font-size: 20px;
+  border-width: 1px;
+  border-color: #edeeed5f;
+  border-radius: 7px;
+  outline-color: #21A749;
 }
 
 .loginButton {
-    background-color: #21A749;
-    height: 50px;
-    align-self: center;
-    border: 0px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #F4F3F0;
+  background-color: #21A749;
+  height: 50px;
+  align-self: center;
+  border: 0px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #F4F3F0;
 }

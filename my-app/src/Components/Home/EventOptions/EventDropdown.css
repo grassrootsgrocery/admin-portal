@@ -1,52 +1,52 @@
 .dropdown .options-menu {
-    display: flex;
-    justify-content: space-between;
-    width: 280px;
-    height: 44px;
-    background-color: #F24C27;
-    border-radius: 22px;
+  display: flex;
+  justify-content: space-between;
+  width: 280px;
+  height: 44px;
+  background-color: #F24C27;
+  border-radius: 22px;
 }
 
 .dropdown.show .options-menu {
-    border-radius: 22px 22px 0px 0px;
+  border-radius: 22px 22px 0px 0px;
 }
 
 .menu-title {
-    width: 240px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 18px;
-    line-height: 24px;
+  width: 240px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
 }
 
 .dropdown-btn {
-    color: white;
-    text-decoration: none;
-    background-color: #F2A156;
-    width: 40px;
-    font-size: 22px;
-    border-radius: 0px 22px 22px 0px;
-    position: relative;
+  color: white;
+  text-decoration: none;
+  background-color: #F2A156;
+  width: 40px;
+  font-size: 22px;
+  border-radius: 0px 22px 22px 0px;
+  position: relative;
 }
 
 .show.dropdown .dropdown-btn {
-    border-radius: 0px 22px 0px 0px;
+  border-radius: 0px 22px 0px 0px;
 }
 
 .dropdown-btn:hover {
-    color: white;
+  color: white;
 }
 
 .dropdown-menu.show {
-    height: 70px;
-    overflow: scroll;
-    border: solid 2px #F24C27 !important;
+  height: 70px;
+  overflow: scroll;
+  border: solid 2px #F24C27 !important;
 }
 
 .list-unstyled {
-    margin-bottom: 0px;
+  margin-bottom: 0px;
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import "./EventButton.css";
 
 function EventButton() {
@@ -10,7 +10,7 @@ function EventButton() {
         </button>
       </div>
     </div>
-  )
+  );
 }
 
 export default EventButton;

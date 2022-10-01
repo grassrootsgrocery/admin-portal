@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Prev.css";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 function Event(props) {
   return (
@@ -28,19 +28,23 @@ function Event(props) {
         </div>
         <div className="group_drivers">
           <p>
-            <span className="driver_amount">{props.group_drivers}</span> {props.group} Drivers
+            <span className="driver_amount">{props.group_drivers}</span>{" "}
+            {props.group} Drivers
           </p>
         </div>
         <div className="general_drivers">
           <p>
-            <span className="driver_amount">{props.general_drivers}</span> General Drivers
+            <span className="driver_amount">{props.general_drivers}</span>{" "}
+            General Drivers
           </p>
         </div>
         <div className="total_drivers">
           <p>
             <span className="needed_background">
               <span className="driver_amount">{props.total_drivers}</span>
-              <span className="needed_text">Total of <span>{props.needed_drivers} Needed</span></span>
+              <span className="needed_text">
+                Total of <span>{props.needed_drivers} Needed</span>
+              </span>
             </span>
           </p>
         </div>
@@ -57,7 +61,7 @@ function PreviousEvents() {
       group_drivers: 8,
       general_drivers: 17,
       total_drivers: 25,
-      needed_drivers: 25
+      needed_drivers: 25,
     },
     {
       date: "February 24th, 2022",
@@ -66,7 +70,7 @@ function PreviousEvents() {
       group_drivers: 8,
       general_drivers: 17,
       total_drivers: 25,
-      needed_drivers: 25
+      needed_drivers: 25,
     },
   ]);
   return (
@@ -74,7 +78,7 @@ function PreviousEvents() {
       <div className="title">
         <p>Previous Events</p>
       </div>
-      {events.map(e => (
+      {events.map((e) => (
         <Event
           date={e.date}
           group={e.group}
@@ -85,7 +89,9 @@ function PreviousEvents() {
           needed_drivers={e.needed_drivers}
         />
       ))}
-      <Link className="prev_see_more" to="/">See More</Link>
+      <Link className="prev_see_more" to="/">
+        See More
+      </Link>
     </div>
   );
 }

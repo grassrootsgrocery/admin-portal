@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -11,7 +11,7 @@ const firebaseConfig = {
   projectId: "jasontest-306a4",
   storageBucket: "jasontest-306a4.appspot.com",
   messagingSenderId: "869870501679",
-  appId: "1:869870501679:web:efcb865f14c5a0b2326bda"
+  appId: "1:869870501679:web:efcb865f14c5a0b2326bda",
 };
 
 // Initialize Firebase

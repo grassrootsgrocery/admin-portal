@@ -49,6 +49,24 @@ function DataTable() {
   useEffect(() => {
     fetchScheduledSlotsTable();
   }, [AIRTABLE_API_KEY]);
+
+  var Airtable = require('airtable');
+  var base = new Airtable({apiKey: AIRTABLE_API_KEY}).base('app7zige4DRGqIaL2');
+  
+  base('🙋🏽Volunteers CRM').select({
+  }).eachPage(function page(records, fetchNextPage) {
+    records.forEach(function(record) {
+        if (record.get('First Name') === "Paul") {
+          console.log(
+            "Full Name: " + record.get('First Name') +
+            "\nPhone Number: " + record.get('Phone Number')
+          );
+        }
+    });
+    fetchNextPage();
+  }, function done(err) {
+      if (err) { console.error(err); return; }
+  });
   
   return null;
 }

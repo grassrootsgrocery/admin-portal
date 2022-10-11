@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { app } from "./firebaseConfig";
+import { AuthProvider } from "./contexts/AuthContext";
+
 import './App.css'
 
 function App() {
@@ -6,7 +9,9 @@ function App() {
   console.log(apiKey);
 
   return (
-    <div className="App"></div>
+    <AuthProvider>
+      <div className="App"></div>
+    </AuthProvider>
   )
 }
 

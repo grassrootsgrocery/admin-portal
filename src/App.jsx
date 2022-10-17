@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 //Pages
 import { Login } from "./pages/Login";
-import { Events } from "./pages/Events/Events";
+import { Events } from "./pages/Events";
 
 import "./App.css";
 

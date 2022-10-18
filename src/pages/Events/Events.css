@@ -1,161 +1,138 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-
-@import url('https://fonts.googleapis.com/css2?family=Inter&family=Roboto&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter&family=Roboto&display=swap");
 
 .events-container {
-    padding: 20px;
+  padding: 40px;
 }
-
 
 .events-label {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 48px;
 
-    width: 376px;
-    height: 56px;
-    left: 63px;
-    top: 237px;
+  /* New Leaf Green */
 
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 700;
-    font-size: 48px;
-    line-height: 56px;
-
-    /* New Leaf Green */
-
-    color: #094343;
+  color: #094343;
 }
 
-
+.left {
+  display: flex;
+}
 
 .card {
-    box-sizing: border-box;
+  box-sizing: border-box;
 
-    /* width: 1314px; */
-    /* height: 248px; */
-    left: 63px;
-    top: 316px;
+  background: #fffef9;
+  /* Soft Gray White */
 
-    background: #FFFEF9;
-    /* Soft Gray White */
+  border: 5px solid #e0deca;
+  border-radius: 16px;
 
-    border: 5px solid #E0DECA;
-    border-radius: 16px;
-
-
-    /* added */
-
-    padding: 10px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-
-
+  padding: 0px 20px 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .date {
-    width: 346px;
-    height: 42px;
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 36px;
 
+  /* New Leaf Green */
 
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 700;
-    font-size: 36px;
-    line-height: 42px;
-
-    /* New Leaf Green */
-
-    color: #094343;
+  color: #094343;
 }
 
 .text-label {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
 
-    width: 47px;
-    height: 23.53px;
-
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 24px;
-
-    color: #2E2D2B;
+  color: #2e2d2b;
 }
 
 .info {
-    width: 210px;
-    height: 29px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 29px;
+  /* identical to box height */
 
+  display: flex;
+  align-items: center;
 
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 29px;
-    /* identical to box height */
+  /* New Leaf Green */
 
-    display: flex;
-    align-items: center;
-
-    /* New Leaf Green */
-
-    color: #094343;
+  color: #094343;
 }
-
 
 .button {
+  /* New Leaf Green */
+  float: right;
+  background: #094343;
+  border-radius: 20px;
 
-    width: 177px;
-    height: 55px;
+  width: 150px;
+  height: 40px;
 
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 23px;
 
-    /* New Leaf Green */
+  /* Soft Gray White */
 
-    background: #094343;
-    border-radius: 20px;
+  color: #e0deca;
 
-    width: 150px;
-    height: 40px;
-    /* left: 1207px; */
-    /* top: 428px; */
-
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 23px;
-
-    /* Soft Gray White */
-
-    color: #E0DECA;
-
-
-    text-align: center;
-    vertical-align: center;
+  text-align: center;
+  vertical-align: center;
 }
 
-.section,
-.top-row,
-.middle-row,
+.date,
 .bottom-row {
-    display: flex;
+  display: flex;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.middle-row {
+  display: flex;
+  margin-bottom: 15px;
+  margin-top: 15px;
+  justify-content: space-between;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+}
+.section {
+  font-size: 24px;
+  display: flex;
+  margin-right: 30px;
 }
 
 .add-button {
-    width: 228px;
-    height: 55px;
-    left: 1147px;
-    top: 237px;
+  width: 228px;
+  height: 55px;
 
-    background: #E65402;
-    border-radius: 20px;
+  background: #e65402;
+  border-radius: 20px;
 
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 23px;
 
+  color: #ffffff;
+}
 
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 23px;
-
-    color: #FFFFFF;
+.mid-section {
+  margin-right: 40px;
 }

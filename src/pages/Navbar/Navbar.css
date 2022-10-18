@@ -6,7 +6,7 @@
   background: #e0deca;
   display: flex;
   justify-content: space-between;
-  padding: 30px;
+  vertical-align: center;
 }
 
 .navbar-items {
@@ -18,7 +18,6 @@
   font-style: normal;
   font-weight: 500;
   font-size: 30px;
-  line-height: 35px;
 
   /* New Leaf Green */
 }
@@ -37,5 +36,11 @@
   font-style: normal;
   font-weight: 570;
   font-size: 18px;
-  line-height: 28px;
+  margin-left: 30px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.logo {
+  width: 300px;
 }

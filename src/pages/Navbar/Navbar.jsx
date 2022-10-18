@@ -1,11 +1,18 @@
 import "./Navbar.css";
+import grgLogo from "../../../public/grg-logo.png";
 import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
     <div class="navbar">
       <div class="logo-box">
-        <Link to="/">Logo</Link>
+        <Link to="/">
+          <img
+            alt="Grassroots Grocery Logo"
+            className="logo"
+            src={grgLogo}
+          ></img>
+        </Link>
         <Link class="link" to="/">
           Event Coordinator
         </Link>

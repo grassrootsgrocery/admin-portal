@@ -12,12 +12,15 @@
 .navbar-items {
   display: flex;
   justify-content: space-between;
-  width: 30%;
+  vertical-align: center;
+  width: 40%;
 
   font-family: "Roboto";
   font-style: normal;
   font-weight: 500;
   font-size: 30px;
+
+  padding: 40px;
 
   /* New Leaf Green */
 }

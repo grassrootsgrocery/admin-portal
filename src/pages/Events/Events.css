@@ -137,3 +137,7 @@
 .mid-section {
   margin-right: 40px;
 }
+
+footer {
+  background: linear-gradient(0deg, #094c43, #094c43), #2e2d2b;
+}

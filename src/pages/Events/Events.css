@@ -2,6 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter&family=Roboto&display=swap");
 
 .events-container {
+  margin-top: 50px;
   padding: 40px;
 }
 

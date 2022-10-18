@@ -21,6 +21,21 @@
   line-height: 35px;
 
   /* New Leaf Green */
+}
 
+.link {
+  text-decoration: none;
   color: #094343;
+}
+
+.logo-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  font-family: "Obviously";
+  font-style: normal;
+  font-weight: 570;
+  font-size: 18px;
+  line-height: 28px;
 }

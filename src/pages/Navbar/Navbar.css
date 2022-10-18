@@ -1,0 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
+.navbar {
+  /* Soft Gray White */
+
+  background: #e0deca;
+  display: flex;
+  justify-content: space-between;
+  padding: 30px;
+}
+
+.navbar-items {
+  display: flex;
+  justify-content: space-between;
+  width: 30%;
+
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 35px;
+
+  /* New Leaf Green */
+
+  color: #094343;
+}

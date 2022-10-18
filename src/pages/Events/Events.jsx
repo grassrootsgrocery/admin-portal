@@ -48,16 +48,18 @@ export function Events() {
   ));
 
   return (
-    <div class="events-container">
+    <div>
       <Navbar />
-      <div class="top-row">
-        <div class="events-label">Upcoming Events</div>
-        <button class="add-button" type="button">
-          + Add Saturday Event
-        </button>
-      </div>
+      <div class="events-container">
+        <div class="top-row">
+          <div class="events-label">Upcoming Events</div>
+          <button class="add-button" type="button">
+            + Add Saturday Event
+          </button>
+        </div>
 
-      {events}
+        {events}
+      </div>
     </div>
   );
 }

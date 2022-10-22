@@ -3,38 +3,54 @@
 html{
    background-color: #E0DECA
 }
-svg-container{
-    display: inline-block;
-	position: relative;
-	width: 100%;
-	padding-bottom: 100%; 
-	vertical-align: middle; 
-	overflow: hidden; 
-}
+
 div{
     margin-top: 5%;
 }
 svg{
     display: block;
-    margin-left: 15%;
-    margin-right: 15%;
+    margin-left: 20%;
+    margin-right: 20%;
     overflow: hidden;
+}
+
+@media only screen and (max-width: 600px) {
+    svg-container{
+        display: inline-block;
+        position: relative;
+        width: 100%;
+        padding-bottom: 100%; 
+        vertical-align: middle; 
+        overflow: hidden; 
+    }
+    svg{
+        display: block;
+        margin-left: 15%;
+        margin-right: 15%;
+        overflow: hidden;
+    }
+    #uname, #password, #sub{
+        width:90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 input{
     font-family: 'Nunito', sans-serif;
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 400px;
     font-size: 16px;
+    width: 400px;
 }
 #sub{
     background-color: #094C43;
     height: 50px;
     color: #FFFFFF;
     border: none;
-    border-radius: 15px;
-    width: 425px;
+    border-radius: 0.75em;
+    text-align: center;
+    float: center;
 }
 #uname,#password{
     background: #FFFFFF;

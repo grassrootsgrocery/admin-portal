@@ -71,6 +71,7 @@ export function Login() {
         </svg>
       </div>
       <h1>Event Coordinator</h1>
+      <div class="form">
       <input
         type="text"
         id="uname"
@@ -88,6 +89,7 @@ export function Login() {
       ></input>
       <br />
       <input type="submit" id="sub" value="login" onClick={handleClick}></input>
+      </div>
     </div>
   );
 }

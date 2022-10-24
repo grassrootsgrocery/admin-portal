@@ -15,21 +15,7 @@ const futureEventsUrl =
   `&fields=Only Driver Count` + // Drivers, Total Participants
   `&fields=Driver and Distributor Count`; // Packers, Drivers, Total Participants
 
-export function Events() {
-  const {
-    data: futureEvents,
-    isLoading: futureEventsLoading,
-    error: futureEventsError,
-  } = useQuery(["fetchFutureEvents"], () => fetchAirtableData(futureEventsUrl));
-
-  if (futureEventsLoading) {
-    return <div>Loading...</div>;
-  }
-  if (futureEventsError) {
-    console.log(futureEventsError);
-    return <div>Error...</div>;
-  }
-
+function processEventData(event) {
   const optionsDay = { weekday: "long", month: "long", day: "numeric" };
   const optionsTime = { hour: "numeric", minute: "numeric", hour12: true };
 
@@ -47,7 +33,7 @@ export function Events() {
     }
   };
 
-  const upcomingEvents = futureEvents.records.map((event) => ({
+  return {
     id: event.id,
     day:
       new Date(event.fields["Start Time"]).toLocaleDateString(
@@ -70,7 +56,26 @@ export function Events() {
       event.fields["Only Distributor Count"] +
       event.fields["Only Driver Count"] +
       event.fields["Driver and Distributor Count"],
-  }));
+  };
+}
+
+export function Events() {
+  const {
+    data: futureEvents,
+    isLoading: futureEventsLoading,
+    error: futureEventsError,
+  } = useQuery(["fetchFutureEvents"], () => fetchAirtableData(futureEventsUrl));
+
+  if (futureEventsLoading) {
+    return <div>Loading...</div>;
+  }
+  if (futureEventsError) {
+    console.log(futureEventsError);
+    return <div>Error...</div>;
+  }
+  const upcomingEvents = futureEvents.records.map((event) =>
+    processEventData(event)
+  );
 
   return (
     <div>

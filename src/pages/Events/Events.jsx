@@ -1,38 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { AIRTABLE_URL_BASE } from "../../airtableDataFetchingUtils";
+import { useQuery } from "react-query";
+import {
+  AIRTABLE_URL_BASE,
+  fetchAirtableData,
+} from "../../airtableDataFetchingUtils";
+
+const futureEventsUrl =
+  `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
+  // Get events after today
+  `&filterByFormula=IS_AFTER({Start Time}, NOW())` +
+  // Get fields for upcoming events dashboard
+  `&fields=Start Time` + // Day, Time
+  `&fields=Pickup Address` + // Main Location
+  `&fields=Only Distributor Count` + // Packers, Total Participants
+  `&fields=Only Driver Count` + // Drivers, Total Participants
+  `&fields=Driver and Distributor Count`; // Packers, Drivers, Total Participants
 
 export function Events() {
-  const AIRTABLE_API_KEY = import.meta.env.VITE_AIRTABLE_API_KEY;
-  const [upcomingEventsData, setUpcomingEventsData] = useState([]);
+  const {
+    data: futureEvents,
+    isLoading: futureEventsLoading,
+    error: futureEventsError,
+  } = useQuery(["fetchFutureEvents"], () => fetchAirtableData(futureEventsUrl));
 
-  const fetchUpcomingEventsData = () => {
-    fetch(
-      `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
-        // Get events after today
-        `&filterByFormula=IS_AFTER({Start Time}, NOW())` +
-        // Get fields for upcoming events dashboard
-        `&fields=Start Time` + // Day, Time
-        `&fields=Pickup Address` + // Main Location
-        `&fields=Only Distributor Count` + // Packers, Total Participants
-        `&fields=Only Driver Count` + // Drivers, Total Participants
-        `&fields=Driver and Distributor Count`, // Packers, Drivers, Total Participants
-
-      { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` } }
-    )
-      .then((resp) => resp.json())
-      .then((data) => {
-        setUpcomingEventsData(data.records);
-        // console.log("Upcoming Events:");
-        // console.log(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  useEffect(() => {
-    fetchUpcomingEventsData();
-  }, [AIRTABLE_API_KEY]);
+  if (futureEventsLoading) {
+    return <div>Loading...</div>;
+  }
+  if (futureEventsError) {
+    console.log(futureEventsError);
+    return <div>Error...</div>;
+  }
 
   const optionsDay = { weekday: "long", month: "long", day: "numeric" };
   const optionsTime = { hour: "numeric", minute: "numeric", hour12: true };
@@ -51,7 +47,8 @@ export function Events() {
     }
   };
 
-  const upcomingEvents = upcomingEventsData.map((event) => ({
+  const upcomingEvents = futureEvents.records.map((event) => ({
+    id: event.id,
     day:
       new Date(event.fields["Start Time"]).toLocaleDateString(
         "en-US",
@@ -77,21 +74,17 @@ export function Events() {
 
   return (
     <div>
-      {upcomingEventsData.length > 0 ? (
-        upcomingEvents.map((event) => (
-          <div>
-            <p>Day: {event.day}</p>
-            <p>Time: {event.time}</p>
-            <p>Main Location: {event.mainLocation}</p>
-            <p>Total Participants: {event.numtotalParticipants}</p>
-            <p>Drivers: {event.numDrivers}</p>
-            <p>Packers: {event.numPackers}</p>
-            <br />
-          </div>
-        ))
-      ) : (
-        <p>Fetching Event Data...</p>
-      )}
+      {upcomingEvents.map((event) => (
+        <div key={event.id}>
+          <p>Day: {event.day}</p>
+          <p>Time: {event.time}</p>
+          <p>Main Location: {event.mainLocation}</p>
+          <p>Total Participants: {event.numtotalParticipants}</p>
+          <p>Drivers: {event.numDrivers}</p>
+          <p>Packers: {event.numPackers}</p>
+          <br />
+        </div>
+      ))}
     </div>
   );
 }

@@ -12,6 +12,7 @@ const queryClient = new QueryClient({
 //Pages
 import { Login } from "./pages/Login";
 import { Events } from "./pages/Events/Events";
+import { ViewEvent } from "./pages/Events/ViewEvent";
 
 import "./App.css";
 
@@ -28,6 +29,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/events" element={<Events />} />
+              <Route path="/events/:eventId" element={<ViewEvent />} />
             </Routes>
           </div>
           <ReactQueryDevtools initialIsOpen={false} />

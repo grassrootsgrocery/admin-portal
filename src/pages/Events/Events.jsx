@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AIRTABLE_URL_BASE } from "../airtableDataFetchingUtils";
+import { AIRTABLE_URL_BASE } from "../../airtableDataFetchingUtils";
 
 export function Events() {
   const AIRTABLE_API_KEY = import.meta.env.VITE_AIRTABLE_API_KEY;

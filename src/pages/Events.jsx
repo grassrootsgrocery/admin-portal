@@ -37,12 +37,25 @@ export function Events() {
     fetchUpcomingEventsData();
   }, [AIRTABLE_API_KEY]);
 
+  const optionsDay = { weekday: 'long', month: 'long', day: 'numeric' };
+  const optionsTime = { hour: 'numeric', minute: 'numeric', hour12: true };
+
+  const getOrdinal = function(d) {
+    if (d > 3 && d < 21) return 'th';
+    switch (d % 10) {
+      case 1:  return "st";
+      case 2:  return "nd";
+      case 3:  return "rd";
+      default: return "th";
+    }
+  }
+  
   const upcomingEvents = upcomingEventsData.map(event => (
     {
-      day: event.fields["Start Time"],      // TODO: need to get day in correct format
-      time: event.fields["Start Time"],     // TODO : need to get time in correct format
+      day: new Date(event.fields["Start Time"]).toLocaleDateString('en-US', optionsDay) + getOrdinal(new Date(event.fields["Start Time"]).getDate()),      // start day in Weekday, Month Day format
+      time: new Date(event.fields["Start Time"]).toLocaleString('en-US', optionsTime),     // start time in HH:MM AM/PM format
       mainLocation: event.fields["Pickup Address"][0],
-      numDrivers: event.fields["Only Distributor Count"] + event.fields["Driver and Distributor Count"],    // sum of only packers and packers who are also drivers
+      numDrivers: event.fields["Only Distributor Count"] + event.fields["Driver and Distributor Count"] + "/30",    // sum of only packers and packers who are also drivers
       numPackers: event.fields["Only Driver Count"] + event.fields["Driver and Distributor Count"],         // sum of only drivers and drivers who are also packers
       numtotalParticipants: event.fields["Only Distributor Count"] + event.fields["Only Driver Count"] + event.fields["Driver and Distributor Count"]
     }

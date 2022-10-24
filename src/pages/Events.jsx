@@ -7,7 +7,7 @@ export function Events() {
 
   const fetchUpcomingEventsData = () => {
     fetch(
-      `${AIRTABLE_URL_BASE}/%F0%9F%9A%9B%20Supplier%20Pickup%20Events?` +
+      `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
         // Get events after today
         `&filterByFormula=IS_AFTER({Start Time}, NOW())` +
         // Get fields for upcoming events dashboard

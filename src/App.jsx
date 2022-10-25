@@ -7,6 +7,7 @@ import { Login } from "./pages/Login";
 import { Events } from "./pages/Events";
 
 import "./App.css";
+import { ParticipantRoster } from "./pages/Roster/ParticipantRoster";
 
 function App() {
   //Create an environment variable in .env (outside of src) and name it this. Give it a value of the Airtable API key
@@ -20,6 +21,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/roster" element={<ParticipantRoster />} />
           </Routes>
         </div>
       </AuthProvider>

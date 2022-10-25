@@ -1,0 +1,124 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter&family=Roboto&display=swap");
+
+td {
+  border: solid;
+  background: #fffef9;
+  /* Soft Gray White */
+
+  border: 4px solid #e0deca;
+  border-radius: 10px;
+
+  text-align: center;
+  padding: 15px;
+}
+
+table {
+  border-collapse: collapse;
+  height: 50%;
+
+  background: #fffef9;
+  /* Soft Gray White */
+
+  border: 4px solid #e0deca;
+  border-radius: 10px;
+
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+
+  color: #094343;
+}
+
+.roster {
+  overflow: scroll;
+  height: 500px;
+}
+
+.roster-page {
+  padding: 30px;
+}
+
+th {
+  padding: 10px;
+}
+
+tr {
+  border: 4px solid #e0deca;
+  border-radius: 10px;
+}
+
+table::-webkit-scrollbar {
+  height: 15px;
+  color: #094343;
+}
+table::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+table::-webkit-scrollbar-thumb {
+  background-color: a6c53b;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+}
+
+select {
+  background: #e65402;
+  border-radius: 10px;
+  height: 20px;
+  color: #f5f7ff;
+
+  border: none;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  vertical-align: center;
+  justify-content: space-between;
+
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+}
+
+button {
+  padding: 30px;
+  align-items: center;
+  color: #ffffff;
+  background: #094343;
+  /* New Leaf Green */
+
+  border: 1px solid #094343;
+  border-radius: 20px;
+}
+
+th:first-of-type {
+  border-top-left-radius: 10px;
+}
+
+th:last-of-type {
+  border-top-right-radius: 10px;
+}
+
+tr:last-of-type td:first-of-type {
+  border-bottom-left-radius: 10px;
+}
+
+tr:first-of-type td:last-of-type {
+  border-bottom-right-radius: 10px;
+}
+
+.title {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 22px;
+
+  /* New Leaf Green */
+
+  color: #094343;
+}

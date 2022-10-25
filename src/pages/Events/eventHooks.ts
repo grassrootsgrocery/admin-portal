@@ -1,14 +1,16 @@
 import { useQuery } from "react-query";
+import { AirtableResponse, Record, Event, ProcessedEvent } from "../../types";
 import {
   AIRTABLE_URL_BASE,
   fetchAirtableData,
 } from "../../airtableDataFetchingUtils";
 
-function processEventData(event) {
-  const optionsDay = { weekday: "long", month: "long", day: "numeric" };
-  const optionsTime = { hour: "numeric", minute: "numeric", hour12: true };
 
-  const getOrdinal = function (d) {
+function processEventData(event: Record<Event>) : ProcessedEvent {
+  const optionsDay = { weekday: "long", month: "long", day: "numeric" } as const;
+  const optionsTime = { hour: "numeric", minute: "numeric", hour12: true } as const;
+
+  const getOrdinal = function (d: number) {
     if (d > 3 && d < 21) return "th";
     switch (d % 10) {
       case 1:
@@ -49,6 +51,8 @@ function processEventData(event) {
   };
 }
 
+
+
 export function useFutureEvents() {
   const futureEventsUrl =
     `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
@@ -62,11 +66,13 @@ export function useFutureEvents() {
     `&fields=Driver and Distributor Count` + // Packers, Drivers, Total Participants
     `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
 
-  const { data, isLoading, error } = useQuery(["fetchFutureEvents"], () =>
-    fetchAirtableData(futureEventsUrl)
+  const { data , isLoading , error } = useQuery(["fetchFutureEvents"], () =>
+    fetchAirtableData<AirtableResponse<Event>>(futureEventsUrl)
   );
-  let futureEvents = [];
-  if (!isLoading) {
+
+  let futureEvents : ProcessedEvent[] = [];
+  if (!isLoading && data) {
+    console.log(data);
     futureEvents = data.records.map((event) => processEventData(event));
   }
 

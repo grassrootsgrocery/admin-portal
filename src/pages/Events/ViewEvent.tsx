@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { AirtableResponse, ScheduledSlot } from "../../types";
 import { useQuery } from "react-query";
 import { useFutureEvents } from "./eventHooks";
 import {
@@ -9,11 +10,11 @@ import {
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
  * */
-function useFutureEventById(eventId) {
+function useFutureEventById(eventId : string | undefined) {
   const { futureEvents, futureEventsLoading, futureEventsError } =
     useFutureEvents();
 
-  let event = {};
+  let event = undefined;
   if (!futureEventsLoading) {
     event = futureEvents.filter((fe) => eventId === fe.id)[0];
   }
@@ -24,6 +25,7 @@ function useFutureEventById(eventId) {
     eventError: futureEventsError,
   };
 }
+
 
 export function ViewEvent() {
   const { eventId } = useParams();
@@ -36,15 +38,27 @@ export function ViewEvent() {
   } = useQuery(
     ["fetchScheduledSlotsForEvent", eventId],
     async () => {
+      if (typeof event === "undefined") {
+        return Promise.reject(new Error("Undefined event"));
+      }
+
       const scheduledSlotsIds = event.scheduledSlots.join(",");
-      const formulaToSearchForScheduledSlotsForEvent = `SEARCH(RECORD_ID(), "${scheduledSlotsIds}") != ""`;
-      const url = `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?filterByFormula=${formulaToSearchForScheduledSlotsForEvent}`;
-      return fetchAirtableData(url);
+      const scheduledSlotsForEventUrl = `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` + 
+      `filterByFormula=SEARCH(RECORD_ID(), "${scheduledSlotsIds}") != ""` +
+      `&fields=First Name` + 
+      `&fields=Last Name` + 
+      `&fields=Correct slot time` + 
+      `&fields=Type` +
+      `&fields=Confirmed?` +
+      `&fields=Volunteer Status` +
+      `&fields=Email`;
+
+      return fetchAirtableData<AirtableResponse<ScheduledSlot>>(scheduledSlotsForEventUrl);
     },
-    { enabled: !eventIsLoading }
+    { enabled: !eventIsLoading  }
   );
 
-  if (eventIsLoading || scheduledSlotsForEventLoading) {
+  if (eventIsLoading || scheduledSlotsForEventLoading || !scheduledSlotsForEvent) {
     return <div>Loading...</div>;
   }
 
@@ -55,7 +69,8 @@ export function ViewEvent() {
   }
 
   //RENDER LOGIC
-
+  
+  //console.log("Logging scheduledSlotsForEvent", scheduledSlotsForEvent);
   return (
     <table>
       <thead>

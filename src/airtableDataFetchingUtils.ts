@@ -9,13 +9,13 @@ export const AIRTABLE_URL_BASE = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID
 
 //Generic fetch call to Airtable
 const apiKey = import.meta.env.VITE_AIRTABLE_API_KEY;
-export const fetchAirtableData = async (url) => {
+export const fetchAirtableData = async <T> (url : string) => {
   try {
     const response = await fetch(url, {
       headers: { Authorization: `Bearer ${apiKey}` },
     });
-    return response.json();
+    return response.json() as T;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };

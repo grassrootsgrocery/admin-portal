@@ -1,3 +1,4 @@
+import React from "react";
 import { app } from "./firebaseConfig";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";

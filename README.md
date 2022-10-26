@@ -80,7 +80,7 @@ const { data, status, error } = useQuery(["thisIsTheQueryKey"], async () => {
 ```
 
 Let's break down the code above. The `useQuery` hook takes in an array of strings as its first argument. The elements of this array collectively make up the **query key** of this particular `useQuery` call.
-We'll talk more about the query key in a bit, but know that it should be unique to this useage of `useQuery`. The second argument our fetching function. `useQuery` returns an object that has a `data` attribute, which stores the result of the fetch, `status`, which stores the status of the fetch (`"loading"`, `"idle"`, `"success"`, or `"error"`), and `error`, which stores errors thrown from the fetch.
+The second argument is our fetching function. `useQuery` returns an object that has a `data` attribute, which stores the result of the fetch, `status`, which stores the status of the fetch (`"loading"`, `"idle"`, `"success"`, or `"error"`), and `error`, which stores errors thrown from the fetch.
 
 <!-- For the `status` variable, `"loading"` and `"idle"` are the same thing (`"idle"` has been removed in future versions of React Query). -->
 
@@ -94,7 +94,7 @@ const cache = {
 }
 ```
 
-This means that subsequent calls to `useQuery` with the same query key and fetch function will first read from the cache before making the request, which means that our data can be displayed _instantly_. This also means that if we have code that looks like this:
+This means that subsequent calls to `useQuery` with the same query key will first read from the cache before making the request, which means that our data can be displayed _instantly_. This also means that if we have code that looks like this:
 
 ```TypeScript
 import { useQuery } from "react-query";
@@ -127,7 +127,7 @@ function ComponentB() {
 }
 ```
 
-Both `ComponentA` and `ComponentB` read from and populate the same cache, which makes it really easy for us to share that data between them.
+Both `ComponentA` and `ComponentB` read from and populate the same cache, which makes it really easy for us to share that data between them. Note that because the query key is the key for accessing fetched data in our cache, it should be unique to the fetch function. In other words, you should _not_ have two `useQuery` calls that have the same query key, but different fetch functions.
 
 ## React Query Dev Tools
 

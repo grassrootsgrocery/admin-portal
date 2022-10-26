@@ -2,16 +2,16 @@ import { useFutureEvents } from "./eventHooks";
 import { Link } from "react-router-dom";
 
 export function Events() {
-  const { futureEvents, futureEventsLoading, futureEventsError } =
+  const { futureEvents, futureEventsStatus, futureEventsError } =
     useFutureEvents();
-  if (futureEventsLoading) {
+  if (futureEventsStatus === "loading" || futureEventsStatus === "idle") {
     return <div>Loading...</div>;
   }
-  if (futureEventsError) {
-    console.log(futureEventsError);
+  if (futureEventsStatus === "error") {
+    console.error(futureEventsError);
     return <div>Error...</div>;
   }
-  console.log("Logging futureEvents", futureEvents);
+  //console.log("Logging futureEvents", futureEvents);
   return (
     <div>
       {futureEvents.map((event) => (

@@ -5,10 +5,17 @@ import {
   fetchAirtableData,
 } from "../../airtableDataFetchingUtils";
 
-
-function processEventData(event: Record<Event>) : ProcessedEvent {
-  const optionsDay = { weekday: "long", month: "long", day: "numeric" } as const;
-  const optionsTime = { hour: "numeric", minute: "numeric", hour12: true } as const;
+function processEventData(event: Record<Event>): ProcessedEvent {
+  const optionsDay = {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  } as const;
+  const optionsTime = {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  } as const;
 
   const getOrdinal = function (d: number) {
     if (d > 3 && d < 21) return "th";
@@ -51,8 +58,6 @@ function processEventData(event: Record<Event>) : ProcessedEvent {
   };
 }
 
-
-
 export function useFutureEvents() {
   const futureEventsUrl =
     `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
@@ -66,19 +71,25 @@ export function useFutureEvents() {
     `&fields=Driver and Distributor Count` + // Packers, Drivers, Total Participants
     `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
 
-  const { data , isLoading , error } = useQuery(["fetchFutureEvents"], () =>
+  const {
+    data: futureEventsData,
+    status: futureEventsStatus,
+    error: futureEventsError,
+  } = useQuery(["fetchFutureEvents"], () =>
     fetchAirtableData<AirtableResponse<Event>>(futureEventsUrl)
   );
 
-  let futureEvents : ProcessedEvent[] = [];
-  if (!isLoading && data) {
-    console.log(data);
-    futureEvents = data.records.map((event) => processEventData(event));
+  let futureEvents: ProcessedEvent[] = [];
+  if (futureEventsStatus === "success") {
+    console.log(futureEventsData);
+    futureEvents = futureEventsData.records.map((event) =>
+      processEventData(event)
+    );
   }
 
   return {
     futureEvents,
-    futureEventsLoading: isLoading,
-    futureEventsError: error,
+    futureEventsStatus,
+    futureEventsError,
   };
 }

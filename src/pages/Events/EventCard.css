@@ -1,0 +1,99 @@
+/* Card stuff */
+
+.left {
+  display: flex;
+}
+
+.card {
+  box-sizing: border-box;
+
+  background: var(--soft-beige);
+
+  border: 5px solid #e0deca;
+  border-radius: 16px;
+
+  padding: 0px 20px 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.date {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 36px;
+
+  color: var(--new-leaf-green);
+}
+
+.text-label {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+
+  color: var(--simple-brown);
+}
+
+.info {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 29px;
+  /* identical to box height */
+
+  display: flex;
+  align-items: center;
+
+  color: var(--new-leaf-green);
+}
+
+.button {
+  /* New Leaf Green */
+  float: right;
+  background: #094343;
+  border-radius: 20px;
+
+  width: 150px;
+  height: 40px;
+
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 23px;
+
+  color: var(--soft-gray-white);
+
+  text-align: center;
+  vertical-align: center;
+}
+
+.date,
+.bottom-row {
+  display: flex;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.middle-row {
+  display: flex;
+  margin-bottom: 15px;
+  margin-top: 15px;
+  justify-content: space-between;
+}
+
+.section {
+  font-size: 24px;
+  display: flex;
+  margin-right: 30px;
+}
+
+.mid-section {
+  margin-right: 40px;
+}
+
+footer {
+  background: linear-gradient(0deg, #094c43, #094c43), var(--simple-brown);
+}

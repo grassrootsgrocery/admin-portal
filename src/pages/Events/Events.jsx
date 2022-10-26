@@ -60,17 +60,7 @@ export function Events() {
 
         {events}
       </div>
-      <footer>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-      </footer>
+      <footer></footer>
     </div>
   );
 }

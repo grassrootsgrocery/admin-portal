@@ -2,8 +2,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter&family=Roboto&display=swap");
 
 .events-container {
-  margin-top: 50px;
+  /* border: 1px solid red; */
   padding: 40px;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
 }
 
 .events-label {
@@ -12,118 +17,15 @@
   font-weight: 700;
   font-size: 48px;
 
-  /* New Leaf Green */
-
-  color: #094343;
+  color: var(--new-leaf-green);
 }
-
-.left {
-  display: flex;
-}
-
-.card {
-  box-sizing: border-box;
-
-  background: #fffef9;
-  /* Soft Gray White */
-
-  border: 5px solid #e0deca;
-  border-radius: 16px;
-
-  padding: 0px 20px 10px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-.date {
-  font-family: "Roboto";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 36px;
-
-  /* New Leaf Green */
-
-  color: #094343;
-}
-
-.text-label {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 20px;
-
-  color: #2e2d2b;
-}
-
-.info {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 29px;
-  /* identical to box height */
-
-  display: flex;
-  align-items: center;
-
-  /* New Leaf Green */
-
-  color: #094343;
-}
-
-.button {
-  /* New Leaf Green */
-  float: right;
-  background: #094343;
-  border-radius: 20px;
-
-  width: 150px;
-  height: 40px;
-
-  font-family: "Roboto";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 23px;
-
-  /* Soft Gray White */
-
-  color: #e0deca;
-
-  text-align: center;
-  vertical-align: center;
-}
-
-.date,
-.bottom-row {
-  display: flex;
-  margin-bottom: 15px;
-  margin-top: 15px;
-}
-
-.middle-row {
-  display: flex;
-  margin-bottom: 15px;
-  margin-top: 15px;
-  justify-content: space-between;
-}
-
-.top-row {
-  display: flex;
-  justify-content: space-between;
-}
-.section {
-  font-size: 24px;
-  display: flex;
-  margin-right: 30px;
-}
-
 .add-button {
   width: 228px;
   height: 55px;
 
-  background: #e65402;
+  background: var(--pumpkin-orange);
   border-radius: 20px;
+  border: none;
 
   font-family: "Roboto";
   font-style: normal;
@@ -131,13 +33,10 @@
   font-size: 20px;
   line-height: 23px;
 
-  color: #ffffff;
+  color: white;
 }
 
-.mid-section {
-  margin-right: 40px;
-}
-
-footer {
-  background: linear-gradient(0deg, #094c43, #094c43), #2e2d2b;
+.add-button:hover {
+  filter:brightness(1.1);
+  cursor: pointer;
 }

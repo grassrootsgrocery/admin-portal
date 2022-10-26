@@ -1,17 +1,17 @@
 :root {
-  --pumpkin-orange: #E65402;
+  --pumpkin-orange: #e65402;
   --new-leaf-green: #094343;
-  --soft-beige:  #FFFEF9;
-  --soft-gray-white: #E0DECA;
-  --zested-lime: #CFDF83;
-  --simple-brown: #2E2D2B;
+  --soft-beige: #fffef9;
+  --soft-gray-white: #e0deca;
+  --zested-lime: #cfdf83;
+  --simple-brown: #2e2d2b;
 }
 
 * {
   box-sizing: border-box;
-  /* overflow: hidden; */
 }
 
 body {
   margin: 0;
+  border: 1px solid lime;
 }

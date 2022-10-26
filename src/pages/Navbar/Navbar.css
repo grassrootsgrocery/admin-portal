@@ -1,49 +1,75 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 
 .navbar {
-  /* Soft Gray White */
-
-  background: #e0deca;
+  background: var(--soft-gray-white);
   display: flex;
-  justify-content: space-between;
-  vertical-align: center;
+  align-items: center;
+  /* border: 1px solid red; */
+  height: 7em;
 }
 
+.navbar-items-wrap {
+  flex-grow: 1;
+  /* border: 1px solid orange; */
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 3em;
+}
 .navbar-items {
+  min-width: 12em;
+  /* border: 1px solid blue; */
   display: flex;
   justify-content: space-between;
-  vertical-align: center;
-  width: 40%;
+  align-items: center;
 
   font-family: "Roboto";
   font-style: normal;
-  font-weight: 500;
-  font-size: 30px;
-
-  padding: 40px;
-
-  /* New Leaf Green */
+  font-weight: 700;
+  font-size: 1.5em;
+}
+.navbar-items .link:hover {
+  filter: brightness(1.25);
 }
 
 .link {
   text-decoration: none;
-  color: #094343;
+  color: var(--new-leaf-green);
 }
-
+.navbar a {
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  /* border: 1px solid orange; */
+  border-bottom: none;
+}
 .logo-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  font-family: "Obviously";
-  font-style: normal;
-  font-weight: 570;
-  font-size: 18px;
-  margin-left: 30px;
-  margin-bottom: 10px;
-  margin-top: 10px;
+  gap: 0;
+  /* border: 1px solid black; */
+  padding-left: 3em;
 }
 
 .logo {
-  width: 300px;
+  width: 15em;
+  /* border: 1px solid black; */
+  margin: 0;
+}
+.event-coordinator-text {
+  width: 11em;
+  margin: 0;
+  /* border: 1px solid black; */
+}
+@media only screen and (max-width: 600px) {
+  .logo-box {
+    display: none;
+  }
+  .logo,
+  .event-coordinator-text {
+    display: none;
+  }
+  .navbar-items-wrap {
+    justify-content: center;
+  }
 }

@@ -10,7 +10,7 @@ function Navbar() {
         <Link to="/">
           <img alt="Grassroots Grocery Logo" className="logo" src={grgLogo} />
         </Link>
-        <Link class="link" to="/">
+        <Link to="/">
           <img
             alt="Event Coordinator"
             className="event-coordinator-text"

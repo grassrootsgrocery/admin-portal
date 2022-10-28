@@ -3,10 +3,10 @@ import grgLogo from "../../assets/grassroots-logo.png";
 import eventCoordinatorText from "../../assets/event-coordinator-text.png";
 import { Link } from "react-router-dom";
 
-function Navbar() {
+export function Navbar() {
   return (
-    <div class="navbar">
-      <div class="logo-box">
+    <div className="navbar">
+      <div className="logo-box">
         <Link to="/">
           <img alt="Grassroots Grocery Logo" className="logo" src={grgLogo} />
         </Link>
@@ -19,12 +19,12 @@ function Navbar() {
         </Link>
       </div>
 
-      <div class="navbar-items-wrap">
-        <div class="navbar-items">
-          <Link class="link" to="/events">
+      <div className="navbar-items-wrap">
+        <div className="navbar-items">
+          <Link className="link" to="/events">
             Events
           </Link>
-          <Link class="link" to="/events">
+          <Link className="link" to="/events">
             Forms
           </Link>
         </div>
@@ -32,5 +32,3 @@ function Navbar() {
     </div>
   );
 }
-
-export default Navbar;

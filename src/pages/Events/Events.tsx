@@ -1,5 +1,9 @@
 import { useFutureEvents } from "./eventHooks";
 import { Link } from "react-router-dom";
+import { Navbar } from "../Navbar/Navbar";
+import { EventCard } from "./EventCard";
+
+import "./Events.css";
 
 export function Events() {
   const { futureEvents, futureEventsStatus, futureEventsError } =
@@ -14,20 +18,30 @@ export function Events() {
   //console.log("Logging futureEvents", futureEvents);
   return (
     <div>
-      {futureEvents.map((event) => (
-        <div key={event.id}>
-          <p>Day: {event.day}</p>
-          <p>Time: {event.time}</p>
-          <p>Main Location: {event.mainLocation}</p>
-          <p>Total Participants: {event.numtotalParticipants}</p>
-          <p>Drivers: {event.numDrivers}</p>
-          <p>Packers: {event.numPackers}</p>
-          <br />
-          <Link to={`/events/${event.id}`}>
-            <button>View Event</button>
-          </Link>
+      <Navbar />
+      <div className="events-container">
+        <div className="top-row">
+          <div className="upcoming-events-label">Upcoming Events</div>
+          <button className="add-button" type="button">
+            +
+          </button>
         </div>
-      ))}
+        <ul className="events-list-wrapper">
+          {futureEvents.map((event) => {
+            return (
+              <EventCard
+                eventId={event.id}
+                date={event.day}
+                time={event.time}
+                location={event.mainLocation}
+                participants={event.numtotalParticipants}
+                drivers={event.numDrivers}
+                packers={event.numPackers}
+              />
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 }

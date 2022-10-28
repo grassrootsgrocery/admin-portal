@@ -15,3 +15,12 @@ body {
   margin: 0;
   border: 1px solid lime;
 }
+
+::-webkit-scrollbar {
+    width: 10px;
+    padding-top: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #c4c4c4;
+    border-radius: 10px;
+}

@@ -50,15 +50,16 @@ export function Events() {
   return (
     <div>
       <Navbar />
-      <div class="events-container">
-        <div class="top-row">
-          <div class="upcoming-events-label">Upcoming Events</div>
-          <button class="add-button" type="button">
+      <div className="events-container">
+        <div className="top-row">
+          <div className="upcoming-events-label">Upcoming Events</div>
+          <button className="add-button" type="button">
             + 
           </button>
         </div>
-
-        {events}
+        <ul className="events-list-wrapper">
+          {events}
+        </ul>
       </div>
       <footer></footer>
     </div>

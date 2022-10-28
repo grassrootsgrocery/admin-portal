@@ -2,7 +2,7 @@ import "./EventCard.css";
 
 function EventCard(props) {
   return (
-    <div class="card">
+    <li class="card">
       <div class="date">{props.date}</div>
 
       <div class="middle-row">
@@ -21,7 +21,7 @@ function EventCard(props) {
           </div>
         </div>
 
-        <button class="button">View Event</button>
+        <button class="view-event-button">View Event</button>
       </div>
 
       <div class="bottom-row">
@@ -35,7 +35,7 @@ function EventCard(props) {
           <div class="info">{props.packers}</div>
         </div>
       </div>
-    </div>
+    </li>
   );
 }
 

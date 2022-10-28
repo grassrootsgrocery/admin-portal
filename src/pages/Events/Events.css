@@ -41,6 +41,7 @@
 .add-button::after {
   content: " Add Saturday Event";
 }
+
 @media (max-width: 700px) {
   .events-container
   .add-button::after {
@@ -55,6 +56,17 @@
 
 .events-container 
 .add-button:hover {
-  filter:brightness(1.1);
+  filter: brightness(1.1);
   cursor: pointer;
+}
+
+.events-list-wrapper {
+  padding: 0;
+  padding-top: 0.5rem;
+  list-style-type: none;
+}
+
+footer {
+  height: 10rem;
+  background: linear-gradient(0deg, #094c43, #094c43), var(--simple-brown);
 }

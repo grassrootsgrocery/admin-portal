@@ -52,9 +52,9 @@ export function Events() {
       <Navbar />
       <div class="events-container">
         <div class="top-row">
-          <div class="events-label">Upcoming Events</div>
+          <div class="upcoming-events-label">Upcoming Events</div>
           <button class="add-button" type="button">
-            + Add Saturday Event
+            + 
           </button>
         </div>
 

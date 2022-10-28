@@ -1,5 +1,4 @@
 import { useFutureEvents } from "./eventHooks";
-import { Link } from "react-router-dom";
 import { Navbar } from "../Navbar/Navbar";
 import { EventCard } from "./EventCard";
 

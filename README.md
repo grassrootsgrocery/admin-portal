@@ -153,3 +153,74 @@ Below are also linked some more resources about React Query for further edificat
 TypeScript is safer than JavaScript, most UMD Hack4Impact teams use TypeScript, and TypeScript experience looks better on your resume than JavaScript experience. For these reasons, we've decided to use TypeScript in this project.
 
 \* VSCode tip: If you hover over a type, VSCode will show you the type. If you press `Ctrl` (`Cmd` on Mac?) while hovering, VSCode will show you more information about that type (such as its properties).
+
+## Styling
+
+A few general principles on writing CSS.
+
+1. All of the colors used in the app are defined as CSS variables in `App.css` so use those when trying to color things.
+2. Write semantic HTML. Use things like `section`, `nav`, `footer`, `ol`, `ul`, etc. where they make sense.
+3. Dan expects to be able to use the portal on his phone, so try to make the pages responsive. This means that the font size adjust based on the screen size. Use things like `clamp` to assist with this.
+4. Favor `rem` instead of `px`, since `rem` is based off of font size.
+5. Scope your CSS to avoid your styles being incorrectly applied to other parts of the application. For example, instead of writing `.logo`, write `.navbar .logo`. This ensures that the styles are only applied to the elements with `className="logo"` who are also children of an element with `className="navbar"`. This also can make your CSS more understandable. Writing `.event-card .mid-section .date` is clearer than just writing `.date`.
+6. Try to have your CSS rules follow the order in which the CSS elements appear in your markup, like in the example below.
+
+```TypeScript
+function EventCard() {
+  return (
+    <li className="card">
+      <div className="date">
+      </div>
+
+      <div className="middle-row">
+        <div className="left">
+          <div className="mid-section">
+          </div>
+        </div>
+      </div>
+
+      <div className="bottom-row">
+        <div className="section">
+          <div className="text-label"></div>
+        </div>
+      </div>
+    </li>
+  );
+}
+```
+
+```CSS
+.card {
+
+}
+.card
+.date {
+
+}
+
+.card
+.middle-row {
+
+}
+.card
+.middle-row
+.left {
+
+}
+
+.card
+.bottom-row {
+
+}
+.card
+.bottom-row
+.section {
+
+}
+.card
+.bottom-row
+.section
+.text-lable {
+
+}
+```

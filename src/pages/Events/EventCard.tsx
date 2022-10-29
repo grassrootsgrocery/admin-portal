@@ -15,7 +15,7 @@ export const EventCard: React.FC<Props> = (props) => {
     props;
 
   return (
-    <li className="card">
+    <li className="event-card">
       <div className="date">{date}</div>
 
       <div className="middle-row">

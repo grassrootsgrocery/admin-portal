@@ -19,17 +19,18 @@
   color: var(--new-leaf-green);
 }
 .events-container .add-button {
-  padding: clamp(0.2rem, 0.2rem + 1vh, 1rem)
+  padding: clamp(0.5rem, 0.5rem + 1vh, 1.5rem)
     clamp(0.25rem, 0.25rem + 1vw, 1.5rem);
 
+  /* padding: clamp(0.5rem, 0.5rem + 1vh, 1.25rem) clamp(1rem, 1rem + 1vw, 2.5rem); */
   background: var(--pumpkin-orange);
   border: none;
-  border-radius: 1rem;
+  border-radius: 1.25rem;
 
   font-family: "Roboto";
   font-style: normal;
   font-weight: 700;
-  font-size: clamp(1rem, 1rem + 1vw, 1.25rem);
+  font-size: clamp(0.5rem, 0.5rem + 1vw, 1.25rem);
   line-height: 23px;
   color: white;
 }

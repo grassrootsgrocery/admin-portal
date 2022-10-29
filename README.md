@@ -224,3 +224,9 @@ function EventCard() {
 
 }
 ```
+
+## Technical Infrastructure
+
+Here is a current diagram of what the infrastructure for the project currently looks like.
+![Infra Diagram](./images//Infra1.png)
+Note that keeping API keys on the client like this is technically not secure (see [this clip](https://www.youtube.com/watch?v=FcwfjMebjTU&t=77s)). However, in order to make it completely secure, we would have to write our own backend server, which is probably more work than we care to do.

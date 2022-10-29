@@ -41,6 +41,7 @@ export function Events() {
           })}
         </ul>
       </div>
+      <footer />
     </div>
   );
 }

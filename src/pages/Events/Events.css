@@ -2,28 +2,25 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter&family=Roboto&display=swap");
 
 .events-container {
-  padding: 3em;
+  padding: 5rem 3em;
 }
 
-.events-container 
-.top-row {
+.events-container .top-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.events-container 
-.top-row
-.upcoming-events-label {
+.events-container .top-row .upcoming-events-label {
   font-family: "Roboto";
   font-style: normal;
   font-weight: 700;
   font-size: clamp(1rem, 1rem + 2vw, 2.5rem);
   color: var(--new-leaf-green);
 }
-.events-container 
-.add-button {
-  padding: clamp(0.2rem, 0.2rem + 1vh, 1rem) clamp(0.25rem, 0.25rem + 1vw, 1.5rem);
+.events-container .add-button {
+  padding: clamp(0.2rem, 0.2rem + 1vh, 1rem)
+    clamp(0.25rem, 0.25rem + 1vw, 1.5rem);
 
   background: var(--pumpkin-orange);
   border: none;
@@ -35,27 +32,22 @@
   font-size: clamp(1rem, 1rem + 1vw, 1.25rem);
   line-height: 23px;
   color: white;
-
 }
-.events-container 
-.add-button::after {
+.events-container .add-button::after {
   content: " Add Saturday Event";
 }
 
 @media (max-width: 700px) {
-  .events-container
-  .add-button::after {
+  .events-container .add-button::after {
     content: "";
   }
-  .events-container
-  .add-button {
+  .events-container .add-button {
     padding: 0.5rem 1rem;
     border-radius: 50%;
   }
 }
 
-.events-container 
-.add-button:hover {
+.events-container .add-button:hover {
   filter: brightness(1.1);
   cursor: pointer;
 }

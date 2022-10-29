@@ -6,13 +6,13 @@
   display: flex;
   align-items: center;
   height: 5em;
+  padding: 0 3rem;
 }
 
 .logo-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-left: 3em;
 }
 
 .logo {
@@ -32,7 +32,6 @@
 
   display: flex;
   justify-content: flex-end;
-  margin-right: 3em;
 }
 .navbar-items {
   min-width: 12em;
@@ -45,8 +44,7 @@
   font-weight: 700;
   font-size: 1.5rem;
 }
-.navbar-items
-.link {
+.navbar-items .link {
   color: var(--new-leaf-green);
 }
 .navbar-items .link:hover {
@@ -68,4 +66,4 @@
     justify-content: center;
     margin-right: 0;
   }
-} 
+}

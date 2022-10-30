@@ -1,5 +1,5 @@
 import { useFutureEvents } from "./eventHooks";
-import { Navbar } from "../Navbar/Navbar";
+import { Navbar } from "../../components/Navbar/Navbar";
 import { EventCard } from "./EventCard";
 
 import "./Events.css";
@@ -17,7 +17,6 @@ export function Events() {
   //console.log("Logging futureEvents", futureEvents);
   return (
     <div>
-      <Navbar />
       <div className="events-container">
         <div className="top-row">
           <div className="upcoming-events-label">Upcoming Events</div>

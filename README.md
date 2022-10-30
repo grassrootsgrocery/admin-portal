@@ -165,7 +165,7 @@ A few general principles on writing CSS.
 5. Scope your CSS to avoid your styles being incorrectly applied to other parts of the application. For example, instead of writing `.logo`, write `.navbar .logo`. This ensures that the styles are only applied to the elements with `className="logo"` who are also children of an element with `className="navbar"`. This also can make your CSS more understandable. Writing `.event-card .mid-section .date` is clearer than just writing `.date`.
 6. Try to have your CSS rules follow the order in which the CSS elements appear in your markup, like in the example below.
 
-```TypeScript
+```TSX
 function EventCard() {
   return (
     <li className="card">
@@ -181,7 +181,8 @@ function EventCard() {
 
       <div className="bottom-row">
         <div className="section">
-          <div className="text-label"></div>
+          <div className="text-label">
+          </div>
         </div>
       </div>
     </li>

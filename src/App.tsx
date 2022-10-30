@@ -20,10 +20,6 @@ import { ViewEvent } from "./pages/Events/ViewEvent";
 import "./App.css";
 
 function App() {
-  //Create an environment variable in .env (outside of src) and name it this. Give it a value of the Airtable API key
-  const apiKey = import.meta.env.VITE_AIRTABLE_API_KEY;
-  console.log(apiKey);
-
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -36,6 +32,7 @@ function App() {
               <Route path="/events/:eventId" element={<ViewEvent />} />
             </Routes>
           </div>
+          <footer />
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </AuthProvider>

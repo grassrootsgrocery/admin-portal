@@ -16,31 +16,28 @@ export function Events() {
   }
   //console.log("Logging futureEvents", futureEvents);
   return (
-    <div>
-      <div className="events-container">
-        <div className="top-row">
-          <div className="upcoming-events-label">Upcoming Events</div>
-          <button className="add-button" type="button">
-            +
-          </button>
-        </div>
-        <ul className="events-list-wrapper">
-          {futureEvents.map((event) => {
-            return (
-              <EventCard
-                eventId={event.id}
-                date={event.day}
-                time={event.time}
-                location={event.mainLocation}
-                participants={event.numtotalParticipants}
-                drivers={event.numDrivers}
-                packers={event.numPackers}
-              />
-            );
-          })}
-        </ul>
+    <div className="events-container">
+      <div className="top-row">
+        <div className="upcoming-events-label">Upcoming Events</div>
+        <button className="add-button" type="button">
+          +
+        </button>
       </div>
-      <footer />
+      <ul className="events-list-wrapper">
+        {futureEvents.map((event) => {
+          return (
+            <EventCard
+              eventId={event.id}
+              date={event.day}
+              time={event.time}
+              location={event.mainLocation}
+              participants={event.numtotalParticipants}
+              drivers={event.numDrivers}
+              packers={event.numPackers}
+            />
+          );
+        })}
+      </ul>
     </div>
   );
 }

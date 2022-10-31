@@ -10,31 +10,30 @@ import {
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
  * */
-function useFutureEventById(eventId : string | undefined) {
-  const { futureEvents, futureEventsLoading, futureEventsError } =
+function useFutureEventById(eventId: string | undefined) {
+  const { futureEvents, futureEventsStatus, futureEventsError } =
     useFutureEvents();
 
   let event = undefined;
-  if (!futureEventsLoading) {
+  if (futureEventsStatus === "success") {
     event = futureEvents.filter((fe) => eventId === fe.id)[0];
   }
 
   return {
     event,
-    eventIsLoading: futureEventsLoading,
+    eventStatus: futureEventsStatus,
     eventError: futureEventsError,
   };
 }
 
-
 export function ViewEvent() {
   const { eventId } = useParams();
-  const { event, eventIsLoading, eventError } = useFutureEventById(eventId);
+  const { event, eventStatus, eventError } = useFutureEventById(eventId);
 
   const {
-    data: scheduledSlotsForEvent,
-    isLoading: scheduledSlotsForEventLoading,
-    error: scheduledSlotsForEventError,
+    data: scheduledSlots,
+    status: scheduledSlotsStatus,
+    error: scheduledSlotsError,
   } = useQuery(
     ["fetchScheduledSlotsForEvent", eventId],
     async () => {
@@ -43,33 +42,36 @@ export function ViewEvent() {
       }
 
       const scheduledSlotsIds = event.scheduledSlots.join(",");
-      const scheduledSlotsForEventUrl = `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` + 
-      `filterByFormula=SEARCH(RECORD_ID(), "${scheduledSlotsIds}") != ""` +
-      `&fields=First Name` + 
-      `&fields=Last Name` + 
-      `&fields=Correct slot time` + 
-      `&fields=Type` +
-      `&fields=Confirmed?` +
-      `&fields=Volunteer Status` +
-      `&fields=Email`;
+      const scheduledSlotsForEventUrl =
+        `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
+        `filterByFormula=SEARCH(RECORD_ID(), "${scheduledSlotsIds}") != ""` +
+        `&fields=First Name` +
+        `&fields=Last Name` +
+        `&fields=Correct slot time` +
+        `&fields=Type` +
+        `&fields=Confirmed?` +
+        `&fields=Volunteer Status` +
+        `&fields=Email`;
 
-      return fetchAirtableData<AirtableResponse<ScheduledSlot>>(scheduledSlotsForEventUrl);
+      return fetchAirtableData<AirtableResponse<ScheduledSlot>>(
+        scheduledSlotsForEventUrl
+      );
     },
-    { enabled: !eventIsLoading  }
+    { enabled: eventStatus === "success" }
   );
 
-  if (eventIsLoading || scheduledSlotsForEventLoading || !scheduledSlotsForEvent) {
+  if (scheduledSlotsStatus === "loading" || scheduledSlotsStatus === "idle") {
     return <div>Loading...</div>;
   }
 
-  const error = eventError || scheduledSlotsForEventError;
-  if (error) {
-    console.log(error);
+  if (scheduledSlotsStatus === "error") {
+    const error = eventError || scheduledSlotsError;
+    console.error(error);
     return <div>Error...</div>;
   }
 
   //RENDER LOGIC
-  
+
   //console.log("Logging scheduledSlotsForEvent", scheduledSlotsForEvent);
   return (
     <table>
@@ -87,7 +89,7 @@ export function ViewEvent() {
         </tr>
       </thead>
       <tbody>
-        {scheduledSlotsForEvent.records.map((scheduledSlot, idx) => {
+        {scheduledSlots.records.map((scheduledSlot, idx) => {
           return (
             <tr key={scheduledSlot.id}>
               <td>{idx + 1}</td>

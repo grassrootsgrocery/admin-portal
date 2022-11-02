@@ -5,7 +5,9 @@ import {
   fetchAirtableData,
 } from "../../airtableDataFetchingUtils";
 
-function processEventData(event: Record<Event>): ProcessedEvent {
+// TODO: FIX MATH
+// TODO: ADD OTHER NEW FIELDS  
+function processGeneralEventData(event: Record<Event>): ProcessedEvent {
   const optionsDay = {
     weekday: "long",
     month: "long",
@@ -33,27 +35,30 @@ function processEventData(event: Record<Event>): ProcessedEvent {
 
   return {
     id: event.id,
+
     day:
       new Date(event.fields["Start Time"]).toLocaleDateString(
         "en-US",
         optionsDay
       ) + getOrdinal(new Date(event.fields["Start Time"]).getDate()), // start day in Weekday, Month Day format
+
     time: new Date(event.fields["Start Time"]).toLocaleString(
       "en-US",
       optionsTime
     ), // start time in HH:MM AM/PM format
+    
     mainLocation: event.fields["Pickup Address"][0],
+    
     numDrivers:
-      event.fields["Only Distributor Count"] +
-      event.fields["Driver and Distributor Count"] +
-      "/30", // sum of only packers and packers who are also drivers
+      event.fields["Total Count of Drivers for Event"],
+      //+ "/30", // sum of only packers and packers who are also drivers
+    
     numPackers:
-      event.fields["Only Driver Count"] +
-      event.fields["Driver and Distributor Count"], // sum of only drivers and drivers who are also packers
+      event.fields["Total Count of Distributors for Event"], // sum of only drivers and drivers who are also packers
+    
     numtotalParticipants:
-      event.fields["Only Distributor Count"] +
-      event.fields["Only Driver Count"] +
-      event.fields["Driver and Distributor Count"],
+      event.fields["Total Count of Volunteers for Event"],
+        
     scheduledSlots: event.fields["📅 Scheduled Slots"],
   };
 }
@@ -66,9 +71,10 @@ export function useFutureEvents() {
     // Get fields for upcoming events dashboard
     `&fields=Start Time` + // Day, Time
     `&fields=Pickup Address` + // Main Location
-    `&fields=Only Distributor Count` + // Packers, Total Participants
-    `&fields=Only Driver Count` + // Drivers, Total Participants
-    `&fields=Driver and Distributor Count` + // Packers, Drivers, Total Participants
+    `&fields=Total Count of Distributors for Event` + // Packers, Total Participants
+    `&fields=Total Count of Drivers for Event` + // Drivers, Total Participants
+    `&fields=Total Count of Volunteers for Event` + // Packers, Drivers, Total Participants
+    `&fields=Special Event` + // isSpecialEvent 
     `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
 
   const {
@@ -81,9 +87,18 @@ export function useFutureEvents() {
 
   let futureEvents: ProcessedEvent[] = [];
   if (futureEventsStatus === "success") {
-    console.log(futureEventsData);
-    futureEvents = futureEventsData.records.map((event) =>
-      processEventData(event)
+
+    let generalEvents = futureEventsData.records.filter(event => !event.fields["Special Event"]);
+    let specialEvents = futureEventsData.records.filter(event => event.fields["Special Event"]);
+
+    // console.log("Start");
+    futureEvents = generalEvents.map((generalEvent) => 
+      processSpecialEventsData(processGeneralEventData(generalEvent), 
+        specialEvents.filter((specialEvent) => 
+          specialEvent.fields["Pickup Address"][0] == generalEvent.fields["Pickup Address"][0]
+          && specialEvent.fields["Start Time"] == generalEvent.fields["Start Time"]
+        )
+      )
     );
   }
 
@@ -93,3 +108,25 @@ export function useFutureEvents() {
     futureEventsError,
   };
 }
+
+function processSpecialEventsData(event: ProcessedEvent, specialEvents: Record<Event>[]): ProcessedEvent {
+  specialEvents.forEach((specialEvent) => 
+    processSpecialEventData(event, specialEvent),
+  )
+  // if (event.day == "Saturday, November 12th") {
+  //   console.log("G: " + event.numDrivers);
+  // }
+  return event;
+}
+
+//TODO: ADD OTHER FIELDS
+function processSpecialEventData(event: ProcessedEvent, specialEvent: Record<Event>) {
+  // if (event.day == "Saturday, November 12th") {
+  //   console.log("S: " + event.numDrivers + "+=" + specialEvent.fields["Total Count of Drivers for Event"]);
+  // }
+
+  event.numDrivers += specialEvent.fields["Total Count of Drivers for Event"],
+  event.numPackers += specialEvent.fields["Total Count of Distributors for Event"],
+  event.numtotalParticipants += specialEvent.fields["Total Count of Volunteers for Event"]
+}
+

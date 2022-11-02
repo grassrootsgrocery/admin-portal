@@ -10,9 +10,10 @@ export interface Record<T> {
 export interface Event {
   "Start Time": string,
   "Pickup Address": string[],
-  "Driver and Distributor Count": number,
-  "Only Driver Count": number,
-  "Only Distributor Count": number,
+  "Total Count of Drivers for Event": number,
+  "Total Count of Distributors for Event": number,
+  "Total Count of Volunteers for Event": number,
+  "Special Event": boolean, 
   "📅 Scheduled Slots": string[]
 }
 export interface ProcessedEvent {
@@ -20,7 +21,7 @@ export interface ProcessedEvent {
   day: string;
   time: string;
   mainLocation: string;
-  numDrivers: string;
+  numDrivers: number;
   numPackers: number;
   numtotalParticipants: number;
   scheduledSlots: string[];

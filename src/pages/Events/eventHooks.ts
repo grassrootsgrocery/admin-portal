@@ -126,7 +126,8 @@ function processSpecialEventData(event: ProcessedEvent, specialEvent: Record<Eve
   event.numSpecialGroups += 1,
   event.numDrivers += specialEvent.fields["Total Count of Drivers for Event"],
   event.numPackers += specialEvent.fields["Total Count of Distributors for Event"],
-  event.numtotalParticipants += specialEvent.fields["Total Count of Volunteers for Event"]
+  event.numtotalParticipants += specialEvent.fields["Total Count of Volunteers for Event"],
+  event.scheduledSlots = event.scheduledSlots.concat(specialEvent.fields["📅 Scheduled Slots"])
 }
 
 function processPackerAndDriverCounts(event: ProcessedEvent) {

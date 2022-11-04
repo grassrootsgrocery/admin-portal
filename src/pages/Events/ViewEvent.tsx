@@ -79,11 +79,12 @@ export function ViewEvent() {
         <p>Time: {event?.time}</p>
         <p>Main Location: {event?.mainLocation}</p>
         <p>Total Participants: {event?.numtotalParticipants}</p>
-        <p>Total Drivers: {event?.numDrivers}</p>
-        <p>Total Packers: {event?.numPackers}</p>
+        <p>Total # of Drivers: {event?.numDrivers}</p>
+        <p>Total # of Packers: {event?.numPackers}</p>
         <p>Only Drivers: {event?.numOnlyDrivers} </p>
         <p>Only Packers: {event?.numOnlyPackers} </p>
         <p>Both Drivers & Packers: {event?.numBothDriversAndPackers} </p>
+        <p># of Special Groups: {event?.numSpecialGroups} </p>
         <br/>
     <table>
       <thead>

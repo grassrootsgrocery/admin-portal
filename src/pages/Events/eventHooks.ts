@@ -5,8 +5,6 @@ import {
   fetchAirtableData,
 } from "../../airtableDataFetchingUtils";
 
-// TODO: FIX MATH
-// TODO: ADD OTHER NEW FIELDS  
 function processGeneralEventData(event: Record<Event>): ProcessedEvent {
   const optionsDay = {
     weekday: "long",
@@ -47,17 +45,24 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
       optionsTime
     ), // start time in HH:MM AM/PM format
     
-    mainLocation: event.fields["Pickup Address"][0],
+    mainLocation: event.fields["Pickup Address"][0], // event pickup location
     
     numDrivers:
-      event.fields["Total Count of Drivers for Event"],
-      //+ "/30", // sum of only packers and packers who are also drivers
+      event.fields["Total Count of Drivers for Event"], // number of total drivers for event
     
     numPackers:
-      event.fields["Total Count of Distributors for Event"], // sum of only drivers and drivers who are also packers
+      event.fields["Total Count of Distributors for Event"], // number of total packers for event
     
     numtotalParticipants:
-      event.fields["Total Count of Volunteers for Event"],
+      event.fields["Total Count of Volunteers for Event"], // number of total participants for event
+
+    numSpecialGroups: 0, // number of associated special groups 
+
+    numOnlyDrivers: 0, // number of only drvers for events 
+
+    numOnlyPackers: 0, // number of only packers for events
+
+    numBothDriversAndPackers: 0, // number of both drivers and packers
         
     scheduledSlots: event.fields["📅 Scheduled Slots"],
   };
@@ -71,9 +76,9 @@ export function useFutureEvents() {
     // Get fields for upcoming events dashboard
     `&fields=Start Time` + // Day, Time
     `&fields=Pickup Address` + // Main Location
-    `&fields=Total Count of Distributors for Event` + // Packers, Total Participants
-    `&fields=Total Count of Drivers for Event` + // Drivers, Total Participants
-    `&fields=Total Count of Volunteers for Event` + // Packers, Drivers, Total Participants
+    `&fields=Total Count of Distributors for Event` + // Packers
+    `&fields=Total Count of Drivers for Event` + // Drivers
+    `&fields=Total Count of Volunteers for Event` + // Total Participants
     `&fields=Special Event` + // isSpecialEvent 
     `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
 
@@ -91,7 +96,6 @@ export function useFutureEvents() {
     let generalEvents = futureEventsData.records.filter(event => !event.fields["Special Event"]);
     let specialEvents = futureEventsData.records.filter(event => event.fields["Special Event"]);
 
-    // console.log("Start");
     futureEvents = generalEvents.map((generalEvent) => 
       processSpecialEventsData(processGeneralEventData(generalEvent), 
         specialEvents.filter((specialEvent) => 
@@ -100,6 +104,8 @@ export function useFutureEvents() {
         )
       )
     );
+
+    futureEvents.forEach((event) => processPackerAndDriverCounts(event));
   }
 
   return {
@@ -113,20 +119,18 @@ function processSpecialEventsData(event: ProcessedEvent, specialEvents: Record<E
   specialEvents.forEach((specialEvent) => 
     processSpecialEventData(event, specialEvent),
   )
-  // if (event.day == "Saturday, November 12th") {
-  //   console.log("G: " + event.numDrivers);
-  // }
   return event;
 }
 
-//TODO: ADD OTHER FIELDS
 function processSpecialEventData(event: ProcessedEvent, specialEvent: Record<Event>) {
-  // if (event.day == "Saturday, November 12th") {
-  //   console.log("S: " + event.numDrivers + "+=" + specialEvent.fields["Total Count of Drivers for Event"]);
-  // }
-
+  event.numSpecialGroups += 1,
   event.numDrivers += specialEvent.fields["Total Count of Drivers for Event"],
   event.numPackers += specialEvent.fields["Total Count of Distributors for Event"],
   event.numtotalParticipants += specialEvent.fields["Total Count of Volunteers for Event"]
 }
 
+function processPackerAndDriverCounts(event: ProcessedEvent) {
+  event.numOnlyDrivers = event.numtotalParticipants - event.numPackers;
+  event.numOnlyPackers = event.numtotalParticipants - event.numDrivers;
+  event.numBothDriversAndPackers = event.numPackers - (event.numtotalParticipants - event.numDrivers); 
+}

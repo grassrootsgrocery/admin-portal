@@ -74,6 +74,17 @@ export function ViewEvent() {
 
   //console.log("Logging scheduledSlotsForEvent", scheduledSlotsForEvent);
   return (
+    <div>
+        <p>Day: {event?.day}</p>
+        <p>Time: {event?.time}</p>
+        <p>Main Location: {event?.mainLocation}</p>
+        <p>Total Participants: {event?.numtotalParticipants}</p>
+        <p>Total Drivers: {event?.numDrivers}</p>
+        <p>Total Packers: {event?.numPackers}</p>
+        <p>Only Drivers: {event?.numOnlyDrivers} </p>
+        <p>Only Packers: {event?.numOnlyPackers} </p>
+        <p>Both Drivers & Packers: {event?.numBothDriversAndPackers} </p>
+        <br/>
     <table>
       <thead>
         <tr>
@@ -111,5 +122,6 @@ export function ViewEvent() {
       </tbody>
       <tfoot></tfoot>
     </table>
+    </div>
   );
 }

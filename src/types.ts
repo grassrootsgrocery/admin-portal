@@ -24,6 +24,10 @@ export interface ProcessedEvent {
   numDrivers: number;
   numPackers: number;
   numtotalParticipants: number;
+  numOnlyDrivers: number;
+  numOnlyPackers: number;
+  numBothDriversAndPackers: number;
+  numSpecialGroups: number;
   scheduledSlots: string[];
 }
 

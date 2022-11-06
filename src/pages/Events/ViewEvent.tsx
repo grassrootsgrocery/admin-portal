@@ -85,6 +85,9 @@ export function ViewEvent() {
   //RENDER LOGIC
 
   //console.log("Logging scheduledSlotsForEvent", scheduledSlotsForEvent);
+  scheduledSlots.records.sort((a, b) =>
+    a.fields["First Name"] < b.fields["First Name"] ? -1 : 1
+  );
   return (
     <div>
       <p>Day: {event.dateDisplay}</p>

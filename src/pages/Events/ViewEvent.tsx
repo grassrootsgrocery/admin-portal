@@ -6,6 +6,7 @@ import {
   AIRTABLE_URL_BASE,
   fetchAirtableData,
 } from "../../airtableDataFetchingUtils";
+import { Loading } from "../../components/Loading";
 
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
@@ -61,7 +62,11 @@ export function ViewEvent() {
   );
 
   if (scheduledSlotsStatus === "loading" || scheduledSlotsStatus === "idle") {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ position: "relative", minHeight: "80vh" }}>
+        <Loading />
+      </div>
+    );
   }
 
   if (scheduledSlotsStatus === "error") {

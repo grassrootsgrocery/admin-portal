@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
 import { useFutureEvents } from "./eventHooks";
-import { Navbar } from "../../components/Navbar/Navbar";
 import { EventCard } from "./EventCard";
+
+import { Loading } from "../../components/Loading";
 
 import "./Events.css";
 
@@ -12,7 +12,11 @@ export function Events() {
   const { futureEvents, futureEventsStatus, futureEventsError } =
     useFutureEvents();
   if (futureEventsStatus === "loading" || futureEventsStatus === "idle") {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ position: "relative", minHeight: "80vh" }}>
+        <Loading />
+      </div>
+    );
   }
   if (futureEventsStatus === "error") {
     console.error(futureEventsError);
@@ -23,11 +27,11 @@ export function Events() {
     <div className="events-container">
       <div className="top-row">
         <div className="upcoming-events-label">Upcoming Events</div>
-          <a href={newEventLink} target="_blank" rel="noopener noreferrer">
-            <button className="add-button" type="button">
-              +
-            </button>
-          </a>
+        <a href={newEventLink} target="_blank" rel="noopener noreferrer">
+          <button className="add-button" type="button">
+            +
+          </button>
+        </a>
       </div>
       <ul className="events-list-wrapper">
         {futureEvents.map((event) => {

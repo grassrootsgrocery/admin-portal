@@ -31,8 +31,8 @@ function App() {
               <Route path="/events" element={<Events />} />
               <Route path="/events/:eventId" element={<ViewEvent />} />
             </Routes>
+            <footer />
           </div>
-          <footer />
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </AuthProvider>

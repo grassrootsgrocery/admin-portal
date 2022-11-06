@@ -58,8 +58,3 @@
   padding-top: 0.5rem;
   list-style-type: none;
 }
-
-footer {
-  height: 10rem;
-  background: linear-gradient(0deg, #094c43, #094c43), var(--simple-brown);
-}

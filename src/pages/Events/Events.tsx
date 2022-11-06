@@ -23,18 +23,18 @@ export function Events() {
     <div className="events-container">
       <div className="top-row">
         <div className="upcoming-events-label">Upcoming Events</div>
-        <a href={newEventLink} target="_blank" rel="noopener noreferrer">
-          <button className="add-button" type="button">
-            +
-          </button>
-        </a>
+          <a href={newEventLink} target="_blank" rel="noopener noreferrer">
+            <button className="add-button" type="button">
+              +
+            </button>
+          </a>
       </div>
       <ul className="events-list-wrapper">
         {futureEvents.map((event) => {
           return (
             <EventCard
               eventId={event.id}
-              date={event.day}
+              date={event.dateDisplay}
               time={event.time}
               location={event.mainLocation}
               participants={event.numtotalParticipants}

@@ -31,39 +31,33 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
     }
   };
 
+  const eventDate = new Date(event.fields["Start Time"]);
+
   return {
     id: event.id,
+    date: eventDate,
+    dateDisplay:
+      eventDate.toLocaleDateString("en-US", optionsDay) +
+      getOrdinal(new Date(event.fields["Start Time"]).getDate()), // start day in Weekday, Month Day format
 
-    day:
-      new Date(event.fields["Start Time"]).toLocaleDateString(
-        "en-US",
-        optionsDay
-      ) + getOrdinal(new Date(event.fields["Start Time"]).getDate()), // start day in Weekday, Month Day format
+    time: eventDate.toLocaleString("en-US", optionsTime), // start time in HH:MM AM/PM format
 
-    time: new Date(event.fields["Start Time"]).toLocaleString(
-      "en-US",
-      optionsTime
-    ), // start time in HH:MM AM/PM format
-    
     mainLocation: event.fields["Pickup Address"][0], // event pickup location
-    
-    numDrivers:
-      event.fields["Total Count of Drivers for Event"], // number of total drivers for event
-    
-    numPackers:
-      event.fields["Total Count of Distributors for Event"], // number of total packers for event
-    
-    numtotalParticipants:
-      event.fields["Total Count of Volunteers for Event"], // number of total participants for event
 
-    numSpecialGroups: 0, // number of associated special groups 
+    numDrivers: event.fields["Total Count of Drivers for Event"], // number of total drivers for event
 
-    numOnlyDrivers: 0, // number of only drvers for events 
+    numPackers: event.fields["Total Count of Distributors for Event"], // number of total packers for event
+
+    numtotalParticipants: event.fields["Total Count of Volunteers for Event"], // number of total participants for event
+
+    numSpecialGroups: 0, // number of associated special groups
+
+    numOnlyDrivers: 0, // number of only drvers for events
 
     numOnlyPackers: 0, // number of only packers for events
 
     numBothDriversAndPackers: 0, // number of both drivers and packers
-        
+
     scheduledSlots: event.fields["📅 Scheduled Slots"],
   };
 }
@@ -79,7 +73,7 @@ export function useFutureEvents() {
     `&fields=Total Count of Distributors for Event` + // Packers
     `&fields=Total Count of Drivers for Event` + // Drivers
     `&fields=Total Count of Volunteers for Event` + // Total Participants
-    `&fields=Special Event` + // isSpecialEvent 
+    `&fields=Special Event` + // isSpecialEvent
     `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
 
   const {
@@ -92,20 +86,28 @@ export function useFutureEvents() {
 
   let futureEvents: ProcessedEvent[] = [];
   if (futureEventsStatus === "success") {
+    let generalEvents = futureEventsData.records.filter(
+      (event) => !event.fields["Special Event"]
+    );
+    let specialEvents = futureEventsData.records.filter(
+      (event) => event.fields["Special Event"]
+    );
 
-    let generalEvents = futureEventsData.records.filter(event => !event.fields["Special Event"]);
-    let specialEvents = futureEventsData.records.filter(event => event.fields["Special Event"]);
-
-    futureEvents = generalEvents.map((generalEvent) => 
-      processSpecialEventsData(processGeneralEventData(generalEvent), 
-        specialEvents.filter((specialEvent) => 
-          specialEvent.fields["Pickup Address"][0] == generalEvent.fields["Pickup Address"][0]
-          && specialEvent.fields["Start Time"] == generalEvent.fields["Start Time"]
+    futureEvents = generalEvents.map((generalEvent) =>
+      processSpecialEventsData(
+        processGeneralEventData(generalEvent),
+        specialEvents.filter(
+          (specialEvent) =>
+            specialEvent.fields["Pickup Address"][0] ==
+              generalEvent.fields["Pickup Address"][0] &&
+            specialEvent.fields["Start Time"] ==
+              generalEvent.fields["Start Time"]
         )
       )
     );
 
     futureEvents.forEach((event) => processPackerAndDriverCounts(event));
+    futureEvents.sort((a, b) => (a.date < b.date ? -1 : 1));
   }
 
   return {
@@ -115,23 +117,34 @@ export function useFutureEvents() {
   };
 }
 
-function processSpecialEventsData(event: ProcessedEvent, specialEvents: Record<Event>[]): ProcessedEvent {
-  specialEvents.forEach((specialEvent) => 
-    processSpecialEventData(event, specialEvent),
-  )
+function processSpecialEventsData(
+  event: ProcessedEvent,
+  specialEvents: Record<Event>[]
+): ProcessedEvent {
+  specialEvents.forEach((specialEvent) =>
+    processSpecialEventData(event, specialEvent)
+  );
   return event;
 }
 
-function processSpecialEventData(event: ProcessedEvent, specialEvent: Record<Event>) {
-  event.numSpecialGroups += 1,
-  event.numDrivers += specialEvent.fields["Total Count of Drivers for Event"],
-  event.numPackers += specialEvent.fields["Total Count of Distributors for Event"],
-  event.numtotalParticipants += specialEvent.fields["Total Count of Volunteers for Event"],
-  event.scheduledSlots = event.scheduledSlots.concat(specialEvent.fields["📅 Scheduled Slots"])
+function processSpecialEventData(
+  event: ProcessedEvent,
+  specialEvent: Record<Event>
+) {
+  event.numSpecialGroups += 1;
+  event.numDrivers += specialEvent.fields["Total Count of Drivers for Event"];
+  event.numPackers +=
+    specialEvent.fields["Total Count of Distributors for Event"];
+  event.numtotalParticipants +=
+    specialEvent.fields["Total Count of Volunteers for Event"];
+  event.scheduledSlots = event.scheduledSlots.concat(
+    specialEvent.fields["📅 Scheduled Slots"]
+  );
 }
 
 function processPackerAndDriverCounts(event: ProcessedEvent) {
   event.numOnlyDrivers = event.numtotalParticipants - event.numPackers;
   event.numOnlyPackers = event.numtotalParticipants - event.numDrivers;
-  event.numBothDriversAndPackers = event.numPackers - (event.numtotalParticipants - event.numDrivers); 
+  event.numBothDriversAndPackers =
+    event.numPackers - (event.numtotalParticipants - event.numDrivers);
 }

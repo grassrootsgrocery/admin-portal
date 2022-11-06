@@ -30,7 +30,7 @@ export function Events() {
             return (
               <EventCard
                 eventId={event.id}
-                date={event.day}
+                date={event.dateDisplay}
                 time={event.time}
                 location={event.mainLocation}
                 participants={event.numtotalParticipants}

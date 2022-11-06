@@ -70,59 +70,66 @@ export function ViewEvent() {
     return <div>Error...</div>;
   }
 
+  if (event === undefined) {
+    console.error(
+      `Something went wrong. Event ${event} not found in futureEvents list`
+    );
+    return <div>Error...</div>;
+  }
+
   //RENDER LOGIC
 
   //console.log("Logging scheduledSlotsForEvent", scheduledSlotsForEvent);
   return (
     <div>
-        <p>Day: {event?.day}</p>
-        <p>Time: {event?.time}</p>
-        <p>Main Location: {event?.mainLocation}</p>
-        <p>Total Participants: {event?.numtotalParticipants}</p>
-        <p>Total # of Drivers: {event?.numDrivers}</p>
-        <p>Total # of Packers: {event?.numPackers}</p>
-        <p>Only Drivers: {event?.numOnlyDrivers} </p>
-        <p>Only Packers: {event?.numOnlyPackers} </p>
-        <p>Both Drivers & Packers: {event?.numBothDriversAndPackers} </p>
-        <p># of Special Groups: {event?.numSpecialGroups} </p>
-        <br/>
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>First</th>
-          <th>Last</th>
-          <th>Time</th>
-          <th>Participant Type</th>
-          <th>Confirmed</th>
-          <th>Special Group</th>
-          <th>Delivery Type</th>
-          <th>Contact</th>
-        </tr>
-      </thead>
-      <tbody>
-        {scheduledSlots.records.map((scheduledSlot, idx) => {
-          return (
-            <tr key={scheduledSlot.id}>
-              <td>{idx + 1}</td>
-              <td>{scheduledSlot.fields["First Name"]}</td>
-              <td>{scheduledSlot.fields["Last Name"]}</td>
-              <td>
-                {scheduledSlot.fields["Correct slot time"]["error"]
-                  ? "None"
-                  : scheduledSlot.fields["Correct slot time"]}
-              </td>
-              <td>{scheduledSlot.fields["Type"].length}</td>
-              <td>{scheduledSlot.fields["Confirmed?"] ? "Yes" : "No"}</td>
-              <td>{scheduledSlot.fields["Volunteer Status"]}</td>
-              <td>IDK</td>
-              <td>{scheduledSlot.fields["Email"]}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-      <tfoot></tfoot>
-    </table>
+      <p>Day: {event.dateDisplay}</p>
+      <p>Time: {event.time}</p>
+      <p>Main Location: {event.mainLocation}</p>
+      <p>Total Participants: {event.numtotalParticipants}</p>
+      <p>Total # of Drivers: {event.numDrivers}</p>
+      <p>Total # of Packers: {event.numPackers}</p>
+      <p>Only Drivers: {event.numOnlyDrivers} </p>
+      <p>Only Packers: {event.numOnlyPackers} </p>
+      <p>Both Drivers & Packers: {event.numBothDriversAndPackers} </p>
+      <p># of Special Groups: {event.numSpecialGroups} </p>
+      <br />
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>First</th>
+            <th>Last</th>
+            <th>Time</th>
+            <th>Participant Type</th>
+            <th>Confirmed</th>
+            <th>Special Group</th>
+            <th>Delivery Type</th>
+            <th>Contact</th>
+          </tr>
+        </thead>
+        <tbody>
+          {scheduledSlots.records.map((scheduledSlot, idx) => {
+            return (
+              <tr key={scheduledSlot.id}>
+                <td>{idx + 1}</td>
+                <td>{scheduledSlot.fields["First Name"]}</td>
+                <td>{scheduledSlot.fields["Last Name"]}</td>
+                <td>
+                  {scheduledSlot.fields["Correct slot time"]["error"]
+                    ? "None"
+                    : scheduledSlot.fields["Correct slot time"]}
+                </td>
+                <td>{scheduledSlot.fields["Type"].length}</td>
+                <td>{scheduledSlot.fields["Confirmed?"] ? "Yes" : "No"}</td>
+                <td>{scheduledSlot.fields["Volunteer Status"]}</td>
+                <td>IDK</td>
+                <td>{scheduledSlot.fields["Email"]}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+        <tfoot></tfoot>
+      </table>
     </div>
   );
 }

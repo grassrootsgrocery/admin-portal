@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
 import { useFutureEvents } from "./eventHooks";
-import { Navbar } from "../../components/Navbar/Navbar";
 import { EventCard } from "./EventCard";
+
+import { Loading } from "../../components/Loading";
 
 import "./Events.css";
 
@@ -12,7 +12,11 @@ export function Events() {
   const { futureEvents, futureEventsStatus, futureEventsError } =
     useFutureEvents();
   if (futureEventsStatus === "loading" || futureEventsStatus === "idle") {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ position: "relative", minHeight: "80vh" }}>
+        <Loading />
+      </div>
+    );
   }
   if (futureEventsStatus === "error") {
     console.error(futureEventsError);
@@ -34,7 +38,7 @@ export function Events() {
           return (
             <EventCard
               eventId={event.id}
-              date={event.day}
+              date={event.dateDisplay}
               time={event.time}
               location={event.mainLocation}
               participants={event.numtotalParticipants}

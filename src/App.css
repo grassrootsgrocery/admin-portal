@@ -29,6 +29,3 @@ footer {
   border-radius: 10px;
 }
 /* Until we figure out whether we want it */
-::-webkit-scrollbar {
-  display: none;
-}

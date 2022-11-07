@@ -16,6 +16,7 @@ import { Navbar } from "./components/Navbar/Navbar";
 import { Login } from "./pages/Login";
 import { Events } from "./pages/Events/Events";
 import { ViewEvent } from "./pages/Events/ViewEvent";
+import { ParticipantRoster } from "./pages/Roster/ParticipantRoster";
 
 import "./App.css";
 
@@ -30,6 +31,7 @@ function App() {
               <Route path="/" element={<Login />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:eventId" element={<ViewEvent />} />
+              <Route path="/roster" element={<ParticipantRoster />} />
             </Routes>
           </div>
           <footer />

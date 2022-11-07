@@ -98,7 +98,7 @@ export function Table() {
 
   return (
     <div>
-      <div class="title">
+      <div className="title">
         <h1>Participant Roster</h1>
         <select name="filters" id="filters">
           <option value="none" selected disabled hidden>
@@ -108,11 +108,11 @@ export function Table() {
         </select>
       </div>
 
-      <div class="filter-row">
+      <div className="filter-row">
         <h3>Applied Filters:</h3>
         <button>Clear Filters</button>
       </div>
-      <div class="roster">
+      <div className="roster">
         <table>
           <thead>
             <tr>{headers}</tr>

@@ -32,7 +32,7 @@ table {
 
 .roster {
   overflow: scroll;
-  height: 500px;
+  height: 400px;
 }
 
 .roster-page {
@@ -41,6 +41,10 @@ table {
 
 th {
   padding: 10px;
+position: sticky;
+    top: 0;
+    background: #fffef9;
+    
 }
 
 tr {
@@ -48,16 +52,15 @@ tr {
   border-radius: 10px;
 }
 
-table::-webkit-scrollbar {
+
+
+/* table::-webkit-scrollbar {
   height: 15px;
   color: #094343;
-}
-table::-webkit-scrollbar-track {
-  border-radius: 10px;
-}
-table::-webkit-scrollbar-thumb {
-  background-color: a6c53b;
-}
+} */
+
+
+
 
 .title {
   display: flex;

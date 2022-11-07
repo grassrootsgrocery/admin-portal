@@ -24,14 +24,13 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
-          <div className="App">
+          <div className="h-screen border rounded border-red-500 flex flex-col">
             <Navbar />
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:eventId" element={<ViewEvent />} />
             </Routes>
-            <footer />
           </div>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>

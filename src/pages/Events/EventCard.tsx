@@ -1,18 +1,13 @@
 import { Link } from "react-router-dom";
-import alert from "../../assets/alert.png";
-import check from "../../assets/check.png";
-import "./EventCard.css";
-interface Props {
-  eventId: string;
-  date: string;
-  time: string;
-  location: string;
-  participants: number;
-  drivers: number;
-  packers: number;
-}
 import { useState, useEffect } from "react";
 
+//Assets
+import alert from "../../assets/alert.png";
+import check from "../../assets/check.png";
+
+import "./EventCard.css";
+
+//Custom hook to watch the dimensions of the screen
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
   return {
@@ -21,7 +16,7 @@ function getWindowDimensions() {
   };
 }
 
-export function useWindowDimensions() {
+function useWindowDimensions() {
   const [windowDimensions, setWindowDimensions] = useState(
     getWindowDimensions()
   );
@@ -38,11 +33,27 @@ export function useWindowDimensions() {
   return windowDimensions;
 }
 
-function getDesktopCard(props: Props) {
-  const { date, time, location, participants, eventId, drivers, packers } =
-    props;
+interface Props {
+  eventId: string;
+  date: string;
+  time: string;
+  location: string;
+  participants: number;
+  drivers: number;
+  packers: number;
+}
+
+const EventCardDesktop: React.FC<Props> = ({
+  date,
+  time,
+  location,
+  participants,
+  eventId,
+  drivers,
+  packers,
+}) => {
   return (
-    <li className="rounded-xl border-softGrayWhite border-4 p-8">
+    <li className="rounded-xl border-4 border-softGrayWhite p-8">
       {/* Date */}
       <h2 className="text-3xl font-bold text-newLeafGreen">{date}</h2>
       <div className="h-7" />
@@ -64,17 +75,9 @@ function getDesktopCard(props: Props) {
             {participants}
           </h3>
         </div>
-        <div className="grow flex items-center justify-end">
+        <div className="flex grow items-center justify-end">
           <Link to={`/events/${eventId}`}>
-            <button
-              className="text-softGrayWhite rounded-full font-semibold px-8 bg-newLeafGreen p-4 
-              shadow-md hover:shadow-lg 
-            hover:shadow-newLeafGreen 
-            shadow-newLeafGreen 
-              hover:-translate-y-1 
-              transition-all 
-            "
-            >
+            <button className="rounded-full bg-newLeafGreen p-4 px-8 font-semibold text-softGrayWhite shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen">
               View Event
             </button>
           </Link>
@@ -85,7 +88,7 @@ function getDesktopCard(props: Props) {
       <div className="flex gap-4">
         <div className="flex gap-2">
           <p className="text-2xl">Drivers:</p>
-          <h3 className="text-2xl font-semibold text-newLeafGreen flex items-center">
+          <h3 className="flex items-center text-2xl font-semibold text-newLeafGreen">
             {drivers}/30{" "}
             <img
               className="px-4"
@@ -103,17 +106,23 @@ function getDesktopCard(props: Props) {
       </div>
     </li>
   );
-}
+};
 
-function getMobileCard(props: Props) {
-  const { date, time, location, participants, eventId, drivers, packers } =
-    props;
+const EventCardMobile: React.FC<Props> = ({
+  date,
+  time,
+  location,
+  participants,
+  eventId,
+  drivers,
+  packers,
+}) => {
   return (
-    <li className="rounded-xl border-softGrayWhite border-4 p-4">
+    <li className="rounded-xl border-4 border-softGrayWhite p-4">
       {/* Date */}
       <h2 className="text-md font-bold text-newLeafGreen">{date}</h2>
       <div className="h-1" />
-      <div className="flex gap-2 justify-between">
+      <div className="flex justify-between gap-2">
         {/* Time & Drivers & Packers */}
         <div className="flex flex-col gap-1">
           <div className="grow">
@@ -127,14 +136,14 @@ function getMobileCard(props: Props) {
         <div className="flex flex-col gap-1">
           <div className="grow">
             <p className="text-sm">Main Location</p>
-            <h3 className="text-sm font-semibold text-newLeafGreen h-10 overflow-hidden text-ellipsis line-clamp-2">
+            <h3 className="h-10 overflow-hidden text-ellipsis text-sm font-semibold text-newLeafGreen line-clamp-2">
               {location}
             </h3>
           </div>
           <h3 className="text-sm font-semibold text-newLeafGreen">
             {drivers}/30{" "}
             <img
-              className="w-3 inline"
+              className="inline w-3"
               src={drivers >= 30 ? check : alert}
               alt="wut"
             />
@@ -150,16 +159,7 @@ function getMobileCard(props: Props) {
             </h3>
           </div>
           <Link to={`/events/${eventId}`}>
-            <button
-              className="text-softGrayWhite rounded-full font-semibold px-3 py-2 bg-newLeafGreen 
-              text-xs
-              shadow-md hover:shadow-lg 
-            hover:shadow-newLeafGreen 
-            shadow-newLeafGreen 
-              hover:-translate-y-1 
-              transition-all 
-            "
-            >
+            <button className="rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-softGrayWhite shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen">
               View Event
             </button>
           </Link>
@@ -168,16 +168,16 @@ function getMobileCard(props: Props) {
       </div>
     </li>
   );
-}
-export const EventCard: React.FC<Props> = (props) => {
-  const { date, time, location, participants, eventId, drivers, packers } =
-    props;
-  const { height, width } = useWindowDimensions();
+};
 
-  //I hate this magic number. It corrosponds to the `md` breakpoint in Tailwind, which is 768 pixels
+//Because the mobile card is kinda different from the desktop card in its layout, I've created two separate components for each.
+export const EventCard: React.FC<Props> = (props) => {
+  const { width } = useWindowDimensions();
+
+  //I hate this magic number. It corrosponds to the `sm` breakpoint in Tailwind, which is 640 pixels
   if (width <= 640) {
-    return getMobileCard(props);
+    return <EventCardMobile {...props} />;
   } else {
-    return getDesktopCard(props);
+    return <EventCardDesktop {...props} />;
   }
 };

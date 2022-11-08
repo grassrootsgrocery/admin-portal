@@ -32,7 +32,8 @@ table {
 
 .roster {
   overflow: scroll;
-  height: 400px;
+  height: 450px;
+    border: 4px solid #e0deca;
 }
 
 .roster-page {
@@ -41,26 +42,22 @@ table {
 
 th {
   padding: 10px;
-position: sticky;
-    top: 0;
-    background: #fffef9;
-    
+  position: sticky;
+  top: 0;
+  background: #fffef9;
+    /* box-shadow: inset 0 4px 0 #e0deca, inset 0 -4px 0 #e0deca; */
+    background-clip: padding-box
 }
 
 tr {
-  border: 4px solid #e0deca;
+  /* border: 4px solid #e0deca; */
   border-radius: 10px;
 }
 
-
-
-/* table::-webkit-scrollbar {
+/* .roster::-webkit-scrollbar {
   height: 15px;
   color: #094343;
 } */
-
-
-
 
 .title {
   display: flex;
@@ -99,7 +96,7 @@ button {
   border-radius: 20px;
 }
 
-th:first-of-type {
+/* th:first-of-type {
   border-top-left-radius: 10px;
 }
 
@@ -113,7 +110,7 @@ tr:last-of-type td:first-of-type {
 
 tr:first-of-type td:last-of-type {
   border-bottom-right-radius: 10px;
-}
+} */
 
 .title {
   font-family: "Roboto";

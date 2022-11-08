@@ -7,6 +7,7 @@ import {
   fetchAirtableData,
 } from "../../airtableDataFetchingUtils";
 import { Loading } from "../../components/Loading";
+import { Table } from "../Roster/Table";
 
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
@@ -101,7 +102,36 @@ export function ViewEvent() {
       <p>Both Drivers & Packers: {event.numBothDriversAndPackers} </p>
       <p># of Special Groups: {event.numSpecialGroups} </p>
       <br />
-      <table>
+      <Table headers={[
+          "#",
+          "First Name",
+          "Last Name",
+          "Time Slot",
+          "Participant Type",
+          "Confirmed",
+          "Special Group",
+          "Delivery Type",
+          "Email",
+        ].map((h) => <th>{h}</th>)} body={scheduledSlots.records.map((scheduledSlot, idx) => {
+            return (
+              <tr key={scheduledSlot.id}>
+                <td>{idx + 1}</td>
+                <td>{scheduledSlot.fields["First Name"]}</td>
+                <td>{scheduledSlot.fields["Last Name"]}</td>
+                <td>
+                  {scheduledSlot.fields["Correct slot time"]["error"]
+                    ? "None"
+                    : scheduledSlot.fields["Correct slot time"]}
+                </td>
+                <td>{scheduledSlot.fields["Type"].length}</td>
+                <td>{scheduledSlot.fields["Confirmed?"] ? "Yes" : "No"}</td>
+                <td>{scheduledSlot.fields["Volunteer Status"]}</td>
+                <td>IDK</td>
+                <td>{scheduledSlot.fields["Email"]}</td>
+              </tr>
+            );
+          })} />
+      {/* <table>
         <thead>
           <tr>
             <th>#</th>
@@ -137,7 +167,7 @@ export function ViewEvent() {
           })}
         </tbody>
         <tfoot></tfoot>
-      </table>
+      </table>  */}
     </div>
   );
 }

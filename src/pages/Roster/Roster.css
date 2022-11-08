@@ -28,6 +28,8 @@ table {
   font-size: 20px;
 
   color: #094343;
+
+  margin-bottom: 10px;
 }
 
 .roster {
@@ -67,12 +69,17 @@ tr {
 select {
   background: #e65402;
   border-radius: 10px;
-  height: 20px;
+  height: 30px;
   color: #f5f7ff;
-
+    padding: 5px;   
+  margin: 30px;
   border: none;
 }
 
+h3 {
+    font-family: "Inter";;
+    color: #094343;
+}
 .filter-row {
   display: flex;
   align-items: center;
@@ -86,7 +93,7 @@ select {
 }
 
 button {
-  padding: 30px;
+  padding: 15px 30px;
   align-items: center;
   color: #ffffff;
   background: #094343;

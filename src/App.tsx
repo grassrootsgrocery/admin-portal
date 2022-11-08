@@ -24,7 +24,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
-          <div className="h-screen border rounded border-red-500 flex flex-col">
+          <div className="h-screen border rounded  flex flex-col">
             <Navbar />
             <Routes>
               <Route path="/" element={<Login />} />

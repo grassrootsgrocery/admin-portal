@@ -26,13 +26,26 @@ export function Events() {
   return (
     <div className="grow border rounded px-8 flex flex-col">
       <div className="h-8" />
-      <div className="border rounded flex justify-between items-center">
-        <h1 className="text-4xl font-semibold text-newLeafGreen">
+      <div className="flex justify-between items-center">
+        <h1 className="md:text-4xl text-2xl font-semibold text-newLeafGreen">
           Upcoming Events
         </h1>
         <a href={newEventLink} target="_blank" rel="noopener noreferrer">
           <button
-            className="rounded-full px-6 py-4 font-extrabold bg-pumpkinOrange hover:brightness-110 text-white lg:rounded-2xl lg:after:content-['_Add_Saturday_Event']"
+            className="
+              rounded-full 
+              px-4 py-2
+              sm:px-6 sm:py-4 
+              font-extrabold 
+            bg-pumpkinOrange 
+              shadow-md hover:shadow-lg 
+            hover:shadow-newLeafGreen 
+            shadow-newLeafGreen 
+              hover:-translate-y-1 
+              transition-all 
+            text-white 
+              lg:after:content-['_Add_Saturday_Event']
+            "
             type="button"
           >
             +
@@ -40,7 +53,7 @@ export function Events() {
         </a>
       </div>
       <div className="h-5" />
-      <ul className="flex flex-col gap-7 overflow-auto h-0 grow pr-4">
+      <ul className="flex flex-col gap-2 sm:gap-7 overflow-auto h-0 grow pr-1 md:pr-4">
         {futureEvents.map((event) => {
           return (
             <EventCard

@@ -54,7 +54,7 @@ function getDesktopCard(props: Props) {
         </div>
         <div>
           <p className="text-2xl">Main Location</p>
-          <h3 className="text-2xl font-semibold text-newLeafGreen">
+          <h3 className="text-2xl font-semibold text-newLeafGreen line-clamp-2">
             {location}
           </h3>
         </div>
@@ -127,10 +127,8 @@ function getMobileCard(props: Props) {
         <div className="flex flex-col gap-1">
           <div className="grow">
             <p className="text-sm">Main Location</p>
-            <h3 className="text-sm font-semibold text-newLeafGreen h-10 overflow-hidden text-ellipsis">
-              {location.length > 10
-                ? location.substring(0, 10) + "..."
-                : location}
+            <h3 className="text-sm font-semibold text-newLeafGreen h-10 overflow-hidden text-ellipsis line-clamp-2">
+              {location}
             </h3>
           </div>
           <h3 className="text-sm font-semibold text-newLeafGreen">
@@ -182,80 +180,4 @@ export const EventCard: React.FC<Props> = (props) => {
   } else {
     return getDesktopCard(props);
   }
-
-  return (
-    <li className="border rounded-xl border-softGrayWhite border-4 p-8">
-      {/* Date */}
-      <h2 className="text-3xl font-bold text-newLeafGreen border rounded border-red-500">
-        {date} {height} {width}
-      </h2>
-      <div className="h-3" />
-      {/* Time & Main locations */}
-      <div className="flex gap-8">
-        <div>
-          <p className="text-2xl">Time</p>
-          <h3 className="text-2xl font-semibold text-newLeafGreen">{time}</h3>
-        </div>
-        <div>
-          <p className="text-2xl">Main Location</p>
-          <h3 className="text-2xl font-semibold text-newLeafGreen">
-            {location}
-          </h3>
-        </div>
-      </div>
-      {/* Total participants & View Event Button */}
-      <div>
-        <div>
-          <p>Total Participants</p>
-          <h3>{participants}</h3>
-        </div>
-        <div>
-          <button>View Event</button>
-        </div>
-      </div>
-      <div>
-        <div>
-          <p>Drivers</p>
-          <h3>{drivers}</h3>
-        </div>
-        <div>
-          <p>Packers</p>
-          <h3>{packers}</h3>
-        </div>
-      </div>
-      <div className="border h-4 rounded border-red-500"></div>
-      <div className="">
-        <div className="">
-          <div className="mid-section">
-            <div className="text-label">Time</div>
-            <div className="info">{time}</div>
-          </div>
-          <div className="mid-section">
-            <div className="text-label">Main Location</div>
-            <div className="info">{location}</div>
-          </div>
-          <div className="mid-section">
-            <div className="text-label">Total Participants:</div>
-            <div className="info">{participants}</div>
-          </div>
-        </div>
-
-        <Link to={`/events/${eventId}`}>
-          <button className="view-event-button">View Event</button>
-        </Link>
-      </div>
-
-      <div className="bottom-row">
-        <div className="section">
-          <div className="text-label">Drivers:</div>
-          <div className="info">{drivers}/30</div>
-        </div>
-
-        <div className="section">
-          <div className="text-label">Packers:</div>
-          <div className="info">{packers}</div>
-        </div>
-      </div>
-    </li>
-  );
 };

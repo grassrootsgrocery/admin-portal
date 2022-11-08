@@ -44,7 +44,7 @@ function getDesktopCard(props: Props) {
   return (
     <li className="rounded-xl border-softGrayWhite border-4 p-8">
       {/* Date */}
-      <h2 className="text-3xl font-bold text-newLeafGreen ">{date}</h2>
+      <h2 className="text-3xl font-bold text-newLeafGreen">{date}</h2>
       <div className="h-7" />
       {/* Time & Main locations & Total participants & View Event Button */}
       <div className="flex gap-8">
@@ -113,7 +113,7 @@ function getMobileCard(props: Props) {
       {/* Date */}
       <h2 className="text-md font-bold text-newLeafGreen">{date}</h2>
       <div className="h-1" />
-      <div className="flex gap-2">
+      <div className="flex gap-2 justify-between">
         {/* Time & Drivers & Packers */}
         <div className="flex flex-col gap-1">
           <div className="grow">
@@ -153,7 +153,7 @@ function getMobileCard(props: Props) {
           </div>
           <Link to={`/events/${eventId}`}>
             <button
-              className="text-softGrayWhite rounded-full font-semibold px-4 py-2 bg-newLeafGreen p-1 
+              className="text-softGrayWhite rounded-full font-semibold px-3 py-2 bg-newLeafGreen 
               text-xs
               shadow-md hover:shadow-lg 
             hover:shadow-newLeafGreen 

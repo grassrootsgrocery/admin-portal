@@ -33,8 +33,8 @@ function App() {
               <Route path="/events/:eventId" element={<ViewEvent />} />
               <Route path="/roster" element={<ParticipantRoster />} />
             </Routes>
+            <footer />
           </div>
-          <footer />
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </AuthProvider>

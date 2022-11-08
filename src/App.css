@@ -5,6 +5,7 @@
   --soft-gray-white: #e0deca;
   --zested-lime: #cfdf83;
   --simple-brown: #2e2d2b;
+  --simple-gray: #c4c4c4;
 }
 
 * {
@@ -25,7 +26,10 @@ footer {
   padding-top: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #c4c4c4;
+  background-color: var(--simple-gray);
   border-radius: 10px;
 }
 /* Until we figure out whether we want it */
+/* ::-webkit-scrollbar {
+  display: none;
+} */

@@ -6,7 +6,7 @@ interface Props {
   time: string;
   location: string;
   participants: number;
-  drivers: string;
+  drivers: number;
   packers: number;
 }
 
@@ -42,7 +42,7 @@ export const EventCard: React.FC<Props> = (props) => {
       <div className="bottom-row">
         <div className="section">
           <div className="text-label">Drivers:</div>
-          <div className="info">{drivers}</div>
+          <div className="info">{drivers}/30</div>
         </div>
 
         <div className="section">

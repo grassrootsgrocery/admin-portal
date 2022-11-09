@@ -87,28 +87,28 @@ export function ViewEvent() {
   );
 
   return (
-    <div className="px-14 py-16">
+    <div className="p-6 lg:px-14 lg:py-16">
       {/* Event Info */}
-      <h1 className=" text-3xl font-bold text-newLeafGreen">
+      <h1 className="text-lg font-bold text-newLeafGreen lg:text-3xl">
         {event.dateDisplay}
       </h1>
       <div className="h-4" />
-      <div className="flex gap-10">
+      <div className="flex flex-col gap-3 lg:flex-row lg:gap-10">
         <div className="flex flex-col ">
-          <p className="text-2xl">Time</p>
-          <p className="text-2xl font-semibold text-newLeafGreen">
+          <p className="text-sm lg:text-2xl">Time</p>
+          <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
             {event.time}
           </p>
         </div>
         <div className="flex flex-col ">
-          <p className="text-2xl">Main Location</p>
-          <p className="text-2xl font-semibold text-newLeafGreen">
+          <p className="text-sm lg:text-2xl">Main Location</p>
+          <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
             {event.mainLocation}
           </p>
         </div>
         <div className="flex flex-col ">
-          <p className="text-2xl"> Total Participants</p>
-          <p className="text-2xl font-semibold text-newLeafGreen">
+          <p className="text-sm lg:text-2xl"> Total Participants</p>
+          <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
             {event.numtotalParticipants}
           </p>
         </div>
@@ -116,64 +116,66 @@ export function ViewEvent() {
       <div className="h-12 " />
 
       {/* Participant Breakdown */}
-      <div className="grid grid-cols-4 grid-rows-3 gap-3">
-        <h1 className="col-span-4 flex items-end rounded border text-3xl font-bold text-newLeafGreen">
-          Participant Breakdown
-        </h1>
-        <div className="flex flex-col rounded border">
-          <p className="text-2xl">Total # of Drivers</p>
-          <p className="text-2xl font-semibold text-newLeafGreen">
-            {event.numDrivers}
-          </p>
-        </div>
-        <div className="flex flex-col rounded border">
-          <p className="text-2xl">Total # of Packers</p>
-          <p className="text-2xl font-semibold text-newLeafGreen">
-            {event.numPackers}
-          </p>
+      <h1 className="text-lg font-bold text-newLeafGreen lg:text-3xl">
+        Participant Breakdown
+      </h1>
+      <div className="h-4" />
+      <div className="flex flex-col gap-2 lg:flex-row lg:gap-10">
+        <div className="grid gap-2 lg:grid-cols-3 lg:grid-rows-2">
+          <div className="flex flex-col ">
+            <p className="text-sm lg:text-2xl">Total # of Drivers</p>
+            <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
+              {event.numDrivers}
+            </p>
+          </div>
+          <div className="flex flex-col ">
+            <p className="text-sm lg:text-2xl">Total # of Packers</p>
+            <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
+              {event.numPackers}
+            </p>
+          </div>
+
+          <div className="flex flex-col ">
+            <p className="text-sm lg:text-2xl">Both Drivers & Packers</p>
+            <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
+              {event.numBothDriversAndPackers}
+            </p>
+          </div>
+
+          <div className="flex flex-col ">
+            <p className="text-sm lg:text-2xl">Only Drivers</p>
+            <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
+              {event.numOnlyDrivers}
+            </p>
+          </div>
+          <div className="flex flex-col ">
+            <p className="text-sm lg:text-2xl">Only Packers</p>
+            <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
+              {event.numOnlyPackers}
+            </p>
+          </div>
+          <div className="flex flex-col ">
+            <p className="text-sm lg:text-2xl"># of Special Groups</p>
+            <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
+              {event.numSpecialGroups}
+            </p>
+          </div>
         </div>
 
-        <div className="col-span-2 flex flex-col rounded border md:col-span-1">
-          <p className="text-2xl">Both Drivers & Packers</p>
-          <p className="text-2xl font-semibold text-newLeafGreen">
-            {event.numBothDriversAndPackers}
-          </p>
-        </div>
-
-        <div className="flex flex-col rounded border">
-          <p className="text-2xl">Only Drivers</p>
-          <p className="text-2xl font-semibold text-newLeafGreen">
-            {event.numOnlyDrivers}
-          </p>
-        </div>
-        <div className="flex flex-col rounded border">
-          <p className="text-2xl">Only Packers</p>
-          <p className="text-2xl font-semibold text-newLeafGreen">
-            {event.numOnlyPackers}
-          </p>
-        </div>
-        <div className="col-span-2 flex flex-col rounded border md:col-span-1">
-          <p className="text-2xl"># of Special Groups</p>
-          <p className="text-2xl font-semibold text-newLeafGreen">
-            {event.numSpecialGroups}
-          </p>
-        </div>
-
-        <div className="row-span-1 flex flex-col items-center justify-around rounded border md:row-span-2">
+        <div className="flex flex-col items-start justify-around gap-2 ">
           <button
-            className="rounded-full bg-pumpkinOrange px-5 py-3 font-extrabold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen"
+            className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
             type="button"
           >
             View Special Groups
           </button>
           <button
-            className="rounded-full bg-pumpkinOrange px-5 py-3 font-extrabold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen"
+            className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
             type="button"
           >
             + Add Special Group
           </button>
         </div>
-        <div className="flex justify-center rounded border"></div>
       </div>
       <br />
       <div>

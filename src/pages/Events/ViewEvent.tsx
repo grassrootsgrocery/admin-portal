@@ -11,6 +11,20 @@ import { Loading } from "../../components/Loading";
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
  * */
+
+const HeaderValueDisplay: React.FC<{
+  header: string;
+  value: string | number;
+}> = (props: { header: string; value: string | number }) => {
+  return (
+    <div className="flex flex-col ">
+      <p className="text-sm lg:text-2xl">{props.header}</p>
+      <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
+        {props.value}
+      </p>
+    </div>
+  );
+};
 function useFutureEventById(eventId: string | undefined) {
   const { futureEvents, futureEventsStatus, futureEventsError } =
     useFutureEvents();
@@ -94,27 +108,14 @@ export function ViewEvent() {
       </h1>
       <div className="h-4" />
       <div className="flex flex-col gap-3 lg:flex-row lg:gap-10">
-        <div className="flex flex-col ">
-          <p className="text-sm lg:text-2xl">Time</p>
-          <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
-            {event.time}
-          </p>
-        </div>
-        <div className="flex flex-col ">
-          <p className="text-sm lg:text-2xl">Main Location</p>
-          <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
-            {event.mainLocation}
-          </p>
-        </div>
-        <div className="flex flex-col ">
-          <p className="text-sm lg:text-2xl"> Total Participants</p>
-          <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
-            {event.numtotalParticipants}
-          </p>
-        </div>
+        <HeaderValueDisplay header="Time" value={event.time} />
+        <HeaderValueDisplay header="Main Location" value={event.mainLocation} />
+        <HeaderValueDisplay
+          header="Total Participants"
+          value={event.numtotalParticipants}
+        />
       </div>
       <div className="h-12 " />
-
       {/* Participant Breakdown */}
       <h1 className="text-lg font-bold text-newLeafGreen lg:text-3xl">
         Participant Breakdown
@@ -122,44 +123,30 @@ export function ViewEvent() {
       <div className="h-4" />
       <div className="flex flex-col gap-2 lg:flex-row lg:gap-10">
         <div className="grid gap-2 lg:grid-cols-3 lg:grid-rows-2">
-          <div className="flex flex-col ">
-            <p className="text-sm lg:text-2xl">Total # of Drivers</p>
-            <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
-              {event.numDrivers}
-            </p>
-          </div>
-          <div className="flex flex-col ">
-            <p className="text-sm lg:text-2xl">Total # of Packers</p>
-            <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
-              {event.numPackers}
-            </p>
-          </div>
-
-          <div className="flex flex-col ">
-            <p className="text-sm lg:text-2xl">Both Drivers & Packers</p>
-            <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
-              {event.numBothDriversAndPackers}
-            </p>
-          </div>
-
-          <div className="flex flex-col ">
-            <p className="text-sm lg:text-2xl">Only Drivers</p>
-            <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
-              {event.numOnlyDrivers}
-            </p>
-          </div>
-          <div className="flex flex-col ">
-            <p className="text-sm lg:text-2xl">Only Packers</p>
-            <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
-              {event.numOnlyPackers}
-            </p>
-          </div>
-          <div className="flex flex-col ">
-            <p className="text-sm lg:text-2xl"># of Special Groups</p>
-            <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
-              {event.numSpecialGroups}
-            </p>
-          </div>
+          <HeaderValueDisplay
+            header="Total # of Drivers"
+            value={event.numDrivers}
+          />
+          <HeaderValueDisplay
+            header="Total # of Packers"
+            value={event.numPackers}
+          />
+          <HeaderValueDisplay
+            header="Both Drivers & Packers"
+            value={event.numBothDriversAndPackers}
+          />
+          <HeaderValueDisplay
+            header="Only Drivers"
+            value={event.numOnlyDrivers}
+          />
+          <HeaderValueDisplay
+            header="Only Packers"
+            value={event.numOnlyPackers}
+          />
+          <HeaderValueDisplay
+            header="# of Special Groups"
+            value={event.numSpecialGroups}
+          />
         </div>
 
         <div className="flex flex-col items-start justify-around gap-2 ">

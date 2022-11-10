@@ -3,9 +3,12 @@
 
 .events-container {
   display: flex; 
-  padding: 0 2rem;
   flex-direction: column; 
+  padding: 0 2rem;
   border-radius: 0.25rem; 
+  margin-top: 1.5rem;
+  gap: 1.5rem;
+  flex-grow: 1;
 }
 .events-container .header {
   display: flex; 
@@ -14,8 +17,7 @@
 }
 
 .events-container .header h1 {
-  font-size: clamp(1.5rem, 1rem + 2vw, 2.25rem);
-  line-height: 2rem; 
+  font-size: clamp(var(--font-xl), var(--font-xl) + 1vw, var(--font-3xl));
   font-weight: 700; 
   color: var(--new-leaf-green);
 }
@@ -41,6 +43,16 @@
   .events-container .header .new-event-btn::after {
     content: " Add Saturday Event";
   }
+}
+
+.events-container .event-list {
+  display: flex; 
+  overflow: auto; 
+  padding-right: 0.25rem; 
+  flex-direction: column; 
+  height: 0; 
+  gap: 0.5rem; 
+  flex-grow: 1;
 }
 
 

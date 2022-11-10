@@ -25,7 +25,7 @@ export function Events() {
   console.log("Logging futureEvents", futureEvents);
   return (
     <div className="events-container">
-      <div className="h-8" />
+      {/* <div className="h-8" /> */}
       <div className="header">
         <h1>Upcoming Events</h1>
         <a href={newEventLink} target="_blank" rel="noopener noreferrer">
@@ -38,8 +38,9 @@ export function Events() {
           </button>
         </a>
       </div>
-      <div className="h-5 rounded border" />
-      <ul className="flex h-0 grow flex-col gap-2 overflow-auto rounded border border-red-500 pr-1 sm:gap-7 md:pr-4">
+      {/* <div className="h-5 rounded border" /> */}
+      {/* <ul className="flex h-0 grow flex-col gap-2 overflow-auto rounded border border-red-500 pr-1 sm:gap-7 md:pr-4"> */}
+      <ul className="event-list">
         {futureEvents.map((event) => {
           return (
             <EventCard

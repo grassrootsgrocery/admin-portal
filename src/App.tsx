@@ -28,8 +28,11 @@ export interface FilterScheduledSlot {
   packer: boolean;
   name: string;
 }
-const filterProps = [
-  { label: "Confirmed", filter: (e: FilterScheduledSlot) => e.confirmed },
+const filters = [
+  {
+    label: "Confirmed",
+    filter: (e: FilterScheduledSlot) => e.confirmed,
+  },
   {
     label: "Only Driver",
     filter: (e: FilterScheduledSlot) => e.driver && !e.packer,
@@ -74,7 +77,7 @@ function App() {
               <Route path="/events/:eventId" element={<ViewEvent />} />
               <Route
                 path="/dropdown"
-                element={<Dropdown filterProps={filterProps} ss={ss} />}
+                element={<Dropdown filters={filters} ss={ss} />}
               />
             </Routes>
           </div>

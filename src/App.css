@@ -8,18 +8,22 @@
   --simple-gray: #c4c4c4;
 }
 
-/* * {
+* {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  font-family: sans-serif;
+}
+ul {
+  list-style-type: none;
 }
 
 footer {
   height: 10rem;
   background: linear-gradient(0deg, #094c43, #094c43), var(--simple-brown);
-} */
+}
 
 ::-webkit-scrollbar {
   width: 10px;

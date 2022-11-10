@@ -22,25 +22,24 @@ export function Events() {
     console.error(futureEventsError);
     return <div>Error...</div>;
   }
-  //console.log("Logging futureEvents", futureEvents);
+  console.log("Logging futureEvents", futureEvents);
   return (
-    <div className="flex grow flex-col rounded border px-8">
+    <div className="events-container">
       <div className="h-8" />
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-newLeafGreen md:text-4xl">
-          Upcoming Events
-        </h1>
+      <div className="header">
+        <h1>Upcoming Events</h1>
         <a href={newEventLink} target="_blank" rel="noopener noreferrer">
           <button
-            className="rounded-full bg-pumpkinOrange px-4 py-2 font-bold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen sm:px-6 sm:py-4 lg:after:content-['_Add_Saturday_Event']"
+            //className="rounded-full bg-pumpkinOrange px-4 py-2 font-bold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen sm:px-6 sm:py-4 lg:after:content-['_Add_Saturday_Event']"
+            className="new-event-btn"
             type="button"
           >
             +
           </button>
         </a>
       </div>
-      <div className="h-5" />
-      <ul className="flex h-0 grow flex-col gap-2 overflow-auto pr-1 sm:gap-7 md:pr-4">
+      <div className="h-5 rounded border" />
+      <ul className="flex h-0 grow flex-col gap-2 overflow-auto rounded border border-red-500 pr-1 sm:gap-7 md:pr-4">
         {futureEvents.map((event) => {
           return (
             <EventCard

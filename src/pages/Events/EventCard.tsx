@@ -120,7 +120,7 @@ const EventCardDesktop: React.FC<Props> = ({
           </div>
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
             <p className="label flex items-start">Drivers:</p>
-            <h3 className="driver-fraction label bold-green flex items-start gap-2">
+            <h3 className="driver-fraction label bold-green flex items-start gap-2 lg:gap-2">
               {drivers}/30{" "}
               <img
                 style={{ padding: "0.35rem 0.125rem" }}
@@ -129,7 +129,7 @@ const EventCardDesktop: React.FC<Props> = ({
               />
             </h3>
           </div>
-          <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:gap-2">
             <p className="label">Packers:</p>
             <h3 className="label bold-green">{packers}</h3>
           </div>

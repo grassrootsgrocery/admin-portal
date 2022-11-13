@@ -103,6 +103,24 @@ export const Dropdown: React.FC<Props> = ({ filters, ss }) => {
           </ul>
         }
       </div>
+
+        {/* Applied Filters Label */}
+        <h1 className="text-xl font-semibold text-newLeafGreen"> Applied Filters: </h1>
+
+        {/* Button that pops up after filter is clicked */}
+      <div className="flex rounded-full bg-newLeafGreen p-1 px-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-newLeafGreen">
+        <button> Confirmed </button>
+        <h1 className="pl-4"> X </h1>
+      </div>
+
+        {/* Clear Filters button */}
+      <button
+            className="rounded-full bg-pumpkinOrange px-9 py-1 font-semibold text-white transition-all hover:shadow-lg hover:shadow-newLeafGreen"
+            type="button"
+          >
+            Clear Filters
+      </button>
+
       <div className="flex grow flex-col self-stretch overflow-hidden border pr-2">
         <ul className="flex h-0 grow flex-col gap-4 overflow-auto rounded border border-pumpkinOrange bg-softBeige p-4">
           {filtered.map((item, idx) => {

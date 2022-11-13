@@ -147,7 +147,6 @@ export function ViewEvent() {
 
   return (
     <div className="p-6 lg:px-14 lg:py-16">
-      <Dropdown filters={filters} ss={scheduledSlots.records} />
       {/* Event Info */}
       <h1 className="text-lg font-bold text-newLeafGreen lg:text-3xl">
         {event.dateDisplay}
@@ -212,43 +211,7 @@ export function ViewEvent() {
       </div>
       <br />
       <div>
-        <table className="border-4 border-softGrayWhite">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>First</th>
-              <th>Last</th>
-              <th>Time</th>
-              <th>Participant Type</th>
-              <th>Confirmed</th>
-              <th>Special Group</th>
-              <th>Delivery Type</th>
-              <th>Contact</th>
-            </tr>
-          </thead>
-          <tbody>
-            {scheduledSlots.records.map((scheduledSlot, idx) => {
-              return (
-                <tr key={scheduledSlot.id}>
-                  <td>{idx + 1}</td>
-                  <td>{scheduledSlot.fields["First Name"]}</td>
-                  <td>{scheduledSlot.fields["Last Name"]}</td>
-                  <td>
-                    {scheduledSlot.fields["Correct slot time"]["error"]
-                      ? "None"
-                      : scheduledSlot.fields["Correct slot time"]}
-                  </td>
-                  <td>{scheduledSlot.fields["Type"].length}</td>
-                  <td>{scheduledSlot.fields["Confirmed?"] ? "Yes" : "No"}</td>
-                  <td>{scheduledSlot.fields["Volunteer Status"]}</td>
-                  <td>IDK</td>
-                  <td>{scheduledSlot.fields["Email"]}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-          <tfoot></tfoot>
-        </table>
+      <Dropdown filters={filters} ss={scheduledSlots.records} />
       </div>
     </div>
   );

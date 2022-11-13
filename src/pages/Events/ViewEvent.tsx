@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { AirtableResponse, ScheduledSlot } from "../../types";
+import { AirtableResponse, Record, ScheduledSlot } from "../../types";
 import { useQuery } from "react-query";
 import { useFutureEvents } from "./eventHooks";
 import {
@@ -7,6 +7,7 @@ import {
   fetchAirtableData,
 } from "../../airtableDataFetchingUtils";
 import { Loading } from "../../components/Loading";
+import { Dropdown } from "../../components/Dropdown";
 
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
@@ -41,6 +42,30 @@ function useFutureEventById(eventId: string | undefined) {
   };
 }
 
+const filters = [
+  {
+    label: "Confirmed",
+    filter: (e: Record<ScheduledSlot>) => e.fields["Confirmed?"],
+  },
+  {
+    label: "Not Confirmed",
+    filter: (e: Record<ScheduledSlot>) => !e.fields["Confirmed?"],
+  },
+  {
+    label: "Only Packers",
+    filter: (e: Record<ScheduledSlot>) => e.fields.Type.includes("Distributor") && !e.fields.Type.includes("Driver"),
+  },
+  {
+    label: "Only Drivers",
+    filter: (e: Record<ScheduledSlot>) => e.fields.Type.includes("Driver") && !e.fields.Type.includes("Distributor"),
+  },
+  {
+    label: "Packers & Drivers",
+    filter: (e: Record<ScheduledSlot>) => e.fields.Type.includes("Distributor") && e.fields.Type.includes("Driver"),
+  },
+  // TODO: Add filters for special groups
+];
+
 export function ViewEvent() {
   const { eventId } = useParams();
   const { event, eventStatus, eventError } = useFutureEventById(eventId);
@@ -66,7 +91,8 @@ export function ViewEvent() {
         `&fields=Type` +
         `&fields=Confirmed?` +
         `&fields=Volunteer Status` +
-        `&fields=Email`;
+        `&fields=Email` +
+        `&fields=Volunteer Group (for MAKE)`;
 
       return fetchAirtableData<AirtableResponse<ScheduledSlot>>(
         scheduledSlotsForEventUrl
@@ -102,6 +128,7 @@ export function ViewEvent() {
 
   return (
     <div className="p-6 lg:px-14 lg:py-16">
+      <Dropdown filters={filters} ss={scheduledSlots.records} />
       {/* Event Info */}
       <h1 className="text-lg font-bold text-newLeafGreen lg:text-3xl">
         {event.dateDisplay}

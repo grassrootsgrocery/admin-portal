@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { FilterScheduledSlot } from "../App";
 import chevron_up from "../assets/chevron-up.svg";
 import chevron_down from "../assets/chevron-down.svg";
+import { AirtableResponse, Record, ScheduledSlot } from "../types";
 
 //Taken from y-knot code base. Used to track click event outside of the dropdown.
 const useClickOutside = (onClickOutside: () => void) => {
@@ -46,8 +46,8 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
 };
 
 interface Props {
-  filters: { label: string; filter: (e: FilterScheduledSlot) => boolean }[];
-  ss: FilterScheduledSlot[];
+  filters: { label: string; filter: (e: Record<ScheduledSlot>) => boolean }[];
+  ss: Record<ScheduledSlot>[];
 }
 
 export const Dropdown: React.FC<Props> = ({ filters, ss }) => {
@@ -123,13 +123,13 @@ export const Dropdown: React.FC<Props> = ({ filters, ss }) => {
 
       <div className="flex grow flex-col self-stretch overflow-hidden border pr-2">
         <ul className="flex h-0 grow flex-col gap-4 overflow-auto rounded border border-pumpkinOrange bg-softBeige p-4">
-          {filtered.map((item, idx) => {
+          {filtered.map((scheduledSlot) => {
             return (
               <li
-                key={idx}
+                key={scheduledSlot.id}
                 className="rounded-lg border border-pumpkinOrange bg-white p-2 font-semibold text-pumpkinOrange shadow-sm shadow-pumpkinOrange transition-all hover:-translate-y-1 hover:cursor-pointer hover:shadow-md hover:shadow-pumpkinOrange hover:brightness-110"
               >
-                {item.name}
+                {scheduledSlot.fields["First Name"]}
               </li>
             );
           })}

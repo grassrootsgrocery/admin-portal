@@ -18,50 +18,7 @@ import { Events } from "./pages/Events/Events";
 import { ViewEvent } from "./pages/Events/ViewEvent";
 
 import "./App.css";
-import { Dropdown } from "./components/Dropdown";
 
-const l = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-export interface FilterScheduledSlot {
-  confirmed: boolean;
-  driver: boolean;
-  packer: boolean;
-  name: string;
-}
-const filters = [
-  {
-    label: "Confirmed",
-    filter: (e: FilterScheduledSlot) => e.confirmed,
-  },
-  {
-    label: "Only Driver",
-    filter: (e: FilterScheduledSlot) => e.driver && !e.packer,
-  },
-  {
-    label: "Only Packer",
-    filter: (e: FilterScheduledSlot) => e.packer && !e.driver,
-  },
-  {
-    label: "Packer & Driver",
-    filter: (e: FilterScheduledSlot) => e.packer && e.driver,
-  },
-];
-
-const ss = [
-  { confirmed: true, driver: false, packer: false, name: "Jason" },
-  { confirmed: false, driver: false, packer: false, name: "Tim" },
-  { confirmed: true, driver: true, packer: false, name: "Grace" },
-  { confirmed: true, driver: false, packer: true, name: "Sophie" },
-  { confirmed: false, driver: false, packer: false, name: "Surabi" },
-  { confirmed: true, driver: false, packer: true, name: "Helen" },
-  { confirmed: false, driver: true, packer: false, name: "Arin" },
-  { confirmed: true, driver: false, packer: false, name: "Jacob" },
-  { confirmed: false, driver: false, packer: false, name: "Rae" },
-  { confirmed: true, driver: true, packer: false, name: "Andrew" },
-  { confirmed: false, driver: true, packer: true, name: "Vibhu" },
-  { confirmed: false, driver: false, packer: false, name: "Sadena" },
-  { confirmed: true, driver: true, packer: true, name: "Pallavi" },
-];
 function App() {
   // Label -> Packers
   // filter -> () => {}
@@ -75,10 +32,6 @@ function App() {
               <Route path="/" element={<Login />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:eventId" element={<ViewEvent />} />
-              <Route
-                path="/dropdown"
-                element={<Dropdown filters={filters} ss={ss} />}
-              />
             </Routes>
           </div>
           <ReactQueryDevtools initialIsOpen={false} />

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import chevron_up from "../assets/chevron-up.svg";
 import chevron_down from "../assets/chevron-down.svg";
+import x from "../assets/x.svg";
 import { Record, ScheduledSlot } from "../types";
 
 //Taken from y-knot code base. Used to track click event outside of the dropdown.
@@ -55,9 +56,12 @@ const FilterButton: React.FC<FilterButtonProps> = (props: FilterButtonProps) => 
   
   return selected ? (
     <div className="flex rounded-full bg-newLeafGreen p-1 px-3 min-w-fit font-semibold text-white transition-all 
-      hover:shadow-lg hover:shadow-newLeafGreen" onClick={onSelect}>
+      hover:shadow hover:shadow-newLeafGreen" onClick={onSelect}>
       <button> {item} </button>
-      <h3 className="pl-3 font-thin"> x </h3>
+      <h3 className="pl-2 py-1">
+      <img src={x} alt="x" />
+      </h3>
+      {/* <h3 className="pl-3 font-thin"> x </h3> */}
     </div>
   ) : null;
 };
@@ -123,10 +127,10 @@ export const Dropdown: React.FC<Props> = ({ filters, ss }) => {
         </div>
 
           {/* Applied Filters Label */}
-          <h1 className="text-xl font-semibold text-newLeafGreen"> Applied Filters: </h1>
+          <h1 className="text-xl font-semibold text-newLeafGreen "> Applied Filters: </h1>
 
           {/* Buttons that pops up after filter is clicked */}
-          <div className="flex w-1/3 overflow-x-auto overscroll-x-auto items-start gap-4">
+          <div className="flex py-1 px-2 w-1/3 overflow-x-auto overscroll-x-auto items-start gap-4">
             {
               filters.map((item, i) => (
                 <FilterButton
@@ -140,14 +144,14 @@ export const Dropdown: React.FC<Props> = ({ filters, ss }) => {
 
           {/* Clear Filters button */}
         <button
-              className="rounded-full bg-pumpkinOrange px-9 py-1 font-semibold text-white transition-all hover:shadow-lg hover:shadow-newLeafGreen"
+              className="rounded-full bg-pumpkinOrange px-10 py-1 font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:shadow-lg hover:shadow-newLeafGreen"
               type="button"
               onClick={() => setSelectedFilters(Array(filters.length).fill(false))}
             >
               Clear Filters
         </button>
       </div>
-      <div className="lg:px-0 lg:py-10 z-10 min-h-screen">
+      <div className="lg:px-0 lg:py-16 z-10 min-h-screen">
         <table className="border-4 border-softGrayWhite">
           <thead>
             <tr>

@@ -45,6 +45,23 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
   );
 };
 
+interface FilterButtonProps {
+  onSelect: () => void;
+  item: string;
+  selected: boolean;
+}
+const FilterButton: React.FC<FilterButtonProps> = (props: FilterButtonProps) => {
+  const { item, selected, onSelect } = props;
+  
+  return selected ? (
+    <div className="flex rounded-full bg-newLeafGreen p-1 px-3 min-w-fit font-semibold text-white transition-all 
+      hover:shadow-lg hover:shadow-newLeafGreen" onClick={onSelect}>
+      <button> {item} </button>
+      <h3 className="pl-3 font-thin"> x </h3>
+    </div>
+  ) : null;
+};
+
 interface Props {
   filters: { label: string; filter: (e: Record<ScheduledSlot>) => boolean }[];
   ss: Record<ScheduledSlot>[];
@@ -76,9 +93,9 @@ export const Dropdown: React.FC<Props> = ({ filters, ss }) => {
 
   return (
     <div className="p-6 lg:px-0 lg:py-10">
-      <div className="flex items-start gap-8">
+      <div className="flex items-start gap-8 h-1">
         <div
-          className="rounded-lg border bg-softBeige shadow-md "
+          className="rounded-lg border bg-softBeige shadow-md w-min z-50"
           ref={dropdownRef}
         >
           <h1
@@ -108,21 +125,29 @@ export const Dropdown: React.FC<Props> = ({ filters, ss }) => {
           {/* Applied Filters Label */}
           <h1 className="text-xl font-semibold text-newLeafGreen"> Applied Filters: </h1>
 
-          {/* Button that pops up after filter is clicked */}
-        <div className="flex rounded-full bg-newLeafGreen p-1 px-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-newLeafGreen">
-          <button> Confirmed </button>
-          <h1 className="pl-4"> X </h1>
-        </div>
+          {/* Buttons that pops up after filter is clicked */}
+          <div className="flex w-1/3 overflow-x-auto overscroll-x-auto items-start gap-4">
+            {
+              filters.map((item, i) => (
+                <FilterButton
+                  key={i}
+                  selected={selectedFilters[i]}
+                  onSelect={() => onFilterSelect(i)}
+                  item={item.label}
+                />
+              ))}
+          </div>
 
           {/* Clear Filters button */}
         <button
               className="rounded-full bg-pumpkinOrange px-9 py-1 font-semibold text-white transition-all hover:shadow-lg hover:shadow-newLeafGreen"
               type="button"
+              onClick={() => setSelectedFilters(Array(filters.length).fill(false))}
             >
               Clear Filters
         </button>
       </div>
-      <div className="lg:px-0 lg:py-10">
+      <div className="lg:px-0 lg:py-10 z-10 min-h-screen">
         <table className="border-4 border-softGrayWhite">
           <thead>
             <tr>

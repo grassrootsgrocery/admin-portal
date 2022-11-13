@@ -42,30 +42,6 @@ function useFutureEventById(eventId: string | undefined) {
   };
 }
 
-const filters = [
-  {
-    label: "Confirmed",
-    filter: (e: Record<ScheduledSlot>) => e.fields["Confirmed?"],
-  },
-  {
-    label: "Not Confirmed",
-    filter: (e: Record<ScheduledSlot>) => !e.fields["Confirmed?"],
-  },
-  {
-    label: "Only Packers",
-    filter: (e: Record<ScheduledSlot>) => e.fields.Type.includes("Distributor") && !e.fields.Type.includes("Driver"),
-  },
-  {
-    label: "Only Drivers",
-    filter: (e: Record<ScheduledSlot>) => e.fields.Type.includes("Driver") && !e.fields.Type.includes("Distributor"),
-  },
-  {
-    label: "Packers & Drivers",
-    filter: (e: Record<ScheduledSlot>) => e.fields.Type.includes("Distributor") && e.fields.Type.includes("Driver"),
-  },
-  // TODO: Add filters for special groups
-];
-
 export function ViewEvent() {
   const { eventId } = useParams();
   const { event, eventStatus, eventError } = useFutureEventById(eventId);
@@ -121,6 +97,49 @@ export function ViewEvent() {
     );
     return <div>Error...</div>;
   }
+
+  // Filters for filter dropdown
+  let filters = [
+    {
+      label: "Confirmed",
+      filter: (e: Record<ScheduledSlot>) => e.fields["Confirmed?"],
+    },
+    {
+      label: "Not Confirmed",
+      filter: (e: Record<ScheduledSlot>) => !e.fields["Confirmed?"],
+    },
+    {
+      label: "Only Packers",
+      filter: (e: Record<ScheduledSlot>) => e.fields.Type.includes("Distributor") && !e.fields.Type.includes("Driver"),
+    },
+    {
+      label: "Only Drivers",
+      filter: (e: Record<ScheduledSlot>) => e.fields.Type.includes("Driver") && !e.fields.Type.includes("Distributor"),
+    },
+    {
+      label: "Packers & Drivers",
+      filter: (e: Record<ScheduledSlot>) => e.fields.Type.includes("Distributor") && e.fields.Type.includes("Driver"),
+    },
+  ];
+
+  // Create list of unique special groups and add special group filters
+  let specialGroupsList : string[] = [];
+  scheduledSlots.records.forEach(function(ss){
+    let specialGroup = ss.fields["Volunteer Group (for MAKE)"];
+
+    // Check for a unique special group
+    if (specialGroup && !specialGroupsList.includes(specialGroup)) {
+      specialGroupsList.push(specialGroup)
+      
+      // Add special group as a filter
+      let groupFilter = {
+        label: specialGroup,
+        filter: (e: Record<ScheduledSlot>) => e.fields["Volunteer Group (for MAKE)"] === specialGroup
+      };
+      filters.push(groupFilter);
+    };
+  });
+  // console.log("specialGroupsList:", specialGroupsList);
 
   scheduledSlots.records.sort((a, b) =>
     a.fields["First Name"] < b.fields["First Name"] ? -1 : 1

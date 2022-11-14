@@ -61,7 +61,6 @@ const FilterButton: React.FC<FilterButtonProps> = (props: FilterButtonProps) => 
       <h3 className="pl-2 py-1">
       <img src={x} alt="x" />
       </h3>
-      {/* <h3 className="pl-3 font-thin"> x </h3> */}
     </div>
   ) : null;
 };
@@ -109,7 +108,7 @@ export const Dropdown: React.FC<Props> = ({ filters, ss }) => {
             }
             onClick={() => setOpen(!open)}
           >
-            Filter <img src={open ? chevron_up : chevron_down} alt="ugh" />
+            Filter <img src={open ? chevron_up : chevron_down} alt="^" />
           </h1>
           {
             <ul className={`flex flex-col gap-2 ${open ? "py-2 px-1" : ""}`}>
@@ -127,7 +126,7 @@ export const Dropdown: React.FC<Props> = ({ filters, ss }) => {
         </div>
 
           {/* Applied Filters Label */}
-          <h1 className="text-xl font-semibold text-newLeafGreen "> Applied Filters: </h1>
+          <h1 className="py-1 text-xl font-semibold text-newLeafGreen "> Applied Filters: </h1>
 
           {/* Buttons that pops up after filter is clicked */}
           <div className="flex py-1 px-2 w-1/3 overflow-x-auto overscroll-x-auto items-start gap-4">

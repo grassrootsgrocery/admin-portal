@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Generic stuff */
+:root {
+  /* Colors */
+  --pumpkin-orange: #e65402;
+  --new-leaf-green: #094343;
+  --soft-beige: #fffef9;
+  --soft-gray-white: #e0deca;
+  --zested-lime: #cfdf83;
+  --simple-brown: #2e2d2b;
+  --simple-gray: #c4c4c4;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  padding-top: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--simple-gray);
+  border-radius: 10px;
+}

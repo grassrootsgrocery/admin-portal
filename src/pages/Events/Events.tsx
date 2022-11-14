@@ -22,21 +22,29 @@ export function Events() {
     console.error(futureEventsError);
     return <div>Error...</div>;
   }
-  //console.log("Logging futureEvents", futureEvents);
+  console.log("Logging futureEvents", futureEvents);
   return (
-    <div className="events-container">
-      <div className="top-row">
-        <div className="upcoming-events-label">Upcoming Events</div>
+    <div className="flex grow flex-col rounded border px-8">
+      <div className="h-8" />
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-newLeafGreen md:text-4xl">
+          Upcoming Events
+        </h1>
         <a href={newEventLink} target="_blank" rel="noopener noreferrer">
-          <button className="add-button" type="button">
+          <button
+            className="rounded-full bg-pumpkinOrange px-3 pb-2 text-3xl font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen sm:px-4 sm:pb-3 sm:pt-1 lg:py-3 lg:px-5 lg:text-xl lg:after:content-['_Add_Saturday_Event']"
+            type="button"
+          >
             +
           </button>
         </a>
       </div>
-      <ul className="events-list-wrapper">
+      <div className="h-5" />
+      <ul className="flex h-0 grow flex-col gap-2 overflow-auto pr-1 sm:gap-7 md:pr-4">
         {futureEvents.map((event) => {
           return (
             <EventCard
+              key={event.id}
               eventId={event.id}
               date={event.dateDisplay}
               time={event.time}

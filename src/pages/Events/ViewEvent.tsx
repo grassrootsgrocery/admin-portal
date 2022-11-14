@@ -11,6 +11,20 @@ import { Loading } from "../../components/Loading";
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
  * */
+
+const HeaderValueDisplay: React.FC<{
+  header: string;
+  value: string | number;
+}> = (props: { header: string; value: string | number }) => {
+  return (
+    <div className="flex flex-col ">
+      <p className="text-sm lg:text-2xl">{props.header}</p>
+      <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
+        {props.value}
+      </p>
+    </div>
+  );
+};
 function useFutureEventById(eventId: string | undefined) {
   const { futureEvents, futureEventsStatus, futureEventsError } =
     useFutureEvents();
@@ -77,67 +91,119 @@ export function ViewEvent() {
 
   if (event === undefined) {
     console.error(
-      `Something went wrong. Event ${event} not found in futureEvents list`
+      `Something went wrong. Event ${event} not found in futureEvents list.`
     );
     return <div>Error...</div>;
   }
 
-  //RENDER LOGIC
-
-  //console.log("Logging scheduledSlotsForEvent", scheduledSlotsForEvent);
   scheduledSlots.records.sort((a, b) =>
     a.fields["First Name"] < b.fields["First Name"] ? -1 : 1
   );
+
   return (
-    <div>
-      <p>Day: {event.dateDisplay}</p>
-      <p>Time: {event.time}</p>
-      <p>Main Location: {event.mainLocation}</p>
-      <p>Total Participants: {event.numtotalParticipants}</p>
-      <p>Total # of Drivers: {event.numDrivers}</p>
-      <p>Total # of Packers: {event.numPackers}</p>
-      <p>Only Drivers: {event.numOnlyDrivers} </p>
-      <p>Only Packers: {event.numOnlyPackers} </p>
-      <p>Both Drivers & Packers: {event.numBothDriversAndPackers} </p>
-      <p># of Special Groups: {event.numSpecialGroups} </p>
+    <div className="p-6 lg:px-14 lg:py-16">
+      {/* Event Info */}
+      <h1 className="text-lg font-bold text-newLeafGreen lg:text-3xl">
+        {event.dateDisplay}
+      </h1>
+      <div className="h-4" />
+      <div className="flex flex-col gap-3 lg:flex-row lg:gap-10">
+        <HeaderValueDisplay header="Time" value={event.time} />
+        <HeaderValueDisplay header="Main Location" value={event.mainLocation} />
+        <HeaderValueDisplay
+          header="Total Participants"
+          value={event.numtotalParticipants}
+        />
+      </div>
+      <div className="h-12 " />
+      {/* Participant Breakdown */}
+      <h1 className="text-lg font-bold text-newLeafGreen lg:text-3xl">
+        Participant Breakdown
+      </h1>
+      <div className="h-4" />
+      <div className="flex flex-col gap-2 lg:flex-row lg:gap-10">
+        <div className="grid gap-2 lg:grid-cols-3 lg:grid-rows-2">
+          <HeaderValueDisplay
+            header="Total # of Drivers"
+            value={event.numDrivers}
+          />
+          <HeaderValueDisplay
+            header="Total # of Packers"
+            value={event.numPackers}
+          />
+          <HeaderValueDisplay
+            header="Both Drivers & Packers"
+            value={event.numBothDriversAndPackers}
+          />
+          <HeaderValueDisplay
+            header="Only Drivers"
+            value={event.numOnlyDrivers}
+          />
+          <HeaderValueDisplay
+            header="Only Packers"
+            value={event.numOnlyPackers}
+          />
+          <HeaderValueDisplay
+            header="# of Special Groups"
+            value={event.numSpecialGroups}
+          />
+        </div>
+
+        <div className="flex flex-col items-start justify-around gap-2 ">
+          <button
+            className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+            type="button"
+          >
+            View Special Groups
+          </button>
+          <button
+            className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+            type="button"
+          >
+            + Add Special Group
+          </button>
+        </div>
+      </div>
       <br />
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>First</th>
-            <th>Last</th>
-            <th>Time</th>
-            <th>Participant Type</th>
-            <th>Confirmed</th>
-            <th>Special Group</th>
-            <th>Delivery Type</th>
-            <th>Contact</th>
-          </tr>
-        </thead>
-        <tbody>
-          {scheduledSlots.records.map((scheduledSlot, idx) => {
-            return (
-              <tr key={scheduledSlot.id}>
-                <td>{idx + 1}</td>
-                <td>{scheduledSlot.fields["First Name"]}</td>
-                <td>{scheduledSlot.fields["Last Name"]}</td>
-                <td>
-                  {scheduledSlot.fields["Correct slot time"]["error"]
-                    ? "None"
-                    : scheduledSlot.fields["Correct slot time"]}
-                </td>
-                <td>{scheduledSlot.fields["Type"].length}</td>
-                <td>{scheduledSlot.fields["Confirmed?"] ? "Yes" : "No"}</td>
-                <td>{scheduledSlot.fields["Volunteer Status"]}</td>
-                <td>IDK</td>
-                <td>{scheduledSlot.fields["Email"]}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-        <tfoot></tfoot>
-      </table>
+      <div>
+        <table className="border-4 border-softGrayWhite">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>First</th>
+              <th>Last</th>
+              <th>Time</th>
+              <th>Participant Type</th>
+              <th>Confirmed</th>
+              <th>Special Group</th>
+              <th>Delivery Type</th>
+              <th>Contact</th>
+            </tr>
+          </thead>
+          <tbody>
+            {scheduledSlots.records.map((scheduledSlot, idx) => {
+              return (
+                <tr key={scheduledSlot.id}>
+                  <td>{idx + 1}</td>
+                  <td>{scheduledSlot.fields["First Name"]}</td>
+                  <td>{scheduledSlot.fields["Last Name"]}</td>
+                  <td>
+                    {scheduledSlot.fields["Correct slot time"]["error"]
+                      ? "None"
+                      : scheduledSlot.fields["Correct slot time"]}
+                  </td>
+                  <td>{scheduledSlot.fields["Type"].length}</td>
+                  <td>{scheduledSlot.fields["Confirmed?"] ? "Yes" : "No"}</td>
+                  <td>{scheduledSlot.fields["Volunteer Status"]}</td>
+                  <td>IDK</td>
+                  <td>{scheduledSlot.fields["Email"]}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
     </div>
   );
 }

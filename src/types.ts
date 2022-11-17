@@ -40,4 +40,5 @@ export interface ScheduledSlot {
   "Confirmed?": boolean;
   "Volunteer Status": string;
   Email: string;
+  "Volunteer Group (for MAKE)": string;
 }

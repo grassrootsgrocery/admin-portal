@@ -15,6 +15,7 @@
 }
 
 ::-webkit-scrollbar {
+  height: 6px;
   width: 10px;
   padding-top: 10px;
 }

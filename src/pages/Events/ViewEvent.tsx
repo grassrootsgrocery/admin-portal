@@ -8,6 +8,9 @@ import {
 } from "../../airtableDataFetchingUtils";
 import { Loading } from "../../components/Loading";
 import { VolunteersTable } from "../../components/VolunteersTable";
+//Assets
+import alert from "../../assets/alert.svg";
+import check from "../../assets/check.svg";
 
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
@@ -19,8 +22,8 @@ const HeaderValueDisplay: React.FC<{
 }> = (props: { header: string; value: string | number }) => {
   return (
     <div className="flex flex-col ">
-      <p className="lg:text-2xl">{props.header}</p>
-      <p className="font-semibold text-newLeafGreen lg:text-2xl">
+      <p className="lg:text-xl">{props.header}</p>
+      <p className="font-semibold text-newLeafGreen lg:text-xl">
         {props.value}
       </p>
     </div>
@@ -153,7 +156,7 @@ export function ViewEvent() {
   );
 
   return (
-    <div className="p-6 lg:px-14 lg:py-16">
+    <div className="p-6 lg:px-14 lg:py-10">
       {/* Event Info */}
       <h1 className="text-lg font-bold text-newLeafGreen lg:text-3xl">
         {event.dateDisplay}
@@ -175,10 +178,17 @@ export function ViewEvent() {
       <div className="h-4" />
       <div className="flex flex-col gap-2 md:flex-row md:gap-10">
         <div className="grid gap-2 md:grid-cols-3 md:grid-rows-2">
-          <HeaderValueDisplay
-            header="Total # of Drivers"
-            value={event.numDrivers}
-          />
+          <div className="flex flex-col ">
+            <p className="lg:text-xl">Total # of Drivers</p>
+            <p className="flex gap-4 font-semibold text-newLeafGreen lg:text-xl">
+              {event.numDrivers}/30
+              <img
+                className="mt-1 w-4 md:w-6 lg:w-7"
+                src={event.numDrivers >= 30 ? check : alert}
+                alt="wut"
+              />
+            </p>
+          </div>
           <HeaderValueDisplay
             header="Total # of Packers"
             value={event.numPackers}

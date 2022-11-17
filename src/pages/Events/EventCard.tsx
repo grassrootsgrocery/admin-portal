@@ -50,11 +50,11 @@ export const EventCard: React.FC<Props> = ({
           </div>
           {/* Drivers */}
           <div className="col-span-2 grow-0 md:col-span-1">
-            <p className="event-card-label">Drivers:</p>
+            <p className={label}>Drivers:</p>
           </div>
           {/* Drivers Count */}
           <div className="col-span-4 md:col-span-4 lg:col-span-2">
-            <h3 className="event-card-label-bold flex gap-4">
+            <h3 className={`${labelBold} flex gap-4`}>
               {drivers}/30{" "}
               <img
                 className="mt-1 w-4 md:w-6 lg:w-7"
@@ -83,7 +83,7 @@ export const EventCard: React.FC<Props> = ({
           </div>
           <div className="flex grow items-center lg:justify-end">
             <Link to={`/events/${eventId}`}>
-              <button className="rounded-full bg-newLeafGreen px-1 py-1 text-xs font-medium text-softGrayWhite shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl">
+              <button className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-medium text-softGrayWhite shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl">
                 View Event
               </button>
             </Link>

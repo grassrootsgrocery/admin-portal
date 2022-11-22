@@ -21,11 +21,13 @@ import { ParticipantRoster } from "./pages/Roster/ParticipantRoster";
 import "./App.css";
 
 function App() {
+  // Label -> Packers
+  // filter -> () => {}
   return (
     <BrowserRouter>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
-          <div className="App">
+          <div className="flex h-screen flex-col  rounded border">
             <Navbar />
             <Routes>
               <Route path="/" element={<Login />} />
@@ -33,7 +35,6 @@ function App() {
               <Route path="/events/:eventId" element={<ViewEvent />} />
               <Route path="/roster" element={<ParticipantRoster />} />
             </Routes>
-            <footer />
           </div>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>

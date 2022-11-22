@@ -11,8 +11,9 @@ of different services wired together (main ones are [Airtable](https://airtable.
 
 1. Clone the repo and `cd` into it
 2. Run `npm install`
-3. Run `npm run dev`
-4. Navigate to `localhost:5173` in your browser
+3. Follow the steps in the section below to set up your API key (**API Key Management and Access**)
+4. Run `npm run dev`
+5. Navigate to `localhost:5173` in your browser
 
 # API Key Management and Access
 
@@ -34,7 +35,7 @@ const apiKey = import.meta.env.VITE_AIRTABLE_API_KEY;
 
 # Tech Resources
 
-The stack is currently TypeScript, React, and Airtable, with [Vite](https://vitejs.dev/guide/) as our build tool.
+The stack is currently TypeScript, React, Tailwind CSS, and Airtable, with [Vite](https://vitejs.dev/guide/) as our build tool.
 
 ## Data fetching and React Query
 
@@ -154,9 +155,11 @@ TypeScript is safer than JavaScript, most UMD Hack4Impact teams use TypeScript, 
 
 \* VSCode tip: If you hover over a type, VSCode will show you the type. If you press `Ctrl` (`Cmd` on Mac?) while hovering, VSCode will show you more information about that type (such as its properties).
 
-## Styling
+## CSS
 
-A few general principles on writing CSS.
+### Styling
+
+A few general principles on writing vanilla CSS.
 
 1. All of the colors used in the app are defined as CSS variables in `App.css` so use those when trying to color things.
 2. Write semantic HTML. Use things like `section`, `nav`, `footer`, `ol`, `ul`, etc. where they make sense.
@@ -225,6 +228,22 @@ function EventCard() {
 
 }
 ```
+
+### Tailwind CSS
+
+Because the tech lead on this project can't resist playing with new tech, we decided to use [Tailwind CSS](https://tailwindcss.com/) to aid with our styling. Tailwind was introduced because we wanted a bit more systematic approach to writing CSS. We also wanted something that would help us tackle responsiveness. However, it is not a requirement that things be styled using Tailwind. The codebase is currently a mix of components that are styled with Tailwind and components that are styled with vanilla CSS.
+
+#### Tailwind VSCode Extension
+
+This extension is called Tailwind CSS IntelliSense, and you should install it if you plan on using writing Tailwind in this project.
+
+#### More resources
+
+- [Official Docs](https://tailwindcss.com/docs/installation)
+- [Why Tailwind](https://www.swyx.io/why-tailwind)
+- [A nice talk](https://www.youtube.com/watch?v=R50q4NES6Iw)
+- [A tweet from Ben Holmes (former Hack4Impact Director of Engineering) probably talking about a Hack4Impact project...](https://twitter.com/BHolmesDev/status/1314036040697610241?s=20)
+- [A blog post from Ben Holmes about different CSS frameworks](https://bholmes.dev/blog/understanding-the-spectrum-of-css-frameworks/)
 
 ## Technical Infrastructure
 

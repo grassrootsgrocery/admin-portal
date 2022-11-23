@@ -198,6 +198,7 @@ export const VolunteersTable: React.FC<Props> = ({
       for (let i = 0; i < type.length; i++) {
         type[i] = type[i].replace("Distributor", "Packer");
       }
+      type.sort();
       let typeLabel = type[0];
       if (type.length === 2) {
         typeLabel += " & " + type[1];

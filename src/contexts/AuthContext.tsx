@@ -9,20 +9,22 @@ import {
   updateEmail,
   updatePassword,
   onAuthStateChanged,
-  User
+  User,
 } from "firebase/auth";
 
 interface AuthContextInterface {
-  user: User | null,
-  signup: (email: string, password: string) => void,
-  login: (email : string, password : string) => void,
-  logout: () => void,
-  resetPassword: (email : string) => void,
-  updateUserEmail: (email: string) => void,
-  updateUserPassword: (email: string) => void,
+  user: User | null;
+  signup: (email: string, password: string) => void;
+  login: (email: string, password: string) => void;
+  logout: () => void;
+  resetPassword: (email: string) => void;
+  updateUserEmail: (email: string) => void;
+  updateUserPassword: (email: string) => void;
 }
 
-const AuthContext = React.createContext<AuthContextInterface | undefined>(undefined);
+const AuthContext = React.createContext<AuthContextInterface | undefined>(
+  undefined
+);
 
 export function useAuth() {
   const authContext = useContext(AuthContext);
@@ -32,35 +34,39 @@ export function useAuth() {
   return authContext;
 }
 
-export function AuthProvider({ children } : { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const auth = getAuth(app);
 
-  function signup(email : string, password : string) {
+  function signup(email: string, password: string) {
     createUserWithEmailAndPassword(auth, email, password);
   }
 
-  function login(email : string, password : string) {
-    signInWithEmailAndPassword(auth, email, password);
+  function login(email: string, password: string) {
+    try {
+      signInWithEmailAndPassword(auth, email, password);
+    } catch (e) {
+      throw e;
+    }
   }
 
   function logout() {
     signOut(auth);
   }
 
-  function resetPassword(email : string) {
+  function resetPassword(email: string) {
     sendPasswordResetEmail(auth, email);
   }
 
-  function updateUserEmail(email : string) {
+  function updateUserEmail(email: string) {
     if (!currentUser) {
       throw new Error("Error updating email. Current user is undefined.");
     }
     updateEmail(currentUser, email);
   }
 
-  function updateUserPassword(password : string) {
+  function updateUserPassword(password: string) {
     if (!currentUser) {
       throw new Error("Error updating password. Current user is undefined.");
     }

@@ -10,24 +10,17 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 180 } },
 }); //Set staleTime to 3 minutes since this is not the kind of application that needs to refetch data very often
 
-//Components
-import { Navbar } from "./components/Navbar/Navbar";
 //Pages
 import { Login } from "./pages/Login";
 import { Events } from "./pages/Events/Events";
 import { ViewEvent } from "./pages/Events/ViewEvent";
 
-import "./App.css";
-
 function App() {
-  // Label -> Packers
-  // filter -> () => {}
   return (
     <BrowserRouter>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
           <div className="flex h-screen flex-col  rounded border">
-            <Navbar />
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/events" element={<Events />} />

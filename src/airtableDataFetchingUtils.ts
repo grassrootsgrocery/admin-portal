@@ -5,11 +5,7 @@ So this "base id" is the id for the Mott Haven Fridge/Grassroots Groceries Airta
 const AIRTABLE_BASE_ID_PROD = "app7zige4DRGqIaL2";
 const AIRTABLE_BASE_ID_DEV = "app18BBTcWqsoNjb2";
 //"Base" here just has the normal definition
-export const AIRTABLE_URL_BASE = `https://api.airtable.com/v0/${
-  import.meta.env.VITE_NODE_ENV === "development"
-    ? AIRTABLE_BASE_ID_DEV
-    : AIRTABLE_BASE_ID_PROD
-}`;
+export const AIRTABLE_URL_BASE = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID_DEV}`;
 
 //Generic fetch call to Airtable
 const apiKey = import.meta.env.VITE_AIRTABLE_API_KEY;

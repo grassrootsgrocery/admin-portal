@@ -1,0 +1,22 @@
+/* From https://codepen.io/dcode-software/pen/vYKVepQ */
+.loading {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.loading::after {
+  content: "";
+  border-top-color: var(--new-leaf-green);
+  border-radius: 50%;
+  animation: spinloader 0.75s linear infinite;
+}
+
+@keyframes spinloader {
+  to {
+    transform: rotate(1turn);
+  }
+}

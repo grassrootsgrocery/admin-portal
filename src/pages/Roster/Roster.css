@@ -1,59 +1,88 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter&family=Roboto&display=swap");
 
+.jason
 td {
   border: solid;
   background: #fffef9;
   /* Soft Gray White */
 
-  border: 4px solid #e0deca;
-  border-radius: 10px;
+  /* border: 4px solid #e0deca; */
+  /* border-radius: 10px; */
 
   text-align: center;
   padding: 15px;
 }
+.jason
+.roster {
+  overflow: scroll;
+  height: 450px;
+  border: 1px solid var(--soft-gray-white);
+  border-radius: 10px;
+  padding-right: 10px;
+    /* border: 4px solid #e0deca; */
+}
 
+.jason
 table {
-  border-collapse: collapse;
-  height: 50%;
+  /* height: 50%; */
 
   background: #fffef9;
   /* Soft Gray White */
 
   border: 4px solid #e0deca;
+  /* border: 4px solid red; */
   border-radius: 10px;
 
-  font-family: "Inter";
+  /* font-family: "Inter";
   font-style: normal;
   font-weight: 400;
-  font-size: 20px;
+  font-size: 20px; */
 
   color: #094343;
 
   margin-bottom: 10px;
 }
 
-.roster {
-  overflow: scroll;
-  height: 450px;
-    /* border: 4px solid #e0deca; */
-}
 
+.jason
 .roster-page {
   padding: 30px;
 }
 
-th {
-  padding: 10px;
+.jason
+.table-table-ugh {
+  /* border: 10px solid var(--soft-beige); */
+}
+
+.jason
+thead {
   position: sticky;
   top: 0;
   background: #fffef9;
-    /* box-shadow: inset 0 4px 0 #e0deca, inset 0 -4px 0 #e0deca; */
-    background-clip: padding-box
 }
 
+.jason
+thead tr {
+  border: 1px solid red;
+
+}
+
+.jason
+th {
+  /* padding: 10px; */
+  position: sticky;
+  top: 0;
+  background: #fffef9;
+  border: 1px solid red;
+    /* box-shadow: inset 0 4px 0 #e0deca, inset 0 -4px 0 #e0deca; */
+    /* background-clip: padding-box; */
+    /* border: 1px solid red; */
+}
+
+.jason
 tr {
   /* border: 4px solid #e0deca; */
-  border-radius: 10px;
+  /* border-radius: 10px; */
 }
 
 /* .roster::-webkit-scrollbar {
@@ -61,11 +90,13 @@ tr {
   color: #094343;
 } */
 
+.jason
 .title {
   display: flex;
   align-items: center;
 }
 
+.jason
 select {
   background: #e65402;
   border-radius: 10px;
@@ -76,10 +107,12 @@ select {
   border: none;
 }
 
+.jason
 h3 {
     font-family: "Inter";;
     color: #094343;
 }
+.jason
 .filter-row {
   display: flex;
   align-items: center;
@@ -92,6 +125,7 @@ h3 {
   font-size: 24px;
 }
 
+.jason
 button {
   padding: 15px 30px;
   align-items: center;
@@ -99,26 +133,30 @@ button {
   background: #094343;
   /* New Leaf Green */
 
-  border: 1px solid #094343;
   border-radius: 20px;
 }
 
-/* th:first-of-type {
+.jason
+th:first-of-type {
   border-top-left-radius: 10px;
 }
 
+.jason
 th:last-of-type {
-  border-top-right-radius: 10px;
+  border-top-right-radius: 15px;
 }
 
+.jason
 tr:last-of-type td:first-of-type {
   border-bottom-left-radius: 10px;
 }
 
+.jason
 tr:first-of-type td:last-of-type {
   border-bottom-right-radius: 10px;
-} */
+}
 
+.jason
 .title {
   font-family: "Roboto";
   font-style: normal;

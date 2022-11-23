@@ -12,6 +12,7 @@ import { VolunteersTable } from "../../components/VolunteersTable";
 //Assets
 import alert from "../../assets/alert.svg";
 import check from "../../assets/check.svg";
+import { JasonTable } from "./JasonTable";
 
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
@@ -228,20 +229,7 @@ export function ViewEvent() {
         </div>
       </div>
       <br />
-      <Table
-        headers={[
-          "#",
-          "First Name",
-          "Last Name",
-          "Time Slot",
-          "Participant Type",
-          "Confirmed",
-          "Special Group",
-          "Delivery Type",
-          "Email",
-        ].map((h) => (
-          <th>{h}</th>
-        ))}
+      {/* <Table
         body={scheduledSlots.records.map((scheduledSlot, idx) => {
           return (
             <tr key={scheduledSlot.id}>
@@ -261,6 +249,20 @@ export function ViewEvent() {
             </tr>
           );
         })}
+      /> */}
+      <JasonTable
+        headings={[
+          "#",
+          "First Name",
+          "Last Name",
+          "Time Slot",
+          "Participant Type",
+          "Confirmed",
+          "Special Group",
+          "Delivery Type",
+          "Email",
+        ]}
+        scheduledSlots={scheduledSlots}
       />
       {/* <table>
         <thead>
@@ -299,12 +301,10 @@ export function ViewEvent() {
         </tbody>
         <tfoot></tfoot>
       </table>  */}
-      {/* <div>
-        <VolunteersTable
-          filters={filters}
-          scheduledSlots={scheduledSlots.records}
-        />
-      </div> */}
+      <VolunteersTable
+        filters={filters}
+        scheduledSlots={scheduledSlots.records}
+      />
     </div>
   );
 }

@@ -11,11 +11,9 @@ export const DataTable: React.FC<Props> = ({
   columnHeaders,
   dataRows,
 }: Props) => {
-  const tdClasses =
-    "border border-newLeafGreen bg-softBeige text-newLeafGreen px-4 py-2 text-center align-middle";
   return (
     <div className="hide-scroll h-full w-full overflow-scroll rounded-lg border-4 border-softGrayWhite">
-      <table className="table w-full border-separate border-spacing-0 rounded-lg">
+      <table className="table w-full border-separate border-spacing-0  rounded-lg">
         <thead className="sticky top-0  border-b-2 border-newLeafGreen bg-softBeige ">
           <tr>
             {columnHeaders.map((h, i) => {
@@ -32,9 +30,7 @@ export const DataTable: React.FC<Props> = ({
         </thead>
         <tbody>
           {dataRows.map((row) => {
-            console.log(row);
             const [id, ...data] = row;
-            console.log("id", id);
             if (typeof id !== "string" && typeof id !== "number") {
               console.error("Something went wrong hahaha");
               return;
@@ -43,7 +39,10 @@ export const DataTable: React.FC<Props> = ({
               <tr key={id}>
                 {data.map((datum, idx) => {
                   return (
-                    <td key={idx} className={tdClasses}>
+                    <td
+                      key={idx}
+                      className="border border-newLeafGreen bg-softBeige px-4 py-2 text-center align-middle text-newLeafGreen"
+                    >
                       {datum}
                     </td>
                   );

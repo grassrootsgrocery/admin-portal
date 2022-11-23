@@ -13,6 +13,9 @@ import { VolunteersTable } from "./VolunteersTable";
 //Assets
 import alert from "../../assets/alert.svg";
 import check from "../../assets/check.svg";
+import calendar from "../../assets/calendar.svg";
+import people from "../../assets/people.svg";
+import roster from "../../assets/roster.svg";
 
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
@@ -46,6 +49,7 @@ const HeaderValueDisplay: React.FC<{
     </div>
   );
 };
+
 export function ViewEvent() {
   const { eventId } = useParams();
   const { event, eventStatus, eventError } = useFutureEventById(eventId);
@@ -102,16 +106,21 @@ export function ViewEvent() {
     return <div>Error...</div>;
   }
 
-  // console.log("specialGroupsList:", specialGroupsList);
-
   scheduledSlots.records.sort((a, b) =>
     a.fields["First Name"] < b.fields["First Name"] ? -1 : 1
   );
 
+  //UI
+
+  //Tailwind classes
+  const sectionHeader =
+    "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
+  const sectionHeaderIcon = "w-6 lg:w-10";
   return (
     <div className="p-6 lg:px-14 lg:py-10">
       {/* Event Info */}
-      <h1 className="text-lg font-bold text-newLeafGreen lg:text-3xl">
+      <h1 className={sectionHeader}>
+        <img className={sectionHeaderIcon} src={calendar} alt="calendar" />
         {event.dateDisplay}
       </h1>
       <div className="h-4" />
@@ -125,7 +134,8 @@ export function ViewEvent() {
       </div>
       <div className="h-12 " />
       {/* Participant Breakdown */}
-      <h1 className="text-lg font-bold text-newLeafGreen lg:text-3xl">
+      <h1 className={sectionHeader}>
+        <img className={sectionHeaderIcon} src={people} alt="people" />
         Participant Breakdown
       </h1>
       <div className="h-4" />
@@ -179,6 +189,11 @@ export function ViewEvent() {
           </button>
         </div>
       </div>
+      <div className="h-12"></div>
+      <h1 className={sectionHeader}>
+        <img className={sectionHeaderIcon} src={roster} alt="roster" />
+        Participant Roster
+      </h1>
       {/* Volunteer Table */}
       <VolunteersTable scheduledSlots={scheduledSlots.records} />
     </div>

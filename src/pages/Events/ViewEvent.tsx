@@ -56,6 +56,7 @@ export function ViewEvent() {
 
   const {
     data: scheduledSlots,
+    refetch: refetchScheduledSlots,
     status: scheduledSlotsStatus,
     error: scheduledSlotsError,
   } = useQuery(
@@ -88,7 +89,7 @@ export function ViewEvent() {
   if (scheduledSlotsStatus === "loading" || scheduledSlotsStatus === "idle") {
     return (
       <div style={{ position: "relative", minHeight: "80vh" }}>
-        <Loading />
+        <Loading size="large" thickness="extra-thicc" />
       </div>
     );
   }
@@ -110,6 +111,7 @@ export function ViewEvent() {
     a.fields["First Name"] < b.fields["First Name"] ? -1 : 1
   );
 
+  console.log("scheduledSlots", scheduledSlots);
   //UI
 
   //Tailwind classes
@@ -195,7 +197,10 @@ export function ViewEvent() {
         Participant Roster
       </h1>
       {/* Volunteer Table */}
-      <VolunteersTable scheduledSlots={scheduledSlots.records} />
+      <VolunteersTable
+        scheduledSlots={scheduledSlots.records}
+        refetchVolunteers={refetchScheduledSlots}
+      />
     </div>
   );
 }

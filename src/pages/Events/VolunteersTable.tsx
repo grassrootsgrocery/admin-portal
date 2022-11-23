@@ -4,6 +4,8 @@ import chevron_down from "../../assets/chevron-down.svg";
 import x from "../../assets/x.svg";
 import { Record, ScheduledSlot } from "../../types";
 import { DataTable } from "../../components/DataTable";
+import { ConfirmVolunteerCheckbox } from "./ConfirmVolunteerCheckbox";
+import toast, { Toaster } from "react-hot-toast";
 
 /*
 TODO: There is a lot of stuff going on in this component and we should perhaps look into refactoring at some point. 
@@ -76,55 +78,16 @@ const useClickOutside = (onClickOutside: () => void) => {
   return [domNodeRef];
 };
 
-//Takes in scheduledSlots array and formats data for DataTable component
-function processScheduledSlotsForTable(
-  scheduledSlots: Record<ScheduledSlot>[]
-): (string | number | JSX.Element)[][] {
-  //Replace the word "Distributor" with "Packer" in the type array
-  function getParticipantType(type: string[]) {
-    for (let i = 0; i < type.length; i++) {
-      type[i] = type[i].replace("Distributor", "Packer");
-    }
-    let typeLabel = type[0];
-    if (type.length === 2) {
-      typeLabel += " & " + type[1];
-    }
-    return typeLabel;
-  }
-  function getTimeSlot(timeslot: string) {
-    const optionsTime = {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    } as const;
-    return new Date(timeslot).toLocaleString("en-US", optionsTime);
-  }
-
-  let output = [];
-  for (let i = 0; i < scheduledSlots.length; i++) {
-    const ss = scheduledSlots[i];
-    ss.fields["Type"];
-    let cur = [
-      ss.id, //id
-      i + 1, //#
-      ss.fields["First Name"], //First Name
-      ss.fields["Last Name"], //Last Name
-
-      ss.fields["Correct slot time"]["error"]
-        ? "None"
-        : getTimeSlot(ss.fields["Correct slot time"]), //Time Slot
-
-      getParticipantType(ss.fields["Type"]), //Participant Type
-
-      <input type="checkbox" checked={ss.fields["Confirmed?"]} />, //Confirmed
-      "Not Going", //TODO: Not Going
-      ss.fields["Volunteer Group (for MAKE)"] || "N/A", // Special Group
-      "IDK", //TODO: Delivery Count
-      ss.fields["Email"], //TODO: Contact
-    ];
-    output.push(cur);
-  }
-  return output;
+function toastNotify(message: string, isSuccess: boolean) {
+  toast(message, {
+    duration: 3000,
+    position: "top-center",
+    icon: isSuccess ? "✅" : "❌",
+    ariaProps: {
+      role: "status",
+      "aria-live": "polite",
+    },
+  });
 }
 
 interface DropdownFilterOption {
@@ -187,13 +150,12 @@ function createDropdownFilters(scheduledSlots: Record<ScheduledSlot>[]) {
 
 interface Props {
   scheduledSlots: Record<ScheduledSlot>[];
+  refetchVolunteers: () => void;
 }
-
-export const VolunteersTable: React.FC<Props> = ({ scheduledSlots }) => {
-  // Create list of unique special groups and add special group filters
-  // Filters for filter dropdown
-  //useEffect(() => getSpecialGroupFilters(filters, scheduledSlots), []);
-
+export const VolunteersTable: React.FC<Props> = ({
+  scheduledSlots,
+  refetchVolunteers,
+}) => {
   const [filters, setFilters] = useState<DropdownFilterOption[]>([]);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [filtered, setFiltered] = useState(scheduledSlots);
@@ -202,11 +164,13 @@ export const VolunteersTable: React.FC<Props> = ({ scheduledSlots }) => {
   //Create filters on component mount
   useEffect(() => {
     let dropdownFilters = createDropdownFilters(scheduledSlots);
+    console.log("Volunteer Table component mount");
     setFilters(dropdownFilters);
   }, []);
 
   //Filter items on filter selection
   useEffect(() => {
+    console.log("UE2");
     let filteredItems = scheduledSlots;
     for (let i = 0; i < filters.length; i++) {
       if (filters[i].isSelected) {
@@ -214,7 +178,7 @@ export const VolunteersTable: React.FC<Props> = ({ scheduledSlots }) => {
       }
     }
     setFiltered(filteredItems);
-  }, filters);
+  }, [filters, scheduledSlots]);
 
   const onFilterSelect = (i: number) => {
     let newSelectedFilters = [...filters];
@@ -225,6 +189,73 @@ export const VolunteersTable: React.FC<Props> = ({ scheduledSlots }) => {
     setFilters(newSelectedFilters);
   };
 
+  //Takes in scheduledSlots array and formats data for DataTable component
+  function processScheduledSlotsForTable(
+    scheduledSlots: Record<ScheduledSlot>[]
+  ): (string | number | JSX.Element)[][] {
+    //Replace the word "Distributor" with "Packer" in the type array
+    function getParticipantType(type: string[]) {
+      for (let i = 0; i < type.length; i++) {
+        type[i] = type[i].replace("Distributor", "Packer");
+      }
+      let typeLabel = type[0];
+      if (type.length === 2) {
+        typeLabel += " & " + type[1];
+      }
+      return typeLabel;
+    }
+    function getTimeSlot(timeslot: string) {
+      const optionsTime = {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      } as const;
+      return new Date(timeslot).toLocaleString("en-US", optionsTime);
+    }
+    function onConfirmVolunteerSuccess(toastMessage: string) {
+      refetchVolunteers();
+      toastNotify(toastMessage, true);
+    }
+
+    function onConfirmVolunteerError() {
+      toastNotify("Unable to confirm volunteer", false);
+    }
+
+    let output = [];
+    for (let i = 0; i < scheduledSlots.length; i++) {
+      const ss = scheduledSlots[i];
+      let cur = [
+        ss.id, //id
+        i + 1, //#
+        ss.fields["First Name"], //First Name
+        ss.fields["Last Name"], //Last Name
+
+        ss.fields["Correct slot time"]["error"]
+          ? "Error!"
+          : getTimeSlot(ss.fields["Correct slot time"]), //Time Slot
+        getParticipantType(ss.fields["Type"]), //Participant Type
+        <ConfirmVolunteerCheckbox
+          volunteerId={ss.id}
+          checked={ss.fields["Confirmed?"]}
+          onSuccess={() =>
+            onConfirmVolunteerSuccess(
+              `${ss.fields["First Name"] || ""} ${
+                ss.fields["Last Name"] || ""
+              } ${ss.fields["Confirmed?"] ? "unconfirmed" : "confirmed"}`
+            )
+          }
+          onError={() => onConfirmVolunteerError()}
+        />, //Confirmed
+        "Not Going", //TODO: Not Going
+        ss.fields["Volunteer Group (for MAKE)"] || "N/A", // Special Group
+        "IDK", //TODO: Delivery Count
+        ss.fields["Email"], //TODO: Contact
+      ];
+      output.push(cur);
+    }
+    return output;
+  }
+
   // UI
   const label = "text-sm md:text-base lg:text-xl";
   const labelBold =
@@ -232,6 +263,7 @@ export const VolunteersTable: React.FC<Props> = ({ scheduledSlots }) => {
 
   return (
     <div className="flex h-screen flex-col pt-6">
+      <Toaster />
       {/* Filtering */}
       <div
         className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4"
@@ -249,7 +281,7 @@ export const VolunteersTable: React.FC<Props> = ({ scheduledSlots }) => {
             <img
               className="w-2 md:w-3"
               src={isFilterDropdownOpen ? chevron_up : chevron_down}
-              alt="^"
+              alt="chevron-icon"
             />
           </h1>
           {/* Filter options */}

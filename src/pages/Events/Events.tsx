@@ -14,7 +14,7 @@ export function Events() {
   if (futureEventsStatus === "loading" || futureEventsStatus === "idle") {
     return (
       <div style={{ position: "relative", minHeight: "80vh" }}>
-        <Loading />
+        <Loading size="large" thickness="extra-thicc" />
       </div>
     );
   }

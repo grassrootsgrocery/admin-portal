@@ -1,7 +1,0 @@
-.application-wrapper {
-  display: flex; 
-  flex-direction: column; 
-  height: 100vh; 
-  border-radius: 0.25rem; 
-  border-width: 1px; 
-}

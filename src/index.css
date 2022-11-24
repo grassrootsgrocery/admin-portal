@@ -14,9 +14,16 @@
   --simple-gray: #c4c4c4;
 }
 
+input[type="checkbox"]:hover {
+  cursor: pointer;
+}
 ::-webkit-scrollbar {
   width: 10px;
   padding-top: 10px;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px; /* Sets the size of the scrollbar when it's horizontal */
+  width: 6px;
 }
 ::-webkit-scrollbar-thumb {
   background-color: var(--simple-gray);

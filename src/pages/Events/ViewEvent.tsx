@@ -1,30 +1,25 @@
 import { useParams } from "react-router-dom";
-import { AirtableResponse, ScheduledSlot } from "../../types";
+import { AirtableResponse, Record, ScheduledSlot } from "../../types";
 import { useQuery } from "react-query";
 import { useFutureEvents } from "./eventHooks";
 import {
   AIRTABLE_URL_BASE,
   fetchAirtableData,
 } from "../../airtableDataFetchingUtils";
+
+//Components
 import { Loading } from "../../components/Loading";
+import { VolunteersTable } from "./VolunteersTable";
+//Assets
+import alert from "../../assets/alert.svg";
+import check from "../../assets/check.svg";
+import calendar from "../../assets/calendar.svg";
+import people from "../../assets/people.svg";
+import roster from "../../assets/roster.svg";
 
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
  * */
-
-const HeaderValueDisplay: React.FC<{
-  header: string;
-  value: string | number;
-}> = (props: { header: string; value: string | number }) => {
-  return (
-    <div className="flex flex-col ">
-      <p className="text-sm lg:text-2xl">{props.header}</p>
-      <p className="text-sm font-semibold text-newLeafGreen lg:text-2xl">
-        {props.value}
-      </p>
-    </div>
-  );
-};
 function useFutureEventById(eventId: string | undefined) {
   const { futureEvents, futureEventsStatus, futureEventsError } =
     useFutureEvents();
@@ -41,12 +36,27 @@ function useFutureEventById(eventId: string | undefined) {
   };
 }
 
+const HeaderValueDisplay: React.FC<{
+  header: string;
+  value: string | number;
+}> = (props: { header: string; value: string | number }) => {
+  return (
+    <div className="flex flex-col ">
+      <p className="lg:text-xl">{props.header}</p>
+      <p className="font-semibold text-newLeafGreen lg:text-xl">
+        {props.value}
+      </p>
+    </div>
+  );
+};
+
 export function ViewEvent() {
   const { eventId } = useParams();
   const { event, eventStatus, eventError } = useFutureEventById(eventId);
 
   const {
     data: scheduledSlots,
+    refetch: refetchScheduledSlots,
     status: scheduledSlotsStatus,
     error: scheduledSlotsError,
   } = useQuery(
@@ -66,7 +76,8 @@ export function ViewEvent() {
         `&fields=Type` +
         `&fields=Confirmed?` +
         `&fields=Volunteer Status` +
-        `&fields=Email`;
+        `&fields=Email` +
+        `&fields=Volunteer Group (for MAKE)`;
 
       return fetchAirtableData<AirtableResponse<ScheduledSlot>>(
         scheduledSlotsForEventUrl
@@ -78,7 +89,7 @@ export function ViewEvent() {
   if (scheduledSlotsStatus === "loading" || scheduledSlotsStatus === "idle") {
     return (
       <div style={{ position: "relative", minHeight: "80vh" }}>
-        <Loading />
+        <Loading size="large" thickness="extra-thicc" />
       </div>
     );
   }
@@ -100,14 +111,22 @@ export function ViewEvent() {
     a.fields["First Name"] < b.fields["First Name"] ? -1 : 1
   );
 
+  console.log("scheduledSlots", scheduledSlots);
+  //UI
+
+  //Tailwind classes
+  const sectionHeader =
+    "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
+  const sectionHeaderIcon = "w-6 lg:w-10";
   return (
-    <div className="p-6 lg:px-14 lg:py-16">
+    <div className="p-6 lg:px-14 lg:py-10">
       {/* Event Info */}
-      <h1 className="text-lg font-bold text-newLeafGreen lg:text-3xl">
+      <h1 className={sectionHeader}>
+        <img className={sectionHeaderIcon} src={calendar} alt="calendar" />
         {event.dateDisplay}
       </h1>
       <div className="h-4" />
-      <div className="flex flex-col gap-3 lg:flex-row lg:gap-10">
+      <div className="flex flex-col gap-3 md:flex-row md:gap-10">
         <HeaderValueDisplay header="Time" value={event.time} />
         <HeaderValueDisplay header="Main Location" value={event.mainLocation} />
         <HeaderValueDisplay
@@ -117,16 +136,24 @@ export function ViewEvent() {
       </div>
       <div className="h-12 " />
       {/* Participant Breakdown */}
-      <h1 className="text-lg font-bold text-newLeafGreen lg:text-3xl">
+      <h1 className={sectionHeader}>
+        <img className={sectionHeaderIcon} src={people} alt="people" />
         Participant Breakdown
       </h1>
       <div className="h-4" />
-      <div className="flex flex-col gap-2 lg:flex-row lg:gap-10">
-        <div className="grid gap-2 lg:grid-cols-3 lg:grid-rows-2">
-          <HeaderValueDisplay
-            header="Total # of Drivers"
-            value={event.numDrivers}
-          />
+      <div className="flex flex-col gap-2 md:flex-row md:gap-10">
+        <div className="grid gap-2 md:grid-cols-3 md:grid-rows-2">
+          <div className="flex flex-col ">
+            <p className="lg:text-xl">Total # of Drivers</p>
+            <p className="flex gap-4 font-semibold text-newLeafGreen lg:text-xl">
+              {event.numDrivers}/30
+              <img
+                className="mt-1 w-4 md:w-6 lg:w-7"
+                src={event.numDrivers >= 30 ? check : alert}
+                alt="wut"
+              />
+            </p>
+          </div>
           <HeaderValueDisplay
             header="Total # of Packers"
             value={event.numPackers}
@@ -164,46 +191,16 @@ export function ViewEvent() {
           </button>
         </div>
       </div>
-      <br />
-      <div>
-        <table className="border-4 border-softGrayWhite">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>First</th>
-              <th>Last</th>
-              <th>Time</th>
-              <th>Participant Type</th>
-              <th>Confirmed</th>
-              <th>Special Group</th>
-              <th>Delivery Type</th>
-              <th>Contact</th>
-            </tr>
-          </thead>
-          <tbody>
-            {scheduledSlots.records.map((scheduledSlot, idx) => {
-              return (
-                <tr key={scheduledSlot.id}>
-                  <td>{idx + 1}</td>
-                  <td>{scheduledSlot.fields["First Name"]}</td>
-                  <td>{scheduledSlot.fields["Last Name"]}</td>
-                  <td>
-                    {scheduledSlot.fields["Correct slot time"]["error"]
-                      ? "None"
-                      : scheduledSlot.fields["Correct slot time"]}
-                  </td>
-                  <td>{scheduledSlot.fields["Type"].length}</td>
-                  <td>{scheduledSlot.fields["Confirmed?"] ? "Yes" : "No"}</td>
-                  <td>{scheduledSlot.fields["Volunteer Status"]}</td>
-                  <td>IDK</td>
-                  <td>{scheduledSlot.fields["Email"]}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-          <tfoot></tfoot>
-        </table>
-      </div>
+      <div className="h-12"></div>
+      <h1 className={sectionHeader}>
+        <img className={sectionHeaderIcon} src={roster} alt="roster" />
+        Participant Roster
+      </h1>
+      {/* Volunteer Table */}
+      <VolunteersTable
+        scheduledSlots={scheduledSlots.records}
+        refetchVolunteers={refetchScheduledSlots}
+      />
     </div>
   );
 }

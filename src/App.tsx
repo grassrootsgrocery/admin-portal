@@ -20,11 +20,13 @@ import { ViewEvent } from "./pages/Events/ViewEvent";
 import "./App.css";
 
 function App() {
+  // Label -> Packers
+  // filter -> () => {}
   return (
     <BrowserRouter>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
-          <div className="application-wrapper">
+          <div className="flex h-screen flex-col  rounded border">
             <Navbar />
             <Routes>
               <Route path="/" element={<Login />} />

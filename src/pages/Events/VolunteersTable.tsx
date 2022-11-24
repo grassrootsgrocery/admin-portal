@@ -100,30 +100,32 @@ function createDropdownFilters(scheduledSlots: Record<ScheduledSlot>[]) {
     {
       label: "Confirmed",
       isSelected: false,
-      filter: (e: Record<ScheduledSlot>) => e.fields["Confirmed?"],
+      filter: (ss: Record<ScheduledSlot>) => ss.fields["Confirmed?"],
     },
     {
       label: "Not Confirmed",
       isSelected: false,
-      filter: (e: Record<ScheduledSlot>) => !e.fields["Confirmed?"],
+      filter: (ss: Record<ScheduledSlot>) => !ss.fields["Confirmed?"],
     },
     {
       label: "Only Packers",
       isSelected: false,
-      filter: (e: Record<ScheduledSlot>) =>
-        e.fields.Type.includes("Packer") && !e.fields.Type.includes("Driver"),
+      filter: (ss: Record<ScheduledSlot>) =>
+        ss.fields.Type.includes("Packer") && !ss.fields.Type.includes("Driver"),
     },
     {
       label: "Only Drivers",
       isSelected: false,
-      filter: (e: Record<ScheduledSlot>) =>
-        e.fields.Type.includes("Driver") && !e.fields.Type.includes("Packer"),
+      filter: (ss: Record<ScheduledSlot>) =>
+        ss.fields.Type.includes("Driver") &&
+        !ss.fields.Type.includes("Distributor"),
     },
     {
       label: "Packers & Drivers",
       isSelected: false,
-      filter: (e: Record<ScheduledSlot>) =>
-        e.fields.Type.includes("Packer") && e.fields.Type.includes("Driver"),
+      filter: (ss: Record<ScheduledSlot>) =>
+        ss.fields.Type.includes("Distributor") &&
+        ss.fields.Type.includes("Driver"),
     },
   ];
 
@@ -164,14 +166,13 @@ export const VolunteersTable: React.FC<Props> = ({
   //Create filters on component mount
   useEffect(() => {
     let dropdownFilters = createDropdownFilters(scheduledSlots);
-    console.log("Volunteer Table component mount");
     setFilters(dropdownFilters);
   }, []);
 
   //Filter items on filter selection
   useEffect(() => {
-    console.log("UE2");
     let filteredItems = scheduledSlots;
+    console.log("ss", scheduledSlots);
     for (let i = 0; i < filters.length; i++) {
       if (filters[i].isSelected) {
         filteredItems = filteredItems.filter(filters[i].filter);
@@ -195,16 +196,18 @@ export const VolunteersTable: React.FC<Props> = ({
   ): (string | number | JSX.Element)[][] {
     //Replace the word "Distributor" with "Packer" in the type array
     function getParticipantType(type: string[]) {
-      for (let i = 0; i < type.length; i++) {
-        type[i] = type[i].replace("Distributor", "Packer");
+      const typeCopy = [...type];
+      for (let i = 0; i < typeCopy.length; i++) {
+        typeCopy[i] = typeCopy[i].replace("Distributor", "Packer");
       }
-      type.sort();
-      let typeLabel = type[0];
-      if (type.length === 2) {
-        typeLabel += " & " + type[1];
+      typeCopy.sort();
+      let typeLabel = typeCopy[0];
+      if (typeCopy.length === 2) {
+        typeLabel += " & " + typeCopy[1];
       }
       return typeLabel;
     }
+
     function getTimeSlot(timeslot: string) {
       const optionsTime = {
         hour: "numeric",

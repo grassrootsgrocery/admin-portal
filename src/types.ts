@@ -48,7 +48,7 @@ export interface Driver {
   "First Name": string;
   "Last Name": string;
   "Driving Slot Time": string;
-  // "???": string;
+  "Total Deliveries": number;
   "Zip Code": string;
   "Transportation Types": string;
   "Restricted Neighborhoods": string[];
@@ -59,17 +59,12 @@ export interface ProcessedDriver {
   firstName: string,
   lastName: string,
   timeSlot: string,
-  // deliveryType: number,
+  deliveryCount: number,
   zipCode: string,
   vehicle: string,
-  restrictedLocations: string
+  restrictedLocations: string[]
 }
 
 export interface Neighborhood {
   "Name": string
-}
-
-export interface ProcessedNeighborhood {
-  id: string,
-  name: string
 }

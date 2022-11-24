@@ -16,6 +16,7 @@ import check from "../../assets/check.svg";
 import calendar from "../../assets/calendar.svg";
 import people from "../../assets/people.svg";
 import roster from "../../assets/roster.svg";
+import { Messaging } from "./Messaging";
 
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
@@ -191,7 +192,7 @@ export function ViewEvent() {
           </button>
         </div>
       </div>
-      <div className="h-12"></div>
+      <div className="h-12" />
       <h1 className={sectionHeader}>
         <img className={sectionHeaderIcon} src={roster} alt="roster" />
         Participant Roster
@@ -201,6 +202,9 @@ export function ViewEvent() {
         scheduledSlots={scheduledSlots.records}
         refetchVolunteers={refetchScheduledSlots}
       />
+      {/* Messaging */}
+      <div className="h-16"></div>
+      <Messaging />
     </div>
   );
 }

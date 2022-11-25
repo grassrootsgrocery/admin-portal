@@ -72,19 +72,19 @@ export function useDriversInfo() {
 // query for driver info from schedule slots table
 function fetchDriverInfo() {
   const driversUrl =
-  `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` + 
-  
-  // `view=Assign Location ` +            // tested with view "Drivers - Last Week"
-  `view=Drivers - Last Week` +    
+    `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` + 
+    
+    // `view=Assign Location ` +            // tested with view "Drivers - Last Week"
+    `view=Drivers - Last Week` +    
 
-  // Get fields for driver info table
-  `&fields=First Name` +              // First Name
-  `&fields=Last Name` +               // Last Name
-  `&fields=Driving Slot Time` +       // Time Slot
-  `&fields=Total Deliveries` +        // Delivery Type
-  `&fields=Zip Code` +                // Zip Code
-  `&fields=Transportation Types` +    // Vehicle
-  `&fields=Restricted Neighborhoods`; // Restricted Locations
+    // Get fields for driver info table
+    `&fields=First Name` +              // First Name
+    `&fields=Last Name` +               // Last Name
+    `&fields=Driving Slot Time` +       // Time Slot
+    `&fields=Total Deliveries` +        // Delivery Type
+    `&fields=Zip Code` +                // Zip Code
+    `&fields=Transportation Types` +    // Vehicle
+    `&fields=Restricted Neighborhoods`; // Restricted Locations
 
   const {
     data: drivers,

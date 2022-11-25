@@ -28,65 +28,63 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {   // note:
 }
 
 export function useDriversInfo() {
-    const { processedDrivers, processedDriversStatus, processedDriversError } = fetchDriverInfo();
+  const { processedDrivers, processedDriversStatus, processedDriversError } = fetchDriverInfo();
 
-    // query for neighborhood names from neighborhood table
-    const {
-        data: neighborhoods,
-        status: neighborhoodsStatus,
-        error: neighborhoodsError,
-    } = useQuery (
-        ["fetchNeighborhoodNames"],
-        async () => {
-            if (typeof processedDrivers === "undefined") {
-                return Promise.reject(new Error("Undefined driver info"));
-            }
+  // query for neighborhood names from neighborhood table
+  const {
+    data: neighborhoods,
+    status: neighborhoodsStatus,
+    error: neighborhoodsError,
+  } = useQuery (
+    ["fetchNeighborhoodNames"],
+    async () => {
+      if (typeof processedDrivers === "undefined") {
+        return Promise.reject(new Error("Undefined driver info"));
+      }
 
-            const uniqueNeighborhoodIds = getUniqueNeighborhoodIdsForUrl(processedDrivers);
+      const neighborhoodIds = getNeighborhoodIdsForUrl(processedDrivers);
 
-            const neighborhoodsUrl = `${AIRTABLE_URL_BASE}/🏡 Neighborhoods?` +
-            `filterByFormula=SEARCH(RECORD_ID(), "${uniqueNeighborhoodIds}") != ""` +
-            `&fields%5B%5D=Name`;
+      const neighborhoodsUrl = `${AIRTABLE_URL_BASE}/🏡 Neighborhoods?` +
+      `filterByFormula=SEARCH(RECORD_ID(), "${neighborhoodIds}") != ""` +
+      `&fields%5B%5D=Name`;
 
-            return fetchAirtableData<AirtableResponse<Neighborhood>>(
-                neighborhoodsUrl
-            )
-        },
-        { enabled: processedDriversStatus === "success" && processDriverData.length > 0 }
-    );
+      return fetchAirtableData<AirtableResponse<Neighborhood>>(neighborhoodsUrl)
+    },
+    { enabled: processedDriversStatus === "success" && processDriverData.length > 0 }
+  );
 
-    if (neighborhoodsStatus === "success" && processedDrivers.length > 0) {
-        let neighborhoodNamesById: Map<string, string> = new Map();
-        neighborhoods.records.forEach((neighborhood) => neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name));
-        processNeighborhoodsForDriver(processedDrivers, neighborhoodNamesById);
+  if (neighborhoodsStatus === "success" && processedDrivers.length > 0) {
+    let neighborhoodNamesById: Map<string, string> = new Map();
+    neighborhoods.records.forEach((neighborhood) => neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name));
+    processNeighborhoodsForDriver(processedDrivers, neighborhoodNamesById);
 
-        // sort drivers by first name
-        processedDrivers.sort((driver1, driver2) => driver1.firstName < driver2.firstName ? -1 : 1);
-    }
+    // sort drivers by first name
+    processedDrivers.sort((driver1, driver2) => driver1.firstName < driver2.firstName ? -1 : 1);
+  }
 
-    return {
-        processedDrivers,
-        processedDriversStatus: processedDriversStatus && neighborhoodsStatus,
-        processedDriversError: processedDriversError && neighborhoodsError,
-      };
+  return {
+    processedDrivers,
+    processedDriversStatus: processedDriversStatus && neighborhoodsStatus,
+    processedDriversError: processedDriversError && neighborhoodsError,
+  };
 }
 
 // query for driver info from schedule slots table
 function fetchDriverInfo() {
-    const driversUrl =
-    `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` + 
-    
-    // `view=Assign Location ` +            // tested with view "Drivers - Last Week"
-    `view=Drivers - Last Week` +    
+  const driversUrl =
+  `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` + 
+  
+  // `view=Assign Location ` +            // tested with view "Drivers - Last Week"
+  `view=Drivers - Last Week` +    
 
-    // Get fields for driver info table
-    `&fields=First Name` +              // First Name
-    `&fields=Last Name` +               // Last Name
-    `&fields=Driving Slot Time` +       // Time Slot
-    `&fields=Total Deliveries` +        // Delivery Type
-    `&fields=Zip Code` +                // Zip Code
-    `&fields=Transportation Types` +    // Vehicle
-    `&fields=Restricted Neighborhoods`; // Restricted Locations
+  // Get fields for driver info table
+  `&fields=First Name` +              // First Name
+  `&fields=Last Name` +               // Last Name
+  `&fields=Driving Slot Time` +       // Time Slot
+  `&fields=Total Deliveries` +        // Delivery Type
+  `&fields=Zip Code` +                // Zip Code
+  `&fields=Transportation Types` +    // Vehicle
+  `&fields=Restricted Neighborhoods`; // Restricted Locations
 
   const {
     data: drivers,
@@ -95,8 +93,6 @@ function fetchDriverInfo() {
   } = useQuery(["fetchDriverInfo"], () =>
     fetchAirtableData<AirtableResponse<Driver>>(driversUrl)
   );
-
-  console.log(drivers);
 
   let processedDrivers: ProcessedDriver[] = [];
   if (driversStatus === "success" && drivers.records !== undefined) {
@@ -111,22 +107,22 @@ function fetchDriverInfo() {
 }
 
 // create string with needed neighborhood ids for url in neighborhood table query
-function getUniqueNeighborhoodIdsForUrl(drivers: ProcessedDriver[]): string {
-    let neighborhoodIds:string[] = [];
-    drivers.forEach((driver) => driver.restrictedLocations.forEach((neighborhood) => neighborhoodIds.push(neighborhood)));
-    return neighborhoodIds.join();
+function getNeighborhoodIdsForUrl(drivers: ProcessedDriver[]): string {
+  let neighborhoodIds:string[] = [];
+  drivers.forEach((driver) => driver.restrictedLocations.forEach((neighborhood) => neighborhoodIds.push(neighborhood)));
+  return neighborhoodIds.join();
 }
 
 // update the processed driver's restricted neighborhood field with neighborhood names
 function processNeighborhoodsForDriver(drivers: ProcessedDriver[], neighborhoods: Map<string, string>) {
-    drivers.forEach(function(driver) {
-        let neighborhoodNames: string[] = [];
-        driver.restrictedLocations.forEach(function(neighborhoodId) {
-            const neighborhoodName = neighborhoods.get(neighborhoodId);
-            if (neighborhoodName !== undefined) {
-                neighborhoodNames.push(neighborhoodName);
-            }
-        });
-        driver.restrictedLocations = neighborhoodNames;
+  drivers.forEach(function(driver) {
+    let neighborhoodNames: string[] = [];
+    driver.restrictedLocations.forEach(function(neighborhoodId) {
+      const neighborhoodName = neighborhoods.get(neighborhoodId);
+      if (neighborhoodName !== undefined) {
+        neighborhoodNames.push(neighborhoodName);
+      }
     });
+    driver.restrictedLocations = neighborhoodNames;
+  });
 }

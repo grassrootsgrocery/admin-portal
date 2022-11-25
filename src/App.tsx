@@ -16,7 +16,7 @@ import { Navbar } from "./components/Navbar/Navbar";
 import { Login } from "./pages/Login";
 import { Events } from "./pages/Events/Events";
 import { ViewEvent } from "./pages/Events/ViewEvent";
-import { DriverInfo } from "./pages/Events/DriverInfo";
+import { DriverAndLocationInfo } from "./pages/Events/DriverAndLocationInfo";
 
 import "./App.css";
 
@@ -33,7 +33,10 @@ function App() {
               <Route path="/" element={<Login />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:eventId" element={<ViewEvent />} />
-              <Route path="/driverInfo" element={<DriverInfo />} />
+              <Route
+                path="/events/driver-location-info/:eventId"
+                element={<DriverAndLocationInfo />}
+              />
             </Routes>
           </div>
           <ReactQueryDevtools initialIsOpen={false} />

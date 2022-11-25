@@ -213,6 +213,9 @@ export function ViewEvent() {
           Delivery and Location Info
         </button>
       </Link>
+      <div className="h-12" />
+      <Messaging />
+      <div className="h-12" />
     </div>
   );
 }

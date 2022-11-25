@@ -1,5 +1,4 @@
-// const defaultText =
-//   "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ad, fugit! Deleniti officiis repudiandae ratione iusto veritatis sunt! Ducimus eveniet eaque explicabo consequuntur eius. Ab distinctio non a, voluptatibus nam maiores, sunt iste animi aliquam sed aliquid vel delectus architecto atque voluptates doloremque, eligendi recusandae magnam minima? Asperiores ipsum quae doloremque iusto molestias nam placeat atque repellendus explicabo. Vitae dolores modi assumenda quo, officiis ad ipsa est numquam soluta suscipit voluptas porro obcaecati, aperiam temporibus hic explicabo dicta recusandae ullam commodi excepturi iste mollitia fugit inventore possimus. Placeat sint dicta autem sed unde pariatur amet in perspiciatis cum accusantium velit libero excepturi esse nam fuga iure, aliquam dolorem illo nisi ratione quis! Culpa molestias aperiam, obcaecati incidunt quasi ad placeat labore!";
+import { useEffect, useState } from "react";
 
 const defaultText = "Jason this is some awesome text that I am typing rn";
 // Tailwind classes
@@ -13,7 +12,37 @@ const textArea =
 const btn =
   "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold";
 
+const makeKey = import.meta.env.VITE_MAKE_API_KEY;
 export function Messaging() {
+  const [loading, setLoading] = useState(false);
+  const fetchData = async () => {
+    console.log("key", makeKey);
+    setLoading(true);
+    try {
+      const resp = await fetch(
+        "https://us1.make.com/api/v2/scenarios?teamId=1989&pg%5Blimit%5D=100",
+        {
+          headers: {
+            method: "GET",
+            Authorization: `Token ${makeKey}`,
+          },
+        }
+      );
+      const data = await resp.json();
+      console.log("data", data);
+    } catch (error) {
+      console.error(error);
+    }
+    setLoading(false);
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading</div>;
+  }
+
   return (
     <div className="flex h-1/3 flex-col gap-4">
       <h1 className={sectionHeader}>Recruitment</h1>

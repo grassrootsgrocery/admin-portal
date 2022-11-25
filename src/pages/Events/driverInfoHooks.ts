@@ -89,10 +89,20 @@ export function useDriversInfo() {
     );
   }
 
+  const isLoading =
+    processedDriversStatus === "loading" ||
+    processedDriversStatus === "idle" ||
+    neighborhoodsStatus === "loading" ||
+    neighborhoodsStatus === "idle";
+
+  const isError =
+    processedDriversStatus === "error" || neighborhoodsStatus === "error";
+
   return {
-    processedDrivers,
-    processedDriversStatus: processedDriversStatus && neighborhoodsStatus,
-    processedDriversError: processedDriversError && neighborhoodsError,
+    driversInfo: processedDrivers,
+    driversInfoIsLoading: isLoading,
+    driversInfoIsError: isError,
+    driversInfoError: processedDriversError || neighborhoodsError,
   };
 }
 

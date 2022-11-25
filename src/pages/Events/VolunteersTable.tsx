@@ -261,12 +261,9 @@ export const VolunteersTable: React.FC<Props> = ({
   }
 
   // UI
-  const label = "text-sm md:text-base lg:text-xl";
-  const labelBold =
-    "text-sm font-semibold text-newLeafGreen md:text-base lg:text-xl";
-
   return (
     <div className="flex h-screen flex-col pt-6">
+      {/* Toast that appears when a volunteer is confirmed or unconfirmed */}
       <Toaster />
       {/* Filtering */}
       <div
@@ -340,7 +337,7 @@ export const VolunteersTable: React.FC<Props> = ({
           Clear Filters
         </button>
       </div>
-      <div className="h-16"></div>
+      <div className="h-16" />
 
       {/* Table */}
       <DataTable

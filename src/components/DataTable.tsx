@@ -20,7 +20,7 @@ export const DataTable: React.FC<Props> = ({
               return (
                 <th
                   key={i}
-                  className="border-b-2  border-newLeafGreen bg-softBeige p-4 text-newLeafGreen"
+                  className="border-b-2 border-newLeafGreen bg-softBeige p-4 text-newLeafGreen"
                 >
                   {h}
                 </th>
@@ -32,7 +32,9 @@ export const DataTable: React.FC<Props> = ({
           {dataRows.map((row) => {
             const [id, ...data] = row;
             if (typeof id !== "string" && typeof id !== "number") {
-              console.error("Something went wrong hahaha");
+              console.error(
+                "Please provide an ID of type 'string' or 'number' as the first entry of each row."
+              );
               return;
             }
             return (

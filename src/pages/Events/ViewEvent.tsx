@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { AirtableResponse, Record, ScheduledSlot } from "../../types";
 import { useQuery } from "react-query";
 import { useFutureEvents } from "./eventHooks";
@@ -113,12 +113,14 @@ export function ViewEvent() {
   );
 
   console.log("scheduledSlots", scheduledSlots);
+
   //UI
 
   //Tailwind classes
   const sectionHeader =
     "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
   const sectionHeaderIcon = "w-6 lg:w-10";
+
   return (
     <div className="p-6 lg:px-14 lg:py-10">
       {/* Event Info */}
@@ -202,9 +204,15 @@ export function ViewEvent() {
         scheduledSlots={scheduledSlots.records}
         refetchVolunteers={refetchScheduledSlots}
       />
-      {/* Messaging */}
-      <div className="h-16"></div>
-      <Messaging />
+      <div className="h-4" />
+      <Link to={`/events/driver-location-info/${eventId}`}>
+        <button
+          className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+          type="button"
+        >
+          Delivery and Location Info
+        </button>
+      </Link>
     </div>
   );
 }

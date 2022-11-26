@@ -4,10 +4,13 @@
   "description": "Grassroots groceries admin portal",
   "main": "server/server.ts",
   "scripts": {
-    "server:dev": "nodemon server/server.ts",
-    "server-ts:dev": "npx -w",
     "server:build": "rm -rf ./dist && tsc",
-    "server:start": "node dist/server.js"
+    "server:dev": "nodemon server/server.ts",
+    "client:build": "npm run build --prefix client",
+    "client:dev": "npm run dev --prefix client",
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "build": "npm run server:build && npm run client:build",
+    "start": "node dist/server.js"
   },
   "repository": {
     "type": "git",

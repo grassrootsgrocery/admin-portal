@@ -16,11 +16,11 @@ app.use(express.urlencoded({ extended: false })); //x-www-form-urlencoded
 //---- API Start----
 
 //Events
-import eventRouter from "./routes/eventRoutes";
+import eventRouter from "./routes/events";
 app.use("/", eventRouter);
 
 //Messaging
-import messagingRouter from "./routes/messagingRoutes";
+import messagingRouter from "./routes/messaging";
 app.use("/", messagingRouter);
 
 //---- API End ----

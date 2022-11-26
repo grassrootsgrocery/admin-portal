@@ -3,11 +3,10 @@ import asyncHandler from "express-async-handler";
 import { fetch } from "./nodeFetch";
 
 import { Request, Response } from "express";
-
 const router = express.Router();
 
 /**
- * @description Get all upcoming events.
+ * @description Get all upcoming messages.
  * @route  GET /api/messaging/
  * @access
  */

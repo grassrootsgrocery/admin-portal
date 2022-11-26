@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./server",
+    "moduleResolution": "node",
+    "target": "es5",
+    "allowJs": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "resolveJsonModule": true,
+  },
+  "include": [
+    "./server/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+  ]
+}

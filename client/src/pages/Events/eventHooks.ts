@@ -80,38 +80,39 @@ export function useFutureEvents() {
     data: futureEventsData,
     status: futureEventsStatus,
     error: futureEventsError,
-  } = useQuery(["fetchFutureEvents"], () =>
-    fetchAirtableData<AirtableResponse<Event>>(futureEventsUrl)
-  );
+  } = useQuery(["fetchFutureEvents"], async () => {
+    const response = await fetch("http://localhost:5000/api/events");
+    return (await response.json()) as ProcessedEvent[];
+  });
 
-  let futureEvents: ProcessedEvent[] = [];
-  if (futureEventsStatus === "success") {
-    let generalEvents = futureEventsData.records.filter(
-      (event) => !event.fields["Special Event"]
-    );
-    let specialEvents = futureEventsData.records.filter(
-      (event) => event.fields["Special Event"]
-    );
+  // let futureEvents: ProcessedEvent[] = [];
+  // if (futureEventsStatus === "success") {
+  //   let generalEvents = futureEventsData.records.filter(
+  //     (event) => !event.fields["Special Event"]
+  //   );
+  //   let specialEvents = futureEventsData.records.filter(
+  //     (event) => event.fields["Special Event"]
+  //   );
 
-    futureEvents = generalEvents.map((generalEvent) =>
-      processSpecialEventsData(
-        processGeneralEventData(generalEvent),
-        specialEvents.filter(
-          (specialEvent) =>
-            specialEvent.fields["Pickup Address"][0] ==
-              generalEvent.fields["Pickup Address"][0] &&
-            specialEvent.fields["Start Time"] ==
-              generalEvent.fields["Start Time"]
-        )
-      )
-    );
+  //   futureEvents = generalEvents.map((generalEvent) =>
+  //     processSpecialEventsData(
+  //       processGeneralEventData(generalEvent),
+  //       specialEvents.filter(
+  //         (specialEvent) =>
+  //           specialEvent.fields["Pickup Address"][0] ==
+  //             generalEvent.fields["Pickup Address"][0] &&
+  //           specialEvent.fields["Start Time"] ==
+  //             generalEvent.fields["Start Time"]
+  //       )
+  //     )
+  //   );
 
-    futureEvents.forEach((event) => processPackerAndDriverCounts(event));
-    futureEvents.sort((a, b) => (a.date < b.date ? -1 : 1));
-  }
+  //   futureEvents.forEach((event) => processPackerAndDriverCounts(event));
+  //   futureEvents.sort((a, b) => (a.date < b.date ? -1 : 1));
+  // }
 
   return {
-    futureEvents,
+    futureEventsData,
     futureEventsStatus,
     futureEventsError,
   };

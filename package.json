@@ -19,10 +19,13 @@
     "url": "https://github.com/Hack4Impact-UMD/mott-haven/issues"
   },
   "homepage": "https://github.com/Hack4Impact-UMD/mott-haven#readme",
+  "type": "module",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "node-fetch": "^3.3.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",

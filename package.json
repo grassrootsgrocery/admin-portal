@@ -6,7 +6,7 @@
   "scripts": {
     "server:build": "rm -rf ./dist && tsc",
     "server:dev": "nodemon server/server.ts",
-    "client:build": "npm run build --prefix client",
+    "client:build": "npm install --prefix client && npm run build --prefix client",
     "client:dev": "npm run dev --prefix client",
     "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
     "build": "npm run server:build && npm run client:build",

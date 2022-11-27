@@ -7,6 +7,16 @@ export interface Record<T> {
   createdTime: string;
 }
 
+export interface Event {
+  "Start Time": string;
+  "Pickup Address": string[];
+  "Total Count of Drivers for Event": number;
+  "Total Count of Distributors for Event": number;
+  "Total Count of Volunteers for Event": number;
+  "Special Event": boolean;
+  "📅 Scheduled Slots": string[];
+}
+
 export interface ProcessedEvent {
   id: string;
   dateDisplay: string;
@@ -32,6 +42,16 @@ export interface ScheduledSlot {
   "Volunteer Status": string;
   Email: string;
   "Volunteer Group (for MAKE)": string;
+}
+
+export interface Driver {
+  "First Name": string;
+  "Last Name": string;
+  "Driving Slot Time": string;
+  "Total Deliveries": number;
+  "Zip Code": string;
+  "Transportation Types": string;
+  "Restricted Neighborhoods": string[];
 }
 export interface ProcessedDriver {
   id: string;

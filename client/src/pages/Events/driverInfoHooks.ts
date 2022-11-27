@@ -1,58 +1,14 @@
 import { useQuery } from "react-query";
-import {
-  AirtableResponse,
-  Record,
-  Driver,
-  ProcessedDriver,
-  Neighborhood,
-} from "../../types";
-
-import {
-  AIRTABLE_URL_BASE,
-  fetchAirtableData,
-} from "../../airtableDataFetchingUtils";
-
-function processDriverData(driver: Record<Driver>): ProcessedDriver {
-  // note: does not process restricted locations (done later)
-  const optionsTime = {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  } as const;
-
-  const timeSlot = new Date(driver.fields["Driving Slot Time"][0]);
-
-  return {
-    // validate each data type data, returns N/A for null values
-    id: driver.id,
-    firstName: driver.fields["First Name"]
-      ? driver.fields["First Name"][0]
-      : "N/A",
-    lastName: driver.fields["Last Name"]
-      ? driver.fields["Last Name"][0]
-      : "N/A",
-    timeSlot: timeSlot.toLocaleString("en-US", optionsTime), // time slot in HH:MM AM/PM format
-    deliveryCount: driver.fields["Total Deliveries"],
-    zipCode: driver.fields["Zip Code"] ? driver.fields["Zip Code"][0] : "N/A",
-    vehicle: driver.fields["Transportation Types"]
-      ? driver.fields["Transportation Types"][0]
-      : "N/A",
-    restrictedLocations: driver.fields["Restricted Neighborhoods"]
-      ? driver.fields["Restricted Neighborhoods"]
-      : [],
-  };
-}
+import { AirtableResponse, ProcessedDriver, Neighborhood } from "../../types";
+import { API_BASE_URL } from "../../httpUtils";
 
 export function useDriversInfo() {
-  // const { processedDrivers, processedDriversStatus, processedDriversError } =
-  //   fetchDriverInfo();
-
   const {
     data: processedDrivers,
     status: processedDriversStatus,
     error: processedDriversError,
   } = useQuery(["fetchDriverInfo"], async () => {
-    const response = await fetch("/api/volunteers/drivers");
+    const response = await fetch(`${API_BASE_URL}/api/volunteers/drivers`);
     return response.json() as Promise<ProcessedDriver[]>;
   });
 
@@ -71,7 +27,7 @@ export function useDriversInfo() {
       const neighborhoodIds = getNeighborhoodIdsForUrl(processedDrivers);
 
       const response = await fetch(
-        `/api/neighborhoods?neighborhoodIds=${neighborhoodIds}`
+        `${API_BASE_URL}/api/neighborhoods?neighborhoodIds=${neighborhoodIds}`
       );
       return response.json() as Promise<AirtableResponse<Neighborhood>>;
     },
@@ -110,43 +66,6 @@ export function useDriversInfo() {
     driversInfoIsLoading: isLoading,
     driversInfoIsError: isError,
     driversInfoError: processedDriversError || neighborhoodsError,
-  };
-}
-
-// query for driver info from schedule slots table
-function fetchDriverInfo() {
-  const driversUrl =
-    `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
-    //`view=Assign Location ` + // tested with view "Drivers - Last Week"
-    `view=Drivers - Last Week` +
-    // Get fields for driver info table
-    `&fields=First Name` + // First Name
-    `&fields=Last Name` + // Last Name
-    `&fields=Driving Slot Time` + // Time Slot
-    `&fields=Total Deliveries` + // Delivery Type
-    `&fields=Zip Code` + // Zip Code
-    `&fields=Transportation Types` + // Vehicle
-    `&fields=Restricted Neighborhoods`; // Restricted Locations
-
-  const {
-    data: drivers,
-    status: driversStatus,
-    error: driversError,
-  } = useQuery(["fetchDriverInfo"], () =>
-    fetchAirtableData<AirtableResponse<Driver>>(driversUrl)
-  );
-
-  let processedDrivers: ProcessedDriver[] = [];
-  if (driversStatus === "success" && drivers.records !== undefined) {
-    processedDrivers = drivers.records.map((driver) =>
-      processDriverData(driver)
-    );
-  }
-
-  return {
-    processedDrivers,
-    processedDriversStatus: driversStatus,
-    processedDriversError: driversError,
   };
 }
 

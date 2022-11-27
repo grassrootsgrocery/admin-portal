@@ -34,7 +34,7 @@ export function DriverAndLocationInfo() {
     driversInfoIsError,
     driversInfoError,
   } = useDriversInfo();
-  console.log(driversInfo);
+  console.log("driversInfo", driversInfo);
 
   if (driversInfoIsLoading) {
     return (

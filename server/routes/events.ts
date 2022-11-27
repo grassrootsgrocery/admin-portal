@@ -4,42 +4,10 @@ import { Request, Response } from "express";
 import { AIRTABLE_URL_BASE } from "./airtableUtils";
 import { fetch } from "./nodeFetch";
 
+//Types
+import { AirtableResponse, Record, Event, ProcessedEvent } from "../types";
+
 const router = express.Router();
-
-export interface AirtableResponse<FieldsType> {
-  records: Record<FieldsType>[];
-}
-export interface Record<T> {
-  id: string;
-  fields: T;
-  createdTime: string;
-}
-
-export interface Event {
-  "Start Time": string;
-  "Pickup Address": string[];
-  "Total Count of Drivers for Event": number;
-  "Total Count of Distributors for Event": number;
-  "Total Count of Volunteers for Event": number;
-  "Special Event": boolean;
-  "📅 Scheduled Slots": string[];
-}
-
-export interface ProcessedEvent {
-  id: string;
-  dateDisplay: string;
-  date: Date;
-  time: string;
-  mainLocation: string;
-  numDrivers: number;
-  numPackers: number;
-  numtotalParticipants: number;
-  numOnlyDrivers: number;
-  numOnlyPackers: number;
-  numBothDriversAndPackers: number;
-  numSpecialGroups: number;
-  scheduledSlots: string[];
-}
 
 function processGeneralEventData(event: Record<Event>): ProcessedEvent {
   const optionsDay = {

@@ -4,27 +4,17 @@ import { Request, Response } from "express";
 import { AIRTABLE_URL_BASE } from "./airtableUtils";
 import { fetch } from "./nodeFetch";
 
+//Types
+import {
+  AirtableResponse,
+  Driver,
+  ProcessedDriver,
+  Record,
+  ScheduledSlot,
+  Neighborhood,
+} from "../types";
+
 const router = express.Router();
-
-export interface AirtableResponse<FieldsType> {
-  records: Record<FieldsType>[];
-}
-export interface Record<T> {
-  id: string;
-  fields: T;
-  createdTime: string;
-}
-
-export interface ScheduledSlot {
-  "First Name": string;
-  "Last Name": string;
-  "Correct slot time": any;
-  Type: string[];
-  "Confirmed?": boolean;
-  "Volunteer Status": string;
-  Email: string;
-  "Volunteer Group (for MAKE)": string;
-}
 
 /**
  * @description Get all volunteers for event
@@ -70,7 +60,7 @@ router.route("/api/volunteers/").get(
 
 /**
  * @description Confirm a volunteer for an event
- * @route  PATCH /api/volunteers/:volunteerId
+ * @route  PATCH /api/volunteers/confirm/:volunteerId
  * @access
  */
 router.route("/api/volunteers/confirm/:volunteerId").patch(
@@ -110,28 +100,8 @@ router.route("/api/volunteers/confirm/:volunteerId").patch(
   })
 );
 
-export interface Driver {
-  "First Name": string;
-  "Last Name": string;
-  "Driving Slot Time": string;
-  "Total Deliveries": number;
-  "Zip Code": string;
-  "Transportation Types": string;
-  "Restricted Neighborhoods": string[];
-}
-export interface ProcessedDriver {
-  id: string;
-  firstName: string;
-  lastName: string;
-  timeSlot: string;
-  deliveryCount: number;
-  zipCode: string;
-  vehicle: string;
-  restrictedLocations: string[];
-}
-
 function processDriverData(driver: Record<Driver>): ProcessedDriver {
-  // note: does not process restricted locations (done later)
+  // TODO: process restricted locations
   const optionsTime = {
     hour: "numeric",
     minute: "numeric",
@@ -208,27 +178,6 @@ router.route("/api/volunteers/drivers").get(
     }
   })
 );
-
-export interface Neighborhood {
-  Name: string;
-}
-
-// update the processed driver's restricted neighborhood field with neighborhood names
-function processNeighborhoodsForDriver(
-  drivers: ProcessedDriver[],
-  neighborhoods: Map<string, string>
-) {
-  drivers.forEach(function (driver) {
-    let neighborhoodNames: string[] = [];
-    driver.restrictedLocations.forEach(function (neighborhoodId) {
-      const neighborhoodName = neighborhoods.get(neighborhoodId);
-      if (neighborhoodName !== undefined) {
-        neighborhoodNames.push(neighborhoodName);
-      }
-    });
-    driver.restrictedLocations = neighborhoodNames;
-  });
-}
 
 /**
  * @description

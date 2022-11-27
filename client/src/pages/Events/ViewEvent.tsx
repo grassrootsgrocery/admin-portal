@@ -11,6 +11,7 @@ import check from "../../assets/check.svg";
 import calendar from "../../assets/calendar.svg";
 import people from "../../assets/people.svg";
 import roster from "../../assets/roster.svg";
+import { API_BASE_URL } from "../../httpUtils";
 
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
@@ -21,7 +22,7 @@ function useFutureEventById(eventId: string | undefined) {
     status: futureEventsStatus,
     error: futureEventsError,
   } = useQuery(["fetchFutureEvents"], async () => {
-    const response = await fetch("/api/events");
+    const response = await fetch(`${API_BASE_URL}/api/events`);
     return response.json() as Promise<ProcessedEvent[]>;
   });
 
@@ -68,7 +69,7 @@ export function ViewEvent() {
       }
       const scheduledSlotsIds = event.scheduledSlots.join(",");
       const response = await fetch(
-        `/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`
+        `${API_BASE_URL}/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`
       );
       return response.json() as Promise<AirtableResponse<ScheduledSlot>>;
     },

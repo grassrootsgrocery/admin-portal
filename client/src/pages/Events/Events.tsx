@@ -1,4 +1,5 @@
 import { useQuery } from "react-query";
+import { API_BASE_URL } from "../../httpUtils";
 //Types
 import { ProcessedEvent } from "../../types";
 //Components
@@ -14,7 +15,7 @@ export function Events() {
     status: futureEventsStatus,
     error: futureEventsError,
   } = useQuery(["fetchFutureEvents"], async () => {
-    const response = await fetch("/api/events");
+    const response = await fetch(`${API_BASE_URL}/api/events`);
     return response.json() as Promise<ProcessedEvent[]>;
   });
 

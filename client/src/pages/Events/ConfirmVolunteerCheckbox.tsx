@@ -2,6 +2,7 @@ import * as Checkbox from "@radix-ui/react-checkbox";
 import { useState } from "react";
 import { useMutation } from "react-query";
 import { Loading } from "../../components/Loading";
+import { API_BASE_URL } from "../../httpUtils";
 
 interface Props {
   volunteerId: string;
@@ -19,13 +20,16 @@ export const ConfirmVolunteerCheckbox: React.FC<Props> = ({
 
   const confirmVolunteer = useMutation({
     mutationFn: async () => {
-      const resp = await fetch(`/api/volunteers/confirm/${volunteerId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ newConfirmationStatus: !checked }),
-      });
+      const resp = await fetch(
+        `${API_BASE_URL}/api/volunteers/confirm/${volunteerId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ newConfirmationStatus: !checked }),
+        }
+      );
       return resp.json();
     },
     onSuccess(data, variables, context) {

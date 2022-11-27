@@ -8,7 +8,7 @@ import { ConfirmVolunteerCheckbox } from "./ConfirmVolunteerCheckbox";
 import toast, { Toaster } from "react-hot-toast";
 
 /*
-TODO: There is a lot of stuff going on in this component and we should perhaps look into refactoring at some point. 
+TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
 */
 
 interface FilterItemProps {

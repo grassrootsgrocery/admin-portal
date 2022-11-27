@@ -18,7 +18,6 @@ import { Events } from "./pages/Events/Events";
 import { ViewEvent } from "./pages/Events/ViewEvent";
 import { DriverAndLocationInfo } from "./pages/Events/DriverAndLocationInfo";
 
-import "./App.css";
 import { BackendTesting } from "./pages/BackendTesting";
 
 function App() {

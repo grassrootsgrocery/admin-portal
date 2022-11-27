@@ -23,6 +23,8 @@ app.use("/", eventRouter);
 import messagingRouter from "./routes/messaging";
 app.use("/", messagingRouter);
 
+import volunteersRouter from "./routes/volunteers";
+app.use("/", volunteersRouter);
 //---- API End ----
 
 //Middleware for handling errors. This has to go after the routes.

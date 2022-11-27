@@ -44,8 +44,19 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {
 }
 
 export function useDriversInfo() {
-  const { processedDrivers, processedDriversStatus, processedDriversError } =
-    fetchDriverInfo();
+  // const { processedDrivers, processedDriversStatus, processedDriversError } =
+  //   fetchDriverInfo();
+
+  const {
+    data: processedDrivers,
+    status: processedDriversStatus,
+    error: processedDriversError,
+  } = useQuery(["fetchDriverInfo"], async () => {
+    const response = await fetch(
+      "http://localhost:5000/api/volunteers/drivers"
+    );
+    return response.json() as Promise<ProcessedDriver[]>;
+  });
 
   // query for neighborhood names from neighborhood table
   const {
@@ -61,22 +72,20 @@ export function useDriversInfo() {
 
       const neighborhoodIds = getNeighborhoodIdsForUrl(processedDrivers);
 
-      const neighborhoodsUrl =
-        `${AIRTABLE_URL_BASE}/🏡 Neighborhoods?` +
-        `filterByFormula=SEARCH(RECORD_ID(), "${neighborhoodIds}") != ""` +
-        `&fields%5B%5D=Name`;
-
-      return fetchAirtableData<AirtableResponse<Neighborhood>>(
-        neighborhoodsUrl
+      const response = await fetch(
+        `http://localhost:5000/api/neighborhoods?neighborhoodIds=${neighborhoodIds}`
       );
+      return response.json() as Promise<AirtableResponse<Neighborhood>>;
     },
     {
-      enabled:
-        processedDriversStatus === "success" && processDriverData.length > 0,
+      enabled: processedDriversStatus === "success",
     }
   );
 
-  if (neighborhoodsStatus === "success" && processedDrivers.length > 0) {
+  if (
+    processedDriversStatus === "success" &&
+    neighborhoodsStatus === "success"
+  ) {
     let neighborhoodNamesById: Map<string, string> = new Map();
     neighborhoods.records.forEach((neighborhood) =>
       neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)

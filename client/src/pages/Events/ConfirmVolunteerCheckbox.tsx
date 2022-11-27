@@ -1,11 +1,7 @@
 import * as Checkbox from "@radix-ui/react-checkbox";
-// import { CheckIcon } from "@radix-ui/react-icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMutation } from "react-query";
 import { Loading } from "../../components/Loading";
-
-const key = import.meta.env.VITE_AIRTABLE_API_KEY;
-const AIRTABLE_BASE_ID_DEV = "app18BBTcWqsoNjb2";
 
 interface Props {
   volunteerId: string;
@@ -23,24 +19,14 @@ export const ConfirmVolunteerCheckbox: React.FC<Props> = ({
 
   const confirmVolunteer = useMutation({
     mutationFn: async () => {
-      const data = {
-        records: [
-          {
-            id: volunteerId,
-            fields: { "Confirmed?": !checked },
-          },
-        ],
-      };
-      const json = JSON.stringify(data);
       const resp = await fetch(
-        `https://api.airtable.com/v0/${AIRTABLE_BASE_ID_DEV}/%F0%9F%93%85%20Scheduled%20Slots`,
+        `http://localhost:5000/api/volunteers/confirm/${volunteerId}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${key}`,
           },
-          body: json,
+          body: JSON.stringify({ newConfirmationStatus: !checked }),
         }
       );
       return resp.json();

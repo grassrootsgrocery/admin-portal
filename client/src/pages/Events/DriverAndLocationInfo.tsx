@@ -47,6 +47,10 @@ export function DriverAndLocationInfo() {
     console.error(driversInfoError);
     return <div>Error...</div>;
   }
+  if (driversInfo === undefined) {
+    console.error("driversInfo is undefined");
+    return <div>Error...</div>;
+  }
 
   return (
     <div className="p-6 lg:px-14 lg:py-10">

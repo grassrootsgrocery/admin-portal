@@ -1,11 +1,6 @@
 import { Link, useParams } from "react-router-dom";
-import { AirtableResponse, Record, ScheduledSlot } from "../../types";
+import { AirtableResponse, ProcessedEvent, ScheduledSlot } from "../../types";
 import { useQuery } from "react-query";
-import { useFutureEvents } from "./eventHooks";
-import {
-  AIRTABLE_URL_BASE,
-  fetchAirtableData,
-} from "../../airtableDataFetchingUtils";
 
 //Components
 import { Loading } from "../../components/Loading";
@@ -21,8 +16,14 @@ import roster from "../../assets/roster.svg";
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
  * */
 function useFutureEventById(eventId: string | undefined) {
-  const { futureEvents, futureEventsStatus, futureEventsError } =
-    useFutureEvents();
+  const {
+    data: futureEvents,
+    status: futureEventsStatus,
+    error: futureEventsError,
+  } = useQuery(["fetchFutureEvents"], async () => {
+    const response = await fetch("/api/events");
+    return response.json() as Promise<ProcessedEvent[]>;
+  });
 
   let event = undefined;
   if (futureEventsStatus === "success") {
@@ -41,7 +42,7 @@ const HeaderValueDisplay: React.FC<{
   value: string | number;
 }> = (props: { header: string; value: string | number }) => {
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col">
       <p className="lg:text-xl">{props.header}</p>
       <p className="font-semibold text-newLeafGreen lg:text-xl">
         {props.value}
@@ -65,23 +66,11 @@ export function ViewEvent() {
       if (typeof event === "undefined") {
         return Promise.reject(new Error("Undefined event"));
       }
-
       const scheduledSlotsIds = event.scheduledSlots.join(",");
-      const scheduledSlotsForEventUrl =
-        `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
-        `filterByFormula=SEARCH(RECORD_ID(), "${scheduledSlotsIds}") != ""` +
-        `&fields=First Name` +
-        `&fields=Last Name` +
-        `&fields=Correct slot time` +
-        `&fields=Type` +
-        `&fields=Confirmed?` +
-        `&fields=Volunteer Status` +
-        `&fields=Email` +
-        `&fields=Volunteer Group (for MAKE)`;
-
-      return fetchAirtableData<AirtableResponse<ScheduledSlot>>(
-        scheduledSlotsForEventUrl
+      const response = await fetch(
+        `http://localhost:5000/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`
       );
+      return response.json() as Promise<AirtableResponse<ScheduledSlot>>;
     },
     { enabled: eventStatus === "success" }
   );
@@ -193,7 +182,7 @@ export function ViewEvent() {
           </button>
         </div>
       </div>
-      <div className="h-12"></div>
+      <div className="h-12" />
       <h1 className={sectionHeader}>
         <img className={sectionHeaderIcon} src={roster} alt="roster" />
         Participant Roster

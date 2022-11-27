@@ -1,6 +1,8 @@
-import { useFutureEvents } from "./eventHooks";
+import { useQuery } from "react-query";
+//Types
+import { ProcessedEvent } from "../../types";
+//Components
 import { EventCard } from "./EventCard";
-
 import { Loading } from "../../components/Loading";
 
 const newEventLink =
@@ -8,10 +10,13 @@ const newEventLink =
 
 export function Events() {
   const {
-    futureEventsData: futureEvents,
-    futureEventsStatus,
-    futureEventsError,
-  } = useFutureEvents();
+    data: futureEvents,
+    status: futureEventsStatus,
+    error: futureEventsError,
+  } = useQuery(["fetchFutureEvents"], async () => {
+    const response = await fetch("http://localhost:5000/api/events");
+    return response.json() as Promise<ProcessedEvent[]>;
+  });
 
   if (futureEventsStatus === "loading" || futureEventsStatus === "idle") {
     return (
@@ -22,10 +27,6 @@ export function Events() {
   }
   if (futureEventsStatus === "error") {
     console.error(futureEventsError);
-    return <div>Error...</div>;
-  }
-  if (futureEvents === undefined) {
-    console.log("futureEvents === undefined");
     return <div>Error...</div>;
   }
 

@@ -18,11 +18,9 @@ import { Events } from "./pages/Events/Events";
 import { ViewEvent } from "./pages/Events/ViewEvent";
 import { DriverAndLocationInfo } from "./pages/Events/DriverAndLocationInfo";
 
-import "./App.css";
+import { BackendTesting } from "./pages/BackendTesting";
 
 function App() {
-  // Label -> Packers
-  // filter -> () => {}
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -37,6 +35,7 @@ function App() {
                 path="/events/driver-location-info/:eventId"
                 element={<DriverAndLocationInfo />}
               />
+              <Route path="/backendtesting" element={<BackendTesting />} />
             </Routes>
           </div>
           <ReactQueryDevtools initialIsOpen={false} />

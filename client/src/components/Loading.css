@@ -12,7 +12,7 @@
   content: "";
   border-top-color: var(--new-leaf-green);
   border-radius: 50%;
-  animation: spinloader 0.75s linear infinite;
+  animation: spinloader 0.8s linear infinite;
 }
 
 @keyframes spinloader {

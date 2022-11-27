@@ -1,14 +1,24 @@
-import { useFutureEvents } from "./eventHooks";
+import { useQuery } from "react-query";
+import { API_BASE_URL } from "../../httpUtils";
+//Types
+import { ProcessedEvent } from "../../types";
+//Components
 import { EventCard } from "./EventCard";
-
 import { Loading } from "../../components/Loading";
 
 const newEventLink =
   "https://airtable.com/shrETAYONKTJMVTnZ?prefill_Supplier=Rap+4+Bronx&prefill_Start+Time=01/01/2023+09:00am&prefill_End+Time=01/01/2023+01:00pm&prefill_First+Driving+Slot+Start+Time=01/01/2023+10:30am&prefill_How+long+should+each+Driver+Time+Slot+be?=0:15&prefill_Max+Count+of+Drivers+Per+Slot=30&prefill_How+long+should+the+Logistics+slot+be?=1:30&prefill_Maximum+number+of+drivers+needed+for+this+event+(usually+30)?=30&prefill_Max+Count+of+Distributors+Per+Slot=30";
 
 export function Events() {
-  const { futureEvents, futureEventsStatus, futureEventsError } =
-    useFutureEvents();
+  const {
+    data: futureEvents,
+    status: futureEventsStatus,
+    error: futureEventsError,
+  } = useQuery(["fetchFutureEvents"], async () => {
+    const response = await fetch(`${API_BASE_URL}/api/events`);
+    return response.json() as Promise<ProcessedEvent[]>;
+  });
+
   if (futureEventsStatus === "loading" || futureEventsStatus === "idle") {
     return (
       <div style={{ position: "relative", minHeight: "80vh" }}>
@@ -20,6 +30,7 @@ export function Events() {
     console.error(futureEventsError);
     return <div>Error...</div>;
   }
+
   console.log("Logging futureEvents", futureEvents);
   return (
     <div className="flex grow flex-col rounded border px-8">

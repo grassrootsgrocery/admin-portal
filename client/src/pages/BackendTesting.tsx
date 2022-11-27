@@ -19,7 +19,6 @@ export function BackendTesting() {
   return (
     <div>
       <div>Backend Testing</div>
-      <div>{data}</div>
     </div>
   );
 }

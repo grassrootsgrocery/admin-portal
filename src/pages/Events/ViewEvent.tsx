@@ -77,7 +77,8 @@ export function ViewEvent() {
         `&fields=Confirmed?` +
         `&fields=Volunteer Status` +
         `&fields=Email` +
-        `&fields=Volunteer Group (for MAKE)`;
+        `&fields=Volunteer Group (for MAKE)` +
+        `&fields=Can't Come`;
 
       return fetchAirtableData<AirtableResponse<ScheduledSlot>>(
         scheduledSlotsForEventUrl

@@ -4,7 +4,7 @@ import chevron_down from "../../assets/chevron-down.svg";
 import x from "../../assets/x.svg";
 import { Record, ScheduledSlot } from "../../types";
 import { DataTable } from "../../components/DataTable";
-import { ConfirmVolunteerCheckbox } from "./ConfirmVolunteerCheckbox";
+import { Checkbox } from "./Checkbox";
 import toast, { Toaster } from "react-hot-toast";
 
 /*
@@ -221,8 +221,16 @@ export const VolunteersTable: React.FC<Props> = ({
       toastNotify(toastMessage, true);
     }
 
+    function onConfirmAvailability(toastMessage: string) {
+      toastNotify(toastMessage, true);
+    }
+
     function onConfirmVolunteerError() {
       toastNotify("Unable to confirm volunteer", false);
+    }
+
+    function onConfirmAvailabilityError() {
+      toastNotify("Unable to modify availability", false);
     }
 
     let output = [];
@@ -238,9 +246,10 @@ export const VolunteersTable: React.FC<Props> = ({
           ? "Error!"
           : getTimeSlot(ss.fields["Correct slot time"]), //Time Slot
         getParticipantType(ss.fields["Type"]), //Participant Type
-        <ConfirmVolunteerCheckbox
+        <Checkbox
           volunteerId={ss.id}
           checked={ss.fields["Confirmed?"]}
+          fieldId="Confirmed?"
           onSuccess={() =>
             onConfirmVolunteerSuccess(
               `${ss.fields["First Name"] || ""} ${
@@ -250,7 +259,23 @@ export const VolunteersTable: React.FC<Props> = ({
           }
           onError={() => onConfirmVolunteerError()}
         />, //Confirmed
-        "Not Going", //TODO: Not Going
+        <Checkbox
+          volunteerId={ss.id}
+          checked={ss.fields["Can't Come"]}
+          fieldId="Can't Come"
+          onSuccess={() =>
+            onConfirmAvailability(
+              `${ss.fields["First Name"] || ""} ${
+                ss.fields["Last Name"] || ""
+              } ${
+                ss.fields["Can't Come"]
+                  ? "is able to volunteer"
+                  : "is unable to volunteer"
+              }`
+            )
+          }
+          onError={() => onConfirmAvailabilityError()}
+        />, //TODO: Not Going
         ss.fields["Volunteer Group (for MAKE)"] || "N/A", // Special Group
         "IDK", //TODO: Delivery Count
         ss.fields["Email"], //TODO: Contact

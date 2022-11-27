@@ -1,4 +1,4 @@
-import * as Checkbox from "@radix-ui/react-checkbox";
+import * as Check from "@radix-ui/react-checkbox";
 // import { CheckIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { useMutation } from "react-query";
@@ -9,25 +9,26 @@ const AIRTABLE_BASE_ID_DEV = "app18BBTcWqsoNjb2";
 
 interface Props {
   volunteerId: string;
+  fieldId: string;
   checked: boolean;
   onSuccess: () => void;
   onError: () => void;
 }
-export const ConfirmVolunteerCheckbox: React.FC<Props> = ({
+export const Checkbox: React.FC<Props> = ({
   volunteerId,
+  fieldId,
   checked,
   onSuccess,
   onError,
 }: Props) => {
   const [isChecked, setIsChecked] = useState(checked);
-
-  const confirmVolunteer = useMutation({
+  const applyPatch = useMutation({
     mutationFn: async () => {
       const data = {
         records: [
           {
             id: volunteerId,
-            fields: { "Confirmed?": !checked },
+            fields: { [fieldId]: !checked },
           },
         ],
       };
@@ -57,16 +58,16 @@ export const ConfirmVolunteerCheckbox: React.FC<Props> = ({
 
   return (
     <div className="relative flex h-full justify-center">
-      {confirmVolunteer.status === "loading" ? (
+      {applyPatch.status === "loading" ? (
         <Loading size="xsmall" thickness="thin" />
       ) : (
-        <Checkbox.Root
+        <Check.Root
           className="flex h-5 w-5 items-center justify-center rounded border-2 border-newLeafGreen bg-softGrayWhite shadow-md hover:brightness-110"
           checked={isChecked}
           id="c1"
-          onClick={() => confirmVolunteer.mutate()}
+          onClick={() => applyPatch.mutate()}
         >
-          <Checkbox.Indicator className="CheckboxIndicator">
+          <Check.Indicator className="CheckboxIndicator">
             <svg
               width="15"
               height="15"
@@ -81,8 +82,8 @@ export const ConfirmVolunteerCheckbox: React.FC<Props> = ({
                 clip-rule="evenodd"
               ></path>
             </svg>
-          </Checkbox.Indicator>
-        </Checkbox.Root>
+          </Check.Indicator>
+        </Check.Root>
       )}
     </div>
   );

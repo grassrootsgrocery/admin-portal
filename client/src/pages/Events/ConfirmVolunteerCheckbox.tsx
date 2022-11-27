@@ -19,16 +19,13 @@ export const ConfirmVolunteerCheckbox: React.FC<Props> = ({
 
   const confirmVolunteer = useMutation({
     mutationFn: async () => {
-      const resp = await fetch(
-        `http://localhost:5000/api/volunteers/confirm/${volunteerId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ newConfirmationStatus: !checked }),
-        }
-      );
+      const resp = await fetch(`/api/volunteers/confirm/${volunteerId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ newConfirmationStatus: !checked }),
+      });
       return resp.json();
     },
     onSuccess(data, variables, context) {

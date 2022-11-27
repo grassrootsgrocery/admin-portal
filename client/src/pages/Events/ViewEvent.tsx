@@ -68,7 +68,7 @@ export function ViewEvent() {
       }
       const scheduledSlotsIds = event.scheduledSlots.join(",");
       const response = await fetch(
-        `http://localhost:5000/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`
+        `/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`
       );
       return response.json() as Promise<AirtableResponse<ScheduledSlot>>;
     },

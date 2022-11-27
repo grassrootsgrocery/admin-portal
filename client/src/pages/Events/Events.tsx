@@ -14,7 +14,7 @@ export function Events() {
     status: futureEventsStatus,
     error: futureEventsError,
   } = useQuery(["fetchFutureEvents"], async () => {
-    const response = await fetch("http://localhost:5000/api/events");
+    const response = await fetch("/api/events");
     return response.json() as Promise<ProcessedEvent[]>;
   });
 

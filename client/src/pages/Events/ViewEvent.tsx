@@ -1,12 +1,8 @@
-import { useParams } from "react-router-dom";
-import { AirtableResponse, Record, ScheduledSlot } from "../../types";
+import { Link, useParams } from "react-router-dom";
 import { useQuery } from "react-query";
-import { useFutureEvents } from "./eventHooks";
-import {
-  AIRTABLE_URL_BASE,
-  fetchAirtableData,
-} from "../../airtableDataFetchingUtils";
 
+//Types
+import { AirtableResponse, ProcessedEvent, ScheduledSlot } from "../../types";
 //Components
 import { Loading } from "../../components/Loading";
 import { VolunteersTable } from "./VolunteersTable";
@@ -16,13 +12,21 @@ import check from "../../assets/check.svg";
 import calendar from "../../assets/calendar.svg";
 import people from "../../assets/people.svg";
 import roster from "../../assets/roster.svg";
+import { Messaging } from "./Messaging";
+import { API_BASE_URL } from "../../httpUtils";
 
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
  * */
 function useFutureEventById(eventId: string | undefined) {
-  const { futureEvents, futureEventsStatus, futureEventsError } =
-    useFutureEvents();
+  const {
+    data: futureEvents,
+    status: futureEventsStatus,
+    error: futureEventsError,
+  } = useQuery(["fetchFutureEvents"], async () => {
+    const response = await fetch(`${API_BASE_URL}/api/events`);
+    return response.json() as Promise<ProcessedEvent[]>;
+  });
 
   let event = undefined;
   if (futureEventsStatus === "success") {
@@ -41,7 +45,7 @@ const HeaderValueDisplay: React.FC<{
   value: string | number;
 }> = (props: { header: string; value: string | number }) => {
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col">
       <p className="lg:text-xl">{props.header}</p>
       <p className="font-semibold text-newLeafGreen lg:text-xl">
         {props.value}
@@ -65,24 +69,11 @@ export function ViewEvent() {
       if (typeof event === "undefined") {
         return Promise.reject(new Error("Undefined event"));
       }
-
       const scheduledSlotsIds = event.scheduledSlots.join(",");
-      const scheduledSlotsForEventUrl =
-        `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
-        `filterByFormula=SEARCH(RECORD_ID(), "${scheduledSlotsIds}") != ""` +
-        `&fields=First Name` +
-        `&fields=Last Name` +
-        `&fields=Correct slot time` +
-        `&fields=Type` +
-        `&fields=Confirmed?` +
-        `&fields=Volunteer Status` +
-        `&fields=Email` +
-        `&fields=Volunteer Group (for MAKE)` +
-        `&fields=Can't Come`;
-
-      return fetchAirtableData<AirtableResponse<ScheduledSlot>>(
-        scheduledSlotsForEventUrl
+      const response = await fetch(
+        `${API_BASE_URL}/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`
       );
+      return response.json() as Promise<AirtableResponse<ScheduledSlot>>;
     },
     { enabled: eventStatus === "success" }
   );
@@ -113,12 +104,14 @@ export function ViewEvent() {
   );
 
   console.log("scheduledSlots", scheduledSlots);
+
   //UI
 
   //Tailwind classes
   const sectionHeader =
     "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
   const sectionHeaderIcon = "w-6 lg:w-10";
+
   return (
     <div className="p-6 lg:px-14 lg:py-10">
       {/* Event Info */}
@@ -192,7 +185,7 @@ export function ViewEvent() {
           </button>
         </div>
       </div>
-      <div className="h-12"></div>
+      <div className="h-12" />
       <h1 className={sectionHeader}>
         <img className={sectionHeaderIcon} src={roster} alt="roster" />
         Participant Roster
@@ -202,6 +195,18 @@ export function ViewEvent() {
         scheduledSlots={scheduledSlots.records}
         refetchVolunteers={refetchScheduledSlots}
       />
+      <div className="h-4" />
+      <Link to={`/events/driver-location-info/${eventId}`}>
+        <button
+          className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+          type="button"
+        >
+          Delivery and Location Info
+        </button>
+      </Link>
+      <div className="h-12" />
+      <Messaging />
+      <div className="h-12" />
     </div>
   );
 }

@@ -4,11 +4,12 @@ import chevron_down from "../../assets/chevron-down.svg";
 import x from "../../assets/x.svg";
 import { Record, ScheduledSlot } from "../../types";
 import { DataTable } from "../../components/DataTable";
-import { Checkbox } from "./Checkbox";
+import { HttpCheckbox } from "./HttpCheckbox";
 import toast, { Toaster } from "react-hot-toast";
+import { API_BASE_URL } from "../../httpUtils";
 
 /*
-TODO: There is a lot of stuff going on in this component and we should perhaps look into refactoring at some point. 
+TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
 */
 
 interface FilterItemProps {
@@ -216,66 +217,65 @@ export const VolunteersTable: React.FC<Props> = ({
       } as const;
       return new Date(timeslot).toLocaleString("en-US", optionsTime);
     }
-    function onConfirmVolunteerSuccess(toastMessage: string) {
-      refetchVolunteers();
-      toastNotify(toastMessage, true);
-    }
 
-    function onConfirmAvailability(toastMessage: string) {
-      toastNotify(toastMessage, true);
-    }
-
-    function onConfirmVolunteerError() {
-      toastNotify("Unable to confirm volunteer", false);
-    }
-
-    function onConfirmAvailabilityError() {
-      toastNotify("Unable to modify availability", false);
-    }
+    const applyPatch = (url: string, body: any) => async () => {
+      console.log(`Here applying patch ${url} ${JSON.stringify(body)}`);
+      const resp = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      return resp.json();
+    };
 
     let output = [];
     for (let i = 0; i < scheduledSlots.length; i++) {
       const ss = scheduledSlots[i];
+      const first = ss.fields["First Name"] || "";
+      const last = ss.fields["Last Name"] || "";
       let cur = [
         ss.id, //id
         i + 1, //#
-        ss.fields["First Name"], //First Name
-        ss.fields["Last Name"], //Last Name
-
+        first, //First Name
+        last, //Last Name
         ss.fields["Correct slot time"]["error"]
           ? "Error!"
           : getTimeSlot(ss.fields["Correct slot time"]), //Time Slot
         getParticipantType(ss.fields["Type"]), //Participant Type
-        <Checkbox
-          volunteerId={ss.id}
+        <HttpCheckbox
           checked={ss.fields["Confirmed?"]}
-          fieldId="Confirmed?"
-          onSuccess={() =>
-            onConfirmVolunteerSuccess(
-              `${ss.fields["First Name"] || ""} ${
-                ss.fields["Last Name"] || ""
-              } ${ss.fields["Confirmed?"] ? "unconfirmed" : "confirmed"}`
-            )
-          }
-          onError={() => onConfirmVolunteerError()}
+          mutationFn={applyPatch(
+            `${API_BASE_URL}/api/volunteers/confirm/${ss.id}`,
+            { newConfirmationStatus: !ss.fields["Confirmed?"] }
+          )}
+          onSuccess={() => {
+            const toastMessage = `${first} ${last} ${
+              ss.fields["Confirmed?"] ? "unconfirmed" : "confirmed"
+            }`;
+            refetchVolunteers();
+            toastNotify(toastMessage, true);
+          }}
+          onError={() => toastNotify("Unable to confirm volunteer", false)}
         />, //Confirmed
-        <Checkbox
-          volunteerId={ss.id}
+        <HttpCheckbox
           checked={ss.fields["Can't Come"]}
-          fieldId="Can't Come"
-          onSuccess={() =>
-            onConfirmAvailability(
-              `${ss.fields["First Name"] || ""} ${
-                ss.fields["Last Name"] || ""
-              } ${
-                ss.fields["Can't Come"]
-                  ? "is able to volunteer"
-                  : "is unable to volunteer"
-              }`
-            )
-          }
-          onError={() => onConfirmAvailabilityError()}
-        />, //TODO: Not Going
+          mutationFn={applyPatch(
+            `${API_BASE_URL}/api/volunteers/going/${ss.id}`,
+            { newGoingStatus: !ss.fields["Can't Come"] }
+          )}
+          onSuccess={() => {
+            const toastMessage = `${first} ${last} ${
+              ss.fields["Can't Come"]
+                ? "is unable to volunteer"
+                : "is able to volunteer"
+            }`;
+            refetchVolunteers();
+            toastNotify(toastMessage, true);
+          }}
+          onError={() => toastNotify("Unable to modify availability", false)}
+        />, //Not Going
         ss.fields["Volunteer Group (for MAKE)"] || "N/A", // Special Group
         "IDK", //TODO: Delivery Count
         ss.fields["Email"], //TODO: Contact
@@ -286,12 +286,9 @@ export const VolunteersTable: React.FC<Props> = ({
   }
 
   // UI
-  const label = "text-sm md:text-base lg:text-xl";
-  const labelBold =
-    "text-sm font-semibold text-newLeafGreen md:text-base lg:text-xl";
-
   return (
     <div className="flex h-screen flex-col pt-6">
+      {/* Toast that appears when a volunteer is confirmed or unconfirmed */}
       <Toaster />
       {/* Filtering */}
       <div
@@ -365,7 +362,7 @@ export const VolunteersTable: React.FC<Props> = ({
           Clear Filters
         </button>
       </div>
-      <div className="h-16"></div>
+      <div className="h-16" />
 
       {/* Table */}
       <DataTable

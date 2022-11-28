@@ -16,12 +16,11 @@ import { Navbar } from "./components/Navbar/Navbar";
 import { Login } from "./pages/Login";
 import { Events } from "./pages/Events/Events";
 import { ViewEvent } from "./pages/Events/ViewEvent";
+import { DriverAndLocationInfo } from "./pages/Events/DriverAndLocationInfo";
 
-import "./App.css";
+import { BackendTesting } from "./pages/BackendTesting";
 
 function App() {
-  // Label -> Packers
-  // filter -> () => {}
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -32,6 +31,11 @@ function App() {
               <Route path="/" element={<Login />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:eventId" element={<ViewEvent />} />
+              <Route
+                path="/events/driver-location-info/:eventId"
+                element={<DriverAndLocationInfo />}
+              />
+              <Route path="/backendtesting" element={<BackendTesting />} />
             </Routes>
           </div>
           <ReactQueryDevtools initialIsOpen={false} />

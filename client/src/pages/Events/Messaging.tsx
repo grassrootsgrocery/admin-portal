@@ -2,7 +2,6 @@ import { useQuery } from "react-query";
 import { Loading } from "../../components/Loading";
 import { API_BASE_URL } from "../../httpUtils";
 
-const defaultText = "Jason this is some awesome text that I am typing rn";
 // Tailwind classes
 const sectionHeader =
   "flex items-center gap-2 text-2xl font-bold text-newLeafGreen lg:text-3xl";
@@ -62,10 +61,11 @@ export function Messaging() {
           ) : (
             <textarea
               className={textArea}
-              defaultValue={
-                coordinatorRecruitmentTextData.response.blueprint.flow[4].mapper
-                  .body
-              }
+              // defaultValue={
+              //   coordinatorRecruitmentTextData.response.blueprint.flow[4].mapper
+              //     .body
+              // }
+              defaultValue={coordinatorRecruitmentTextData}
             />
           )}
           <button className={btn}>Recruit Coordinators</button>
@@ -80,10 +80,7 @@ export function Messaging() {
           ) : (
             <textarea
               className={textArea}
-              defaultValue={
-                volunteerRecruitmentTextData.response.blueprint.flow[2].mapper
-                  .body
-              }
+              defaultValue={volunteerRecruitmentTextData}
             />
           )}
           <button className={btn}>Recruit Participants</button>

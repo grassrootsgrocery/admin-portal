@@ -26,7 +26,6 @@ export const HttpCheckbox: React.FC<Props> = ({
     },
     onError(error, variables, context) {
       console.error(error);
-      console.log("Jason");
       onError();
     },
   });

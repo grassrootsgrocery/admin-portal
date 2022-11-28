@@ -3,6 +3,8 @@ import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import { AIRTABLE_URL_BASE } from "./airtableUtils";
 import { fetch } from "./nodeFetch";
+//Status codes
+import { INTERNAL_SERVER_ERROR, BAD_REQUEST, OK } from "../statusCodes";
 
 //Types
 import {
@@ -46,12 +48,12 @@ router.route("/api/volunteers/").get(
         },
       });
       const volunteers = (await resp.json()) as AirtableResponse<ScheduledSlot>;
-      res.status(200).json(volunteers);
+      res.status(OK).json(volunteers);
     } catch (error) {
       console.error(error);
-      res.status(500);
+      res.status(INTERNAL_SERVER_ERROR);
       if (error instanceof Error) {
-        throw new Error(error.message);
+        throw error;
       } else {
         throw new Error("Something went wrong on server.");
       }
@@ -59,30 +61,6 @@ router.route("/api/volunteers/").get(
   })
 );
 
-async function applyPatch(
-  volunteerId: string,
-  fieldId: string,
-  fieldValue: boolean
-) {
-  const data = {
-    records: [
-      {
-        id: volunteerId,
-        fields: { [fieldId]: fieldValue },
-      },
-    ],
-  };
-  const json = JSON.stringify(data);
-  const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slots`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-    },
-    body: json,
-  });
-  return resp.json();
-}
 /**
  * @description Confirm a volunteer for an event
  * @route  PATCH /api/volunteers/confirm/:volunteerId
@@ -97,31 +75,66 @@ router.route("/api/volunteers/confirm/:volunteerId").patch(
       volunteerId &&
       newConfirmationStatus &&
       typeof volunteerId === "string" &&
-      typeof newConfirmationStatus === "boolean";
+      typeof newConfirmationStatus === "string";
 
-    if (!isValidRequest) {
-      res.status(400);
-      throw new Error(
-        "Please provide a 'volunteerId' as a query param and a 'newConfirmationStatus' on the body."
-      );
-    }
+    // if (!isValidRequest) {
+    //   res.status(400);
+    //   console.log(`Invalid request ${res}`);
+    //   console.log(
+    //     'typeof volunteerId === "string"',
+    //     typeof volunteerId === "string"
+    //   );
+    //   console.log(
+    //     'typeof newConfirmationStatus === "string"',
+    //     typeof newConfirmationStatus === "string"
+    //   );
+    //   throw new Error(
+    //     "Please provide a 'volunteerId' as a query param and a 'newConfirmationStatus' on the body."
+    //   );
+    // }
 
-    try {
-      const result = applyPatch(
-        volunteerId,
-        "Confirmed?",
-        newConfirmationStatus
-      );
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500);
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      } else {
-        throw new Error("Something went wrong on server.");
+    // try {
+    const data = {
+      records: [
+        {
+          id: volunteerId,
+          fields: { "Confirmed?": newConfirmationStatus },
+        },
+      ],
+    };
+    const json = JSON.stringify(data);
+    const resp = await fetch(
+      `${AIRTABLE_URL_BASE}/📅 Scheduled Slotsadljsfklsdjf`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+        },
+        body: json,
       }
+    );
+    const result = await resp.json();
+    if (!resp.ok) {
+      console.log("result", result);
+      throw {
+        type: result.error.type,
+        message: result.error.message,
+        status: resp.status,
+      };
     }
+    //const result = await resp.json();
+    console.log("result", result);
+    res.status(OK).json(result);
+    // } catch (error) {
+    //   console.error(error);
+    //   res.status(INTERNAL_SERVER_ERROR);
+    //   if (error instanceof Error) {
+    //     throw error;
+    //   } else {
+    //     throw new Error("Something went wrong on server.");
+    //   }
+    // }
   })
 );
 
@@ -140,24 +153,40 @@ router.route("/api/volunteers/going/:volunteerId").patch(
       volunteerId &&
       newGoingStatus &&
       typeof volunteerId === "string" &&
-      typeof newGoingStatus === "boolean";
+      typeof newGoingStatus === "string";
 
     if (!isValidRequest) {
       console.log("isValidRequest === false");
-      res.status(400);
+      res.status(BAD_REQUEST);
       throw new Error(
         "Please provide a 'volunteerId' as a query param and a 'newGoingStatus' on the body."
       );
     }
     try {
-      const result = applyPatch(volunteerId, "Can't Come", newGoingStatus);
-      res.status(200).json(result);
+      const data = {
+        records: [
+          {
+            id: volunteerId,
+            fields: { "Can't Come": newGoingStatus },
+          },
+        ],
+      };
+      const json = JSON.stringify(data);
+      const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slots`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+        },
+        body: json,
+      });
+      const result = await resp.json();
+      res.status(OK).json(result);
     } catch (error) {
-      console.log("Here server");
       console.error(error);
-      res.status(500);
+      res.status(INTERNAL_SERVER_ERROR);
       if (error instanceof Error) {
-        throw new Error(error.message);
+        throw error;
       } else {
         throw new Error("Something went wrong on server.");
       }
@@ -231,12 +260,12 @@ router.route("/api/volunteers/drivers").get(
       processedDrivers.sort((driver1, driver2) =>
         driver1.firstName < driver2.firstName ? -1 : 1
       );
-      res.status(200).json(processedDrivers);
+      res.status(OK).json(processedDrivers);
     } catch (error) {
       console.error(error);
-      res.status(500);
+      res.status(INTERNAL_SERVER_ERROR);
       if (error instanceof Error) {
-        throw new Error(error.message);
+        throw error;
       } else {
         throw new Error("Something went wrong on server.");
       }
@@ -268,12 +297,12 @@ router.route("/api/neighborhoods").get(
       });
       const neighborhoods =
         (await resp.json()) as AirtableResponse<Neighborhood>;
-      res.status(200).json(neighborhoods);
+      res.status(OK).json(neighborhoods);
     } catch (error) {
       console.error(error);
-      res.status(500);
+      res.status(INTERNAL_SERVER_ERROR);
       if (error instanceof Error) {
-        throw new Error(error.message);
+        throw error;
       } else {
         throw new Error("Something went wrong on server.");
       }

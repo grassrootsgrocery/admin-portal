@@ -6,6 +6,7 @@ import { fetch } from "./nodeFetch";
 
 //Types
 import { AirtableResponse, Record, Event, ProcessedEvent } from "../types";
+import { INTERNAL_SERVER_ERROR, OK } from "../statusCodes";
 
 const router = express.Router();
 
@@ -150,10 +151,10 @@ router.route("/api/events").get(
 
       futureEvents.forEach((event) => processPackerAndDriverCounts(event));
       futureEvents.sort((a, b) => (a.date < b.date ? -1 : 1));
-      res.status(200).json(futureEvents);
+      res.status(OK).json(futureEvents);
     } catch (error) {
       console.error(error);
-      res.status(500);
+      res.status(INTERNAL_SERVER_ERROR);
       if (error instanceof Error) {
         throw new Error(error.message);
       } else {

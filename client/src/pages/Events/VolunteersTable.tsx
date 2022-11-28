@@ -227,6 +227,13 @@ export const VolunteersTable: React.FC<Props> = ({
         },
         body: JSON.stringify(body),
       });
+      console.log("resp", resp);
+      console.log(resp.ok);
+      if (!resp.ok) {
+        const data = await resp.json();
+        console.log("HERE");
+        throw new Error(data.message);
+      }
       return resp.json();
     };
 
@@ -251,10 +258,10 @@ export const VolunteersTable: React.FC<Props> = ({
             { newConfirmationStatus: !ss.fields["Confirmed?"] }
           )}
           onSuccess={() => {
+            refetchVolunteers();
             const toastMessage = `${first} ${last} ${
               ss.fields["Confirmed?"] ? "unconfirmed" : "confirmed"
             }`;
-            refetchVolunteers();
             toastNotify(toastMessage, true);
           }}
           onError={() => toastNotify("Unable to confirm volunteer", false)}
@@ -266,12 +273,12 @@ export const VolunteersTable: React.FC<Props> = ({
             { newGoingStatus: !ss.fields["Can't Come"] }
           )}
           onSuccess={() => {
+            refetchVolunteers();
             const toastMessage = `${first} ${last} ${
               ss.fields["Can't Come"]
                 ? "is unable to volunteer"
                 : "is able to volunteer"
             }`;
-            refetchVolunteers();
             toastNotify(toastMessage, true);
           }}
           onError={() => toastNotify("Unable to modify availability", false)}

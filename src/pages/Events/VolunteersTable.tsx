@@ -26,7 +26,9 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
       }`}
       onClick={onSelect}
     >
+      <div className="w-10/12">
       {filterLabel}
+      </div>
       <Checkbox.Root
           className={`flex h-4 w-4 ml-auto items-end justify-end rounded border border-pumpkinOrange hover:brightness-110 ${
             selected ? "bg-white" : "bg-softGrayWhite"

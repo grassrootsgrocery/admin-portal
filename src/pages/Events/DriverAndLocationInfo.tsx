@@ -8,15 +8,19 @@ import { Dropdown } from "../../components/AssignDropdown";
 
 const filters = [
   {
-    label: "Confirmed",
-    filter: (e: ProcessedDropoffLocation) => true,
-  },
-  {
     label: "Test",
     filter: (e: ProcessedDropoffLocation) => true,
   },
   {
+    label: "Co-op City Fridge",
+    filter: (e: ProcessedDropoffLocation) => true,
+  },
+  {
     label: "ABC Street",
+    filter: (e: ProcessedDropoffLocation) => true,
+  },
+  {
+    label: "New Settlement Community Center",
     filter: (e: ProcessedDropoffLocation) => true,
   },
 ];

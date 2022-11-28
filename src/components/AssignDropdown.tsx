@@ -36,7 +36,7 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
   const { filterLabel, selected, onSelect } = props;
   return (
     <li
-      className={`flex min-w-fit shrink-0 items-center gap-1 rounded-lg border border-newLeafGreen px-2 font-semibold shadow-md hover:cursor-pointer hover:brightness-110 ${
+      className={`flex min-w-fit shrink-0 items-center gap-1 rounded-lg border border-newLeafGreen px-2 text-left font-semibold shadow-md hover:cursor-pointer hover:brightness-110 ${
         selected ? "bg-newLeafGreen text-white" : "bg-white text-newLeafGreen"
       }`}
       onClick={onSelect}
@@ -102,12 +102,13 @@ export const Dropdown: React.FC<Props> = ({ filters, locations }) => {
   return (
     <div className="flex h-9 items-start gap-8">
       <div
-        className= {`rounded-lg border bg-white shadow-md ${
+        className= {`flex flex-col items-start ${
             isDropdownOpen ? "z-50" : "z-0"
             }`}
         ref={dropdownRef}
       >
       {/* Dropdown */}
+      <div className="relative">
         <h1
           className={
             "relative flex w-40 select-none items-center justify-between rounded-lg border bg-newLeafGreen px-2 py-1 font-semibold text-white hover:cursor-pointer hover:brightness-110" +
@@ -122,8 +123,8 @@ export const Dropdown: React.FC<Props> = ({ filters, locations }) => {
           alt="chevron-icon" />
         </h1>
         {
-          <ul className={`relative flex flex-col gap-2 ${
-            isDropdownOpen ? "py-2 px-1 z-50" : "z-0"
+          <ul className={`absolute flex flex-col gap-2 rounded-lg border bg-white shadow-md  ${
+            isDropdownOpen ? "scrollbar-thin py-2 px-1 z-50 h-32 overflow-y-scroll" : "z-0"
             }`}>
             {isDropdownOpen &&
               filters.map((item, i) => (
@@ -136,6 +137,7 @@ export const Dropdown: React.FC<Props> = ({ filters, locations }) => {
               ))}
           </ul>
         }
+      </div>
       </div>
     </div>
   );

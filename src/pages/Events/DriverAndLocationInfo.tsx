@@ -1,11 +1,28 @@
 import { Link, useParams } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
 import { Loading } from "../../components/Loading";
-import { ProcessedDriver } from "../../types";
+import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 import { useDriversInfo } from "./driverInfoHooks";
+import { useDropOffLocations } from "./dropoffLocationHooks";
+import { Dropdown } from "../../components/AssignDropdown";
+
+const filters = [
+  {
+    label: "Confirmed",
+    filter: (e: ProcessedDropoffLocation) => true,
+  },
+  {
+    label: "Test",
+    filter: (e: ProcessedDropoffLocation) => true,
+  },
+  {
+    label: "ABC Street",
+    filter: (e: ProcessedDropoffLocation) => true,
+  },
+];
 
 //Takes in ProcessedDriver array and formats data for DataTable component
-function processDriversForTable(drivers: ProcessedDriver[]) {
+function processDriversForTable(drivers: ProcessedDriver[], processedDropOffLocations: ProcessedDropoffLocation[]) {
   let output = [];
   for (let i = 0; i < drivers.length; i++) {
     const curDriver = drivers[i];
@@ -19,6 +36,7 @@ function processDriversForTable(drivers: ProcessedDriver[]) {
       curDriver.zipCode,
       curDriver.vehicle,
       curDriver.restrictedLocations.join(", "),
+      <Dropdown filters={filters} locations={processedDropOffLocations} />,
     ];
     output.push(curRow);
   }
@@ -36,6 +54,9 @@ export function DriverAndLocationInfo() {
   } = useDriversInfo();
   console.log(driversInfo);
 
+  const { processedDropOffLocations, processedDropOffLocationsStatus, processedDropOffLocationsError } =
+  useDropOffLocations();
+
   if (driversInfoIsLoading) {
     return (
       <div style={{ position: "relative", minHeight: "80vh" }}>
@@ -45,6 +66,18 @@ export function DriverAndLocationInfo() {
   }
   if (driversInfoIsError) {
     console.error(driversInfoError);
+    return <div>Error...</div>;
+  }
+
+  if (processedDropOffLocationsStatus === "loading" || processedDropOffLocationsStatus === "idle") {
+    return (
+      <div style={{ position: "relative", minHeight: "80vh" }}>
+        <Loading size="large" thickness="extra-thicc" />
+      </div>
+    );
+  }
+  if (processedDropOffLocationsStatus === "error") {
+    console.error(processedDropOffLocationsError);
     return <div>Error...</div>;
   }
 
@@ -83,8 +116,9 @@ export function DriverAndLocationInfo() {
           "Zip Code",
           "Vehicle",
           "Restricted Locations",
+          "Assign Location",
         ]}
-        dataRows={processDriversForTable(driversInfo)}
+        dataRows={processDriversForTable(driversInfo, processedDropOffLocations)}
       />
     </div>
   );

@@ -68,3 +68,11 @@ export interface ProcessedDriver {
 export interface Neighborhood {
   "Name": string
 }
+
+export interface DropoffLocation {
+  "Drop Off Location": string
+}
+
+export interface ProcessedDropoffLocation {
+  dropOffLocation: string
+}

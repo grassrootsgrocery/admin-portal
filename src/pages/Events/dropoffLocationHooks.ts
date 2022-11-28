@@ -14,7 +14,7 @@ import {
 function processDropOffLocations(location: Record<DropoffLocation>): ProcessedDropoffLocation {
     return {
      dropOffLocation: location.fields["Drop Off Location"] 
-       ? location.fields["Drop Off Location"]
+       ? location.fields["Drop Off Location"][0]
        : "N/A",
    };
  }
@@ -24,7 +24,7 @@ function processDropOffLocations(location: Record<DropoffLocation>): ProcessedDr
    const dropoffsUrl =
      `${AIRTABLE_URL_BASE}/📍 Drop off locations?` +
      `view=Drop-offs for This Weekend` +
-     `&fields=Drop off location`; 
+     `&fields=Drop off location`; // Name of drop off location
  
    const {
      data: DropOffLocations,
@@ -40,7 +40,7 @@ function processDropOffLocations(location: Record<DropoffLocation>): ProcessedDr
      processDropOffLocations(location)
      );
    }
- 
+
    return {
      processedDropOffLocations,
      processedDropOffLocationsStatus: DropOffLocationsStatus,

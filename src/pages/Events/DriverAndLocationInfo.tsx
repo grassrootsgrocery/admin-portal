@@ -60,6 +60,7 @@ export function DriverAndLocationInfo() {
 
   const { processedDropOffLocations, processedDropOffLocationsStatus, processedDropOffLocationsError } =
   useDropOffLocations();
+  console.log("dropoff locs", processedDropOffLocations);
 
   if (driversInfoIsLoading) {
     return (

@@ -5,25 +5,11 @@ import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 import { useDriversInfo } from "./driverInfoHooks";
 import { useDropOffLocations } from "./dropoffLocationHooks";
 import { Dropdown } from "../../components/AssignDropdown";
-
-const filters = [
-  {
-    label: "Test",
-    filter: (e: ProcessedDropoffLocation) => true,
-  },
-  {
-    label: "Co-op City Fridge",
-    filter: (e: ProcessedDropoffLocation) => true,
-  },
-  {
-    label: "ABC Street",
-    filter: (e: ProcessedDropoffLocation) => true,
-  },
-  {
-    label: "New Settlement Community Center",
-    filter: (e: ProcessedDropoffLocation) => true,
-  },
-];
+ 
+const filters : {
+  label: string;
+  filter: (e: ProcessedDropoffLocation) => boolean;
+}[] = [];
 
 //Takes in ProcessedDriver array and formats data for DataTable component
 function processDriversForTable(drivers: ProcessedDriver[], processedDropOffLocations: ProcessedDropoffLocation[]) {
@@ -85,6 +71,16 @@ export function DriverAndLocationInfo() {
     console.error(processedDropOffLocationsError);
     return <div>Error...</div>;
   }
+
+  processedDropOffLocations.forEach((location) => {
+    let locationName = location.dropOffLocation;
+
+    let locationSelection = {
+      label: locationName,
+      filter: (e: ProcessedDropoffLocation) => true
+    };
+    filters.push(locationSelection);
+  })
 
   return (
     <div className="p-6 lg:px-14 lg:py-10">

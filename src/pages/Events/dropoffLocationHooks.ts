@@ -12,9 +12,10 @@ import {
   } from "../../airtableDataFetchingUtils";
 
 function processDropOffLocations(location: Record<DropoffLocation>): ProcessedDropoffLocation {
+    console.log("fieldss:", location.fields["Drop off location"]);
     return {
-     dropOffLocation: location.fields["Drop Off Location"] 
-       ? location.fields["Drop Off Location"][0]
+     dropOffLocation: location.fields["Drop off location"] 
+       ? location.fields["Drop off location"]
        : "N/A",
    };
  }
@@ -22,10 +23,10 @@ function processDropOffLocations(location: Record<DropoffLocation>): ProcessedDr
  // query for drop off locations from Drop off locations table
  export function useDropOffLocations() {
    const dropoffsUrl =
-     `${AIRTABLE_URL_BASE}/📍 Drop off locations?` +
+     `${AIRTABLE_URL_BASE}/📍 Drop off locations?`+
      `view=Drop-offs for This Weekend` +
-     `&fields=Drop off location`; // Name of drop off location
- 
+     `&fields%5B%5D=Drop off location`; // Name of drop off location
+  
    const {
      data: DropOffLocations,
      status: DropOffLocationsStatus,
@@ -36,9 +37,10 @@ function processDropOffLocations(location: Record<DropoffLocation>): ProcessedDr
  
    let processedDropOffLocations: ProcessedDropoffLocation[] = [];
    if (DropOffLocationsStatus === "success" && DropOffLocations.records !== undefined) {
+     console.log("data:", DropOffLocations.records);
      processedDropOffLocations = DropOffLocations.records.map((location) =>
      processDropOffLocations(location)
-     );
+     ); 
    }
 
    return {

@@ -70,7 +70,7 @@ export interface Neighborhood {
 }
 
 export interface DropoffLocation {
-  "Drop Off Location": string
+  "Drop off location": string
 }
 
 export interface ProcessedDropoffLocation {

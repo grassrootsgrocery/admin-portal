@@ -26,7 +26,7 @@ function processDriversForTable(drivers: ProcessedDriver[], processedDropOffLoca
       curDriver.zipCode,
       curDriver.vehicle,
       curDriver.restrictedLocations.join(", "),
-      <Dropdown filters={filters} locations={processedDropOffLocations} />,
+      <Dropdown filters={filters} locations={processedDropOffLocations} driverId={curDriver.id} />,
     ];
     output.push(curRow);
   }
@@ -72,6 +72,7 @@ export function DriverAndLocationInfo() {
     return <div>Error...</div>;
   }
 
+  // Create selections for each drop off location
   processedDropOffLocations.forEach((location) => {
     let locationName = location.dropOffLocation;
 

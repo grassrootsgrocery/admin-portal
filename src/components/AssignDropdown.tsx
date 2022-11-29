@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { ProcessedDropoffLocation } from "../types";
+import { useMutation } from "react-query";
 import chevron_up from "../assets/chevron-up.svg";
 import chevron_down from "../assets/chevron-down.svg";
 import * as Checkbox from "@radix-ui/react-checkbox";
+
+const key = import.meta.env.VITE_AIRTABLE_API_KEY;
+const AIRTABLE_BASE_ID_DEV = "app18BBTcWqsoNjb2";
+
 
 //Taken from y-knot code base. Used to track click event outside of the dropdown.
 const useClickOutside = (onClickOutside: () => void) => {
@@ -75,9 +80,10 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
 interface Props {
   filters: { label: string; filter: (e: ProcessedDropoffLocation) => boolean }[];
   locations: ProcessedDropoffLocation[];
+  driverId: string;    
 }
 
-export const Dropdown: React.FC<Props> = ({ filters, locations }) => {
+export const Dropdown: React.FC<Props> = ({ filters, locations, driverId }) => {
   const [selectedFilters, setSelectedFilters] = useState(
     Array(filters.length).fill(false)
   );
@@ -99,7 +105,38 @@ export const Dropdown: React.FC<Props> = ({ filters, locations }) => {
     let newSelectedFilters = [...selectedFilters];
     newSelectedFilters[i] = !selectedFilters[i];
     setSelectedFilters(newSelectedFilters);
+    let ids : string[] = [];
+    newSelectedFilters.forEach( (item, idx) => {
+        if (newSelectedFilters[idx] == true) {ids.push(locations[idx].id)} 
+    } )
+    assignLocation.mutate(ids);
   };
+
+  const assignLocation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const data = {
+        records: [
+          {
+            id: driverId,
+            fields: { "📍 Drop off location" : ids },
+          },
+        ],
+      };
+      const json = JSON.stringify(data);
+      const resp = await fetch(
+        `https://api.airtable.com/v0/${AIRTABLE_BASE_ID_DEV}/%F0%9F%93%85%20Scheduled%20Slots`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${key}`,
+          },
+          body: json,
+        }
+      );
+      return resp.json();
+    },
+  });
 
   return (
     <div className="flex h-9 items-start gap-8">
@@ -113,7 +150,7 @@ export const Dropdown: React.FC<Props> = ({ filters, locations }) => {
       <div className="relative">
         <h1
           className={
-            "relative flex w-40 select-none items-center justify-between rounded-lg border bg-newLeafGreen px-2 py-1 font-semibold text-white hover:cursor-pointer hover:brightness-110" +
+            "relative flex w-52 select-none items-center justify-between rounded-lg border bg-newLeafGreen px-2 py-1 font-semibold text-white hover:cursor-pointer hover:brightness-110" +
             (isDropdownOpen ? " brightness-110 z-50" : "z-0")
           }
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -126,7 +163,7 @@ export const Dropdown: React.FC<Props> = ({ filters, locations }) => {
         </h1>
         {
           <ul className={`absolute flex flex-col gap-2 rounded-lg border bg-white shadow-md  ${
-            isDropdownOpen ? "scrollbar-thin py-2 px-1 z-50 h-32 overflow-y-scroll" : "z-0"
+            isDropdownOpen ? "scrollbar-thin py-2 px-1 z-50 h-36 overflow-y-scroll" : "z-0"
             }`}>
             {isDropdownOpen &&
               filters.map((item, i) => (

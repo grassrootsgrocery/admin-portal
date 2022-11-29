@@ -14,6 +14,7 @@ import {
 function processDropOffLocations(location: Record<DropoffLocation>): ProcessedDropoffLocation {
     console.log("fieldss:", location.fields["Drop off location"]);
     return {
+     id: location.id,
      dropOffLocation: location.fields["Drop off location"] 
        ? location.fields["Drop off location"]
        : "N/A",

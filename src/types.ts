@@ -74,5 +74,6 @@ export interface DropoffLocation {
 }
 
 export interface ProcessedDropoffLocation {
+  id: string
   dropOffLocation: string
 }

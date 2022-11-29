@@ -1,9 +1,8 @@
 import * as Checkbox from "@radix-ui/react-checkbox";
 import { useState } from "react";
 import { useMutation } from "react-query";
-import { Loading } from "../../components/Loading";
-import { API_BASE_URL } from "../../httpUtils";
-import check_icon from "../../assets/checkbox-icon.svg";
+import { Loading } from "./Loading";
+import check_icon from "../assets/checkbox-icon.svg";
 
 interface Props {
   checked: boolean;

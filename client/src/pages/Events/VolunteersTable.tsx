@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { DataTable } from "../../components/DataTable";
+import { HttpCheckbox } from "../../components/HttpCheckbox";
+import toast from "react-hot-toast";
+import { API_BASE_URL, applyPatch } from "../../httpUtils";
+//Types
+import { Record, ScheduledSlot } from "../../types";
+//Assets
 import chevron_up from "../../assets/chevron-up.svg";
 import chevron_down from "../../assets/chevron-down.svg";
 import x from "../../assets/x.svg";
-import { Record, ScheduledSlot } from "../../types";
-import { DataTable } from "../../components/DataTable";
-import { HttpCheckbox } from "./HttpCheckbox";
-import toast, { Toaster } from "react-hot-toast";
-import { API_BASE_URL } from "../../httpUtils";
 
 /*
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
@@ -218,21 +220,6 @@ export const VolunteersTable: React.FC<Props> = ({
       return new Date(timeslot).toLocaleString("en-US", optionsTime);
     }
 
-    const applyPatch = (url: string, body: any) => async () => {
-      const resp = await fetch(url, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      if (!resp.ok) {
-        const data = await resp.json();
-        throw new Error(data.message);
-      }
-      return resp.json();
-    };
-
     let rows = [];
     for (let i = 0; i < scheduledSlots.length; i++) {
       const ss = scheduledSlots[i];
@@ -280,8 +267,8 @@ export const VolunteersTable: React.FC<Props> = ({
           onSuccess={() => {
             const toastMessage = `${first} ${last} ${
               ss.fields["Can't Come"]
-                ? "is unable to volunteer"
-                : "is able to volunteer"
+                ? "is able to volunteer"
+                : "is unable to volunteer"
             }`;
             refetchVolunteers();
             toastNotify(toastMessage, true);
@@ -354,7 +341,7 @@ export const VolunteersTable: React.FC<Props> = ({
           {filters.map((item, i) => (
             <FilterButton
               key={i}
-              selected={filters[i].isSelected}
+              selected={item.isSelected}
               onSelect={() => onFilterSelect(i)}
               filterLabel={item.label}
             />

@@ -22,6 +22,10 @@ export function Messaging() {
     const resp = await fetch(
       `${API_BASE_URL}/api/messaging/volunteer-recruitment-text`
     );
+    if (!resp.ok) {
+      const data = await resp.json();
+      throw new Error(data.message);
+    }
     return resp.json();
   });
   const {
@@ -32,6 +36,10 @@ export function Messaging() {
     const resp = await fetch(
       `${API_BASE_URL}/api/messaging/coordinator-recruitment-text`
     );
+    if (!resp.ok) {
+      const data = await resp.json();
+      throw new Error(data.message);
+    }
     return resp.json();
   });
 
@@ -43,10 +51,7 @@ export function Messaging() {
     coordinatorRecruitmentTextStatus === "loading" ||
     coordinatorRecruitmentTextStatus === "idle";
 
-  if (!coordinatorTextLoading) {
-    console.log(coordinatorRecruitmentTextData);
-  }
-
+  //UI
   return (
     <div className="flex h-1/3 flex-col gap-4">
       <h1 className={sectionHeader}>Recruitment</h1>
@@ -61,10 +66,6 @@ export function Messaging() {
           ) : (
             <textarea
               className={textArea}
-              // defaultValue={
-              //   coordinatorRecruitmentTextData.response.blueprint.flow[4].mapper
-              //     .body
-              // }
               defaultValue={coordinatorRecruitmentTextData}
             />
           )}

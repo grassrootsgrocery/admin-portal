@@ -10,6 +10,5 @@ export const AIRTABLE_URL_BASE = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID
 /* Because I'm not sure that we want to display error messages from Airtable on the client, this is the 
 default error message that we will use when a request to Airtable fails
 */
-
 export const AIRTABLE_ERROR_MESSAGE =
   "There was a problem fetching data from Airtable";

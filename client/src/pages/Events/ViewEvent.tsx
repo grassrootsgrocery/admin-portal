@@ -25,6 +25,10 @@ function useFutureEventById(eventId: string | undefined) {
     error: futureEventsError,
   } = useQuery(["fetchFutureEvents"], async () => {
     const response = await fetch(`${API_BASE_URL}/api/events`);
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message);
+    }
     return response.json() as Promise<ProcessedEvent[]>;
   });
 
@@ -73,6 +77,10 @@ export function ViewEvent() {
       const response = await fetch(
         `${API_BASE_URL}/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`
       );
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
       return response.json() as Promise<AirtableResponse<ScheduledSlot>>;
     },
     { enabled: eventStatus === "success" }

@@ -1,12 +1,15 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
-import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
+import {
+  AIRTABLE_ERROR_MESSAGE,
+  AIRTABLE_URL_BASE,
+} from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
-
+//Status codes
+import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
 //Types
 import { AirtableResponse, Record, Event, ProcessedEvent } from "../types";
-import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
 
 const router = express.Router();
 
@@ -120,47 +123,43 @@ router.route("/api/events").get(
       `&fields=Special Event` + // isSpecialEvent
       `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
 
-    try {
-      const resp = await fetch(url, {
-        headers: {
-          method: "GET",
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        },
-      });
-      const futureEventsData = (await resp.json()) as AirtableResponse<Event>;
-      let futureEvents: ProcessedEvent[] = [];
-      let generalEvents = futureEventsData.records.filter(
-        (event) => !event.fields["Special Event"]
-      );
-      let specialEvents = futureEventsData.records.filter(
-        (event) => event.fields["Special Event"]
-      );
-
-      futureEvents = generalEvents.map((generalEvent) =>
-        processSpecialEventsData(
-          processGeneralEventData(generalEvent),
-          specialEvents.filter(
-            (specialEvent) =>
-              specialEvent.fields["Pickup Address"][0] ==
-                generalEvent.fields["Pickup Address"][0] &&
-              specialEvent.fields["Start Time"] ==
-                generalEvent.fields["Start Time"]
-          )
-        )
-      );
-
-      futureEvents.forEach((event) => processPackerAndDriverCounts(event));
-      futureEvents.sort((a, b) => (a.date < b.date ? -1 : 1));
-      res.status(OK).json(futureEvents);
-    } catch (error) {
-      console.error(error);
-      res.status(INTERNAL_SERVER_ERROR);
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      } else {
-        throw new Error("Something went wrong on server.");
-      }
+    const resp = await fetch(url, {
+      headers: {
+        method: "GET",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+    });
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
     }
+    const futureEventsData = (await resp.json()) as AirtableResponse<Event>;
+    let futureEvents: ProcessedEvent[] = [];
+    let generalEvents = futureEventsData.records.filter(
+      (event) => !event.fields["Special Event"]
+    );
+    let specialEvents = futureEventsData.records.filter(
+      (event) => event.fields["Special Event"]
+    );
+
+    futureEvents = generalEvents.map((generalEvent) =>
+      processSpecialEventsData(
+        processGeneralEventData(generalEvent),
+        specialEvents.filter(
+          (specialEvent) =>
+            specialEvent.fields["Pickup Address"][0] ==
+              generalEvent.fields["Pickup Address"][0] &&
+            specialEvent.fields["Start Time"] ==
+              generalEvent.fields["Start Time"]
+        )
+      )
+    );
+
+    futureEvents.forEach((event) => processPackerAndDriverCounts(event));
+    futureEvents.sort((a, b) => (a.date < b.date ? -1 : 1));
+    res.status(OK).json(futureEvents);
   })
 );
 

@@ -32,6 +32,7 @@ export interface ScheduledSlot {
   "Volunteer Status": string;
   Email: string;
   "Volunteer Group (for MAKE)": string;
+  "Can't Come": boolean
 }
 export interface ProcessedDriver {
   id: string;

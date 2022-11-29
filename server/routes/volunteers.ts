@@ -1,9 +1,10 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
-import { AIRTABLE_URL_BASE } from "./airtableUtils";
-import { fetch } from "./nodeFetch";
-
+import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
+import { fetch } from "../httpUtils/nodeFetch";
+//Status codes
+import { BAD_REQUEST, OK } from "../httpUtils/statusCodes";
 //Types
 import {
   AirtableResponse,
@@ -13,9 +14,10 @@ import {
   ScheduledSlot,
   Neighborhood,
 } from "../types";
+//Error messages
+import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
 
 const router = express.Router();
-
 /**
  * @description Get all volunteers for event
  * @route  GET /api/volunteers/
@@ -25,6 +27,16 @@ router.route("/api/volunteers/").get(
   asyncHandler(async (req: Request, res: Response) => {
     const { scheduledSlotsIds } = req.query;
     console.log(`GET /api/volunteers/?${scheduledSlotsIds}`);
+
+    const isValidRequest =
+      scheduledSlotsIds && typeof scheduledSlotsIds === "string";
+    if (!isValidRequest) {
+      res.status(BAD_REQUEST);
+      throw new Error(
+        "Please provide a 'scheduledSlotsIds' as a query param of type 'string'."
+      );
+    }
+
     const url =
       `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
       `filterByFormula=SEARCH(RECORD_ID(), "${scheduledSlotsIds}") != ""` +
@@ -34,27 +46,24 @@ router.route("/api/volunteers/").get(
       `&fields=Type` +
       `&fields=Confirmed?` +
       `&fields=Volunteer Status` +
+      `&fields=Can't Come` +
       `&fields=Email` +
       `&fields=Volunteer Group (for MAKE)`;
 
-    try {
-      const resp = await fetch(url, {
-        headers: {
-          method: "GET",
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        },
-      });
-      const volunteers = (await resp.json()) as AirtableResponse<ScheduledSlot>;
-      res.status(200).json(volunteers);
-    } catch (error) {
-      console.error(error);
-      res.status(500);
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      } else {
-        throw new Error("Something went wrong on server.");
-      }
+    const resp = await fetch(url, {
+      headers: {
+        method: "GET",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+    });
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
     }
+    const volunteers = (await resp.json()) as AirtableResponse<ScheduledSlot>;
+    res.status(OK).json(volunteers);
   })
 );
 
@@ -67,36 +76,96 @@ router.route("/api/volunteers/confirm/:volunteerId").patch(
   asyncHandler(async (req: Request, res: Response) => {
     const { volunteerId } = req.params;
     const { newConfirmationStatus } = req.body;
-    console.log(`PATCH /api/volunteers/${volunteerId}`);
-    try {
-      const data = {
-        records: [
-          {
-            id: volunteerId,
-            fields: { "Confirmed?": newConfirmationStatus },
-          },
-        ],
-      };
-      const json = JSON.stringify(data);
-      const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slots`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        },
-        body: json,
-      });
-      const result = await resp.json();
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500);
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      } else {
-        throw new Error("Something went wrong on server.");
-      }
+    console.log(`PATCH /api/volunteers/confirm/${volunteerId}`);
+
+    const isValidRequest =
+      volunteerId &&
+      typeof volunteerId === "string" &&
+      typeof newConfirmationStatus === "boolean";
+
+    if (!isValidRequest) {
+      res.status(BAD_REQUEST);
+      throw new Error(
+        "Please provide a 'volunteerId' as a query param and a 'newConfirmationStatus' on the body."
+      );
     }
+
+    const data = {
+      records: [
+        {
+          id: volunteerId,
+          fields: { "Confirmed?": newConfirmationStatus },
+        },
+      ],
+    };
+    const json = JSON.stringify(data);
+    const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slots`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+      body: json,
+    });
+    const result = await resp.json();
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
+    }
+    res.status(OK).json(result);
+  })
+);
+
+/**
+ * @description Mark a volunteer as "Not Going" for an event
+ * @route  PATCH /api/volunteers/going/:volunteerId
+ * @access
+ */
+router.route("/api/volunteers/going/:volunteerId").patch(
+  asyncHandler(async (req: Request, res: Response) => {
+    const { volunteerId } = req.params;
+    const { newGoingStatus } = req.body;
+    console.log(`PATCH /api/volunteers/going/${volunteerId}`);
+
+    const isValidRequest =
+      volunteerId &&
+      typeof volunteerId === "string" &&
+      typeof newGoingStatus === "boolean";
+
+    if (!isValidRequest) {
+      res.status(BAD_REQUEST);
+      throw new Error(
+        "Please provide a 'volunteerId' as a query param and a 'newGoingStatus' on the body."
+      );
+    }
+
+    const data = {
+      records: [
+        {
+          id: volunteerId,
+          fields: { "Can't Come": newGoingStatus },
+        },
+      ],
+    };
+    const json = JSON.stringify(data);
+    const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slots`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+      body: json,
+    });
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
+    }
+    const result = await resp.json();
+    res.status(OK).json(result);
   })
 );
 
@@ -132,7 +201,7 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {
 }
 
 /**
- * @description
+ * @description Get all the drivers for an event
  * @route  GET /api/volunteers/drivers
  * @access
  */
@@ -141,8 +210,8 @@ router.route("/api/volunteers/drivers").get(
     console.log("GET /api/volunteers/drivers");
     const url =
       `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
-      //`view=Assign Location ` + // tested with view "Drivers - Last Week"
-      `view=Drivers - Last Week` +
+      `view=Assign Location ` + // tested with view "Drivers - Last Week"
+      //`view=Drivers - Last Week` +
       // Get fields for driver info table
       `&fields=First Name` + // First Name
       `&fields=Last Name` + // Last Name
@@ -152,30 +221,26 @@ router.route("/api/volunteers/drivers").get(
       `&fields=Transportation Types` + // Vehicle
       `&fields=Restricted Neighborhoods`; // Restricted Locations
 
-    try {
-      const resp = await fetch(url, {
-        headers: {
-          method: "GET",
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        },
-      });
-      const drivers = (await resp.json()) as AirtableResponse<Driver>;
-      let processedDrivers = drivers.records.map((driver) =>
-        processDriverData(driver)
-      );
-      processedDrivers.sort((driver1, driver2) =>
-        driver1.firstName < driver2.firstName ? -1 : 1
-      );
-      res.status(200).json(processedDrivers);
-    } catch (error) {
-      console.error(error);
-      res.status(500);
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      } else {
-        throw new Error("Something went wrong on server.");
-      }
+    const resp = await fetch(url, {
+      headers: {
+        method: "GET",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+    });
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
     }
+    const drivers = (await resp.json()) as AirtableResponse<Driver>;
+    let processedDrivers = drivers.records.map((driver) =>
+      processDriverData(driver)
+    );
+    processedDrivers.sort((driver1, driver2) =>
+      driver1.firstName < driver2.firstName ? -1 : 1
+    );
+    res.status(OK).json(processedDrivers);
   })
 );
 
@@ -189,30 +254,34 @@ router.route("/api/neighborhoods").get(
     const { neighborhoodIds } = req.query;
     console.log(`GET /api/neighborhoods ${neighborhoodIds}`);
 
+    const isValidRequest =
+      neighborhoodIds && typeof neighborhoodIds === "string";
+    if (!isValidRequest) {
+      res.status(BAD_REQUEST);
+      throw new Error(
+        "Please provide a 'neighborhoodIds' as a query param of type 'string'."
+      );
+    }
+
     const url =
       `${AIRTABLE_URL_BASE}/🏡 Neighborhoods?` +
       `filterByFormula=SEARCH(RECORD_ID(), "${neighborhoodIds}") != ""` +
       `&fields%5B%5D=Name`;
 
-    try {
-      const resp = await fetch(url, {
-        headers: {
-          method: "GET",
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        },
-      });
-      const neighborhoods =
-        (await resp.json()) as AirtableResponse<Neighborhood>;
-      res.status(200).json(neighborhoods);
-    } catch (error) {
-      console.error(error);
-      res.status(500);
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      } else {
-        throw new Error("Something went wrong on server.");
-      }
+    const resp = await fetch(url, {
+      headers: {
+        method: "GET",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+    });
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
     }
+    const neighborhoods = (await resp.json()) as AirtableResponse<Neighborhood>;
+    res.status(OK).json(neighborhoods);
   })
 );
 

@@ -16,6 +16,10 @@ export function Events() {
     error: futureEventsError,
   } = useQuery(["fetchFutureEvents"], async () => {
     const response = await fetch(`${API_BASE_URL}/api/events`);
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message);
+    }
     return response.json() as Promise<ProcessedEvent[]>;
   });
 

@@ -1,7 +1,8 @@
 import { Link, useParams } from "react-router-dom";
-import { AirtableResponse, ProcessedEvent, ScheduledSlot } from "../../types";
 import { useQuery } from "react-query";
 
+//Types
+import { AirtableResponse, ProcessedEvent, ScheduledSlot } from "../../types";
 //Components
 import { Loading } from "../../components/Loading";
 import { VolunteersTable } from "./VolunteersTable";
@@ -24,6 +25,10 @@ function useFutureEventById(eventId: string | undefined) {
     error: futureEventsError,
   } = useQuery(["fetchFutureEvents"], async () => {
     const response = await fetch(`${API_BASE_URL}/api/events`);
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message);
+    }
     return response.json() as Promise<ProcessedEvent[]>;
   });
 
@@ -72,6 +77,10 @@ export function ViewEvent() {
       const response = await fetch(
         `${API_BASE_URL}/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`
       );
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
       return response.json() as Promise<AirtableResponse<ScheduledSlot>>;
     },
     { enabled: eventStatus === "success" }
@@ -127,7 +136,7 @@ export function ViewEvent() {
           value={event.numtotalParticipants}
         />
       </div>
-      <div className="h-12 " />
+      <div className="h-12" />
       {/* Participant Breakdown */}
       <h1 className={sectionHeader}>
         <img className={sectionHeaderIcon} src={people} alt="people" />

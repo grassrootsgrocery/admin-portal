@@ -9,6 +9,10 @@ export function useDriversInfo() {
     error: processedDriversError,
   } = useQuery(["fetchDriverInfo"], async () => {
     const response = await fetch(`${API_BASE_URL}/api/volunteers/drivers`);
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message);
+    }
     return response.json() as Promise<ProcessedDriver[]>;
   });
 
@@ -29,6 +33,10 @@ export function useDriversInfo() {
       const response = await fetch(
         `${API_BASE_URL}/api/neighborhoods?neighborhoodIds=${neighborhoodIds}`
       );
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.messsage);
+      }
       return response.json() as Promise<AirtableResponse<Neighborhood>>;
     },
     {

@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { DataTable } from "../../components/DataTable";
+import { HttpCheckbox } from "../../components/HttpCheckbox";
+import toast from "react-hot-toast";
+import { API_BASE_URL, applyPatch } from "../../httpUtils";
+//Types
+import { Record, ScheduledSlot } from "../../types";
+//Assets
 import chevron_up from "../../assets/chevron-up.svg";
 import chevron_down from "../../assets/chevron-down.svg";
 import x from "../../assets/x.svg";
-import { Record, ScheduledSlot } from "../../types";
-import { DataTable } from "../../components/DataTable";
-import { ConfirmVolunteerCheckbox } from "./ConfirmVolunteerCheckbox";
-import toast, { Toaster } from "react-hot-toast";
 
 /*
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
@@ -141,8 +144,8 @@ function createDropdownFilters(scheduledSlots: Record<ScheduledSlot>[]) {
       let groupFilter = {
         label: specialGroup,
         isSelected: false,
-        filter: (e: Record<ScheduledSlot>) =>
-          e.fields["Volunteer Group (for MAKE)"] === specialGroup,
+        filter: (ss: Record<ScheduledSlot>) =>
+          ss.fields["Volunteer Group (for MAKE)"] === specialGroup,
       };
       dropdownFilters.push(groupFilter);
     }
@@ -216,55 +219,78 @@ export const VolunteersTable: React.FC<Props> = ({
       } as const;
       return new Date(timeslot).toLocaleString("en-US", optionsTime);
     }
-    function onConfirmVolunteerSuccess(toastMessage: string) {
-      refetchVolunteers();
-      toastNotify(toastMessage, true);
-    }
 
-    function onConfirmVolunteerError() {
-      toastNotify("Unable to confirm volunteer", false);
-    }
-
-    let output = [];
+    let rows = [];
     for (let i = 0; i < scheduledSlots.length; i++) {
       const ss = scheduledSlots[i];
-      let cur = [
-        ss.id, //id
-        i + 1, //#
-        ss.fields["First Name"], //First Name
-        ss.fields["Last Name"], //Last Name
+      const first = ss.fields["First Name"] || "";
+      const last = ss.fields["Last Name"] || "";
 
+      let curRow = [
+        /* id */
+        ss.id,
+        /* # */
+        i + 1,
+        /* First Name */
+        first,
+        /* Last Name */
+        last,
+        /* Time Slot */
         ss.fields["Correct slot time"]["error"]
           ? "Error!"
-          : getTimeSlot(ss.fields["Correct slot time"]), //Time Slot
-        getParticipantType(ss.fields["Type"]), //Participant Type
-        <ConfirmVolunteerCheckbox
-          volunteerId={ss.id}
+          : getTimeSlot(ss.fields["Correct slot time"]),
+        /* Participant Type */
+        getParticipantType(ss.fields["Type"]),
+        /* Confirmed Checkbox */
+        <HttpCheckbox
           checked={ss.fields["Confirmed?"]}
-          onSuccess={() =>
-            onConfirmVolunteerSuccess(
-              `${ss.fields["First Name"] || ""} ${
-                ss.fields["Last Name"] || ""
-              } ${ss.fields["Confirmed?"] ? "unconfirmed" : "confirmed"}`
-            )
-          }
-          onError={() => onConfirmVolunteerError()}
-        />, //Confirmed
-        "Not Going", //TODO: Not Going
-        ss.fields["Volunteer Group (for MAKE)"] || "N/A", // Special Group
-        "IDK", //TODO: Delivery Count
-        ss.fields["Email"], //TODO: Contact
+          mutationFn={applyPatch(
+            `${API_BASE_URL}/api/volunteers/confirm/${ss.id}`,
+            { newConfirmationStatus: !ss.fields["Confirmed?"] }
+          )}
+          onSuccess={() => {
+            const toastMessage = `${first} ${last} ${
+              ss.fields["Confirmed?"] ? "unconfirmed" : "confirmed"
+            }`;
+            refetchVolunteers();
+            toastNotify(toastMessage, true);
+          }}
+          onError={() => toastNotify("Unable to confirm volunteer", false)}
+        />,
+        /* Not Going Checkbox */
+        <HttpCheckbox
+          checked={ss.fields["Can't Come"]}
+          mutationFn={applyPatch(
+            `${API_BASE_URL}/api/volunteers/going/${ss.id}`,
+            { newGoingStatus: !ss.fields["Can't Come"] }
+          )}
+          onSuccess={() => {
+            const toastMessage = `${first} ${last} ${
+              ss.fields["Can't Come"]
+                ? "is able to volunteer"
+                : "is unable to volunteer"
+            }`;
+            refetchVolunteers();
+            toastNotify(toastMessage, true);
+          }}
+          onError={() => toastNotify("Unable to modify availability", false)}
+        />,
+        /* Special Group */
+        ss.fields["Volunteer Group (for MAKE)"] || "N/A",
+        /* Deliver Count */
+        "IDK",
+        /* TODO: Contact Modal */
+        ss.fields["Email"],
       ];
-      output.push(cur);
+
+      rows.push(curRow);
     }
-    return output;
+    return rows;
   }
 
   // UI
   return (
     <div className="flex h-screen flex-col pt-6">
-      {/* Toast that appears when a volunteer is confirmed or unconfirmed */}
-      <Toaster />
       {/* Filtering */}
       <div
         className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4"
@@ -296,7 +322,7 @@ export const VolunteersTable: React.FC<Props> = ({
                 filters.map((item, i) => (
                   <FilterItem
                     key={i}
-                    selected={filters[i].isSelected}
+                    selected={item.isSelected}
                     onSelect={() => onFilterSelect(i)}
                     filterLabel={item.label}
                   />
@@ -315,7 +341,7 @@ export const VolunteersTable: React.FC<Props> = ({
           {filters.map((item, i) => (
             <FilterButton
               key={i}
-              selected={filters[i].isSelected}
+              selected={item.isSelected}
               onSelect={() => onFilterSelect(i)}
               filterLabel={item.label}
             />

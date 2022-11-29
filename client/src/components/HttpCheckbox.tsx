@@ -1,9 +1,11 @@
-import * as Checkbox from "@radix-ui/react-checkbox";
+import { Checkbox } from "./Checkbox";
 import { useState } from "react";
 import { useMutation } from "react-query";
 import { Loading } from "./Loading";
-import check_icon from "../assets/checkbox-icon.svg";
 
+/* 
+A checkbox that makes an http request when checked using. Keeps track of a loading state. 
+*/
 interface Props {
   checked: boolean;
   mutationFn: () => Promise<any>;
@@ -28,21 +30,14 @@ export const HttpCheckbox: React.FC<Props> = ({
       onError();
     },
   });
+
+  //UI
   return (
     <div className="relative flex h-full justify-center">
       {httpRequest.status === "loading" ? (
         <Loading size="xsmall" thickness="thin" />
       ) : (
-        <Checkbox.Root
-          className="flex h-5 w-5 items-center justify-center rounded border-2 border-newLeafGreen bg-softGrayWhite shadow-md hover:brightness-110"
-          checked={isChecked}
-          id="c1"
-          onClick={() => httpRequest.mutate()}
-        >
-          <Checkbox.Indicator className="CheckboxIndicator">
-            <img src={check_icon} alt="" />
-          </Checkbox.Indicator>
-        </Checkbox.Root>
+        <Checkbox isChecked={isChecked} onClick={() => httpRequest.mutate()} />
       )}
     </div>
   );

@@ -1,27 +1,27 @@
 import { useEffect, useRef, useState } from "react";
-import { ProcessedDropoffLocation } from "../types";
-import { useMutation } from "react-query";
+//Assets
 import chevron_up from "../assets/chevron-up.svg";
 import chevron_down from "../assets/chevron-down.svg";
-import * as Checkbox from "@radix-ui/react-checkbox";
-import checkbox_icon from "../../assets/checkbox-icon.svg";
-import { API_BASE_URL, applyPatch } from "../httpUtils";
 
-interface FilterItemProps {
+interface DropdownItemProps {
+  isSelected: boolean;
   onSelect: () => void;
-  filterLabel: string;
-  selected: boolean;
+  content: JSX.Element;
 }
-const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
-  const { filterLabel, selected, onSelect } = props;
+const DropdownItem: React.FC<DropdownItemProps> = ({
+  isSelected,
+  onSelect,
+  content,
+}: DropdownItemProps) => {
   return (
     <li
       className={`flex min-w-fit shrink-0 items-center gap-1 rounded-lg border border-newLeafGreen px-2 text-left font-semibold shadow-md hover:cursor-pointer hover:brightness-110 ${
-        selected ? "bg-newLeafGreen text-white" : "bg-white text-newLeafGreen"
+        isSelected ? "bg-newLeafGreen text-white" : "bg-white text-newLeafGreen"
       }`}
       onClick={onSelect}
     >
-      <div className="w-10/12">{filterLabel}</div>
+      {content}
+      {/* <div className="w-10/12">{filterLabel}</div>
       <Checkbox.Root
         className={`ml-auto flex h-4 w-4 items-end justify-end rounded border border-newLeafGreen hover:brightness-110 ${
           selected ? "bg-white" : "bg-softGrayWhite"
@@ -32,54 +32,52 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
         <Checkbox.Indicator className="CheckboxIndicator">
           <img src={checkbox_icon} alt="" />
         </Checkbox.Indicator>
-      </Checkbox.Root>
+      </Checkbox.Root> */}
     </li>
   );
 };
 
-interface Props {
-  filters: { label: string }[];
-  locations: ProcessedDropoffLocation[];
-  driverId: string;
-}
+//Taken from y-knot code base. Used to track click event outside of the dropdown.
+const useClickOutside = (onClickOutside: () => void) => {
+  const domNodeRef = useRef<any>(null);
 
-export const AssignLocationDropdown: React.FC<Props> = ({
-  filters,
-  locations,
-  driverId,
-}) => {
-  const [selectedFilters, setSelectedFilters] = useState(
-    Array(filters.length).fill(false)
-  );
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [filtered, setFiltered] = useState(locations);
-  //const [dropdownRef] = useClickOutside(() => setIsDropdownOpen(false));
-
-  useEffect(() => {
-    let filteredItems = locations;
-    setFiltered(filteredItems);
-  }, selectedFilters);
-
-  const onFilterSelect = (i: number) => {
-    let newSelectedFilters = [...selectedFilters];
-    newSelectedFilters[i] = !selectedFilters[i];
-    setSelectedFilters(newSelectedFilters);
-    let ids: string[] = [];
-    newSelectedFilters.forEach((item, idx) => {
-      if (newSelectedFilters[idx] == true) {
-        ids.push(locations[idx].id);
-      }
-    });
-    assignLocation.mutate(ids);
+  const clickedOutsideDomNodes = (e: any) => {
+    return !domNodeRef.current || !domNodeRef.current.contains(e.target);
+  };
+  //Because I gave up on trying to get the types to work.
+  const handleClick = (e: any) => {
+    e.preventDefault();
+    if (clickedOutsideDomNodes(e)) {
+      onClickOutside();
+    }
   };
 
-  const assignLocation = useMutation({
-    mutationFn: async (ids: string[]) =>
-      applyPatch(
-        `${API_BASE_URL}/api/volunteers/drivers/assign-location/${driverId}`,
-        { locationIds: ids }
-      )(),
-  });
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return [domNodeRef];
+};
+
+interface Props {
+  dropdownItems: { onSelect: () => void; content: JSX.Element }[];
+}
+export const MultiselectDropdown: React.FC<Props> = ({
+  dropdownItems,
+}: Props) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selected, setSelected] = useState(
+    Array(dropdownItems.length).fill(false)
+  );
+  const [dropdownRef] = useClickOutside(() => setIsDropdownOpen(false));
+
+  const onItemSelect = (idx: number) => {
+    const newSelected = [...selected];
+    newSelected[idx] = !selected[idx];
+    setSelected(newSelected);
+    dropdownItems[idx].onSelect();
+  };
 
   return (
     <div className="flex h-9 items-start gap-8">
@@ -87,7 +85,7 @@ export const AssignLocationDropdown: React.FC<Props> = ({
         className={`flex flex-col items-start ${
           isDropdownOpen ? "z-50" : "z-0"
         }`}
-        //ref={dropdownRef}
+        ref={dropdownRef}
       >
         {/* Dropdown */}
         <div className="relative">
@@ -114,12 +112,12 @@ export const AssignLocationDropdown: React.FC<Props> = ({
               }`}
             >
               {isDropdownOpen &&
-                filters.map((item, i) => (
-                  <FilterItem
+                dropdownItems.map((item, i) => (
+                  <DropdownItem
                     key={i}
-                    selected={selectedFilters[i]}
-                    onSelect={() => onFilterSelect(i)}
-                    filterLabel={item.label}
+                    isSelected={selected[i]}
+                    onSelect={() => onItemSelect(i)}
+                    content={item.content}
                   />
                 ))}
             </ul>

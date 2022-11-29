@@ -119,7 +119,7 @@ router.route("/api/volunteers/confirm/:volunteerId").patch(
 );
 
 /**
- * @description Mark a volunteer as "Not Going" for an event
+ * @description Update the "Can't Come" status for a volunteer  for a particular event
  * @route  PATCH /api/volunteers/going/:volunteerId
  * @access
  */
@@ -244,6 +244,51 @@ router.route("/api/volunteers/drivers").get(
   })
 );
 
+/**
+ * @description Assign a driver a dropoff location
+ * @route  GET /api/volunteers/drivers/assign-location/:driverId
+ * @access
+ */
+router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
+  asyncHandler(async (req: Request, res: Response) => {
+    const { driverId } = req.params;
+    const { locationIds } = req.body;
+
+    const isValidRequest =
+      locationIds && driverId && typeof driverId === "string"; //&& typeof locationIds === "string[]";
+    if (!isValidRequest) {
+      res.status(BAD_REQUEST);
+      throw new Error(
+        "Please provide a 'locationIds' on the request body with type string[]"
+      );
+    }
+    console.log(`PATCH /api/volunteers/drivers/assign-location/${driverId}`);
+
+    const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slots`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+      body: JSON.stringify({
+        records: [
+          {
+            id: driverId,
+            fields: { "📍 Drop off location": locationIds },
+          },
+        ],
+      }),
+    });
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
+    }
+    const result = await resp.json();
+    res.status(OK).json(result);
+  })
+);
 /**
  * @description
  * @route  GET /api/neighborhoods

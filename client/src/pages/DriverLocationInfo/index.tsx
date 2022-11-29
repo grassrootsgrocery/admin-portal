@@ -3,8 +3,10 @@ import { DataTable } from "../../components/DataTable";
 import { Loading } from "../../components/Loading";
 import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 import { useDriversInfo } from "./driverInfoHooks";
-import { useDropOffLocations } from "./dropoffLocationHooks";
+// import { useDropOffLocations } from "./dropoffLocationHooks";
 import { Dropdown } from "../../components/AssignDropdown";
+import { useQuery } from "react-query";
+import { API_BASE_URL } from "../../httpUtils";
 
 const filters: {
   label: string;
@@ -51,45 +53,42 @@ export default function DriverAndLocationInfo() {
   console.log("driversInfo", driversInfo);
 
   const {
-    processedDropOffLocations,
-    processedDropOffLocationsStatus,
-    processedDropOffLocationsError,
-  } = useDropOffLocations();
-  console.log("dropoff locs", processedDropOffLocations);
+    data: dropoffLocations,
+    status: dropoffLocationsStatus,
+    error: dropoffLocationsError,
+  } = useQuery(["fetchDropOffLocations"], async () => {
+    const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations`);
+    if (!resp.ok) {
+      const data = await resp.json();
+      throw new Error(data.messsage);
+    }
+    return resp.json() as Promise<ProcessedDropoffLocation[]>;
+  });
 
-  if (driversInfoIsLoading) {
+  if (
+    driversInfoIsLoading ||
+    dropoffLocationsStatus === "loading" ||
+    dropoffLocationsStatus === "idle"
+  ) {
     return (
-      <div style={{ position: "relative", minHeight: "80vh" }}>
+      // <div style={{ position: "relative", minHeight: "80vh" }}>
+      <div className="relative h-full">
         <Loading size="large" thickness="extra-thicc" />
       </div>
     );
   }
-  if (driversInfoIsError) {
-    console.error(driversInfoError);
+  if (driversInfoIsError || dropoffLocationsStatus === "error") {
+    const error = driversInfoError || dropoffLocationsError;
+    console.error(error);
     return <div>Error...</div>;
   }
+  //This shouldn't be necessary but TypeScript isn't smart enough to know that this can't undefined
   if (driversInfo === undefined) {
     console.error("driversInfo is undefined");
     return <div>Error...</div>;
   }
-
-  if (
-    processedDropOffLocationsStatus === "loading" ||
-    processedDropOffLocationsStatus === "idle"
-  ) {
-    return (
-      <div style={{ position: "relative", minHeight: "80vh" }}>
-        <Loading size="large" thickness="extra-thicc" />
-      </div>
-    );
-  }
-  if (processedDropOffLocationsStatus === "error") {
-    console.error(processedDropOffLocationsError);
-    return <div>Error...</div>;
-  }
-
   // Create selections for each drop off location
-  processedDropOffLocations.forEach((location) => {
+  dropoffLocations.forEach((location) => {
     let locationName = location.dropOffLocation;
 
     let locationSelection = {
@@ -135,10 +134,7 @@ export default function DriverAndLocationInfo() {
           "Restricted Locations",
           "Assign Location",
         ]}
-        dataRows={processDriversForTable(
-          driversInfo,
-          processedDropOffLocations
-        )}
+        dataRows={processDriversForTable(driversInfo, dropoffLocations)}
       />
     </div>
   );

@@ -18,6 +18,7 @@ import { Login } from "./pages/Login";
 import Events from "./pages/Events";
 import ViewEvent from "./pages/ViewEvent";
 import DriverAndLocationInfo from "./pages/DriverLocationInfo";
+import { Test } from "./Test";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
                 path="/events/driver-location-info/:eventId"
                 element={<DriverAndLocationInfo />}
               />
+              <Route path="/jason" element={<Test />} />
             </Routes>
           </div>
           <ReactQueryDevtools initialIsOpen={false} />

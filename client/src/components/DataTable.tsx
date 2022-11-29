@@ -1,8 +1,6 @@
 import React from "react";
 import { AirtableResponse, ScheduledSlot } from "../types";
 
-import "./DataTable.css";
-
 interface Props {
   columnHeaders: string[];
   dataRows: (string | number | JSX.Element)[][];

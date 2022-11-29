@@ -15,9 +15,9 @@ import { Navbar } from "./components/Navbar/Navbar";
 import { Toaster } from "react-hot-toast";
 //Pages
 import { Login } from "./pages/Login";
-import { Events } from "./pages/Events/Events";
-import { ViewEvent } from "./pages/Events/ViewEvent";
-import { DriverAndLocationInfo } from "./pages/Events/DriverAndLocationInfo";
+import Events from "./pages/Events";
+import ViewEvent from "./pages/ViewEvent";
+import DriverAndLocationInfo from "./pages/DriverLocationInfo";
 
 function App() {
   return (

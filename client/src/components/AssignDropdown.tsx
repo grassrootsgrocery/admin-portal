@@ -4,10 +4,10 @@ import { useMutation } from "react-query";
 import chevron_up from "../assets/chevron-up.svg";
 import chevron_down from "../assets/chevron-down.svg";
 import * as Checkbox from "@radix-ui/react-checkbox";
+import checkbox_icon from "../../assets/checkbox-icon.svg";
 
 const key = import.meta.env.VITE_AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID_DEV = "app18BBTcWqsoNjb2";
-
 
 //Taken from y-knot code base. Used to track click event outside of the dropdown.
 const useClickOutside = (onClickOutside: () => void) => {
@@ -46,41 +46,26 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
       }`}
       onClick={onSelect}
     >
-      <div className="w-10/12">
-      {filterLabel}
-      </div>  
+      <div className="w-10/12">{filterLabel}</div>
       <Checkbox.Root
-          className={`flex h-4 w-4 ml-auto items-end justify-end rounded border border-newLeafGreen hover:brightness-110 ${
-            selected ? "bg-white" : "bg-softGrayWhite"
-          }`}
-          checked={selected}
-          id="c1"
-        >
-          <Checkbox.Indicator className="CheckboxIndicator">
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 15 15"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M11.4669 3.72684C11.7558 3.91574 11.8369 4.30308 11.648 4.59198L7.39799 11.092C7.29783 11.2452 7.13556 11.3467 6.95402 11.3699C6.77247 11.3931 6.58989 11.3355 6.45446 11.2124L3.70446 8.71241C3.44905 8.48022 3.43023 8.08494 3.66242 7.82953C3.89461 7.57412 4.28989 7.55529 4.5453 7.78749L6.75292 9.79441L10.6018 3.90792C10.7907 3.61902 11.178 3.53795 11.4669 3.72684Z"
-                fill="black"
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-          </Checkbox.Indicator>
-        </Checkbox.Root>
+        className={`ml-auto flex h-4 w-4 items-end justify-end rounded border border-newLeafGreen hover:brightness-110 ${
+          selected ? "bg-white" : "bg-softGrayWhite"
+        }`}
+        checked={selected}
+        id="c1"
+      >
+        <Checkbox.Indicator className="CheckboxIndicator">
+          <img src={checkbox_icon} alt="" />
+        </Checkbox.Indicator>
+      </Checkbox.Root>
     </li>
   );
 };
 
 interface Props {
-  filters: { label: string; }[];
+  filters: { label: string }[];
   locations: ProcessedDropoffLocation[];
-  driverId: string;    
+  driverId: string;
 }
 
 export const Dropdown: React.FC<Props> = ({ filters, locations, driverId }) => {
@@ -100,10 +85,12 @@ export const Dropdown: React.FC<Props> = ({ filters, locations, driverId }) => {
     let newSelectedFilters = [...selectedFilters];
     newSelectedFilters[i] = !selectedFilters[i];
     setSelectedFilters(newSelectedFilters);
-    let ids : string[] = [];
-    newSelectedFilters.forEach( (item, idx) => {
-        if (newSelectedFilters[idx] == true) {ids.push(locations[idx].id)} 
-    } )
+    let ids: string[] = [];
+    newSelectedFilters.forEach((item, idx) => {
+      if (newSelectedFilters[idx] == true) {
+        ids.push(locations[idx].id);
+      }
+    });
     assignLocation.mutate(ids);
   };
 
@@ -113,7 +100,7 @@ export const Dropdown: React.FC<Props> = ({ filters, locations, driverId }) => {
         records: [
           {
             id: driverId,
-            fields: { "📍 Drop off location" : ids },
+            fields: { "📍 Drop off location": ids },
           },
         ],
       };
@@ -136,42 +123,47 @@ export const Dropdown: React.FC<Props> = ({ filters, locations, driverId }) => {
   return (
     <div className="flex h-9 items-start gap-8">
       <div
-        className= {`flex flex-col items-start ${
-            isDropdownOpen ? "z-50" : "z-0"
-            }`}
+        className={`flex flex-col items-start ${
+          isDropdownOpen ? "z-50" : "z-0"
+        }`}
         ref={dropdownRef}
       >
-      {/* Dropdown */}
-      <div className="relative">
-        <h1
-          className={
-            "relative flex w-52 select-none items-center justify-between rounded-lg border bg-newLeafGreen px-2 py-1 font-semibold text-white hover:cursor-pointer hover:brightness-110" +
-            (isDropdownOpen ? " brightness-110 z-50" : "z-0")
+        {/* Dropdown */}
+        <div className="relative">
+          <h1
+            className={
+              "relative flex w-52 select-none items-center justify-between rounded-lg border bg-newLeafGreen px-2 py-1 font-semibold text-white hover:cursor-pointer hover:brightness-110" +
+              (isDropdownOpen ? " z-50 brightness-110" : "z-0")
+            }
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          >
+            Assign
+            <img
+              className="w-2 md:w-3"
+              src={isDropdownOpen ? chevron_up : chevron_down}
+              alt="chevron-icon"
+            />
+          </h1>
+          {
+            <ul
+              className={`absolute flex flex-col gap-2 rounded-lg border bg-white shadow-md  ${
+                isDropdownOpen
+                  ? "hide-scroll z-50 h-36 overflow-y-scroll py-2 px-2"
+                  : "z-0"
+              }`}
+            >
+              {isDropdownOpen &&
+                filters.map((item, i) => (
+                  <FilterItem
+                    key={i}
+                    selected={selectedFilters[i]}
+                    onSelect={() => onFilterSelect(i)}
+                    filterLabel={item.label}
+                  />
+                ))}
+            </ul>
           }
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        >
-          Assign 
-          <img 
-          className="w-2 md:w-3"
-          src={isDropdownOpen ? chevron_up : chevron_down} 
-          alt="chevron-icon" />
-        </h1>
-        {
-          <ul className={`absolute flex flex-col gap-2 rounded-lg border bg-white shadow-md  ${
-            isDropdownOpen ? "hide-scroll py-2 px-2 z-50 h-36 overflow-y-scroll" : "z-0"
-            }`}>
-            {isDropdownOpen &&
-              filters.map((item, i) => (
-                <FilterItem
-                  key={i}
-                  selected={selectedFilters[i]}
-                  onSelect={() => onFilterSelect(i)}
-                  filterLabel={item.label}
-                />
-              ))}
-          </ul>
-        }
-      </div>
+        </div>
       </div>
     </div>
   );

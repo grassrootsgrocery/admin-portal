@@ -39,7 +39,7 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
         id="c1"
       >
         <Checkbox.Indicator className="CheckboxIndicator">
-          <img src={checkbox_icon} alt="" />
+          <img src={checkbox_icon} alt="check" />
         </Checkbox.Indicator>
       </Checkbox.Root>
     </li>

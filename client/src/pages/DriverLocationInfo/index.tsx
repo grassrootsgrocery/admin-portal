@@ -5,13 +5,16 @@ import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 import { useDriversInfo } from "./driverInfoHooks";
 import { useDropOffLocations } from "./dropoffLocationHooks";
 import { Dropdown } from "../../components/AssignDropdown";
- 
-const filters : {
+
+const filters: {
   label: string;
 }[] = [];
 
 //Takes in ProcessedDriver array and formats data for DataTable component
-function processDriversForTable(drivers: ProcessedDriver[], processedDropOffLocations: ProcessedDropoffLocation[]) {
+function processDriversForTable(
+  drivers: ProcessedDriver[],
+  processedDropOffLocations: ProcessedDropoffLocation[]
+) {
   let output = [];
   for (let i = 0; i < drivers.length; i++) {
     const curDriver = drivers[i];
@@ -25,14 +28,18 @@ function processDriversForTable(drivers: ProcessedDriver[], processedDropOffLoca
       curDriver.zipCode,
       curDriver.vehicle,
       curDriver.restrictedLocations.join(", "),
-      <Dropdown filters={filters} locations={processedDropOffLocations} driverId={curDriver.id} />,
+      <Dropdown
+        filters={filters}
+        locations={processedDropOffLocations}
+        driverId={curDriver.id}
+      />,
     ];
     output.push(curRow);
   }
   return output;
 }
 
-export function DriverAndLocationInfo() {
+export default function DriverAndLocationInfo() {
   const { eventId } = useParams();
 
   const {
@@ -43,8 +50,11 @@ export function DriverAndLocationInfo() {
   } = useDriversInfo();
   console.log("driversInfo", driversInfo);
 
-  const { processedDropOffLocations, processedDropOffLocationsStatus, processedDropOffLocationsError } =
-  useDropOffLocations();
+  const {
+    processedDropOffLocations,
+    processedDropOffLocationsStatus,
+    processedDropOffLocationsError,
+  } = useDropOffLocations();
   console.log("dropoff locs", processedDropOffLocations);
 
   if (driversInfoIsLoading) {
@@ -63,7 +73,10 @@ export function DriverAndLocationInfo() {
     return <div>Error...</div>;
   }
 
-  if (processedDropOffLocationsStatus === "loading" || processedDropOffLocationsStatus === "idle") {
+  if (
+    processedDropOffLocationsStatus === "loading" ||
+    processedDropOffLocationsStatus === "idle"
+  ) {
     return (
       <div style={{ position: "relative", minHeight: "80vh" }}>
         <Loading size="large" thickness="extra-thicc" />
@@ -83,7 +96,7 @@ export function DriverAndLocationInfo() {
       label: locationName,
     };
     filters.push(locationSelection);
-  })
+  });
 
   return (
     <div className="p-6 lg:px-14 lg:py-10">
@@ -122,7 +135,10 @@ export function DriverAndLocationInfo() {
           "Restricted Locations",
           "Assign Location",
         ]}
-        dataRows={processDriversForTable(driversInfo, processedDropOffLocations)}
+        dataRows={processDriversForTable(
+          driversInfo,
+          processedDropOffLocations
+        )}
       />
     </div>
   );

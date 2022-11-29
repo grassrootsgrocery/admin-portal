@@ -58,7 +58,7 @@ const HeaderValueDisplay: React.FC<{
   );
 };
 
-export function ViewEvent() {
+export default function ViewEvent() {
   const { eventId } = useParams();
   const { event, eventStatus, eventError } = useFutureEventById(eventId);
 

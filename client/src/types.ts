@@ -32,7 +32,7 @@ export interface ScheduledSlot {
   "Volunteer Status": string;
   Email: string;
   "Volunteer Group (for MAKE)": string;
-  "Can't Come": boolean
+  "Can't Come": boolean;
 }
 export interface ProcessedDriver {
   id: string;
@@ -47,4 +47,12 @@ export interface ProcessedDriver {
 
 export interface Neighborhood {
   Name: string;
+}
+export interface DropoffLocation {
+  "Drop off location": string;
+}
+
+export interface ProcessedDropoffLocation {
+  id: string;
+  dropOffLocation: string;
 }

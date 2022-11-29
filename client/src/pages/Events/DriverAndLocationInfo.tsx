@@ -4,6 +4,15 @@ import { Loading } from "../../components/Loading";
 import { ProcessedDriver } from "../../types";
 import { useDriversInfo } from "./driverInfoHooks";
 
+import { useQuery } from "react-query";
+
+//Types
+import { ProcessedEvent } from "../../types";
+//Assets
+import car from "../../assets/car.png";
+import driving from "../../assets/driving.svg";
+import { API_BASE_URL } from "../../httpUtils";
+
 //Takes in ProcessedDriver array and formats data for DataTable component
 function processDriversForTable(drivers: ProcessedDriver[]) {
   let output = [];
@@ -25,8 +34,38 @@ function processDriversForTable(drivers: ProcessedDriver[]) {
   return output;
 }
 
+/* Get a future event by the event id.
+ * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
+ * */
+function useFutureEventById(eventId: string | undefined) {
+  const {
+    data: futureEvents,
+    status: futureEventsStatus,
+    error: futureEventsError,
+  } = useQuery(["fetchFutureEvents"], async () => {
+    const response = await fetch(`${API_BASE_URL}/api/events`);
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message);
+    }
+    return response.json() as Promise<ProcessedEvent[]>;
+  });
+
+  let event = undefined;
+  if (futureEventsStatus === "success") {
+    event = futureEvents.filter((fe) => eventId === fe.id)[0];
+  }
+
+  return {
+    event,
+    eventStatus: futureEventsStatus,
+    eventError: futureEventsError,
+  };
+}
+
 export function DriverAndLocationInfo() {
   const { eventId } = useParams();
+  const { event, eventStatus, eventError } = useFutureEventById(eventId);
 
   const {
     driversInfo,
@@ -52,6 +91,20 @@ export function DriverAndLocationInfo() {
     return <div>Error...</div>;
   }
 
+  if (event === undefined) {
+    console.error(
+      `Something went wrong. Event ${event} not found in futureEvents list.`
+    );
+    return <div>Error...</div>;
+  }
+
+  //css
+  const label = "text-sm md:text-base lg:text-xl ";
+  const text = "text-sm font-bold text-newLeafGreen md:text-base lg:text-xl";
+  const sectionHeader =
+    "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
+  const sectionHeaderIcon = "w-6 lg:w-10";
+
   return (
     <div className="p-6 lg:px-14 lg:py-10">
       <Link to={`/events/${eventId}`}>
@@ -76,6 +129,32 @@ export function DriverAndLocationInfo() {
           </svg>
         </button>
       </Link>
+      <div className="space-y-5 mb-20 mt-5">
+        <div className={sectionHeader}>
+          <img className={sectionHeaderIcon} src={car}></img>
+          <h1>Delivery and Location Information</h1>
+        </div>
+
+        <div className="flex items-center gap-8 md:gap-16 lg:gap-32">
+          <div>
+            <p className={label}>Event Date</p>
+            <p className={text}>{event.dateDisplay}</p>
+          </div>
+          <div>
+            <p className={label}>Event Time</p>
+            <p className={text}>{event.time}</p>
+          </div>
+          <div>
+            <p className={label}>Main Location</p>
+            <p className={text}>{event.mainLocation}</p>
+          </div>
+        </div>
+      </div>
+      <div className={sectionHeader}>
+        <img className={sectionHeaderIcon} src={driving}></img>
+        <h1>Driver Information</h1>
+      </div>
+
       <div className="h-8" />
       <DataTable
         columnHeaders={[

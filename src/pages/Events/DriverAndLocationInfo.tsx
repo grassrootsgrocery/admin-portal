@@ -8,7 +8,6 @@ import { Dropdown } from "../../components/AssignDropdown";
  
 const filters : {
   label: string;
-  filter: (e: ProcessedDropoffLocation) => boolean;
 }[] = [];
 
 //Takes in ProcessedDriver array and formats data for DataTable component
@@ -78,7 +77,6 @@ export function DriverAndLocationInfo() {
 
     let locationSelection = {
       label: locationName,
-      filter: (e: ProcessedDropoffLocation) => true
     };
     filters.push(locationSelection);
   })

@@ -78,7 +78,7 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
 };
 
 interface Props {
-  filters: { label: string; filter: (e: ProcessedDropoffLocation) => boolean }[];
+  filters: { label: string; }[];
   locations: ProcessedDropoffLocation[];
   driverId: string;    
 }
@@ -93,11 +93,6 @@ export const Dropdown: React.FC<Props> = ({ filters, locations, driverId }) => {
 
   useEffect(() => {
     let filteredItems = locations;
-    for (let i = 0; i < selectedFilters.length; i++) {
-      if (selectedFilters[i]) {
-        filteredItems = filteredItems.filter(filters[i].filter);
-      }
-    }
     setFiltered(filteredItems);
   }, selectedFilters);
 
@@ -163,7 +158,7 @@ export const Dropdown: React.FC<Props> = ({ filters, locations, driverId }) => {
         </h1>
         {
           <ul className={`absolute flex flex-col gap-2 rounded-lg border bg-white shadow-md  ${
-            isDropdownOpen ? "scrollbar-thin py-2 px-1 z-50 h-36 overflow-y-scroll" : "z-0"
+            isDropdownOpen ? "hide-scroll py-2 px-2 z-50 h-36 overflow-y-scroll" : "z-0"
             }`}>
             {isDropdownOpen &&
               filters.map((item, i) => (

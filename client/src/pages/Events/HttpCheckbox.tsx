@@ -29,9 +29,6 @@ export const HttpCheckbox: React.FC<Props> = ({
       onError();
     },
   });
-  if (httpRequest.isError) {
-    console.log("IT'S AN ERROR");
-  }
   return (
     <div className="relative flex h-full justify-center">
       {httpRequest.status === "loading" ? (

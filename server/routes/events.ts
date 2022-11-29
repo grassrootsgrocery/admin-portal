@@ -1,12 +1,12 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
-import { AIRTABLE_URL_BASE } from "./airtableUtils";
-import { fetch } from "./nodeFetch";
+import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
+import { fetch } from "../httpUtils/nodeFetch";
 
 //Types
 import { AirtableResponse, Record, Event, ProcessedEvent } from "../types";
-import { INTERNAL_SERVER_ERROR, OK } from "../statusCodes";
+import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
 
 const router = express.Router();
 

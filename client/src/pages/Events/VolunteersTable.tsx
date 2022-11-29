@@ -219,7 +219,6 @@ export const VolunteersTable: React.FC<Props> = ({
     }
 
     const applyPatch = (url: string, body: any) => async () => {
-      console.log(`Here applying patch ${url} ${JSON.stringify(body)}`);
       const resp = await fetch(url, {
         method: "PATCH",
         headers: {
@@ -227,30 +226,35 @@ export const VolunteersTable: React.FC<Props> = ({
         },
         body: JSON.stringify(body),
       });
-      console.log("resp", resp);
-      console.log(resp.ok);
       if (!resp.ok) {
         const data = await resp.json();
-        console.log("HERE");
         throw new Error(data.message);
       }
       return resp.json();
     };
 
-    let output = [];
+    let rows = [];
     for (let i = 0; i < scheduledSlots.length; i++) {
       const ss = scheduledSlots[i];
       const first = ss.fields["First Name"] || "";
       const last = ss.fields["Last Name"] || "";
-      let cur = [
-        ss.id, //id
-        i + 1, //#
-        first, //First Name
-        last, //Last Name
+
+      let curRow = [
+        /* id */
+        ss.id,
+        /* # */
+        i + 1,
+        /* First Name */
+        first,
+        /* Last Name */
+        last,
+        /* Time Slot */
         ss.fields["Correct slot time"]["error"]
           ? "Error!"
-          : getTimeSlot(ss.fields["Correct slot time"]), //Time Slot
-        getParticipantType(ss.fields["Type"]), //Participant Type
+          : getTimeSlot(ss.fields["Correct slot time"]),
+        /* Participant Type */
+        getParticipantType(ss.fields["Type"]),
+        /* Confirmed Checkbox */
         <HttpCheckbox
           checked={ss.fields["Confirmed?"]}
           mutationFn={applyPatch(
@@ -258,14 +262,15 @@ export const VolunteersTable: React.FC<Props> = ({
             { newConfirmationStatus: !ss.fields["Confirmed?"] }
           )}
           onSuccess={() => {
-            refetchVolunteers();
             const toastMessage = `${first} ${last} ${
               ss.fields["Confirmed?"] ? "unconfirmed" : "confirmed"
             }`;
+            refetchVolunteers();
             toastNotify(toastMessage, true);
           }}
           onError={() => toastNotify("Unable to confirm volunteer", false)}
-        />, //Confirmed
+        />,
+        /* Not Going Checkbox */
         <HttpCheckbox
           checked={ss.fields["Can't Come"]}
           mutationFn={applyPatch(
@@ -273,30 +278,32 @@ export const VolunteersTable: React.FC<Props> = ({
             { newGoingStatus: !ss.fields["Can't Come"] }
           )}
           onSuccess={() => {
-            refetchVolunteers();
             const toastMessage = `${first} ${last} ${
               ss.fields["Can't Come"]
                 ? "is unable to volunteer"
                 : "is able to volunteer"
             }`;
+            refetchVolunteers();
             toastNotify(toastMessage, true);
           }}
           onError={() => toastNotify("Unable to modify availability", false)}
-        />, //Not Going
-        ss.fields["Volunteer Group (for MAKE)"] || "N/A", // Special Group
-        "IDK", //TODO: Delivery Count
-        ss.fields["Email"], //TODO: Contact
+        />,
+        /* Special Group */
+        ss.fields["Volunteer Group (for MAKE)"] || "N/A",
+        /* Deliver Count */
+        "IDK",
+        /* TODO: Contact Modal */
+        ss.fields["Email"],
       ];
-      output.push(cur);
+
+      rows.push(curRow);
     }
-    return output;
+    return rows;
   }
 
   // UI
   return (
     <div className="flex h-screen flex-col pt-6">
-      {/* Toast that appears when a volunteer is confirmed or unconfirmed */}
-      <Toaster />
       {/* Filtering */}
       <div
         className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4"
@@ -328,7 +335,7 @@ export const VolunteersTable: React.FC<Props> = ({
                 filters.map((item, i) => (
                   <FilterItem
                     key={i}
-                    selected={filters[i].isSelected}
+                    selected={item.isSelected}
                     onSelect={() => onFilterSelect(i)}
                     filterLabel={item.label}
                   />

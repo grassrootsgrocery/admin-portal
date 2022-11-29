@@ -19,6 +19,7 @@ import { ViewEvent } from "./pages/Events/ViewEvent";
 import { DriverAndLocationInfo } from "./pages/Events/DriverAndLocationInfo";
 
 import { BackendTesting } from "./pages/BackendTesting";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
           <div className="flex h-screen flex-col  rounded border">
+            <Toaster />
             <Navbar />
             <Routes>
               <Route path="/" element={<Login />} />

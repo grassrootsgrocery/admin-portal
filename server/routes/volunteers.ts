@@ -1,10 +1,14 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
-import { AIRTABLE_URL_BASE } from "./airtableUtils";
-import { fetch } from "./nodeFetch";
+import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
+import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
-import { INTERNAL_SERVER_ERROR, BAD_REQUEST, OK } from "../statusCodes";
+import {
+  INTERNAL_SERVER_ERROR,
+  BAD_REQUEST,
+  OK,
+} from "../httpUtils/statusCodes";
 
 //Types
 import {
@@ -15,6 +19,7 @@ import {
   ScheduledSlot,
   Neighborhood,
 } from "../types";
+import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
 
 const router = express.Router();
 
@@ -103,38 +108,22 @@ router.route("/api/volunteers/confirm/:volunteerId").patch(
       ],
     };
     const json = JSON.stringify(data);
-    const resp = await fetch(
-      `${AIRTABLE_URL_BASE}/📅 Scheduled Slotsadljsfklsdjf`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        },
-        body: json,
-      }
-    );
+    const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slotse`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+      body: json,
+    });
     const result = await resp.json();
     if (!resp.ok) {
-      console.log("result", result);
       throw {
-        type: result.error.type,
-        message: result.error.message,
+        message: AIRTABLE_ERROR_MESSAGE,
         status: resp.status,
       };
     }
-    //const result = await resp.json();
-    console.log("result", result);
     res.status(OK).json(result);
-    // } catch (error) {
-    //   console.error(error);
-    //   res.status(INTERNAL_SERVER_ERROR);
-    //   if (error instanceof Error) {
-    //     throw error;
-    //   } else {
-    //     throw new Error("Something went wrong on server.");
-    //   }
-    // }
   })
 );
 
@@ -162,35 +151,31 @@ router.route("/api/volunteers/going/:volunteerId").patch(
         "Please provide a 'volunteerId' as a query param and a 'newGoingStatus' on the body."
       );
     }
-    try {
-      const data = {
-        records: [
-          {
-            id: volunteerId,
-            fields: { "Can't Come": newGoingStatus },
-          },
-        ],
-      };
-      const json = JSON.stringify(data);
-      const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slots`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+    const data = {
+      records: [
+        {
+          id: volunteerId,
+          fields: { "Can't Come": newGoingStatus },
         },
-        body: json,
-      });
-      const result = await resp.json();
-      res.status(OK).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(INTERNAL_SERVER_ERROR);
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error("Something went wrong on server.");
-      }
+      ],
+    };
+    const json = JSON.stringify(data);
+    const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slotsf`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+      body: json,
+    });
+    const result = await resp.json();
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
     }
+    res.status(OK).json(result);
   })
 );
 

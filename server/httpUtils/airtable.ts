@@ -7,10 +7,9 @@ const AIRTABLE_BASE_ID_DEV = "app18BBTcWqsoNjb2";
 //"Base" here just has the normal definition
 export const AIRTABLE_URL_BASE = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID_DEV}`;
 
-// //Generic fetch call to Airtable
-// export const fetchAirtableData = async <T>(url: string) => {
-//   const response = await fetch(url, {
-//     headers: { Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}` },
-//   });
-//   return response.json() as T;
-// };
+/* Because I'm not sure that we want to display error messages from Airtable on the client, this is the 
+default error message that we will use when a request to Airtable fails
+*/
+
+export const AIRTABLE_ERROR_MESSAGE =
+  "There was a problem fetching data from Airtable";

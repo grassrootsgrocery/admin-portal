@@ -25,6 +25,9 @@ input[type="checkbox"]:hover {
   height: 6px; /* Sets the size of the scrollbar when it's horizontal */
   width: 6px;
 }
+.hide-scroll::-webkit-scrollbar {
+  display: none;
+}
 ::-webkit-scrollbar-thumb {
   background-color: var(--simple-gray);
   border-radius: 10px;

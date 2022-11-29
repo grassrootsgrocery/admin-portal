@@ -142,8 +142,8 @@ function createDropdownFilters(scheduledSlots: Record<ScheduledSlot>[]) {
       let groupFilter = {
         label: specialGroup,
         isSelected: false,
-        filter: (e: Record<ScheduledSlot>) =>
-          e.fields["Volunteer Group (for MAKE)"] === specialGroup,
+        filter: (ss: Record<ScheduledSlot>) =>
+          ss.fields["Volunteer Group (for MAKE)"] === specialGroup,
       };
       dropdownFilters.push(groupFilter);
     }

@@ -128,7 +128,7 @@ export function ViewEvent() {
           value={event.numtotalParticipants}
         />
       </div>
-      <div className="h-12 " />
+      <div className="h-12" />
       {/* Participant Breakdown */}
       <h1 className={sectionHeader}>
         <img className={sectionHeaderIcon} src={people} alt="people" />

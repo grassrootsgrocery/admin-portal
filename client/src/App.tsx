@@ -12,14 +12,12 @@ const queryClient = new QueryClient({
 
 //Components
 import { Navbar } from "./components/Navbar/Navbar";
+import { Toaster } from "react-hot-toast";
 //Pages
 import { Login } from "./pages/Login";
 import { Events } from "./pages/Events/Events";
 import { ViewEvent } from "./pages/Events/ViewEvent";
 import { DriverAndLocationInfo } from "./pages/Events/DriverAndLocationInfo";
-
-import { BackendTesting } from "./pages/BackendTesting";
-import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -37,7 +35,6 @@ function App() {
                 path="/events/driver-location-info/:eventId"
                 element={<DriverAndLocationInfo />}
               />
-              <Route path="/backendtesting" element={<BackendTesting />} />
             </Routes>
           </div>
           <ReactQueryDevtools initialIsOpen={false} />

@@ -41,7 +41,7 @@ export function DriverAndLocationInfo() {
     driversInfoIsError,
     driversInfoError,
   } = useDriversInfo();
-  console.log(driversInfo);
+  console.log("driversInfo", driversInfo);
 
   const { processedDropOffLocations, processedDropOffLocationsStatus, processedDropOffLocationsError } =
   useDropOffLocations();
@@ -56,6 +56,10 @@ export function DriverAndLocationInfo() {
   }
   if (driversInfoIsError) {
     console.error(driversInfoError);
+    return <div>Error...</div>;
+  }
+  if (driversInfo === undefined) {
+    console.error("driversInfo is undefined");
     return <div>Error...</div>;
   }
 

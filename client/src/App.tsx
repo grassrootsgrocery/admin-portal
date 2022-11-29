@@ -12,22 +12,20 @@ const queryClient = new QueryClient({
 
 //Components
 import { Navbar } from "./components/Navbar/Navbar";
+import { Toaster } from "react-hot-toast";
 //Pages
 import { Login } from "./pages/Login";
 import { Events } from "./pages/Events/Events";
 import { ViewEvent } from "./pages/Events/ViewEvent";
 import { DriverAndLocationInfo } from "./pages/Events/DriverAndLocationInfo";
 
-import "./App.css";
-
 function App() {
-  // Label -> Packers
-  // filter -> () => {}
   return (
     <BrowserRouter>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
-          <div className="flex h-screen flex-col  rounded border">
+          <div className="flex h-screen flex-col">
+            <Toaster />
             <Navbar />
             <Routes>
               <Route path="/" element={<Login />} />

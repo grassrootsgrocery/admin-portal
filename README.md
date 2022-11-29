@@ -7,35 +7,73 @@
 Currently, Grassroot's technical infrastructure for managing all their volunteers' and coordinators' data is a hodgepodge
 of different services wired together (main ones are [Airtable](https://airtable.com/), [Twilio](https://www.twilio.com/), [Make](https://www.make.com/), [Front](https://front.com/), and [Jotform](https://www.jotform.com/)). Dan uses these technologies to keep track of people who register for events, schedule events, send text messages to people to remind them of events, and much more. Because the system is so [ad hoc](https://en.wikipedia.org/wiki/Ad_hoc), it is very difficult for anyone besides Dan to use it. Dan would like a web app that brings together all of these services together into an easy-to-use portal.
 
+# The stack
+
+- Our frontend is currently TypeScript, React, and Tailwind CSS, with [Vite](https://vitejs.dev/guide/) as our build tool.
+- Our backend is currently TypeScript and Express.
+- Our database is Airtable because this is what Grassroots Groceries is using to store their data currently.
+- Make is a service used for triggering automations. Grassroots Groceries uses it to send automated text messages to volunteers and coordinators. The automations have been built out by Dan's team, and we only need to trigger them on our backend.
+
+Here is a current diagram of what the infrastructure for the project currently looks like.
+![Infra Diagram](./infrastructure-diagram.png)
+
+# .env files
+
+There are two `.env` files in the project: `.env` in the root of the project and `client/.env`.
+
+- `.env` is for the backend of our application and holds all of our API keys to the different services that we
+  need to interact with (currently, just Airtable and Make).
+- `client/.env` is for the frontend of the application, and it is only used for development purposes. In order to run the dev server for this project, you must add `VITE_SERVER_URL='http://localhost:5000'`to this file.
+
+# API Key Access & Management
+
+## How to get the API key for development
+
+### Airtable
+
+- Go to [https://airtable.com/account](https://airtable.com/account). Sign in with the Mott Haven Fridge credentials. Copy the API key from the field.
+- Go to the root `.env` of the project and add the line `AIRTABLE_API_KEY=<Whatever the key is>`
+
+### Make
+
+<!-- - Go to [https://](). Sign in with your whatever. -->
+
+- TODO: Figure out how to get you guys access to the Make API key
+- Go to the root `.env` of the project and add the line `MAKE_API_KEY=<Whatever the key is>`
+
+## Using the API keys
+
+### Backend
+
+Access your API keys on the backend like this:
+
+```TypeScript
+const airtableApiKey = process.env.AIRTABLE_API_KEY;
+const makeApiKey = process.env.AIRTABLE_API_KEY;
+```
+
+<!-- ### Frontend
+Inside of your TypeScript code, in order to access the key, do
+
+```TypeScript
+const apiKey = import.meta.env.VITE_AIRTABLE_API_KEY;
+````
+-->
+
 # Running the dev server
 
 1. Clone the repo and `cd` into it
 2. Run `npm install`
-3. Follow the steps in the section below to set up your API key (**API Key Management and Access**)
-4. Run `npm run dev`
-5. Navigate to `localhost:5173` in your browser
+3. Follow the steps in the section above to set up your API keys (**API Key Access & Management**)
+4. Add `VITE_SERVER_URL='http://localhost:5000'`to your `client/.env` file
+5. Run `npm run dev`
+6. Navigate to `localhost:5173` in your browser
 
-# API Key Management and Access
+# Hosting
 
-## How to get the API key for development
-
-Go to [https://airtable.com/account](https://airtable.com/account). Sign in with the Mott Haven Fridge credentials. Copy the API key from the field.
-
-## Using the API key in your code to make calls to Airtable
-
-In order to access the Grassroots Groceries Airtable database, you need the API key for the Mott Haven Fridge Airtable account.
-After obtaining the key, create a `.env` file in the root of the project directory (in the same directory as `src`, but _not_ in the `src` directory). In the `.env` file, declare a variable called `VITE_AIRTABLE_API_KEY` and set it equal to the
-Airtable API key (`VITE_AIRTABLE_API_KEY=<Whatever your key is>`).
-
-Inside of your JavaScript/TypeScript code, in order to access the key, do
-
-```TypeScript
-const apiKey = import.meta.env.VITE_AIRTABLE_API_KEY;
-```
+We are currently using [Railway](https://railway.app/) as our hosting solution. You can see a dev deployment of the application at [https://mott-haven-production.up.railway.app/](https://mott-haven-production.up.railway.app/)
 
 # Tech Resources
-
-The stack is currently TypeScript, React, Tailwind CSS, and Airtable, with [Vite](https://vitejs.dev/guide/) as our build tool.
 
 ## Data fetching and React Query
 
@@ -81,9 +119,7 @@ const { data, status, error } = useQuery(["thisIsTheQueryKey"], async () => {
 ```
 
 Let's break down the code above. The `useQuery` hook takes in an array of strings as its first argument. The elements of this array collectively make up the **query key** of this particular `useQuery` call.
-The second argument is our fetching function. `useQuery` returns an object that has a `data` attribute, which stores the result of the fetch, `status`, which stores the status of the fetch (`"loading"`, `"idle"`, `"success"`, or `"error"`), and `error`, which stores errors thrown from the fetch.
-
-<!-- For the `status` variable, `"loading"` and `"idle"` are the same thing (`"idle"` has been removed in future versions of React Query). -->
+The second argument is our fetching function. `useQuery` returns an object that has a `data` attribute, which stores the result of the fetch, `status`, which stores the status of the fetch (`"loading"`, `"idle"`, `"success"`, or `"error"`), and `error`, which stores errors thrown from the fetch. For the `status` variable, `"loading"` and `"idle"` are the same thing (`"idle"` has been removed in future versions of React Query).
 
 So what's the big deal? Why is this better than the vanilla way of fetching? Aside from being shorter and more concise, React Query does a bunch of stuff under the hood for us that we would rather not have to think about (caching, deduping requests, refetching on error, etc.). One thing that we care about in particular is caching.
 Because React Query automatically caches the results of requests on the client, we can use the cache as a way to share the data we get back from requests throughout our application.
@@ -130,10 +166,6 @@ function ComponentB() {
 
 Both `ComponentA` and `ComponentB` read from and populate the same cache, which makes it really easy for us to share that data between them. Note that because the query key is the key for accessing fetched data in our cache, it should be unique to the fetch function. In other words, you should _not_ have two `useQuery` calls that have the same query key, but different fetch functions.
 
-## React Query Dev Tools
-
-React Query also comes with developer tools that make it easy to debug requests. In order to enable these tools, you need to set this environment variable in your `.env` file: `VITE_NODE_ENV='development'`.
-
 ## More resources
 
 Below are also linked some more resources about React Query for further edification.
@@ -155,9 +187,9 @@ TypeScript is safer than JavaScript, most UMD Hack4Impact teams use TypeScript, 
 
 \* VSCode tip: If you hover over a type, VSCode will show you the type. If you press `Ctrl` (`Cmd` on Mac?) while hovering, VSCode will show you more information about that type (such as its properties).
 
-## CSS
+## Styling
 
-### Styling
+### CSS
 
 A few general principles on writing vanilla CSS.
 
@@ -233,20 +265,14 @@ function EventCard() {
 
 Because the tech lead on this project can't resist playing with new tech, we decided to use [Tailwind CSS](https://tailwindcss.com/) to aid with our styling. Tailwind was introduced because we wanted a bit more systematic approach to writing CSS. We also wanted something that would help us tackle responsiveness. However, it is not a requirement that things be styled using Tailwind. The codebase is currently a mix of components that are styled with Tailwind and components that are styled with vanilla CSS.
 
-#### Tailwind VSCode Extension
+### Tailwind VSCode Extension
 
 This extension is called Tailwind CSS IntelliSense, and you should install it if you plan on using writing Tailwind in this project.
 
-#### More resources
+### More resources
 
 - [Official Docs](https://tailwindcss.com/docs/installation)
 - [Why Tailwind](https://www.swyx.io/why-tailwind)
 - [A nice talk](https://www.youtube.com/watch?v=R50q4NES6Iw)
 - [A tweet from Ben Holmes (former Hack4Impact Director of Engineering) probably talking about a Hack4Impact project...](https://twitter.com/BHolmesDev/status/1314036040697610241?s=20)
 - [A blog post from Ben Holmes about different CSS frameworks](https://bholmes.dev/blog/understanding-the-spectrum-of-css-frameworks/)
-
-## Technical Infrastructure
-
-Here is a current diagram of what the infrastructure for the project currently looks like.
-![Infra Diagram](./images//Infra1.png)
-Note that keeping API keys on the client like this is technically not secure (see [this clip](https://www.youtube.com/watch?v=FcwfjMebjTU&t=77s)). However, in order to make it completely secure, we would have to write our own backend server, which is probably more work than we care to do.

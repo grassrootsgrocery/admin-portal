@@ -1,9 +1,17 @@
-import { useQuery } from "react-query";
-import { AirtableResponse, Record, Event, ProcessedEvent } from "../../types";
+import express from "express";
+import asyncHandler from "express-async-handler";
+import { Request, Response } from "express";
 import {
+  AIRTABLE_ERROR_MESSAGE,
   AIRTABLE_URL_BASE,
-  fetchAirtableData,
-} from "../../airtableDataFetchingUtils";
+} from "../httpUtils/airtable";
+import { fetch } from "../httpUtils/nodeFetch";
+//Status codes
+import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
+//Types
+import { AirtableResponse, Record, Event, ProcessedEvent } from "../types";
+
+const router = express.Router();
 
 function processGeneralEventData(event: Record<Event>): ProcessedEvent {
   const optionsDay = {
@@ -62,61 +70,6 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
   };
 }
 
-export function useFutureEvents() {
-  const futureEventsUrl =
-    `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
-    // Get events after today
-    `&filterByFormula=IS_AFTER({Start Time}, NOW())` +
-    // Get fields for upcoming events dashboard
-    `&fields=Start Time` + // Day, Time
-    `&fields=Pickup Address` + // Main Location
-    `&fields=Total Count of Distributors for Event` + // Packers
-    `&fields=Total Count of Drivers for Event` + // Drivers
-    `&fields=Total Count of Volunteers for Event` + // Total Participants
-    `&fields=Special Event` + // isSpecialEvent
-    `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
-
-  const {
-    data: futureEventsData,
-    status: futureEventsStatus,
-    error: futureEventsError,
-  } = useQuery(["fetchFutureEvents"], () =>
-    fetchAirtableData<AirtableResponse<Event>>(futureEventsUrl)
-  );
-
-  let futureEvents: ProcessedEvent[] = [];
-  if (futureEventsStatus === "success") {
-    let generalEvents = futureEventsData.records.filter(
-      (event) => !event.fields["Special Event"]
-    );
-    let specialEvents = futureEventsData.records.filter(
-      (event) => event.fields["Special Event"]
-    );
-
-    futureEvents = generalEvents.map((generalEvent) =>
-      processSpecialEventsData(
-        processGeneralEventData(generalEvent),
-        specialEvents.filter(
-          (specialEvent) =>
-            specialEvent.fields["Pickup Address"][0] ==
-              generalEvent.fields["Pickup Address"][0] &&
-            specialEvent.fields["Start Time"] ==
-              generalEvent.fields["Start Time"]
-        )
-      )
-    );
-
-    futureEvents.forEach((event) => processPackerAndDriverCounts(event));
-    futureEvents.sort((a, b) => (a.date < b.date ? -1 : 1));
-  }
-
-  return {
-    futureEvents,
-    futureEventsStatus,
-    futureEventsError,
-  };
-}
-
 function processSpecialEventsData(
   event: ProcessedEvent,
   specialEvents: Record<Event>[]
@@ -148,3 +101,66 @@ function processPackerAndDriverCounts(event: ProcessedEvent) {
   event.numBothDriversAndPackers =
     event.numPackers - (event.numtotalParticipants - event.numDrivers);
 }
+
+/**
+ * @description Get all upcoming events.
+ * @route  GET /api/events/
+ * @access
+ */
+router.route("/api/events").get(
+  asyncHandler(async (req: Request, res: Response) => {
+    console.log("GET /api/events");
+    const url =
+      `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
+      // Get events after today
+      `&filterByFormula=IS_AFTER({Start Time}, NOW())` +
+      // Get fields for upcoming events dashboard
+      `&fields=Start Time` + // Day, Time
+      `&fields=Pickup Address` + // Main Location
+      `&fields=Total Count of Distributors for Event` + // Packers
+      `&fields=Total Count of Drivers for Event` + // Drivers
+      `&fields=Total Count of Volunteers for Event` + // Total Participants
+      `&fields=Special Event` + // isSpecialEvent
+      `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
+
+    const resp = await fetch(url, {
+      headers: {
+        method: "GET",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+    });
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
+    }
+    const futureEventsData = (await resp.json()) as AirtableResponse<Event>;
+    let futureEvents: ProcessedEvent[] = [];
+    let generalEvents = futureEventsData.records.filter(
+      (event) => !event.fields["Special Event"]
+    );
+    let specialEvents = futureEventsData.records.filter(
+      (event) => event.fields["Special Event"]
+    );
+
+    futureEvents = generalEvents.map((generalEvent) =>
+      processSpecialEventsData(
+        processGeneralEventData(generalEvent),
+        specialEvents.filter(
+          (specialEvent) =>
+            specialEvent.fields["Pickup Address"][0] ==
+              generalEvent.fields["Pickup Address"][0] &&
+            specialEvent.fields["Start Time"] ==
+              generalEvent.fields["Start Time"]
+        )
+      )
+    );
+
+    futureEvents.forEach((event) => processPackerAndDriverCounts(event));
+    futureEvents.sort((a, b) => (a.date < b.date ? -1 : 1));
+    res.status(OK).json(futureEvents);
+  })
+);
+
+export default router;

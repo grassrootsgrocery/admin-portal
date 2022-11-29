@@ -53,20 +53,19 @@ export interface Driver {
   "Transportation Types": string;
   "Restricted Neighborhoods": string[];
 }
-
 export interface ProcessedDriver {
-  id: string,
-  firstName: string,
-  lastName: string,
-  timeSlot: string,
-  deliveryCount: number,
-  zipCode: string,
-  vehicle: string,
-  restrictedLocations: string[]
+  id: string;
+  firstName: string;
+  lastName: string;
+  timeSlot: string;
+  deliveryCount: number;
+  zipCode: string;
+  vehicle: string;
+  restrictedLocations: string[];
 }
 
 export interface Neighborhood {
-  "Name": string
+  Name: string;
 }
 
 export interface DropoffLocation {

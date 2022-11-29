@@ -32,3 +32,17 @@ input[type="checkbox"]:hover {
   background-color: var(--simple-gray);
   border-radius: 10px;
 }
+
+/* Dev stuff */
+.r {
+  border: 1px solid red;
+}
+.b {
+  border: 1px solid blue;
+}
+.g {
+  border: 1px solid green;
+}
+.p {
+  border: 1px solid pink;
+}

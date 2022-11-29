@@ -1,12 +1,8 @@
 import { Link, useParams } from "react-router-dom";
-import { AirtableResponse, Record, ScheduledSlot } from "../../types";
 import { useQuery } from "react-query";
-import { useFutureEvents } from "./eventHooks";
-import {
-  AIRTABLE_URL_BASE,
-  fetchAirtableData,
-} from "../../airtableDataFetchingUtils";
 
+//Types
+import { AirtableResponse, ProcessedEvent, ScheduledSlot } from "../../types";
 //Components
 import { Loading } from "../../components/Loading";
 import { VolunteersTable } from "./VolunteersTable";
@@ -16,13 +12,25 @@ import check from "../../assets/check.svg";
 import calendar from "../../assets/calendar.svg";
 import people from "../../assets/people.svg";
 import roster from "../../assets/roster.svg";
+import { Messaging } from "./Messaging";
+import { API_BASE_URL } from "../../httpUtils";
 
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
  * */
 function useFutureEventById(eventId: string | undefined) {
-  const { futureEvents, futureEventsStatus, futureEventsError } =
-    useFutureEvents();
+  const {
+    data: futureEvents,
+    status: futureEventsStatus,
+    error: futureEventsError,
+  } = useQuery(["fetchFutureEvents"], async () => {
+    const response = await fetch(`${API_BASE_URL}/api/events`);
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message);
+    }
+    return response.json() as Promise<ProcessedEvent[]>;
+  });
 
   let event = undefined;
   if (futureEventsStatus === "success") {
@@ -41,7 +49,7 @@ const HeaderValueDisplay: React.FC<{
   value: string | number;
 }> = (props: { header: string; value: string | number }) => {
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col">
       <p className="lg:text-xl">{props.header}</p>
       <p className="font-semibold text-newLeafGreen lg:text-xl">
         {props.value}
@@ -65,23 +73,15 @@ export function ViewEvent() {
       if (typeof event === "undefined") {
         return Promise.reject(new Error("Undefined event"));
       }
-
       const scheduledSlotsIds = event.scheduledSlots.join(",");
-      const scheduledSlotsForEventUrl =
-        `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
-        `filterByFormula=SEARCH(RECORD_ID(), "${scheduledSlotsIds}") != ""` +
-        `&fields=First Name` +
-        `&fields=Last Name` +
-        `&fields=Correct slot time` +
-        `&fields=Type` +
-        `&fields=Confirmed?` +
-        `&fields=Volunteer Status` +
-        `&fields=Email` +
-        `&fields=Volunteer Group (for MAKE)`;
-
-      return fetchAirtableData<AirtableResponse<ScheduledSlot>>(
-        scheduledSlotsForEventUrl
+      const response = await fetch(
+        `${API_BASE_URL}/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`
       );
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
+      return response.json() as Promise<AirtableResponse<ScheduledSlot>>;
     },
     { enabled: eventStatus === "success" }
   );
@@ -136,7 +136,7 @@ export function ViewEvent() {
           value={event.numtotalParticipants}
         />
       </div>
-      <div className="h-12 " />
+      <div className="h-12" />
       {/* Participant Breakdown */}
       <h1 className={sectionHeader}>
         <img className={sectionHeaderIcon} src={people} alt="people" />
@@ -193,7 +193,7 @@ export function ViewEvent() {
           </button>
         </div>
       </div>
-      <div className="h-12"></div>
+      <div className="h-12" />
       <h1 className={sectionHeader}>
         <img className={sectionHeaderIcon} src={roster} alt="roster" />
         Participant Roster
@@ -212,6 +212,9 @@ export function ViewEvent() {
           Delivery and Location Info
         </button>
       </Link>
+      <div className="h-12" />
+      <Messaging />
+      <div className="h-12" />
     </div>
   );
 }

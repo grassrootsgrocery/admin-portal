@@ -9,7 +9,7 @@ import { useQuery } from "react-query";
 //Types
 import { ProcessedEvent } from "../../types";
 //Assets
-import car from "../../assets/car.png";
+import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
 import { API_BASE_URL } from "../../httpUtils";
 
@@ -129,7 +129,7 @@ export function DriverAndLocationInfo() {
           </svg>
         </button>
       </Link>
-      <div className="space-y-5 mb-20 mt-5">
+      <div className="space-y-5 mb-16 mt-5">
         <div className={sectionHeader}>
           <img className={sectionHeaderIcon} src={car}></img>
           <h1>Delivery and Location Information</h1>

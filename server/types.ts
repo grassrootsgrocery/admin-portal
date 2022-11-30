@@ -69,10 +69,10 @@ export interface Neighborhood {
 }
 
 export interface DropoffLocation {
-  "Drop off location": string
+  "Drop off location": string;
 }
 
 export interface ProcessedDropoffLocation {
-  id: string
-  dropOffLocation: string
+  id: string;
+  dropOffLocation: string;
 }

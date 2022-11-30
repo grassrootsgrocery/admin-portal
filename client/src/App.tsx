@@ -17,7 +17,7 @@ import { Toaster } from "react-hot-toast";
 import { Login } from "./pages/Login";
 import Events from "./pages/Events";
 import ViewEvent from "./pages/ViewEvent";
-import DriverAndLocationInfo from "./pages/DriverLocationInfo";
+import DriverLocationInfo from "./pages/DriverLocationInfo";
 import { Test } from "./Test";
 
 function App() {
@@ -34,7 +34,7 @@ function App() {
               <Route path="/events/:eventId" element={<ViewEvent />} />
               <Route
                 path="/events/driver-location-info/:eventId"
-                element={<DriverAndLocationInfo />}
+                element={<DriverLocationInfo />}
               />
               <Route path="/jason" element={<Test />} />
             </Routes>

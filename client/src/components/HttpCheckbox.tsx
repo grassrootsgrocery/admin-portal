@@ -6,18 +6,18 @@ import { Loading } from "./Loading";
 /* 
 A checkbox that makes an http request when checked using. Keeps track of a loading state. 
 */
-interface Props {
+interface HttpCheckboxProps {
   checked: boolean;
-  mutationFn: () => Promise<any>;
+  mutationFn: any; //This needs to be generic enough
   onSuccess: () => void;
   onError: () => void;
 }
-export const HttpCheckbox: React.FC<Props> = ({
+export const HttpCheckbox: React.FC<HttpCheckboxProps> = ({
   checked,
   mutationFn,
   onSuccess,
   onError,
-}: Props) => {
+}: HttpCheckboxProps) => {
   const [isChecked, setIsChecked] = useState(checked);
   const httpRequest = useMutation({
     mutationFn: mutationFn,
@@ -33,8 +33,8 @@ export const HttpCheckbox: React.FC<Props> = ({
 
   //UI
   return (
-    <div className="relative flex h-full justify-center">
-      {httpRequest.status === "loading" ? (
+    <div className="r relative flex h-full w-full items-center justify-center">
+      {httpRequest.status !== "loading" ? (
         <Loading size="xsmall" thickness="thin" />
       ) : (
         <Checkbox isChecked={isChecked} onClick={() => httpRequest.mutate()} />

@@ -58,6 +58,10 @@ router.route("/api/dropoff-locations/").get(
     let processedDropOffLocations = dropoffLocations.records.map((location) =>
       processDropOffLocations(location)
     );
-    res.status(OK).json(processDropOffLocations);
+    res.status(OK).json(processedDropOffLocations) as Response<
+      ProcessedDropoffLocation[]
+    >;
   })
 );
+
+export default router;

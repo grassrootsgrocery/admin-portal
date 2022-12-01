@@ -38,7 +38,7 @@ function App() {
                 element={<DriverAndLocationInfo />}
               />
               <Route
-                path="/dropdown"
+                path="/events/add-special-group/:eventId"
                 element={<Dropdown />}
               />
             </Routes>

@@ -185,12 +185,14 @@ export function ViewEvent() {
           >
             View Special Groups
           </button>
+        <Link to={`/events/add-special-group/${eventId}`} state={{...event.allEventIds}}> 
           <button
             className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
             type="button"
           >
             + Add Special Group
           </button>
+        </Link>
         </div>
       </div>
       <div className="h-12" />

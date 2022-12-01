@@ -21,10 +21,10 @@ import {
     specialGroup: Record<SpecialGroup>
   ): ProcessedSpecialGroup {
     return {
-      Name: specialGroup.fields["Name"] 
+      name: specialGroup.fields["Name"] 
         ? specialGroup.fields["Name"] 
         : "N/A",
-      Events: specialGroup.fields["🚛 Supplier Pickup Events"],
+      events: specialGroup.fields["🚛 Supplier Pickup Events"],
     };
   }
 

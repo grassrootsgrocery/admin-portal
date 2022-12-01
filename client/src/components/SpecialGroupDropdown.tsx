@@ -170,7 +170,7 @@ export const Dropdown = () => {
       </div>
       
       {/* Special Group Listing Dropdown */} 
-      <ul className="hidden w-80 border-2 border-t-0 border-softGrayWhite rounded-lg text-newLeafGreen py-1"
+      <ul className="hidden w-80 max-h-56 overflow-y-scroll border-2 border-t-0 border-softGrayWhite rounded-lg text-newLeafGreen py-1"
       id="specialGroupDropdown">
 
         <div className="text-sm text-[#0E7575] px-2">

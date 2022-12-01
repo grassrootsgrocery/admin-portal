@@ -24,6 +24,9 @@ app.use("/", messagingRouter);
 
 import volunteersRouter from "./routes/volunteers";
 app.use("/", volunteersRouter);
+
+import specialGroupsRouter from "./routes/specialGroups";
+app.use("/", specialGroupsRouter);
 //---- API End ----
 
 //Middleware for handling errors. This has to go after the routes.

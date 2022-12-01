@@ -1,4 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "react-query";
+import { API_BASE_URL } from "../httpUtils";
+import { Loading } from "./Loading";
+import { ProcessedSpecialGroup } from "../types";
+//Assets
 import plus from "../assets/plus.svg";
 import x from "../assets/greenX.svg";
 import alert from "../assets/alert.svg";
@@ -9,7 +14,7 @@ interface testStateList {
   list: string[];
 } 
 
-// show/hide dropdown and clear button
+// Show/Hide dropdown and clear button
 function showHideElements() {
   const input = document.getElementById('specialGroupInput') as HTMLInputElement;
   const dropdown = document.getElementById("specialGroupDropdown");
@@ -26,42 +31,76 @@ function showHideElements() {
     }
   }
 }
+
 export const Dropdown = () => {
 
-  const posts = [
-    'How to create a react search bar', 
-    'How to mock api data in Node',
-    ]
-
-  const [state, setstate] = useState<testStateList>({
+  const [state, setState] = useState<testStateList>({
     query: '',
     list: []
-    })
-  
+  })
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
-    // result filtering based on input
-    const results = posts.filter(post => {
-    if (e.target.value === "") return posts
-    return post.toLowerCase().includes(e.target.value.toLowerCase())
+    // Result filtering based on input
+    const results = specialGroupsList.filter(group => {
+    if (e.target.value === "") return specialGroupsList
+    return group.toLowerCase().includes(e.target.value.toLowerCase())
     })
-    setstate({
-    query: e.target.value,
-    list: results
+    setState({
+      query: e.target.value,
+      list: results
     })
 
     showHideElements();
   }
 
-  // clear input
+  // Clear input
   const inputRef = useRef<HTMLInputElement>(null);
   const clearInput = () => {
     if (inputRef.current != null) {
       inputRef.current.value = '';
-      setstate({query: '', list: []});
+      setState({
+        query: '', 
+        list: []
+      });
       showHideElements();
     }
   }
+
+  // Retrieve Special Groups
+  const {
+    data: specialGroups,
+    status: specialGroupsStatus,
+    error: specialGroupsError,
+  } = useQuery(["fetchSpecialGroups"], async () => {
+    const response = await fetch(`${API_BASE_URL}/api/special-groups`);
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message);
+    }
+    return response.json() as Promise<ProcessedSpecialGroup[]>;
+  });
+
+  if (specialGroupsStatus === "loading" || specialGroupsStatus === "idle") {
+    return (
+      <div style={{ position: "relative", minHeight: "80vh" }}>
+        <Loading size="large" thickness="extra-thicc" />
+      </div>
+    );
+  }
+  
+  if (specialGroupsStatus === "error") {
+    console.error(specialGroupsError);
+    return <div>Error...</div>;
+  }
+
+  console.log("Logging specialGroups", specialGroups);
+
+  // Create list of special group names
+  const specialGroupsList: string[] = [];
+  specialGroups.map(group => {
+    specialGroupsList.push(group.Name);
+  })
   
   return (
 
@@ -92,14 +131,14 @@ export const Dropdown = () => {
           Select existing group or create new one
         </div>
 
-        {(state.query === '' ? "" : state.list.map(post => {
+        {(state.query === '' ? "" : state.list.map(specialGroup => {
           return <li className="flex flex-row rounded-lg hover:cursor-pointer hover:bg-softGrayWhite px-2">
             <img
               className="w-2 mr-1 md:w-4"
               src={plus}
               alt="plus-icon"
             /> 
-          {post}
+          {specialGroup}
           </li>
         }))}
         

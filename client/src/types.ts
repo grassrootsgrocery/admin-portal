@@ -48,3 +48,14 @@ export interface ProcessedDriver {
 export interface Neighborhood {
   Name: string;
 }
+
+export interface SpecialGroup {
+  Name: string;
+  "🚛 Supplier Pickup Events": string[];
+}
+
+export interface ProcessedSpecialGroup {
+  Name: string;
+  Events: string[];
+}
+

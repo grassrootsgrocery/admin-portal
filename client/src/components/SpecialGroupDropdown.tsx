@@ -4,19 +4,34 @@ import x from "../assets/greenX.svg";
 import alert from "../assets/alert.svg";
 import check from "../assets/check.svg";
 
-interface testList {
-  
-    url: string;
-    tags: string[];
-    title: string;
-}
-
 interface testStateList {
   query: string;
-  list: testList[];
-}
+  list: string[];
+} 
 
+// show/hide dropdown and clear button
+function showHideElements() {
+  const input = document.getElementById('specialGroupInput') as HTMLInputElement;
+  const dropdown = document.getElementById("specialGroupDropdown");
+  const clearButton = document.getElementById("clearBtn");
+
+  if (dropdown != null && clearButton != null) {
+    if (input.value === "") { 
+      dropdown.style.display = "none";
+      clearButton.style.display = "none";
+    }
+    else { 
+      dropdown.style.display = "block";
+      clearButton.style.display = "block"; 
+    }
+  }
+}
 export const Dropdown = () => {
+
+  const posts = [
+    'How to create a react search bar', 
+    'How to mock api data in Node',
+    ]
 
   const [state, setstate] = useState<testStateList>({
     query: '',
@@ -28,35 +43,26 @@ export const Dropdown = () => {
     // result filtering based on input
     const results = posts.filter(post => {
     if (e.target.value === "") return posts
-    return post.title.toLowerCase().includes(e.target.value.toLowerCase())
+    return post.toLowerCase().includes(e.target.value.toLowerCase())
     })
     setstate({
     query: e.target.value,
     list: results
     })
 
-    // show/hide dropdown
-    const dropdown = document.getElementById("specialGroupDropdown");
-    if (dropdown != null) {
-      if (e.target.value === "") { dropdown.style.display = "none" }
-      else { dropdown.style.display = "block" }
+    showHideElements();
+  }
+
+  // clear input
+  const inputRef = useRef<HTMLInputElement>(null);
+  const clearInput = () => {
+    if (inputRef.current != null) {
+      inputRef.current.value = '';
+      setstate({query: '', list: []});
+      showHideElements();
     }
   }
   
-  const posts = [
-  {
-  url: '',
-  tags: ['react', 'blog'],
-  title: 'How to create a react search bar',
-  },
-  {
-  url:'',
-  tags: ['node','express'],
-  title: 'How to mock api data in Node',
-  },
-  // more data here
-  ]
-
   return (
 
     <div className="px-4 py-2">
@@ -65,9 +71,11 @@ export const Dropdown = () => {
       <div className="flex flex-row items-center">
         <form>
         <input className="w-72 h-8 border-2 border-softGrayWhite rounded-lg text-lg text-newLeafGreen placeholder:text-lg placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:outline-softGrayWhite pl-2 pr-7"
-        type="text" id="specialGroupInput" placeholder="Search through groups..." value={state.query} onChange={handleChange}></input>
+        ref={inputRef} type="text" id="specialGroupInput" placeholder="Search through groups..." value={state.query} onChange={handleChange}></input>
         </form>
-        <button>
+
+        {/* Clear button */} 
+        <button hidden id="clearBtn" onClick={clearInput}>
             <img 
               className="relative bottom-0.25 right-6 w-3 sm:w-4" 
               src={x} 
@@ -85,13 +93,13 @@ export const Dropdown = () => {
         </div>
 
         {(state.query === '' ? "" : state.list.map(post => {
-          return <li className="flex flex-row rounded-lg hover:cursor-pointer hover:bg-softGrayWhite px-2" key={post.title}>
+          return <li className="flex flex-row rounded-lg hover:cursor-pointer hover:bg-softGrayWhite px-2">
             <img
               className="w-2 mr-1 md:w-4"
-              src={ plus }
+              src={plus}
               alt="plus-icon"
             /> 
-          {post.title}
+          {post}
           </li>
         }))}
         

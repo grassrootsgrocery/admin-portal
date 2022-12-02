@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
 import { API_BASE_URL } from "../httpUtils";
 import { Loading } from "./Loading";
@@ -9,8 +9,6 @@ import plus from "../assets/plus.svg";
 import x from "../assets/greenX.svg";
 import alert from "../assets/alert.svg";
 import check from "../assets/check.svg";
-
-
 
 // Show/Hide dropdown, clear button, and messages
 function showHideElements() {
@@ -52,6 +50,7 @@ export const Dropdown = () => {
     list: []
   })
 
+  // Handling when input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
     // Result filtering based on input
@@ -80,42 +79,38 @@ export const Dropdown = () => {
     }
   }
 
-    // Determines if the special group is already registered for the event and handling 
-    const isSpecialGroupRegistered = (specialGroup: ProcessedSpecialGroup, allEventIds: string[]) => {
-      let registered = false;
-      if (specialGroup.events != null) {
-        for (let i = 0; i < specialGroup.events.length; i++) {
-          for (let j = 0; j < allEventIds.length; j++) {
-            if (specialGroup.events[i] === allEventIds[j]) {
-              registered = true;
-            }
-          }
-        }
-      }
-      console.log("registered", registered)
-  
-      // Set input value to selected special group name
-      setState({
-        query: specialGroup.name, 
-        list: state.list
-      });
+  // Determines if the special group is already registered for the event and handling 
+  const isSpecialGroupRegistered = (specialGroup: ProcessedSpecialGroup, allEventIds: string[]) => {
+    
+    // Determine if special group's event list includes an id associated with event
+    let registered = false;
+    if (specialGroup.events != null) {
+      registered = allEventIds.some(id=> specialGroup.events.includes(id));
+    }
+    //console.log("registered", registered)
 
-      // Set visibility of messages and dropdown
-      const dropdown = document.getElementById("specialGroupDropdown");
-      const alertMessage = document.getElementById('alreadyRegisteredMessage');
-      const readyMessage = document.getElementById('readyToRegisterMessage');
-      if (dropdown != null && inputRef.current != null && alertMessage != null && readyMessage != null) {
-        dropdown.style.display = "none"; // Hide dropdown
-        if (registered == true) {
-          alertMessage.style.display = "flex";
-          readyMessage.style.display = "none";
-        }
-        else {
-          readyMessage.style.display = "flex";
-          alertMessage.style.display = "none";
-        }
+    // Set input value to selected special group name
+    setState({
+      query: specialGroup.name, 
+      list: state.list
+    });
+
+    // Set visibility of messages and dropdown
+    const dropdown = document.getElementById("specialGroupDropdown");
+    const alertMessage = document.getElementById('alreadyRegisteredMessage');
+    const readyMessage = document.getElementById('readyToRegisterMessage');
+    if (dropdown != null && inputRef.current != null && alertMessage != null && readyMessage != null) {
+      dropdown.style.display = "none"; // Hide dropdown
+      if (registered == true) {
+        alertMessage.style.display = "flex";
+        readyMessage.style.display = "none";
+      }
+      else {
+        readyMessage.style.display = "flex";
+        alertMessage.style.display = "none";
       }
     }
+  }
 
   // Retrieve Special Groups
   const {
@@ -219,7 +214,7 @@ export const Dropdown = () => {
           src={check}
           alt="check-icon"
         /> 
-        <div className="flex flex-col items-center leading-5 px-4 text-lg font-semibold text-newLeafGreen">
+        <div className="leading-5 px-4 text-lg font-semibold text-newLeafGreen">
           Ready to generate link!
         </div>
       </div>

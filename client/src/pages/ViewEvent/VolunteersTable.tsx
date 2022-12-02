@@ -291,7 +291,7 @@ export const VolunteersTable: React.FC<Props> = ({
                 : "is unable to volunteer"
             }`;
             refetchVolunteers();
-            toastNotify(toastMessage, "failure");
+            toastNotify(toastMessage, "success");
           }}
           onError={() =>
             toastNotify("Unable to modify availability", "failure")
@@ -299,7 +299,7 @@ export const VolunteersTable: React.FC<Props> = ({
         />,
         /* Special Group */
         ss.fields["Volunteer Group (for MAKE)"] || "N/A",
-        /* Deliver Count */
+        /* TODO: Delivery Count */
         "IDK",
         /* TODO: Contact Modal */
         ss.fields["Email"],

@@ -3,15 +3,11 @@ import { DataTable } from "../../components/DataTable";
 import { Loading } from "../../components/Loading";
 import { ProcessedDriver } from "../../types";
 import { useDriversInfo } from "./driverInfoHooks";
+import { useFutureEventById } from "./eventHook";
 
-import { useQuery } from "react-query";
-
-//Types
-import { ProcessedEvent } from "../../types";
 //Assets
 import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
-import { API_BASE_URL } from "../../httpUtils";
 
 //Takes in ProcessedDriver array and formats data for DataTable component
 function processDriversForTable(drivers: ProcessedDriver[]) {
@@ -32,35 +28,6 @@ function processDriversForTable(drivers: ProcessedDriver[]) {
     output.push(curRow);
   }
   return output;
-}
-
-/* Get a future event by the event id.
- * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
- * */
-function useFutureEventById(eventId: string | undefined) {
-  const {
-    data: futureEvents,
-    status: futureEventsStatus,
-    error: futureEventsError,
-  } = useQuery(["fetchFutureEvents"], async () => {
-    const response = await fetch(`${API_BASE_URL}/api/events`);
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message);
-    }
-    return response.json() as Promise<ProcessedEvent[]>;
-  });
-
-  let event = undefined;
-  if (futureEventsStatus === "success") {
-    event = futureEvents.filter((fe) => eventId === fe.id)[0];
-  }
-
-  return {
-    event,
-    eventStatus: futureEventsStatus,
-    eventError: futureEventsError,
-  };
 }
 
 export function DriverAndLocationInfo() {

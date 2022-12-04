@@ -41,7 +41,7 @@ export const DataTable: React.FC<Props> = ({
                   return (
                     <td
                       key={idx}
-                      className="border border-newLeafGreen bg-softBeige px-4 py-2 text-center align-middle text-newLeafGreen"
+                      className="border border-newLeafGreen bg-softBeige px-2 py-2 text-center align-middle text-newLeafGreen"
                     >
                       {datum}
                     </td>

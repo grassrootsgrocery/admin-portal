@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "react-query";
-import { useFutureEventById } from "./eventHook";
+import { useFutureEventById } from "../eventHook";
 
 //Types
 import { AirtableResponse, ProcessedEvent, ScheduledSlot } from "../../types";
@@ -29,6 +29,11 @@ const HeaderValueDisplay: React.FC<{
     </div>
   );
 };
+
+//Tailwind classes
+const sectionHeader =
+  "flex items-start gap-3 text-2xl font-bold text-newLeafGreen lg:text-3xl";
+const sectionHeaderIcon = "w-8 lg:w-10";
 
 export function ViewEvent() {
   const { eventId } = useParams();
@@ -86,12 +91,6 @@ export function ViewEvent() {
   console.log("scheduledSlots", scheduledSlots);
 
   //UI
-
-  //Tailwind classes
-  const sectionHeader =
-    "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
-  const sectionHeaderIcon = "w-6 lg:w-10";
-
   return (
     <div className="p-6 lg:px-14 lg:py-10">
       {/* Event Info */}

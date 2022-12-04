@@ -5,6 +5,7 @@ import { API_BASE_URL } from "../../httpUtils";
 export function useDriversInfo() {
   const {
     data: processedDrivers,
+    refetch: refetchDrivers,
     status: processedDriversStatus,
     error: processedDriversError,
   } = useQuery(["fetchDriverInfo"], async () => {
@@ -71,6 +72,7 @@ export function useDriversInfo() {
 
   return {
     driversInfo: processedDrivers,
+    refetchDrivers,
     driversInfoIsLoading: isLoading,
     driversInfoIsError: isError,
     driversInfoError: processedDriversError || neighborhoodsError,

@@ -63,11 +63,12 @@ const apiKey = import.meta.env.VITE_AIRTABLE_API_KEY;
 # Running the dev server
 
 1. Clone the repo and `cd` into it
-2. Run `npm install`
-3. Follow the steps in the section above to set up your API keys (**API Key Access & Management**)
-4. Add `VITE_SERVER_URL='http://localhost:5000'`to your `client/.env` file
-5. Run `npm run dev`
-6. Navigate to `localhost:5173` in your browser
+2. Run `npm install` in the root directory
+3. Run `npm install` in the `client/` directory
+4. Follow the steps in the section above to set up your API keys (**API Key Access & Management**)
+5. Add `VITE_SERVER_URL='http://localhost:5000'`to your `client/.env` file
+6. Run `npm run dev`
+7. Navigate to `localhost:5173` in your browser
 
 # Hosting
 

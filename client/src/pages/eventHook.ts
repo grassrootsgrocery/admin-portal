@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
-import { API_BASE_URL } from "../../httpUtils";
+import { API_BASE_URL } from "../httpUtils";
 //Types
-import { ProcessedEvent } from "../../types";
+import { ProcessedEvent } from "../types";
 
 /* Get a future event by the event id.
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.

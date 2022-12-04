@@ -1,2 +1,1 @@
-import { ViewEvent } from "./ViewEvent";
-export default ViewEvent;
+export { ViewEvent } from "./ViewEvent";

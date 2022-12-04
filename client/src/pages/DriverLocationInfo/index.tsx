@@ -1,2 +1,1 @@
-import { DriverLocationInfo } from "./DriverLocationInfo";
-export default DriverLocationInfo;
+export { DriverLocationInfo } from "./DriverLocationInfo";

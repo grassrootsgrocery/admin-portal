@@ -88,10 +88,10 @@ export function DriverLocationInfo() {
     <div className="p-6 lg:px-14 lg:py-10">
       <Link to={`/events/${eventId}`}>
         <button
-          className="flex items-center rounded-full bg-pumpkinOrange p-2 font-bold hover:brightness-110"
+          className="shrink-0 rounded-full bg-pumpkinOrange px-4 text-base font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-10 md:py-1"
           type="button"
         >
-          {"< Go Back"}
+          Go Back
         </button>
       </Link>
       <div className="h-8" />

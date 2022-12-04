@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 
 //Taken from y-knot code base. Used to track click event outside of dropdowns.
-//12/2/2022 - This hook is incredibly cursed and should not be used
+//12/2/2022 - This hook is incredibly cursed and should not be used.
 export const useClickOutside = (onClickOutside: () => void) => {
   const domNodeRef = useRef<any>(null);
 

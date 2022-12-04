@@ -318,7 +318,7 @@ export const VolunteersTable: React.FC<Props> = ({
         className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4"
         ref={dropdownRef}
       >
-        {/* Filter dropdown */}
+        {/* Filter dropdown. TODO: This should be converted to use the Radix dropdown menu instead, similar to AssignLocationDropdown.tsx. */}
         <div className="relative z-50">
           <h1
             className={`flex w-44 select-none items-center justify-between rounded-lg border bg-pumpkinOrange px-2 py-1 text-sm font-semibold text-white hover:cursor-pointer hover:brightness-110 md:text-base ${

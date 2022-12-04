@@ -15,10 +15,9 @@ import { Navbar } from "./components/Navbar/Navbar";
 import { Toaster } from "react-hot-toast";
 //Pages
 import { Login } from "./pages/Login";
-import Events from "./pages/Events";
-import ViewEvent from "./pages/ViewEvent";
-import DriverLocationInfo from "./pages/DriverLocationInfo";
-import { Test } from "./Test";
+import { Events } from "./pages/Events";
+import { ViewEvent } from "./pages/ViewEvent";
+import { DriverLocationInfo } from "./pages/DriverLocationInfo";
 
 function App() {
   return (
@@ -36,7 +35,6 @@ function App() {
                 path="/events/driver-location-info/:eventId"
                 element={<DriverLocationInfo />}
               />
-              <Route path="/jason" element={<Test />} />
             </Routes>
           </div>
           <ReactQueryDevtools initialIsOpen={false} />

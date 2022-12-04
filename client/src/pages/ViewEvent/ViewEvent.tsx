@@ -119,7 +119,6 @@ export function ViewEvent() {
   console.log("scheduledSlots", scheduledSlots);
 
   //UI
-
   return (
     <div className="p-6 lg:px-14 lg:py-10">
       {/* Event Info */}

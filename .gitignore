@@ -23,4 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
+# All of that ^ was added automatically on project creation
+# This is stuff that we added 
 .env

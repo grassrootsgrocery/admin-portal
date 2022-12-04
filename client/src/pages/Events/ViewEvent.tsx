@@ -172,12 +172,14 @@ export const ViewEvent = () => {
           >
             Cancel
           </button>
+        <Link to={`/events/add-special-group/${eventId}`} state={{...event.allEventIds}}> 
           <button
             className="rounded-full bg-newLeafGreen px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
             type="button"
           >
             Add Group and Generate Link
           </button>
+        </Link>
         </div>
       </div>
 

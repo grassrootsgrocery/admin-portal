@@ -67,6 +67,8 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
     numBothDriversAndPackers: 0, // number of both drivers and packers
 
     scheduledSlots: event.fields["📅 Scheduled Slots"],
+
+    allEventIds: [event.id],
   };
 }
 
@@ -93,6 +95,7 @@ function processSpecialEventData(
   event.scheduledSlots = event.scheduledSlots.concat(
     specialEvent.fields["📅 Scheduled Slots"]
   );
+  event.allEventIds = event.allEventIds.concat(specialEvent.id);
 }
 
 function processPackerAndDriverCounts(event: ProcessedEvent) {

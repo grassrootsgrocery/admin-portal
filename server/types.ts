@@ -31,6 +31,7 @@ export interface ProcessedEvent {
   numBothDriversAndPackers: number;
   numSpecialGroups: number;
   scheduledSlots: string[];
+  allEventIds: string[];
 }
 
 export interface ScheduledSlot {
@@ -66,4 +67,14 @@ export interface ProcessedDriver {
 
 export interface Neighborhood {
   Name: string;
+}
+
+export interface SpecialGroup {
+  Name: string;
+  "🚛 Supplier Pickup Events": string[];
+}
+
+export interface ProcessedSpecialGroup {
+  name: string;
+  events: string[];
 }

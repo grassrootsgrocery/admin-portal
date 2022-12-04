@@ -221,7 +221,6 @@ function processDropOffLocations(
 router.route("/api/volunteers/drivers").get(
   asyncHandler(async (req: Request, res: Response) => {
     console.log("GET /api/volunteers/drivers");
-    console.log("HELLO!!");
     const url =
       `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
       `view=Assign Location ` + // tested with view "Drivers - Last Week"
@@ -255,7 +254,7 @@ router.route("/api/volunteers/drivers").get(
     processedDrivers.sort((driver1, driver2) =>
       driver1.firstName < driver2.firstName ? -1 : 1
     );
-    console.log(processedDrivers);
+
     res.status(OK).json(processedDrivers);
   })
 );

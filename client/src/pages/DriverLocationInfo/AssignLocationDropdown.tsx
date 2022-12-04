@@ -15,7 +15,6 @@ import { toastNotify } from "../../uiUtils";
 interface DropdownItemProps {
   label: string;
   selected: boolean;
-  onSelect: () => void;
   mutationFn: any;
   onSuccess: () => void;
   onError: () => void;
@@ -23,7 +22,7 @@ interface DropdownItemProps {
 const AssignLocationDropdownItem: React.FC<DropdownItemProps> = (
   props: DropdownItemProps
 ) => {
-  const { label, selected, mutationFn, onError, onSuccess } = props;
+  const { label, selected, mutationFn, onSuccess, onError } = props;
   const [isChecked, setIsChecked] = useState(selected);
   const assign = useMutation({
     mutationFn: mutationFn,
@@ -79,17 +78,19 @@ function getSelectedLocations(
       output[i] = true;
     }
   }
-  console.log("output", output);
   return output;
 }
 interface Props {
   locations: ProcessedDropoffLocation[];
   driver: ProcessedDriver;
+  refetchDrivers: any;
 }
 
+//TODO: Error handling on assigning a dropoff location doesn't work
 export const AssignLocationDropdown: React.FC<Props> = ({
   locations,
   driver,
+  refetchDrivers,
 }) => {
   const [selectedLocations, setSelectedLocations] = useState<boolean[]>(
     getSelectedLocations(locations, driver)
@@ -99,7 +100,7 @@ export const AssignLocationDropdown: React.FC<Props> = ({
   const assignLocation = (id: string, idx: number) => async () => {
     const locationIds = selectedLocations[idx] ? [] : [id];
     for (let i = 0; i < selectedLocations.length; i++) {
-      if (selectedLocations[i]) {
+      if (i != idx && selectedLocations[i]) {
         locationIds.push(locations[i].id);
       }
     }
@@ -142,25 +143,24 @@ export const AssignLocationDropdown: React.FC<Props> = ({
           {locations.map((item, i) => (
             <AssignLocationDropdownItem
               key={item.id}
-              onSelect={() => {
-                const newSelectedLocations = [...selectedLocations];
-                newSelectedLocations[i] = !selectedLocations[i];
-                setSelectedLocations(newSelectedLocations);
-              }}
               selected={selectedLocations[i]}
               label={item.dropOffLocation}
               mutationFn={assignLocation(item.id, i)}
-              onSuccess={() =>
+              onSuccess={() => {
+                const newSelectedLocations = [...selectedLocations];
+                newSelectedLocations[i] = !selectedLocations[i];
+                setSelectedLocations(newSelectedLocations);
+                refetchDrivers();
                 toastNotify(
                   `Location ${
-                    selectedLocations[i] ? "unassigned" : "assigned"
+                    newSelectedLocations[i] ? "assigned" : "unassigned"
                   }`,
                   "success"
-                )
-              }
-              onError={() =>
-                toastNotify("Unable to assign location", "failure")
-              }
+                );
+              }}
+              onError={() => {
+                toastNotify("Unable to assign location", "failure");
+              }}
             />
           ))}
         </DropdownMenu.Content>

@@ -11,7 +11,8 @@ import { API_BASE_URL } from "../../httpUtils";
 //Takes in ProcessedDriver array and formats data for DataTable component
 function processDriversForTable(
   drivers: ProcessedDriver[],
-  processedDropOffLocations: ProcessedDropoffLocation[]
+  processedDropOffLocations: ProcessedDropoffLocation[],
+  refetchDrivers: any
 ) {
   let output = [];
   for (let i = 0; i < drivers.length; i++) {
@@ -31,6 +32,7 @@ function processDriversForTable(
           a.dropOffLocation < b.dropOffLocation ? -1 : 1
         )}
         driver={curDriver}
+        refetchDrivers={refetchDrivers}
       />,
     ];
     output.push(curRow);
@@ -43,6 +45,7 @@ export function DriverLocationInfo() {
 
   const {
     driversInfo,
+    refetchDrivers,
     driversInfoIsLoading,
     driversInfoIsError,
     driversInfoError,
@@ -107,7 +110,11 @@ export function DriverLocationInfo() {
           "Restricted Locations",
           "Assign Location",
         ]}
-        dataRows={processDriversForTable(driversInfo, dropoffLocations)}
+        dataRows={processDriversForTable(
+          driversInfo,
+          dropoffLocations,
+          refetchDrivers
+        )}
       />
     </div>
   );

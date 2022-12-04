@@ -72,6 +72,7 @@ export function useDriversInfo() {
 
   return {
     driversInfo: processedDrivers,
+    refetchDrivers,
     driversInfoIsLoading: isLoading,
     driversInfoIsError: isError,
     driversInfoError: processedDriversError || neighborhoodsError,

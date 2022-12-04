@@ -24,6 +24,9 @@ app.use("/", messagingRouter);
 
 import volunteersRouter from "./routes/volunteers";
 app.use("/", volunteersRouter);
+
+import dropoffRouter from "./routes/dropoffLocations";
+app.use("/", dropoffRouter);
 //---- API End ----
 
 //Middleware for handling errors. This has to go after the routes.

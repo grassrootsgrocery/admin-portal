@@ -1,10 +1,13 @@
 import { useQuery } from "react-query";
 import { Loading } from "../../components/Loading";
 import { API_BASE_URL } from "../../httpUtils";
+//Assets
+import recruitment from "../../assets/recruitment.svg";
 
 // Tailwind classes
 const sectionHeader =
-  "flex items-center gap-2 text-2xl font-bold text-newLeafGreen lg:text-3xl";
+  "flex items-start gap-3 text-2xl font-bold text-newLeafGreen lg:text-3xl";
+const sectionHeaderIcon = "w-8 lg:w-10";
 const recruitCard =
   "flex min-w-max grow flex-col gap-4 items-start lg:items-center";
 const cardHeader = "text-xl lg:text-2xl font-semibold text-newLeafGreen";
@@ -54,7 +57,10 @@ export function Messaging() {
   //UI
   return (
     <div className="flex h-1/3 flex-col gap-4">
-      <h1 className={sectionHeader}>Recruitment</h1>
+      <h1 className={sectionHeader}>
+        <img className={sectionHeaderIcon} src={recruitment} alt="people" />
+        Recruitment
+      </h1>
       <div className="flex grow flex-wrap gap-16 lg:px-32">
         {/* Coordinators Recruitment card */}
         <div className={recruitCard}>

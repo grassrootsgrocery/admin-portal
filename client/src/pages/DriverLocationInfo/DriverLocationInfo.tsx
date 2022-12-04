@@ -42,6 +42,41 @@ function processDriversForTable(
   }
   return output;
 }
+
+//TODO: Make this code cleaner
+function processDropoffLocationsForTable(
+  drivers: ProcessedDriver[],
+  processedDropOffLocations: ProcessedDropoffLocation[]
+) {
+  let output = [];
+  for (let i = 0; i < processedDropOffLocations.length; i++) {
+    const curLocation = processedDropOffLocations[i];
+    let curRow = [
+      curLocation.id, //id
+      i + 1, //#
+      "Coordinator Information", //TODO: coordinator information
+      curLocation.dropOffLocation,
+      curLocation.address,
+      curLocation.neighborhood,
+      curLocation.startTime,
+      curLocation.endTime,
+      curLocation.deliveriesAssigned,
+      <ul className="scrollbar-thin flex w-[600px] gap-4 overflow-x-auto pb-2">
+        {drivers
+          .filter((d) => d.dropoffLocations.some((l) => l === curLocation.id))
+          .map((d) => {
+            return (
+              <li className="flex min-w-fit shrink-0 items-center gap-1 rounded-full bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen sm:text-sm md:text-base">
+                {d.firstName + " " + d.lastName}
+              </li>
+            );
+          })}
+      </ul>,
+    ];
+    output.push(curRow);
+  }
+  return output;
+}
 //Tailwind classes
 const label = "text-sm md:text-base lg:text-xl ";
 const text = "text-sm font-bold text-newLeafGreen md:text-base lg:text-xl";
@@ -135,30 +170,59 @@ export function DriverLocationInfo() {
           </div>
         </div>
       </div>
+
       <div className={sectionHeader}>
         <img className={sectionHeaderIcon} src={driving}></img>
         <h1>Driver Information</h1>
       </div>
+      <div className="h-8" />
+      <div className="h-screen">
+        <DataTable
+          columnHeaders={[
+            "#",
+            "First Name",
+            "Last Name",
+            "Time Slot",
+            "Delivery Count",
+            "Zip Code",
+            "Vehicle",
+            "Restricted Locations",
+            "Assign Location",
+          ]}
+          dataRows={processDriversForTable(
+            driversInfo,
+            dropoffLocations,
+            refetchDrivers
+          )}
+        />
+      </div>
 
       <div className="h-8" />
-      <DataTable
-        columnHeaders={[
-          "#",
-          "First Name",
-          "Last Name",
-          "Time Slot",
-          "Delivery Count",
-          "Zip Code",
-          "Vehicle",
-          "Restricted Locations",
-          "Assign Location",
-        ]}
-        dataRows={processDriversForTable(
-          driversInfo,
-          dropoffLocations,
-          refetchDrivers
-        )}
-      />
+      <div className={sectionHeader}>
+        <img className={sectionHeaderIcon} src={driving}></img>
+        <h1>Location Information</h1>
+      </div>
+      <div className="h-8" />
+
+      <div className="h-screen">
+        <DataTable
+          columnHeaders={[
+            "#",
+            "Coordinator Information",
+            "Site Name",
+            "Address",
+            "Neighborhood",
+            "Start Time",
+            "End Time",
+            "Deliveries Assigned",
+            "Matched Drivers",
+          ]}
+          dataRows={processDropoffLocationsForTable(
+            driversInfo,
+            dropoffLocations
+          )}
+        />
+      </div>
     </div>
   );
 }

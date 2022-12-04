@@ -203,16 +203,6 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {
   };
 }
 
-function processDropOffLocations(
-  location: Record<DropoffLocation>
-): ProcessedDropoffLocation {
-  return {
-    id: location.id,
-    dropOffLocation: location.fields["Drop off location"]
-      ? location.fields["Drop off location"]
-      : "N/A",
-  };
-}
 /**
  * @description Get all the drivers for an event
  * @route  GET /api/volunteers/drivers

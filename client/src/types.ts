@@ -56,4 +56,10 @@ export interface DropoffLocation {
 export interface ProcessedDropoffLocation {
   id: string;
   dropOffLocation: string;
+  address: string;
+  neighborhood: string;
+  startTime: string;
+  endTime: string;
+  deliveriesAssigned: number;
+  matchedDrivers: string[];
 }

@@ -30,7 +30,7 @@ function processDriversForTable(
         locations={processedDropOffLocations.sort((a, b) =>
           a.dropOffLocation < b.dropOffLocation ? -1 : 1
         )}
-        driverId={curDriver.id}
+        driver={curDriver}
       />,
     ];
     output.push(curRow);

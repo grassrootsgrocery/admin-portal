@@ -52,6 +52,7 @@ export interface Driver {
   "Zip Code": string;
   "Transportation Types": string;
   "Restricted Neighborhoods": string[];
+  "📍 Drop off location": string[];
 }
 export interface ProcessedDriver {
   id: string;
@@ -62,6 +63,7 @@ export interface ProcessedDriver {
   zipCode: string;
   vehicle: string;
   restrictedLocations: string[];
+  dropoffLocations: string[];
 }
 
 export interface Neighborhood {

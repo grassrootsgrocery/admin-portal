@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ProcessedDropoffLocation } from "../../types";
+import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 import { useMutation } from "react-query";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
@@ -38,8 +38,8 @@ const AssignLocationDropdownItem: React.FC<DropdownItemProps> = (
   });
   return (
     <DropdownMenu.Item
-      className={`flex select-none items-center justify-between rounded-lg border border-newLeafGreen p-2 font-semibold shadow-md outline-none ${
-        selected
+      className={`flex select-none items-center justify-between rounded-lg border border-newLeafGreen p-2 font-semibold shadow-md outline-none hover:cursor-pointer ${
+        isChecked
           ? "bg-newLeafGreen text-white"
           : "text-newLeafGreen data-[highlighted]:-m-[1px] data-[selected]:cursor-pointer data-[highlighted]:cursor-pointer data-[highlighted]:border-2 data-[highlighted]:brightness-110"
       }`}
@@ -68,28 +68,42 @@ const AssignLocationDropdownItem: React.FC<DropdownItemProps> = (
   );
 };
 
+//TODO: The whole way that we are doing selection needs to be rethought
+function getSelectedLocations(
+  locations: ProcessedDropoffLocation[],
+  driver: ProcessedDriver
+): boolean[] {
+  const output = Array(locations.length).fill(false);
+  for (let i = 0; i < locations.length; i++) {
+    if (driver.dropoffLocations.some((locId) => locId === locations[i].id)) {
+      output[i] = true;
+    }
+  }
+  console.log("output", output);
+  return output;
+}
 interface Props {
   locations: ProcessedDropoffLocation[];
-  driverId: string;
+  driver: ProcessedDriver;
 }
 
 export const AssignLocationDropdown: React.FC<Props> = ({
   locations,
-  driverId,
+  driver,
 }) => {
   const [selectedLocations, setSelectedLocations] = useState<boolean[]>(
-    Array(locations.length).fill(false)
+    getSelectedLocations(locations, driver)
   );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const assignLocation = (id: string) => async () => {
-    const locationIds = [id];
+  const assignLocation = (id: string, idx: number) => async () => {
+    const locationIds = selectedLocations[idx] ? [] : [id];
     for (let i = 0; i < selectedLocations.length; i++) {
       if (selectedLocations[i]) {
         locationIds.push(locations[i].id);
       }
     }
-    const url = `${API_BASE_URL}/api/volunteers/drivers/assign-location/${driverId}`;
+    const url = `${API_BASE_URL}/api/volunteers/drivers/assign-location/${driver.id}`;
     const resp = await fetch(url, {
       method: "PATCH",
       headers: {
@@ -135,8 +149,15 @@ export const AssignLocationDropdown: React.FC<Props> = ({
               }}
               selected={selectedLocations[i]}
               label={item.dropOffLocation}
-              mutationFn={assignLocation(item.id)}
-              onSuccess={() => toastNotify("Location assigned", "success")}
+              mutationFn={assignLocation(item.id, i)}
+              onSuccess={() =>
+                toastNotify(
+                  `Location ${
+                    selectedLocations[i] ? "unassigned" : "assigned"
+                  }`,
+                  "success"
+                )
+              }
               onError={() =>
                 toastNotify("Unable to assign location", "failure")
               }

@@ -43,6 +43,7 @@ export interface ProcessedDriver {
   zipCode: string;
   vehicle: string;
   restrictedLocations: string[];
+  dropoffLocations: string[];
 }
 
 export interface Neighborhood {

@@ -13,6 +13,8 @@ import {
   Record,
   ScheduledSlot,
   Neighborhood,
+  DropoffLocation,
+  ProcessedDropoffLocation,
 } from "../types";
 //Error messages
 import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
@@ -197,9 +199,20 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {
     restrictedLocations: driver.fields["Restricted Neighborhoods"]
       ? driver.fields["Restricted Neighborhoods"]
       : [],
+    dropoffLocations: driver.fields["📍 Drop off location"] || [],
   };
 }
 
+function processDropOffLocations(
+  location: Record<DropoffLocation>
+): ProcessedDropoffLocation {
+  return {
+    id: location.id,
+    dropOffLocation: location.fields["Drop off location"]
+      ? location.fields["Drop off location"]
+      : "N/A",
+  };
+}
 /**
  * @description Get all the drivers for an event
  * @route  GET /api/volunteers/drivers
@@ -208,6 +221,7 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {
 router.route("/api/volunteers/drivers").get(
   asyncHandler(async (req: Request, res: Response) => {
     console.log("GET /api/volunteers/drivers");
+    console.log("HELLO!!");
     const url =
       `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
       `view=Assign Location ` + // tested with view "Drivers - Last Week"
@@ -219,7 +233,8 @@ router.route("/api/volunteers/drivers").get(
       `&fields=Total Deliveries` + // Delivery Type
       `&fields=Zip Code` + // Zip Code
       `&fields=Transportation Types` + // Vehicle
-      `&fields=Restricted Neighborhoods`; // Restricted Locations
+      `&fields=Restricted Neighborhoods` + // Restricted Locations
+      `&fields=📍 Drop off location`; // Restricted Locations
 
     const resp = await fetch(url, {
       headers: {
@@ -240,6 +255,7 @@ router.route("/api/volunteers/drivers").get(
     processedDrivers.sort((driver1, driver2) =>
       driver1.firstName < driver2.firstName ? -1 : 1
     );
+    console.log(processedDrivers);
     res.status(OK).json(processedDrivers);
   })
 );
@@ -299,8 +315,7 @@ router.route("/api/neighborhoods").get(
     const { neighborhoodIds } = req.query;
     console.log(`GET /api/neighborhoods ${neighborhoodIds}`);
 
-    const isValidRequest =
-      neighborhoodIds && typeof neighborhoodIds === "string";
+    const isValidRequest = typeof neighborhoodIds === "string";
     if (!isValidRequest) {
       res.status(BAD_REQUEST);
       throw new Error(

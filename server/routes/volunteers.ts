@@ -13,6 +13,8 @@ import {
   Record,
   ScheduledSlot,
   Neighborhood,
+  DropoffLocation,
+  ProcessedDropoffLocation,
 } from "../types";
 //Error messages
 import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
@@ -119,7 +121,7 @@ router.route("/api/volunteers/confirm/:volunteerId").patch(
 );
 
 /**
- * @description Mark a volunteer as "Not Going" for an event
+ * @description Update the "Can't Come" status for a volunteer  for a particular event
  * @route  PATCH /api/volunteers/going/:volunteerId
  * @access
  */
@@ -197,6 +199,7 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {
     restrictedLocations: driver.fields["Restricted Neighborhoods"]
       ? driver.fields["Restricted Neighborhoods"]
       : [],
+    dropoffLocations: driver.fields["📍 Drop off location"] || [],
   };
 }
 
@@ -219,7 +222,8 @@ router.route("/api/volunteers/drivers").get(
       `&fields=Total Deliveries` + // Delivery Type
       `&fields=Zip Code` + // Zip Code
       `&fields=Transportation Types` + // Vehicle
-      `&fields=Restricted Neighborhoods`; // Restricted Locations
+      `&fields=Restricted Neighborhoods` + // Restricted Locations
+      `&fields=📍 Drop off location`; // Restricted Locations
 
     const resp = await fetch(url, {
       headers: {
@@ -240,10 +244,56 @@ router.route("/api/volunteers/drivers").get(
     processedDrivers.sort((driver1, driver2) =>
       driver1.firstName < driver2.firstName ? -1 : 1
     );
+
     res.status(OK).json(processedDrivers);
   })
 );
 
+/**
+ * @description Assign a driver a dropoff location
+ * @route  GET /api/volunteers/drivers/assign-location/:driverId
+ * @access
+ */
+router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
+  asyncHandler(async (req: Request, res: Response) => {
+    const { driverId } = req.params;
+    const { locationIds } = req.body;
+
+    const isValidRequest =
+      locationIds && driverId && typeof driverId === "string"; //&& typeof locationIds === "string[]";
+    if (!isValidRequest) {
+      res.status(BAD_REQUEST);
+      throw new Error(
+        "Please provide a 'locationIds' on the request body with type string[]"
+      );
+    }
+    console.log(`PATCH /api/volunteers/drivers/assign-location/${driverId}`);
+
+    const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slots`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+      body: JSON.stringify({
+        records: [
+          {
+            id: driverId,
+            fields: { "📍 Drop off location": locationIds },
+          },
+        ],
+      }),
+    });
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
+    }
+    const result = await resp.json();
+    res.status(OK).json(result);
+  })
+);
 /**
  * @description
  * @route  GET /api/neighborhoods
@@ -254,8 +304,7 @@ router.route("/api/neighborhoods").get(
     const { neighborhoodIds } = req.query;
     console.log(`GET /api/neighborhoods ${neighborhoodIds}`);
 
-    const isValidRequest =
-      neighborhoodIds && typeof neighborhoodIds === "string";
+    const isValidRequest = typeof neighborhoodIds === "string";
     if (!isValidRequest) {
       res.status(BAD_REQUEST);
       throw new Error(

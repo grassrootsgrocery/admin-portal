@@ -25,6 +25,9 @@ app.use("/", messagingRouter);
 import volunteersRouter from "./routes/volunteers";
 app.use("/", volunteersRouter);
 
+import dropoffRouter from "./routes/dropoffLocations";
+app.use("/", dropoffRouter);
+
 import specialGroupsRouter from "./routes/specialGroups";
 app.use("/", specialGroupsRouter);
 //---- API End ----

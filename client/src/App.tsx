@@ -15,9 +15,9 @@ import { Navbar } from "./components/Navbar/Navbar";
 import { Toaster } from "react-hot-toast";
 //Pages
 import { Login } from "./pages/Login";
-import { Events } from "./pages/Events/Events";
-import { ViewEvent } from "./pages/Events/ViewEvent";
-import { DriverAndLocationInfo } from "./pages/Events/DriverAndLocationInfo";
+import { Events } from "./pages/Events";
+import { ViewEvent } from "./pages/ViewEvent";
+import { DriverLocationInfo } from "./pages/DriverLocationInfo";
 
 import { Dropdown } from "./components/SpecialGroupDropdown";
 
@@ -28,14 +28,13 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <div className="flex h-screen flex-col">
             <Toaster />
-            <Navbar />
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:eventId" element={<ViewEvent />} />
               <Route
                 path="/events/driver-location-info/:eventId"
-                element={<DriverAndLocationInfo />}
+                element={<DriverLocationInfo />}
               />
               <Route
                 path="/events/add-special-group/:eventId"

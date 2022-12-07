@@ -33,7 +33,7 @@ export interface ScheduledSlot {
   "Volunteer Status": string;
   Email: string;
   "Volunteer Group (for MAKE)": string;
-  "Can't Come": boolean
+  "Can't Come": boolean;
 }
 export interface ProcessedDriver {
   id: string;
@@ -44,10 +44,25 @@ export interface ProcessedDriver {
   zipCode: string;
   vehicle: string;
   restrictedLocations: string[];
+  dropoffLocations: string[];
 }
 
 export interface Neighborhood {
   Name: string;
+}
+export interface DropoffLocation {
+  "Drop off location": string;
+}
+
+export interface ProcessedDropoffLocation {
+  id: string;
+  dropOffLocation: string;
+  address: string;
+  neighborhood: string;
+  startTime: string;
+  endTime: string;
+  deliveriesAssigned: number;
+  matchedDrivers: string[];
 }
 
 export interface SpecialGroup {
@@ -63,4 +78,4 @@ export interface ProcessedSpecialGroup {
 export interface DropdownFilter {
   query: string;
   list: ProcessedSpecialGroup[];
-} 
+}

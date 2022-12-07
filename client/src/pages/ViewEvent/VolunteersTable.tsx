@@ -1,18 +1,68 @@
 import { useEffect, useRef, useState } from "react";
+import * as RadixCheckbox from "@radix-ui/react-checkbox";
+import { useMutation } from "react-query";
+import { toastNotify, useClickOutside } from "../../uiUtils";
+//Components
+import { Loading } from "../../components/Loading";
 import { DataTable } from "../../components/DataTable";
-import { HttpCheckbox } from "../../components/HttpCheckbox";
-import toast from "react-hot-toast";
-import { API_BASE_URL, applyPatch } from "../../httpUtils";
-//Types
-import { Record, ScheduledSlot } from "../../types";
 //Assets
+import { API_BASE_URL, applyPatch } from "../../httpUtils";
 import chevron_up from "../../assets/chevron-up.svg";
 import chevron_down from "../../assets/chevron-down.svg";
 import x from "../../assets/x.svg";
+import check_icon from "../../assets/checkbox-icon.svg";
+//Types
+import { Record, ScheduledSlot } from "../../types";
 
 /*
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
 */
+
+//Used for "Confirmed" and "Not going" checkboxes
+interface HttpCheckboxProps {
+  checked: boolean;
+  mutationFn: any; //This needs to be generic enough
+  onSuccess: () => void;
+  onError: () => void;
+}
+export const HttpCheckbox: React.FC<HttpCheckboxProps> = ({
+  checked,
+  mutationFn,
+  onSuccess,
+  onError,
+}: HttpCheckboxProps) => {
+  const [isChecked, setIsChecked] = useState(checked);
+  const httpRequest = useMutation({
+    mutationFn: mutationFn,
+    onSuccess(data, variables, context) {
+      setIsChecked((prevVal) => !prevVal);
+      onSuccess();
+    },
+    onError(error, variables, context) {
+      console.error(error);
+      onError();
+    },
+  });
+
+  //UI
+  return (
+    <div className="relative flex h-full items-center justify-center">
+      {httpRequest.status === "loading" ? (
+        <Loading size="xsmall" thickness="thin" />
+      ) : (
+        <RadixCheckbox.Root
+          className="flex h-5 w-5 items-center justify-center rounded border-2 border-newLeafGreen bg-softGrayWhite shadow-md hover:brightness-110"
+          checked={isChecked}
+          onClick={() => httpRequest.mutate()}
+        >
+          <RadixCheckbox.Indicator className="CheckboxIndicator">
+            <img src={check_icon} alt="" />
+          </RadixCheckbox.Indicator>
+        </RadixCheckbox.Root>
+      )}
+    </div>
+  );
+};
 
 interface FilterItemProps {
   onSelect: () => void;
@@ -23,12 +73,23 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
   const { filterLabel, selected, onSelect } = props;
   return (
     <li
-      className={`rounded-lg border border-pumpkinOrange px-2 font-semibold shadow-md hover:cursor-pointer hover:brightness-110 ${
+      className={`flex min-w-fit shrink-0 items-center gap-1 rounded-lg border border-pumpkinOrange px-2 font-semibold shadow-md hover:cursor-pointer hover:brightness-110 ${
         selected ? "bg-pumpkinOrange text-white" : "bg-white text-pumpkinOrange"
       }`}
       onClick={onSelect}
     >
-      {filterLabel}
+      <div className="w-10/12">{filterLabel}</div>
+      <RadixCheckbox.Root
+        className={`ml-auto flex h-4 w-4 items-end justify-end rounded border border-pumpkinOrange ${
+          selected ? "bg-white" : "bg-softGrayWhite"
+        }`}
+        checked={selected}
+        id="c1"
+      >
+        <RadixCheckbox.Indicator className="CheckboxIndicator">
+          <img src={check_icon} alt="check" />
+        </RadixCheckbox.Indicator>
+      </RadixCheckbox.Root>
     </li>
   );
 };
@@ -36,17 +97,11 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
 interface FilterButtonProps {
   onSelect: () => void;
   filterLabel: string;
-  selected: boolean;
 }
 const FilterButton: React.FC<FilterButtonProps> = ({
   filterLabel,
-  selected,
   onSelect,
 }: FilterButtonProps) => {
-  if (!selected) {
-    return null;
-  }
-
   return (
     <button
       className="flex min-w-fit shrink-0 items-center gap-1 rounded-full bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:shadow-md hover:shadow-newLeafGreen sm:text-sm md:text-base"
@@ -57,41 +112,6 @@ const FilterButton: React.FC<FilterButtonProps> = ({
     </button>
   );
 };
-
-//Taken from y-knot code base. Used to track click event outside of the dropdown.
-const useClickOutside = (onClickOutside: () => void) => {
-  const domNodeRef = useRef<any>(null);
-
-  const clickedOutsideDomNodes = (e: any) => {
-    return !domNodeRef.current || !domNodeRef.current.contains(e.target);
-  };
-  //Because I gave up on trying to get the types to work.
-  const handleClick = (e: any) => {
-    e.preventDefault();
-    if (clickedOutsideDomNodes(e)) {
-      onClickOutside();
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
-  return [domNodeRef];
-};
-
-function toastNotify(message: string, isSuccess: boolean) {
-  toast(message, {
-    duration: 3000,
-    position: "top-center",
-    icon: isSuccess ? "✅" : "❌",
-    ariaProps: {
-      role: "status",
-      "aria-live": "polite",
-    },
-  });
-}
 
 interface DropdownFilterOption {
   label: string;
@@ -253,9 +273,9 @@ export const VolunteersTable: React.FC<Props> = ({
               ss.fields["Confirmed?"] ? "unconfirmed" : "confirmed"
             }`;
             refetchVolunteers();
-            toastNotify(toastMessage, true);
+            toastNotify(toastMessage, "success");
           }}
-          onError={() => toastNotify("Unable to confirm volunteer", false)}
+          onError={() => toastNotify("Unable to confirm volunteer", "failure")}
         />,
         /* Not Going Checkbox */
         <HttpCheckbox
@@ -271,13 +291,15 @@ export const VolunteersTable: React.FC<Props> = ({
                 : "is unable to volunteer"
             }`;
             refetchVolunteers();
-            toastNotify(toastMessage, true);
+            toastNotify(toastMessage, "success");
           }}
-          onError={() => toastNotify("Unable to modify availability", false)}
+          onError={() =>
+            toastNotify("Unable to modify availability", "failure")
+          }
         />,
         /* Special Group */
         ss.fields["Volunteer Group (for MAKE)"] || "N/A",
-        /* Deliver Count */
+        /* TODO: Delivery Count */
         "IDK",
         /* TODO: Contact Modal */
         ss.fields["Email"],
@@ -296,10 +318,10 @@ export const VolunteersTable: React.FC<Props> = ({
         className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4"
         ref={dropdownRef}
       >
-        {/* Filter dropdown */}
+        {/* Filter dropdown. TODO: This should be converted to use the Radix dropdown menu instead, similar to AssignLocationDropdown.tsx. */}
         <div className="relative z-50">
           <h1
-            className={`relative flex w-40 select-none items-center justify-between rounded-lg border bg-pumpkinOrange px-2 py-1 text-sm font-semibold text-white hover:cursor-pointer hover:brightness-110 md:text-base ${
+            className={`flex w-44 select-none items-center justify-between rounded-lg border bg-pumpkinOrange px-2 py-1 text-sm font-semibold text-white hover:cursor-pointer hover:brightness-110 md:text-base ${
               isFilterDropdownOpen ? " brightness-110" : ""
             }`}
             onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
@@ -315,7 +337,7 @@ export const VolunteersTable: React.FC<Props> = ({
           {
             <ul
               className={`absolute flex flex-col gap-2 rounded-lg border bg-softBeige shadow-md ${
-                isFilterDropdownOpen ? "py-2 px-1" : ""
+                isFilterDropdownOpen ? "py-2 px-2" : ""
               }`}
             >
               {isFilterDropdownOpen &&
@@ -331,21 +353,23 @@ export const VolunteersTable: React.FC<Props> = ({
           }
         </div>
 
-        {/* Applied Filters Label */}
+        {/* Applied Filters Labels */}
         <h1 className="shrink-0 font-semibold text-newLeafGreen lg:text-lg">
           Applied Filters:
         </h1>
 
         {/* Buttons that pops up after filter is clicked */}
-        <div className="scrollbar-thin flex grow items-start gap-4 overflow-x-auto overscroll-x-auto py-1 px-2">
-          {filters.map((item, i) => (
-            <FilterButton
-              key={i}
-              selected={item.isSelected}
-              onSelect={() => onFilterSelect(i)}
-              filterLabel={item.label}
-            />
-          ))}
+        <div className="scrollbar-thin flex max-w-full grow items-start gap-4 overflow-x-auto overscroll-x-auto py-1 px-2">
+          {filters.map((item, i) => {
+            if (!item.isSelected) return null;
+            return (
+              <FilterButton
+                key={i}
+                onSelect={() => onFilterSelect(i)}
+                filterLabel={item.label}
+              />
+            );
+          })}
         </div>
 
         {/* Clear Filters button */}

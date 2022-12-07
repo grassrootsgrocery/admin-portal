@@ -53,6 +53,7 @@ export interface Driver {
   "Zip Code": string;
   "Transportation Types": string;
   "Restricted Neighborhoods": string[];
+  "📍 Drop off location": string[];
 }
 export interface ProcessedDriver {
   id: string;
@@ -63,10 +64,32 @@ export interface ProcessedDriver {
   zipCode: string;
   vehicle: string;
   restrictedLocations: string[];
+  dropoffLocations: string[];
 }
 
 export interface Neighborhood {
   Name: string;
+}
+
+export interface DropoffLocation {
+  "Drop off location": string;
+  "Drop-off Address": string;
+  Neighborhood: string;
+  "Starts accepting at": string;
+  "Stops accepting at": string;
+  // TODO: update with correct airtable field for deliveriesAssigned
+  // TODO: update with correct airtable field for matchedDrivers
+}
+
+export interface ProcessedDropoffLocation {
+  id: string;
+  dropOffLocation: string;
+  address: string;
+  neighborhood: string;
+  startTime: string;
+  endTime: string;
+  deliveriesAssigned: number;
+  matchedDrivers: string[];
 }
 
 export interface SpecialGroup {

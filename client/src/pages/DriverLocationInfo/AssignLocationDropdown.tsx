@@ -136,7 +136,7 @@ export const AssignLocationDropdown: React.FC<Props> = ({
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="flex h-64 w-80 flex-col gap-3 overflow-auto rounded-lg border border-newLeafGreen bg-white px-4 py-2"
+          className="z-20 flex h-64 w-80 flex-col gap-3 overflow-auto rounded-lg border border-newLeafGreen bg-white px-4 py-2"
           avoidCollisions
           align="start"
         >

@@ -7,7 +7,6 @@ export interface Record<T> {
   createdTime: string;
 }
 
-
 export interface ProcessedEvent {
   id: string;
   dateDisplay: string;
@@ -25,13 +24,14 @@ export interface ProcessedEvent {
 }
 
 export interface ScheduledSlot {
-  "First Name": string;
-  "Last Name": string;
+  "First Name": string[];
+  "Last Name": string[];
+  "Total Deliveries": number;
   "Correct slot time": any;
   Type: string[];
   "Confirmed?": boolean;
-  "Volunteer Status": string;
-  Email: string;
+  "Volunteer Status": string[];
+  Email: string[];
   "Volunteer Group (for MAKE)": string;
   "Can't Come": boolean;
 }

@@ -46,6 +46,7 @@ router.route("/api/volunteers/").get(
       `&fields=Last Name` +
       `&fields=Correct slot time` +
       `&fields=Type` +
+      `&fields=Total Deliveries` +
       `&fields=Confirmed?` +
       `&fields=Volunteer Status` +
       `&fields=Can't Come` +

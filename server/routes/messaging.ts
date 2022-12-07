@@ -8,6 +8,13 @@ import { Request, Response } from "express";
 import { MAKE_ERROR_MESSAGE } from "../httpUtils/make";
 const router = express.Router();
 
+/*
+All of these endpoints are pretty bad because we are fetching data from Make and using magic numbers to grab the exact
+part of the response that contains the text message body that is used in the automations. There is probably some better way
+to be doing this. Perhaps we should be talking to the Twilio API to get the text messsages instead, but that would have its 
+own problems if they were to ever change the Make automations to use different text messages.
+*/
+
 /**
  * @description Get "Send Coordinator Recruitment Text (Wed afternoon)" blueprint from Make
  * @route  GET /api/messaging/coordinator-recruitment-text
@@ -32,11 +39,6 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
       };
     }
     const data = await resp.json();
-    /*
-      This is awful, but there is nothing I can do about it really since this is how the Make API is structured. 
-      There might be something better that we can do to try and parse the JSON and get the message instead so that 
-      we can avoid magic numbers like this. 
-    */
     res.status(OK).json(data.response.blueprint.flow[4].mapper.body);
   })
 );
@@ -65,11 +67,6 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
       };
     }
     const data = await resp.json();
-    /*
-        This is awful, but there is nothing I can do about it really since this is how the Make API is structured. 
-        There might be something better that we can do to try and parse the JSON and get the message instead so that 
-        we can avoid magic numbers like this. 
-      */
     res.status(OK).json(data.response.blueprint.flow[2].mapper.body);
   })
 );
@@ -108,11 +105,11 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
 );
 
 /**
- * @description Get the "Send Driver Info To Coordinators" text message blueprint from Make
- * @route  GET /api/messaging/driver-info-to-coordinators-text
+ * @description Get the "[NEW] Send Locations and POC details to volunteer drivers (only text, no email)" text message blueprint from Make
+ * @route  GET /api/messaging/locations-to-drivers-text
  * @access
  */
-router.route("/api/messaging/location-to-driversinfo-text").get(
+router.route("/api/messaging/locations-to-drivers-text").get(
   asyncHandler(async (req: Request, res: Response) => {
     const driverLocationInfoTextAutomationId = 329564;
     const resp = await fetch(

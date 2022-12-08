@@ -14,11 +14,11 @@ import check from "../../assets/check.svg";
 import calendar from "../../assets/calendar.svg";
 import people from "../../assets/people.svg";
 import roster from "../../assets/roster.svg";
-import ex from "../../assets/ex.svg";
 import { Messaging } from "./Messaging";
 import { API_BASE_URL } from "../../httpUtils";
 import { Navbar } from "../../components/Navbar/Navbar";
 import { Dropdown } from "../../components/SpecialGroupDropdown";
+import Popup from "../../components/Popup";
 
 const HeaderValueDisplay: React.FC<{
   header: string;
@@ -37,25 +37,6 @@ const HeaderValueDisplay: React.FC<{
 export const ViewEvent = () => {
   const { eventId } = useParams();
   const { event, eventStatus, eventError } = useFutureEventById(eventId);
-  const [show, setShow] = useState(false);
-  const [group, setGroup] = useState("");
-  const [link, setLink] = useState(false);
-
-  const handleQuery = (query: string) => {
-    setGroup(query);
-  };
-
-  const handleSwitch = () => {
-    if (group) {
-      setLink(true);
-    }
-    setShow(false);
-  };
-
-  const close = () => {
-    setShow(false);
-    setLink(false);
-  };
 
   const {
     data: scheduledSlots,
@@ -80,6 +61,12 @@ export const ViewEvent = () => {
     },
     { enabled: eventStatus === "success" }
   );
+
+  const [group, setGroup] = useState("");
+
+  const handleQuery = (query: string) => {
+    setGroup(query);
+  };
 
   if (scheduledSlotsStatus === "loading" || scheduledSlotsStatus === "idle") {
     return (
@@ -112,88 +99,38 @@ export const ViewEvent = () => {
   const sectionHeader =
     "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
   const sectionHeaderIcon = "w-6 lg:w-10";
+  const addTitle = "Add Special Group to Event";
+  const addTrigger = (
+    <button
+      className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+      type="button"
+    >
+      + Add Special Group
+    </button>
+  );
+  const addNext = (
+    <button
+      className="rounded-full bg-newLeafGreen px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+      type="button"
+    >
+      Add Group and Generate Link
+    </button>
+  );
 
+  const addContent = (
+    <div>
+      <div className="flex justify-center gap-5 mt-5 h-72 mx-5">
+        <p className="font-bold text-newLeafGreen lg:text-2xl">Group Name:</p>
+        <Dropdown handleQuery={handleQuery} />
+      </div>
+      <div className="flex justify-center gap-10"></div>
+    </div>
+  );
   return (
     <>
       <Navbar />
       <div className="p-6 lg:px-14 lg:py-10">
-        <div
-          className="p-10 flex flex-col gap-10 absolute bg-softBeige w-3/5 h-1/3
-        shadow-2xl shadow-slate-700 rounded-3xl"
-          style={{
-            zIndex: 2,
-            visibility: link ? "visible" : "hidden",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          <button
-            onClick={() => close()}
-            className="flex top-7 right-7 absolute"
-          >
-            <img src={ex} className="w-4 lg:w-8" />
-          </button>
-
-          <div className="flex justify-center">
-            <h1 className={sectionHeader}>Special Group Sign Up Link</h1>
-          </div>
-          <div className="flex justify-center">
-            <p>{group}</p>
-          </div>
-        </div>
-
-        <div
-          className="p-10 flex flex-col gap-6 absolute bg-softBeige w-3/5 h-2/3
-        shadow-2xl shadow-slate-700 rounded-3xl"
-          style={{
-            zIndex: 2,
-            visibility: show ? "visible" : "hidden",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          <button
-            onClick={() => close()}
-            className="flex top-7 right-7 absolute"
-          >
-            <img src={ex} className="w-4 lg:w-8" />
-          </button>
-          <div className="flex justify-center">
-            <h1 className={sectionHeader}>Add Special Group to Event</h1>
-          </div>
-
-          <div className="flex justify-center gap-10 h-2/3">
-            <p className="font-bold text-newLeafGreen lg:text-2xl">
-              Group Name:
-            </p>
-            <Dropdown handleQuery={handleQuery} />
-          </div>
-          <div className="flex justify-center gap-10">
-            <button
-              onClick={() => close()}
-              className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-              type="button"
-            >
-              Cancel
-            </button>
-
-            <button
-              onClick={() => handleSwitch()}
-              className="rounded-full bg-newLeafGreen px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-              type="button"
-            >
-              Add Group and Generate Link
-            </button>
-          </div>
-        </div>
-
-        <div
-          style={{
-            opacity: show || link ? "0.3" : "1",
-          }}
-        >
+        <div>
           {/* Event Info */}
           <h1 className={sectionHeader}>
             <img className={sectionHeaderIcon} src={calendar} alt="calendar" />
@@ -254,15 +191,12 @@ export const ViewEvent = () => {
             </div>
 
             <div className="flex flex-col items-start justify-around gap-2 ">
-              <div>
-                <button
-                  onClick={() => setShow(true)}
-                  className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-                  type="button"
-                >
-                  + Add Special Group
-                </button>
-              </div>
+              <Popup
+                title={addTitle}
+                trigger={addTrigger}
+                content={addContent}
+                next={addNext}
+              />
 
               <button
                 className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"

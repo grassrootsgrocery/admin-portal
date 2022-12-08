@@ -54,6 +54,7 @@ export function Navbar() {
           <DropdownMenu.Root
             open={isDropdownOpen}
             onOpenChange={() => setIsDropdownOpen(!isDropdownOpen)}
+            modal={false}
           >
             <DropdownMenu.Trigger asChild>
               <div className="link flex w-4/5 min-w-fit items-center justify-center space-x-2 hover:cursor-pointer">

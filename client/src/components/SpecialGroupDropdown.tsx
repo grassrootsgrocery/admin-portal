@@ -1,9 +1,10 @@
 import { useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useQuery } from "react-query";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import { API_BASE_URL } from "../httpUtils";
 import { Loading } from "./Loading";
 import { ProcessedSpecialGroup, DropdownFilter } from "../types";
+import { addSpecialGroup } from "../pages/ViewEvent/addSpecialGroup";
 //Assets
 import plus from "../assets/plus.svg";
 import x from "../assets/greenX.svg";
@@ -81,6 +82,7 @@ export const Dropdown = (props: any) => {
       });
       showHideElements();
       props.handleQuery("");
+      props.handleRegistered(false);
     }
   };
 
@@ -114,11 +116,21 @@ export const Dropdown = (props: any) => {
     ) {
       dropdown.style.display = "none"; // Hide dropdown
       if (registered == true) {
+        props.handleRegistered(true);
         alertMessage.style.display = "flex";
         readyMessage.style.display = "none";
       } else {
         readyMessage.style.display = "flex";
         alertMessage.style.display = "none";
+
+        // check if group exists
+        const results = specialGroupsList.filter((group) => {
+          return group.name === specialGroup.name;
+        });
+
+        if (results.length === 0) {
+          // create new group
+        }
       }
 
       props.handleQuery(specialGroup.name);
@@ -157,7 +169,7 @@ export const Dropdown = (props: any) => {
   const specialGroupsList: ProcessedSpecialGroup[] = specialGroups;
 
   return (
-    <div className="px-4 py-2">
+    <div className="px-4 py-2" onFocus={clearInput}>
       {/* Special Group Input */}
       <div className="flex flex-row items-center">
         <form>

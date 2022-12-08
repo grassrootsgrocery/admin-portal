@@ -63,6 +63,17 @@ export const ViewEvent = () => {
   );
 
   const [group, setGroup] = useState("");
+  const [registered, setRegistered] = useState(false);
+
+  const handleRegistered = (value: boolean) => {
+    setRegistered(value);
+  };
+
+  const close = () => {
+    setGroup("");
+    setRegistered(false);
+    console.log(registered);
+  };
 
   const handleQuery = (query: string) => {
     setGroup(query);
@@ -99,6 +110,28 @@ export const ViewEvent = () => {
   const sectionHeader =
     "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
   const sectionHeaderIcon = "w-6 lg:w-10";
+
+  // Special group link popup
+  const linkTitle = "Special Group Link";
+  const linkTrigger = (
+    <div>
+      <button
+        disabled={group ? false : true}
+        className="rounded-full bg-newLeafGreen px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+        type="button"
+      >
+        Add Group and Generate Link
+      </button>
+    </div>
+  );
+
+  const linkContent = (
+    <div>
+      <p>{group}</p>
+    </div>
+  );
+
+  // Add special group popup content
   const addTitle = "Add Special Group to Event";
   const addTrigger = (
     <button
@@ -108,24 +141,38 @@ export const ViewEvent = () => {
       + Add Special Group
     </button>
   );
-  const addNext = (
-    <button
-      className="rounded-full bg-newLeafGreen px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-      type="button"
-    >
-      Add Group and Generate Link
-    </button>
+  const addNext = !registered ? (
+    <div>
+      <Popup
+        title={linkTitle}
+        trigger={linkTrigger}
+        content={linkContent}
+        noCancel
+      />
+    </div>
+  ) : (
+    <div>
+      <Popup
+        title="Cannot generate link because group is already registered!"
+        trigger={linkTrigger}
+        noCancel
+      />
+    </div>
   );
 
   const addContent = (
     <div>
-      <div className="flex justify-center gap-5 mt-5 h-72 mx-5">
+      <div className="flex justify-center gap-5 h-72">
         <p className="font-bold text-newLeafGreen lg:text-2xl">Group Name:</p>
-        <Dropdown handleQuery={handleQuery} />
+        <Dropdown
+          handleQuery={handleQuery}
+          handleRegistered={handleRegistered}
+        />
       </div>
       <div className="flex justify-center gap-10"></div>
     </div>
   );
+
   return (
     <>
       <Navbar />
@@ -196,6 +243,7 @@ export const ViewEvent = () => {
                 trigger={addTrigger}
                 content={addContent}
                 next={addNext}
+                close={close}
               />
 
               <button

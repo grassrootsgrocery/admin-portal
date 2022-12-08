@@ -8,25 +8,24 @@ import chevron_up from "../../assets/chevron-up-green.svg";
 import chevron_down from "../../assets/chevron-down-green.svg";
 
 interface FormsDropdownItemProps {
-  label: string
-  formURL: string
+  label: string;
+  formURL: string;
 }
-const FormsDropdownItem = (
-  props: FormsDropdownItemProps
-) => {
+const FormsDropdownItem = (props: FormsDropdownItemProps) => {
   const { label, formURL } = props;
   return (
     <a href={formURL} target="_blank">
       <DropdownMenu.Item
-        className="link text-center text-newLeafGreen text-xl select-none rounded-lg border-2 underline underline-offset-4 border-newLeafGreen p-2 outline-none hover:cursor-pointer hover:bg-newLeafGreen hover:text-softGrayWhite"
+        className="link select-none rounded-lg border-2 border-newLeafGreen p-2 text-center text-xl text-newLeafGreen underline underline-offset-4 outline-none hover:cursor-pointer hover:bg-newLeafGreen hover:text-softGrayWhite"
         onSelect={(e) => {
           e.preventDefault(); //So that the dropdown doesn' close automatically when an item is selected
         }}
-        >{label}
+      >
+        {label}
       </DropdownMenu.Item>
     </a>
   );
-}
+};
 
 export function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -56,42 +55,38 @@ export function Navbar() {
             open={isDropdownOpen}
             onOpenChange={() => setIsDropdownOpen(!isDropdownOpen)}
           >
-            
             <DropdownMenu.Trigger asChild>
-              <div className="link flex justify-center space-x-2 min-w-fit w-4/5 items-center">
-                  <h2 className="link">Forms</h2>
-                  <img
-                    className="w-5"
-                    src={isDropdownOpen ? chevron_up : chevron_down}
-                    alt="chevron-icon"
-                  />
-                </div>
+              <div className="link flex w-4/5 min-w-fit items-center justify-center space-x-2 hover:cursor-pointer">
+                <h2 className="link">Forms</h2>
+                <img
+                  className="w-5"
+                  src={isDropdownOpen ? chevron_up : chevron_down}
+                  alt="chevron-icon"
+                />
+              </div>
             </DropdownMenu.Trigger>
 
             <DropdownMenu.Portal>
-              <DropdownMenu.Content 
+              <DropdownMenu.Content
                 className="z-20 flex h-fit w-max flex-col gap-1 overflow-auto rounded-lg border border-newLeafGreen bg-softGrayWhite"
                 avoidCollisions
                 align="start"
               >
-              <FormsDropdownItem 
-                label={"Attendance Form"}
-                formURL={"https://form.jotform.com/222106405249145"}
-              />
-              <FormsDropdownItem 
-                label={"Driver Form"}
-                formURL={"https://form.jotform.com/222228365139153"}
-              />
-              <FormsDropdownItem 
-                label={"Food Allocation Form"}
-                formURL={"https://submit.jotform.com/222325901439049"}
-              />
-
+                <FormsDropdownItem
+                  label={"Attendance Form"}
+                  formURL={"https://form.jotform.com/222106405249145"}
+                />
+                <FormsDropdownItem
+                  label={"Driver Form"}
+                  formURL={"https://form.jotform.com/222228365139153"}
+                />
+                <FormsDropdownItem
+                  label={"Food Allocation Form"}
+                  formURL={"https://submit.jotform.com/222325901439049"}
+                />
               </DropdownMenu.Content>
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
-
-
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import * as Modal from "@radix-ui/react-dialog";
 //import {Cross2Icon} from '@radix-ui/react-icons';
-import "./styles.css";
+import "./Popup.css";
 import x from "../assets/ex.svg";
 
 const itemWrap = "flex gap-4";
@@ -13,8 +13,8 @@ const Popup = (props: any) => {
       <Modal.Root>
         <Modal.Trigger asChild>{props.trigger}</Modal.Trigger>
         <Modal.Portal>
-          <Modal.Overlay className="modal-overlay bg-softBeige" />
-          <Modal.Content className="modal-content flex flex-col drop-shadow-lg bg-softBeige rounded-2xl">
+          <Modal.Overlay className="modal-overlay z-10 bg-softBeige" />
+          <Modal.Content className="modal-content z-10 flex flex-col rounded-2xl bg-softBeige drop-shadow-lg">
             <Modal.Title className="m-0 flex justify-center text-3xl font-bold text-newLeafGreen">
               {props.title}
             </Modal.Title>
@@ -31,7 +31,7 @@ const Popup = (props: any) => {
               {props.next}
             </div>
             <Modal.Close asChild>
-              <button className="flex top-7 right-7 absolute">
+              <button className="absolute top-7 right-7 flex ">
                 <img src={x} className="w-4 lg:w-8" />
               </button>
             </Modal.Close>

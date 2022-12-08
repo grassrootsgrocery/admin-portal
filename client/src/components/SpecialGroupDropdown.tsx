@@ -157,12 +157,12 @@ export const Dropdown = (props: any) => {
   const specialGroupsList: ProcessedSpecialGroup[] = specialGroups;
 
   return (
-    <div className="px-4 py-2">
+    <div className="w-80 grow-0 px-4 py-2">
       {/* Special Group Input */}
       <div className="flex flex-row items-center">
         <form>
           <input
-            className="w-80 h-8 border-2 border-softGrayWhite rounded-lg text-lg text-newLeafGreen placeholder:text-lg placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:outline-softGrayWhite pl-2 pr-7"
+            className="h-8 w-80 rounded-lg border-2 border-softGrayWhite pl-2 pr-7 text-lg text-newLeafGreen placeholder:text-lg placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:outline-softGrayWhite"
             ref={inputRef}
             type="text"
             id="specialGroupInput"
@@ -175,7 +175,7 @@ export const Dropdown = (props: any) => {
         {/* Clear button */}
         <button hidden id="clearBtn" onClick={clearInput}>
           <img
-            className="relative bottom-0.25 right-6 w-3 sm:w-4"
+            className="bottom-0.25 relative right-6 w-3 sm:w-4"
             src={x}
             alt="x"
           />
@@ -184,10 +184,10 @@ export const Dropdown = (props: any) => {
 
       {/* Special Group Listing Dropdown */}
       <ul
-        className="hidden w-80 max-h-56 overflow-y-scroll border-2 border-t-0 border-softGrayWhite rounded-lg text-newLeafGreen py-1"
+        className="hidden max-h-56 w-80 overflow-y-scroll rounded-lg border-2 border-t-0 border-softGrayWhite py-1 text-newLeafGreen"
         id="specialGroupDropdown"
       >
-        <div className="text-sm text-[#0E7575] px-2">
+        <div className="px-2 text-sm text-[#0E7575]">
           Select existing group or create new one
         </div>
 
@@ -196,20 +196,20 @@ export const Dropdown = (props: any) => {
           : state.list.map((specialGroup) => {
               return (
                 <li
-                  className="flex flex-row rounded-lg hover:cursor-pointer hover:bg-softGrayWhite px-2"
+                  className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
                   key={specialGroup.name}
                   onClick={() => {
                     isSpecialGroupRegistered(specialGroup, eventIdsList);
                   }}
                 >
-                  <img className="w-2 mr-1 md:w-4" src={plus} alt="plus-icon" />
+                  <img className="mr-1 w-2 md:w-4" src={plus} alt="plus-icon" />
                   {specialGroup.name}
                 </li>
               );
             })}
 
         <li
-          className="flex flex-row rounded-lg hover:cursor-pointer hover:bg-softGrayWhite px-2"
+          className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
           onClick={() => {
             isSpecialGroupRegistered(
               { name: state.query, events: [] },
@@ -222,10 +222,11 @@ export const Dropdown = (props: any) => {
         </li>
       </ul>
 
+      <div className="h-8" />
       {/* Aleady registered message */}
       <div className="hidden items-center" id="alreadyRegisteredMessage">
         <img className="mt-1 w-4 md:w-6 lg:w-7" src={alert} alt="alert-icon" />
-        <div className="flex flex-col items-center leading-5 px-2 text-lg font-semibold text-newLeafGreen">
+        <div className="flex flex-col items-center px-2 text-lg font-semibold leading-5 text-newLeafGreen">
           <div> This group is already registered for </div>
           <div> the event! </div>
         </div>
@@ -234,7 +235,7 @@ export const Dropdown = (props: any) => {
       {/* Ready message */}
       <div className="hidden items-center" id="readyToRegisterMessage">
         <img className="mt-1 w-4 md:w-6 lg:w-7" src={check} alt="check-icon" />
-        <div className="leading-5 px-4 text-lg font-semibold text-newLeafGreen">
+        <div className="px-4 text-lg font-semibold leading-5 text-newLeafGreen">
           Ready to generate link!
         </div>
       </div>

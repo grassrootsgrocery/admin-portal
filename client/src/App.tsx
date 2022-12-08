@@ -19,6 +19,8 @@ import { Events } from "./pages/Events";
 import { ViewEvent } from "./pages/ViewEvent";
 import { DriverLocationInfo } from "./pages/DriverLocationInfo";
 
+import { Dropdown } from "./components/SpecialGroupDropdown";
+
 function App() {
   return (
     <BrowserRouter>
@@ -33,6 +35,10 @@ function App() {
               <Route
                 path="/events/driver-location-info/:eventId"
                 element={<DriverLocationInfo />}
+              />
+              <Route
+                path="/events/add-special-group/:eventId"
+                element={<Dropdown />}
               />
             </Routes>
           </div>

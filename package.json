@@ -24,6 +24,8 @@
   "homepage": "https://github.com/Hack4Impact-UMD/mott-haven#readme",
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.0.1",
+    "@radix-ui/react-dialog": "^1.0.2",
+    "@radix-ui/react-dropdown-menu": "^2.0.1",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@vitejs/plugin-react": "^2.2.0",
     "autoprefixer": "^10.4.13",

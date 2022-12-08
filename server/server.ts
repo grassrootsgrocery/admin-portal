@@ -27,6 +27,9 @@ app.use("/", volunteersRouter);
 
 import dropoffRouter from "./routes/dropoffLocations";
 app.use("/", dropoffRouter);
+
+import specialGroupsRouter from "./routes/specialGroups";
+app.use("/", specialGroupsRouter);
 //---- API End ----
 
 //Middleware for handling errors. This has to go after the routes.

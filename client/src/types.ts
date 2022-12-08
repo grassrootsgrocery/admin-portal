@@ -21,6 +21,7 @@ export interface ProcessedEvent {
   numBothDriversAndPackers: number;
   numSpecialGroups: number;
   scheduledSlots: string[];
+  allEventIds: string[];
 }
 
 export interface ScheduledSlot {
@@ -63,4 +64,19 @@ export interface ProcessedDropoffLocation {
   endTime: string;
   deliveriesAssigned: number;
   matchedDrivers: string[];
+}
+
+export interface SpecialGroup {
+  Name: string;
+  "🚛 Supplier Pickup Events": string[];
+}
+
+export interface ProcessedSpecialGroup {
+  name: string;
+  events: string[];
+}
+
+export interface DropdownFilter {
+  query: string;
+  list: ProcessedSpecialGroup[];
 }

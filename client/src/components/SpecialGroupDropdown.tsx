@@ -166,6 +166,7 @@ export const Dropdown = (props: any) => {
             ref={inputRef}
             type="text"
             id="specialGroupInput"
+            autoComplete="off"
             placeholder="Search through groups..."
             value={state.query}
             onChange={handleChange}

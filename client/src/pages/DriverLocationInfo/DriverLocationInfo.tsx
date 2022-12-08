@@ -1,16 +1,19 @@
 import { Link, useParams } from "react-router-dom";
-import { DataTable } from "../../components/DataTable";
-import { Loading } from "../../components/Loading";
-import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 import { useDriversInfo } from "./driverInfoHooks";
 import { AssignLocationDropdown } from "./AssignLocationDropdown";
 import { useQuery } from "react-query";
 import { API_BASE_URL } from "../../httpUtils";
+import { useFutureEventById } from "../eventHook";
+//Types
+import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
+//Components
+import { Navbar } from "../../components/Navbar/Navbar";
+import { DataTable } from "../../components/DataTable";
+import { Loading } from "../../components/Loading";
 //Assets
 import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
-import { useFutureEventById } from "../eventHook";
-import { Navbar } from "../../components/Navbar/Navbar";
+import back from "../../assets/back-white.svg";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -198,10 +201,11 @@ export function DriverLocationInfo() {
       <div className="p-6 lg:px-14 lg:py-10">
         <Link to={`/events/${eventId}`}>
           <button
-            className="shrink-0 rounded-full bg-pumpkinOrange px-4 text-base font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-10 md:py-1"
+            className="flex w-fit shrink-0 items-center gap-3 rounded-full bg-newLeafGreen py-2 px-4 text-lg font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen"
             type="button"
           >
-            Go Back
+            <img className="w-4" src={back} alt="Go back" />
+            Go back
           </button>
         </Link>
         <div className="h-4" />
@@ -231,6 +235,7 @@ export function DriverLocationInfo() {
           <img className={sectionHeaderIcon} src={driving}></img>
           <h1>Driver Information</h1>
         </div>
+        <div className="h-8" />
 
         <div className="h-screen">
           <DataTable

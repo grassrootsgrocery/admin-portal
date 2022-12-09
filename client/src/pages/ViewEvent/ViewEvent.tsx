@@ -70,7 +70,7 @@ export const ViewEvent = () => {
 
   if (scheduledSlotsStatus === "loading" || scheduledSlotsStatus === "idle") {
     return (
-      <div style={{ position: "relative", minHeight: "80vh" }}>
+      <div className="relative h-full">
         <Loading size="large" thickness="extra-thicc" />
       </div>
     );

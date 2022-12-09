@@ -1,10 +1,9 @@
 import { useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "react-query";
 import { API_BASE_URL } from "../httpUtils";
 import { Loading } from "./Loading";
 import { ProcessedSpecialGroup, DropdownFilter } from "../types";
-import { addSpecialGroup } from "../pages/ViewEvent/addSpecialGroup";
+
 //Assets
 import plus from "../assets/plus.svg";
 import x from "../assets/greenX.svg";
@@ -39,8 +38,19 @@ function showHideElements() {
     }
   }
 }
+interface Props {
+  specialGroupsList: ProcessedSpecialGroup[];
+  refetchGroups: () => void;
+  handleQuery: (s: string) => void;
+  handleRegistered: (b: boolean) => void;
+}
 
-export const Dropdown = (props: any) => {
+export const Dropdown: React.FC<Props> = ({
+  specialGroupsList,
+  refetchGroups,
+  handleQuery,
+  handleRegistered,
+}) => {
   // Get allEventIds from ViewEvent
   const location = useLocation();
   const allEventIds = location.state;
@@ -59,6 +69,7 @@ export const Dropdown = (props: any) => {
   // Handling when input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Result filtering based on input
+    refetchGroups();
     const results = specialGroupsList.filter((group) => {
       if (e.target.value === "") return specialGroupsList;
       return group.name.toLowerCase().includes(e.target.value.toLowerCase());
@@ -81,8 +92,8 @@ export const Dropdown = (props: any) => {
         list: [],
       });
       showHideElements();
-      props.handleQuery("");
-      props.handleRegistered(false);
+      handleQuery("");
+      handleRegistered(false);
     }
   };
 
@@ -116,57 +127,17 @@ export const Dropdown = (props: any) => {
     ) {
       dropdown.style.display = "none"; // Hide dropdown
       if (registered == true) {
-        props.handleRegistered(true);
+        handleRegistered(true);
         alertMessage.style.display = "flex";
         readyMessage.style.display = "none";
       } else {
         readyMessage.style.display = "flex";
         alertMessage.style.display = "none";
-
-        // check if group exists
-        const results = specialGroupsList.filter((group) => {
-          return group.name === specialGroup.name;
-        });
-
-        if (results.length === 0) {
-          // create new group
-        }
       }
 
-      props.handleQuery(specialGroup.name);
+      handleQuery(specialGroup.name);
     }
   };
-
-  // Retrieve Special Groups
-  const {
-    data: specialGroups,
-    status: specialGroupsStatus,
-    error: specialGroupsError,
-  } = useQuery(["fetchSpecialGroups"], async () => {
-    const response = await fetch(`${API_BASE_URL}/api/special-groups`);
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message);
-    }
-    return response.json() as Promise<ProcessedSpecialGroup[]>;
-  });
-
-  if (specialGroupsStatus === "loading" || specialGroupsStatus === "idle") {
-    return (
-      <div style={{ position: "relative", minHeight: "80vh" }}>
-        <Loading size="large" thickness="extra-thicc" />
-      </div>
-    );
-  }
-
-  if (specialGroupsStatus === "error") {
-    console.error(specialGroupsError);
-    return <div>Error...</div>;
-  }
-
-  console.log("Logging specialGroups", specialGroups);
-
-  const specialGroupsList: ProcessedSpecialGroup[] = specialGroups;
 
   return (
     <div className="px-4 py-2" onFocus={clearInput}>

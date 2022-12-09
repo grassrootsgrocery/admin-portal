@@ -79,3 +79,8 @@ export interface DropdownFilter {
   query: string;
   list: ProcessedSpecialGroup[];
 }
+
+export interface AddSpecialGroup {
+  Name: string;
+  "🚛 Supplier Pickup Events"?: string[];
+}

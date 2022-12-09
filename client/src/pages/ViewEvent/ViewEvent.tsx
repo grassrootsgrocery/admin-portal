@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
-import { useQuery } from "react-query";
+import { useQuery, useMutation } from "react-query";
 import { useFutureEventById } from "../eventHook";
+import { ProcessedSpecialGroup, AddSpecialGroup } from "../../types";
 
 import React, { useEffect, useState } from "react";
 //Types
@@ -38,6 +39,32 @@ export const ViewEvent = () => {
   const { eventId } = useParams();
   const { event, eventStatus, eventError } = useFutureEventById(eventId);
 
+  const createSpecialGroup = async (data: AddSpecialGroup) => {
+    const response = await fetch(`${API_BASE_URL}/api/add-special-group`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message);
+    }
+
+    return response.json();
+  };
+
+  const { mutate, isLoading } = useMutation(createSpecialGroup, {
+    onSuccess: (data) => {
+      console.log(data); // the response
+    },
+    onError: (error) => {
+      console.log(error); // the error if that is the case
+    },
+  });
+
   const {
     data: scheduledSlots,
     refetch: refetchScheduledSlots,
@@ -62,9 +89,40 @@ export const ViewEvent = () => {
     { enabled: eventStatus === "success" }
   );
 
+  // Retrieve Special Groups
+  const {
+    data: specialGroups,
+    refetch: refetchGroups,
+    status: specialGroupsStatus,
+    error: specialGroupsError,
+  } = useQuery(["fetchSpecialGroups"], async () => {
+    const response = await fetch(`${API_BASE_URL}/api/special-groups`);
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message);
+    }
+    return response.json() as Promise<ProcessedSpecialGroup[]>;
+  });
+
   const [group, setGroup] = useState("");
   const [registered, setRegistered] = useState(false);
 
+  if (specialGroupsStatus === "loading" || specialGroupsStatus === "idle") {
+    return (
+      <div style={{ position: "relative", minHeight: "80vh" }}>
+        <Loading size="large" thickness="extra-thicc" />
+      </div>
+    );
+  }
+
+  if (specialGroupsStatus === "error") {
+    console.error(specialGroupsError);
+    return <div>Error...</div>;
+  }
+
+  console.log("Logging specialGroups", specialGroups);
+
+  const specialGroupsList: ProcessedSpecialGroup[] = specialGroups;
   const handleRegistered = (value: boolean) => {
     setRegistered(value);
   };
@@ -72,7 +130,6 @@ export const ViewEvent = () => {
   const close = () => {
     setGroup("");
     setRegistered(false);
-    console.log(registered);
   };
 
   const handleQuery = (query: string) => {
@@ -106,16 +163,38 @@ export const ViewEvent = () => {
 
   console.log("scheduledSlots", scheduledSlots);
 
+  // Retrieve Special Groups
+
+  const addGroup = () => {
+    const results = specialGroupsList.filter((g) => {
+      return g.name === group;
+    });
+
+    if (results.length === 0) {
+      console.log("Creating new group");
+      const body: AddSpecialGroup = {
+        Name: group,
+      };
+      mutate(body);
+    }
+  };
   //Tailwind classes
   const sectionHeader =
     "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
   const sectionHeaderIcon = "w-6 lg:w-10";
 
   // Special group link popup
-  const linkTitle = "Special Group Link";
+  const linkTitle = <div className="text-center">Special Group Link</div>;
+  const noLinkTitle = (
+    <div className="text-center">
+      Cannot generate link because group is already registered!
+    </div>
+  );
+
   const linkTrigger = (
     <div>
       <button
+        onClick={() => addGroup()}
         disabled={group ? false : true}
         className="rounded-full bg-newLeafGreen px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
         type="button"
@@ -132,7 +211,9 @@ export const ViewEvent = () => {
   );
 
   // Add special group popup content
-  const addTitle = "Add Special Group to Event";
+  const addTitle = (
+    <div className="text-center">Add Special Group to Event</div>
+  );
   const addTrigger = (
     <button
       className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
@@ -152,11 +233,7 @@ export const ViewEvent = () => {
     </div>
   ) : (
     <div>
-      <Popup
-        title="Cannot generate link because group is already registered!"
-        trigger={linkTrigger}
-        noCancel
-      />
+      <Popup title={noLinkTitle} trigger={linkTrigger} noCancel />
     </div>
   );
 
@@ -167,6 +244,8 @@ export const ViewEvent = () => {
         <Dropdown
           handleQuery={handleQuery}
           handleRegistered={handleRegistered}
+          specialGroupsList={specialGroups}
+          refetchGroups={refetchGroups}
         />
       </div>
       <div className="flex justify-center gap-10"></div>

@@ -248,7 +248,6 @@ export const ViewEvent = () => {
           refetchGroups={refetchGroups}
         />
       </div>
-      <div className="flex justify-center gap-10"></div>
     </div>
   );
 

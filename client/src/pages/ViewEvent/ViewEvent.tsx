@@ -256,106 +256,103 @@ export const ViewEvent = () => {
     <>
       <Navbar />
       <div className="p-6 lg:px-14 lg:py-10">
-        <div>
-          {/* Event Info */}
-          <h1 className={sectionHeader}>
-            <img className={sectionHeaderIcon} src={calendar} alt="calendar" />
-            {event.dateDisplay}
-          </h1>
-          <div className="h-4" />
-          <div className="flex flex-col gap-3 md:flex-row md:gap-10">
-            <HeaderValueDisplay header="Time" value={event.time} />
-            <HeaderValueDisplay
-              header="Main Location"
-              value={event.mainLocation}
-            />
-            <HeaderValueDisplay
-              header="Total Participants"
-              value={event.numtotalParticipants}
-            />
-          </div>
-          <div className="h-12" />
-          {/* Participant Breakdown */}
-          <h1 className={sectionHeader}>
-            <img className={sectionHeaderIcon} src={people} alt="people" />
-            Participant Breakdown
-          </h1>
-          <div className="h-4" />
-          <div className="flex flex-col gap-2 md:flex-row md:gap-10">
-            <div className="grid gap-2 md:grid-cols-3 md:grid-rows-2">
-              <div className="flex flex-col ">
-                <p className="lg:text-xl">Total # of Drivers</p>
-                <p className="flex gap-4 font-semibold text-newLeafGreen lg:text-xl">
-                  {event.numDrivers}/30
-                  <img
-                    className="mt-1 w-4 md:w-6 lg:w-7"
-                    src={event.numDrivers >= 30 ? check : alert}
-                    alt="wut"
-                  />
-                </p>
-              </div>
-              <HeaderValueDisplay
-                header="Total # of Packers"
-                value={event.numPackers}
-              />
-              <HeaderValueDisplay
-                header="Both Drivers & Packers"
-                value={event.numBothDriversAndPackers}
-              />
-              <HeaderValueDisplay
-                header="Only Drivers"
-                value={event.numOnlyDrivers}
-              />
-              <HeaderValueDisplay
-                header="Only Packers"
-                value={event.numOnlyPackers}
-              />
-              <HeaderValueDisplay
-                header="# of Special Groups"
-                value={event.numSpecialGroups}
-              />
-            </div>
-
-            <div className="flex flex-col items-start justify-around gap-2 ">
-              <Popup
-                title={addTitle}
-                trigger={addTrigger}
-                content={addContent}
-                next={addNext}
-                close={close}
-              />
-
-              <button
-                className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-                type="button"
-              >
-                View Special Groups
-              </button>
-            </div>
-          </div>
-          <div className="h-12" />
-          <h1 className={sectionHeader}>
-            <img className={sectionHeaderIcon} src={roster} alt="roster" />
-            Participant Roster
-          </h1>
-          {/* Volunteer Table */}
-          <VolunteersTable
-            scheduledSlots={scheduledSlots.records}
-            refetchVolunteers={refetchScheduledSlots}
+        {/* Event Info */}
+        <h1 className={sectionHeader}>
+          <img className={sectionHeaderIcon} src={calendar} alt="calendar" />
+          {event.dateDisplay}
+        </h1>
+        <div className="h-4" />
+        <div className="flex flex-col gap-3 md:flex-row md:gap-10">
+          <HeaderValueDisplay header="Time" value={event.time} />
+          <HeaderValueDisplay
+            header="Main Location"
+            value={event.mainLocation}
           />
-          <div className="h-4" />
-          <Link to={`/events/driver-location-info/${eventId}`}>
+          <HeaderValueDisplay
+            header="Total Participants"
+            value={event.numtotalParticipants}
+          />
+        </div>
+        <div className="h-12" />
+        {/* Participant Breakdown */}
+        <h1 className={sectionHeader}>
+          <img className={sectionHeaderIcon} src={people} alt="people" />
+          Participant Breakdown
+        </h1>
+        <div className="h-4" />
+        <div className="flex flex-col gap-2 md:flex-row md:gap-10">
+          <div className="grid gap-2 md:grid-cols-3 md:grid-rows-2">
+            <div className="flex flex-col ">
+              <p className="lg:text-xl">Total # of Drivers</p>
+              <p className="flex gap-4 font-semibold text-newLeafGreen lg:text-xl">
+                {event.numDrivers}/30
+                <img
+                  className="mt-1 w-4 md:w-6 lg:w-7"
+                  src={event.numDrivers >= 30 ? check : alert}
+                  alt="wut"
+                />
+              </p>
+            </div>
+            <HeaderValueDisplay
+              header="Total # of Packers"
+              value={event.numPackers}
+            />
+            <HeaderValueDisplay
+              header="Both Drivers & Packers"
+              value={event.numBothDriversAndPackers}
+            />
+            <HeaderValueDisplay
+              header="Only Drivers"
+              value={event.numOnlyDrivers}
+            />
+            <HeaderValueDisplay
+              header="Only Packers"
+              value={event.numOnlyPackers}
+            />
+            <HeaderValueDisplay
+              header="# of Special Groups"
+              value={event.numSpecialGroups}
+            />
+          </div>
+
+          <div className="flex flex-col items-start justify-around gap-2 ">
+            <Popup
+              title={addTitle}
+              trigger={addTrigger}
+              content={addContent}
+              next={addNext}
+            />
+
             <button
               className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
               type="button"
             >
-              Delivery and Location Info
+              View Special Groups
             </button>
-          </Link>
-          <div className="h-12" />
-          <Messaging />
-          <div className="h-12" />
+          </div>
         </div>
+        <div className="h-12" />
+        <h1 className={sectionHeader}>
+          <img className={sectionHeaderIcon} src={roster} alt="roster" />
+          Participant Roster
+        </h1>
+        {/* Volunteer Table */}
+        <VolunteersTable
+          scheduledSlots={scheduledSlots.records}
+          refetchVolunteers={refetchScheduledSlots}
+        />
+        <div className="h-4" />
+        <Link to={`/events/driver-location-info/${eventId}`}>
+          <button
+            className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+            type="button"
+          >
+            Delivery and Location Info
+          </button>
+        </Link>
+        <div className="h-12" />
+        <Messaging />
+        <div className="h-12" />
       </div>
     </>
   );

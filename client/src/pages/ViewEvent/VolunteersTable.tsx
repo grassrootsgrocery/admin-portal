@@ -319,7 +319,7 @@ export const VolunteersTable: React.FC<Props> = ({
         ref={dropdownRef}
       >
         {/* Filter dropdown. TODO: This should be converted to use the Radix dropdown menu instead, similar to AssignLocationDropdown.tsx. */}
-        <div className="relative z-50">
+        <div className="relative z-10">
           <h1
             className={`flex w-44 select-none items-center justify-between rounded-lg border bg-pumpkinOrange px-2 py-1 text-sm font-semibold text-white hover:cursor-pointer hover:brightness-110 md:text-base ${
               isFilterDropdownOpen ? " brightness-110" : ""

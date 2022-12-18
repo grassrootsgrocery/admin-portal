@@ -105,6 +105,7 @@ export const ViewEvent = () => {
   });
 
   const [group, setGroup] = useState("");
+  const [id, setId] = useState("");
   const [registered, setRegistered] = useState(false);
 
   if (specialGroupsStatus === "loading" || specialGroupsStatus === "idle") {
@@ -134,6 +135,10 @@ export const ViewEvent = () => {
 
   const handleQuery = (query: string) => {
     setGroup(query);
+  };
+
+  const handleId = (id: string) => {
+    setId(id);
   };
 
   if (scheduledSlotsStatus === "loading" || scheduledSlotsStatus === "idle") {
@@ -176,6 +181,10 @@ export const ViewEvent = () => {
         Name: group,
       };
       mutate(body);
+    } else {
+      const results = specialGroupsList.filter((g) => {
+        return g.name === group;
+      });
     }
   };
   //Tailwind classes

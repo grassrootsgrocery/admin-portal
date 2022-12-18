@@ -13,9 +13,9 @@ const Popup = (props: any) => {
       <Modal.Root onOpenChange={props.change}>
         <Modal.Trigger asChild>{props.trigger}</Modal.Trigger>
         <Modal.Portal>
-          <Modal.Overlay className="modal-overlay z-10 bg-softBeige" />
-          <Modal.Content className="modal-content z-10 flex flex-col rounded-2xl bg-softBeige drop-shadow-lg">
-            <Modal.Title className="mr-10 my-5 flex justify-center text-3xl font-bold text-newLeafGreen">
+          <Modal.Overlay className="modal-overlay z-20 bg-softBeige" />
+          <Modal.Content className="modal-content z-20 flex flex-col rounded-2xl bg-softBeige drop-shadow-lg">
+            <Modal.Title className="m-0 flex justify-center text-3xl font-bold text-newLeafGreen">
               {props.title}
             </Modal.Title>
             <Modal.Description className="flex justify-center">

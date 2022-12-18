@@ -28,7 +28,7 @@ const router = express.Router();
 router.route("/api/volunteers/").get(
   asyncHandler(async (req: Request, res: Response) => {
     const { scheduledSlotsIds } = req.query;
-    console.log(`GET /api/volunteers/?${scheduledSlotsIds}`);
+    console.log(`GET /api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`);
 
     const isValidRequest =
       scheduledSlotsIds && typeof scheduledSlotsIds === "string";
@@ -46,6 +46,7 @@ router.route("/api/volunteers/").get(
       `&fields=Last Name` +
       `&fields=Correct slot time` +
       `&fields=Type` +
+      `&fields=Total Deliveries` +
       `&fields=Confirmed?` +
       `&fields=Volunteer Status` +
       `&fields=Can't Come` +
@@ -251,12 +252,13 @@ router.route("/api/volunteers/drivers").get(
 
 /**
  * @description Assign a driver a dropoff location
- * @route  GET /api/volunteers/drivers/assign-location/:driverId
+ * @route  PATCH /api/volunteers/drivers/assign-location/:driverId
  * @access
  */
 router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
   asyncHandler(async (req: Request, res: Response) => {
     const { driverId } = req.params;
+    console.log("PATCH /api/volunteers/drivers/assign-location/:driverId");
     const { locationIds } = req.body;
 
     const isValidRequest =
@@ -302,7 +304,7 @@ router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
 router.route("/api/neighborhoods").get(
   asyncHandler(async (req: Request, res: Response) => {
     const { neighborhoodIds } = req.query;
-    console.log(`GET /api/neighborhoods ${neighborhoodIds}`);
+    console.log(`GET /api/neighborhoods/?neighborhoddIds=${neighborhoodIds}`);
 
     const isValidRequest = typeof neighborhoodIds === "string";
     if (!isValidRequest) {

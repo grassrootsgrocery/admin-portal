@@ -123,6 +123,7 @@ export const AssignLocationDropdown: React.FC<Props> = ({
     <DropdownMenu.Root
       open={isDropdownOpen}
       onOpenChange={() => setIsDropdownOpen(!isDropdownOpen)}
+      modal={false}
     >
       <DropdownMenu.Trigger asChild>
         <div className="flex w-80 select-none items-center justify-between rounded-lg border-2 bg-newLeafGreen px-2 py-1 font-semibold text-white hover:cursor-pointer hover:brightness-110">
@@ -136,7 +137,7 @@ export const AssignLocationDropdown: React.FC<Props> = ({
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="flex h-64 w-80 flex-col gap-3 overflow-auto rounded-lg border border-newLeafGreen bg-white px-4 py-2"
+          className="z-20 flex h-64 w-80 flex-col gap-3 overflow-auto rounded-lg border border-newLeafGreen bg-white px-4 py-2"
           avoidCollisions
           align="start"
         >

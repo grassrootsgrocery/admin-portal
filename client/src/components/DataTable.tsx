@@ -12,7 +12,7 @@ export const DataTable: React.FC<Props> = ({
   return (
     <div className="hide-scroll h-full w-full overflow-scroll rounded-lg border-4 border-softGrayWhite">
       <table className="table w-full border-separate border-spacing-0  rounded-lg">
-        <thead className="sticky top-0 border-b-2 border-newLeafGreen bg-softBeige ">
+        <thead className="sticky top-0 z-10 border-b-2 border-newLeafGreen bg-softBeige">
           <tr>
             {columnHeaders.map((h, i) => {
               return (

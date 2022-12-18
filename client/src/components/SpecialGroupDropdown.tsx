@@ -149,6 +149,7 @@ export const Dropdown: React.FC<Props> = ({
             ref={inputRef}
             type="text"
             id="specialGroupInput"
+            autoComplete="off"
             placeholder="Search through groups..."
             value={state.query}
             onChange={handleChange}

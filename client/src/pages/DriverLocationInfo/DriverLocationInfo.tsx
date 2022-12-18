@@ -1,17 +1,24 @@
 import { Link, useParams } from "react-router-dom";
-import { DataTable } from "../../components/DataTable";
-import { Loading } from "../../components/Loading";
-import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 import { useDriversInfo } from "./driverInfoHooks";
 import { AssignLocationDropdown } from "./AssignLocationDropdown";
 import { useQuery } from "react-query";
 import { API_BASE_URL } from "../../httpUtils";
+import { useFutureEventById } from "../eventHook";
+//Types
+import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
+//Components
+import { Navbar } from "../../components/Navbar/Navbar";
+import { DataTable } from "../../components/DataTable";
+import { Loading } from "../../components/Loading";
 //Assets
 import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
-import { useFutureEventById } from "../eventHook";
-import { Navbar } from "../../components/Navbar/Navbar";
+import back from "../../assets/back-white.svg";
 
+/* 
+TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
+in the VolunteersTable.tsx file. 
+*/
 //Takes in ProcessedDriver array and formats data for DataTable component
 function processDriversForTable(
   drivers: ProcessedDriver[],
@@ -65,9 +72,12 @@ function processDropoffLocationsForTable(
       <ul className="scrollbar-thin flex w-[600px] gap-4 overflow-x-auto pb-2">
         {drivers
           .filter((d) => d.dropoffLocations.some((l) => l === curLocation.id))
-          .map((d) => {
+          .map((d, i) => {
             return (
-              <li className="flex min-w-fit shrink-0 items-center gap-1 rounded-full bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen sm:text-sm md:text-base">
+              <li
+                key={i}
+                className="flex min-w-fit shrink-0 items-center gap-1 rounded-full bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen sm:text-sm md:text-base"
+              >
                 {d.firstName + " " + d.lastName}
               </li>
             );
@@ -87,6 +97,52 @@ const sectionHeaderIcon = "w-6 lg:w-10";
 
 export function DriverLocationInfo() {
   const { eventId } = useParams();
+
+  const {
+    data: locationsToDriversText,
+    status: locationsToDriversTextStatus,
+    error: locationsToDriversTextError,
+  } = useQuery(
+    ["fetchLocationsToDriversText"],
+    async () => {
+      const resp = await fetch(
+        `${API_BASE_URL}/api/messaging/locations-to-drivers-text`
+      );
+      if (!resp.ok) {
+        const data = await resp.json();
+        throw new Error(data.message);
+      }
+      return resp.json();
+    },
+    { staleTime: 20000 }
+  );
+  const {
+    data: driverInfoToCoordinatorsText,
+    status: driverInfoToCoordinatorsTextStatus,
+    error: driverInfoToCoordinatorsTextError,
+  } = useQuery(
+    ["fetchDriverInfoToCoordinatorsText"],
+    async () => {
+      const resp = await fetch(
+        `${API_BASE_URL}/api/messaging/driver-info-to-coordinators-text`
+      );
+      if (!resp.ok) {
+        const data = await resp.json();
+        throw new Error(data.message);
+      }
+      return resp.json();
+    },
+    { staleTime: 20000 }
+  );
+
+  const locationsToDriversTextLoading =
+    locationsToDriversTextStatus === "loading" ||
+    locationsToDriversTextStatus === "idle";
+
+  const driverInfoToCoordinatorsLoading =
+    driverInfoToCoordinatorsTextStatus === "loading" ||
+    driverInfoToCoordinatorsTextStatus === "idle";
+
   const { event, eventStatus, eventError } = useFutureEventById(eventId);
   const {
     driversInfo,
@@ -145,10 +201,11 @@ export function DriverLocationInfo() {
       <div className="p-6 lg:px-14 lg:py-10">
         <Link to={`/events/${eventId}`}>
           <button
-            className="shrink-0 rounded-full bg-pumpkinOrange px-4 text-base font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-10 md:py-1"
+            className="flex w-fit shrink-0 items-center gap-3 rounded-full bg-newLeafGreen py-2 px-4 text-lg font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen"
             type="button"
           >
-            Go Back
+            <img className="w-4" src={back} alt="Go back" />
+            Go back
           </button>
         </Link>
         <div className="h-4" />
@@ -179,6 +236,7 @@ export function DriverLocationInfo() {
           <h1>Driver Information</h1>
         </div>
         <div className="h-8" />
+
         <div className="h-screen">
           <DataTable
             columnHeaders={[
@@ -199,14 +257,31 @@ export function DriverLocationInfo() {
             )}
           />
         </div>
+        <div className="h-12" />
+        {/* Send locations info to drivers */}
+        <div className="flex h-1/6 w-full flex-col items-start gap-4 lg:w-1/2">
+          {locationsToDriversTextLoading ? (
+            <div className="relative w-full grow rounded-md border-4 border-softGrayWhite py-2 px-4">
+              <Loading size="medium" thickness="thicc" />
+            </div>
+          ) : (
+            <textarea
+              className="w-full grow resize-none overflow-scroll rounded-md border-4 border-softGrayWhite py-2 px-4 text-base lg:text-xl"
+              readOnly
+              defaultValue={locationsToDriversText}
+            />
+          )}
+          <button className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold">
+            Send Locations to Drivers
+          </button>
+        </div>
 
-        <div className="h-8" />
+        <div className="h-16" />
         <div className={sectionHeader}>
           <img className={sectionHeaderIcon} src={driving}></img>
           <h1>Location Information</h1>
         </div>
         <div className="h-8" />
-
         <div className="h-screen">
           <DataTable
             columnHeaders={[
@@ -226,6 +301,30 @@ export function DriverLocationInfo() {
             )}
           />
         </div>
+        <div className="h-12" />
+        <div className="flex h-1/6 flex-col-reverse items-start justify-between gap-6 lg:flex-row lg:justify-between">
+          {/* Send driver info to coordinators */}
+          <div className="flex h-full w-full flex-col items-start gap-4 lg:w-1/2">
+            {driverInfoToCoordinatorsLoading ? (
+              <div className="relative w-full grow rounded-md border-4 border-softGrayWhite py-2 px-4">
+                <Loading size="medium" thickness="thicc" />
+              </div>
+            ) : (
+              <textarea
+                className="w-full grow resize-none overflow-scroll rounded-md border-4 border-softGrayWhite py-2 px-4 text-base lg:text-xl"
+                readOnly
+                defaultValue={driverInfoToCoordinatorsText}
+              />
+            )}
+            <button className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold">
+              Send Driver Info to Coordinators
+            </button>
+          </div>
+          <button className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold">
+            + Add Dropoff Location
+          </button>
+        </div>
+        <div className="h-16" />
       </div>
     </>
   );

@@ -240,13 +240,13 @@ export const VolunteersTable: React.FC<Props> = ({
       return new Date(timeslot).toLocaleString("en-US", optionsTime);
     }
 
-    let rows = [];
-    for (let i = 0; i < scheduledSlots.length; i++) {
-      const ss = scheduledSlots[i];
-      const first = ss.fields["First Name"] || "";
-      const last = ss.fields["Last Name"] || "";
+    //let rows = [];
+    const rows = scheduledSlots.map((ss, i) => {
+      const first = ss.fields["First Name"] ? ss.fields["First Name"][0] : "";
+      const last = ss.fields["Last Name"] ? ss.fields["First Name"][0] : "";
+      const particpantType = getParticipantType(ss.fields["Type"]);
 
-      let curRow = [
+      return [
         /* id */
         ss.id,
         /* # */
@@ -260,7 +260,7 @@ export const VolunteersTable: React.FC<Props> = ({
           ? "Error!"
           : getTimeSlot(ss.fields["Correct slot time"]),
         /* Participant Type */
-        getParticipantType(ss.fields["Type"]),
+        particpantType,
         /* Confirmed Checkbox */
         <HttpCheckbox
           checked={ss.fields["Confirmed?"]}
@@ -299,17 +299,29 @@ export const VolunteersTable: React.FC<Props> = ({
         />,
         /* Special Group */
         ss.fields["Volunteer Group (for MAKE)"] || "N/A",
-        /* TODO: Delivery Count */
-        "IDK",
+        /* Delivery Count */
+        particpantType.includes("Driver")
+          ? ss.fields["Total Deliveries"]
+          : "NA",
         /* TODO: Contact Modal */
-        ss.fields["Email"],
+        ss.fields["Email"] ? ss.fields["Email"][0] : "",
       ];
+    });
 
-      rows.push(curRow);
-    }
     return rows;
   }
 
+  filtered.sort((a, b) => {
+    console.log(a.fields["First Name"], b.fields["First Name"]);
+    if (!a.fields["First Name"]) {
+      return 1;
+    }
+    if (!b.fields["First Name"]) {
+      return -1;
+    }
+
+    return a.fields["First Name"][0] < b.fields["First Name"][0] ? -1 : 1;
+  });
   // UI
   return (
     <div className="flex h-screen flex-col pt-6">
@@ -319,7 +331,7 @@ export const VolunteersTable: React.FC<Props> = ({
         ref={dropdownRef}
       >
         {/* Filter dropdown. TODO: This should be converted to use the Radix dropdown menu instead, similar to AssignLocationDropdown.tsx. */}
-        <div className="relative z-10">
+        <div className="relative z-20">
           <h1
             className={`flex w-44 select-none items-center justify-between rounded-lg border bg-pumpkinOrange px-2 py-1 text-sm font-semibold text-white hover:cursor-pointer hover:brightness-110 md:text-base ${
               isFilterDropdownOpen ? " brightness-110" : ""

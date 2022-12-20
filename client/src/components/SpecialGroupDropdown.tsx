@@ -45,7 +45,7 @@ interface Props {
   handleRegistered: (b: boolean) => void;
 }
 
-export const Dropdown: React.FC<Props> = ({
+export const SpecialGroupDropdown: React.FC<Props> = ({
   specialGroupsList,
   refetchGroups,
   handleQuery,

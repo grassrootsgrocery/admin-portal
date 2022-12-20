@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useQuery, useMutation } from "react-query";
 import { useFutureEventById } from "../eventHook";
-import { ProcessedSpecialGroup, AddSpecialGroup } from "../../types";
+import { ProcessedSpecialGroup, AddSpecialGroupRequestBody } from "../../types";
 
 import React, { useEffect, useState } from "react";
 //Types
@@ -18,8 +18,9 @@ import roster from "../../assets/roster.svg";
 import { Messaging } from "./Messaging";
 import { API_BASE_URL } from "../../httpUtils";
 import { Navbar } from "../../components/Navbar/Navbar";
-import { Dropdown } from "../../components/SpecialGroupDropdown";
+// import { Dropdown } from "../../components/SpecialGroupDropdown";
 import Popup from "../../components/Popup";
+import { AddSpecialGroup } from "./AddSpecialGroup";
 
 const HeaderValueDisplay: React.FC<{
   header: string;
@@ -38,32 +39,6 @@ const HeaderValueDisplay: React.FC<{
 export const ViewEvent = () => {
   const { eventId } = useParams();
   const { event, eventStatus, eventError } = useFutureEventById(eventId);
-
-  const createSpecialGroup = async (data: AddSpecialGroup) => {
-    const response = await fetch(`${API_BASE_URL}/api/add-special-group`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message);
-    }
-
-    return response.json();
-  };
-
-  const { mutate, isLoading } = useMutation(createSpecialGroup, {
-    onSuccess: (data) => {
-      console.log(data); // the response
-    },
-    onError: (error) => {
-      console.log(error); // the error if that is the case
-    },
-  });
 
   const {
     data: scheduledSlots,
@@ -88,58 +63,6 @@ export const ViewEvent = () => {
     },
     { enabled: eventStatus === "success" }
   );
-
-  // Retrieve Special Groups
-  const {
-    data: specialGroups,
-    refetch: refetchGroups,
-    status: specialGroupsStatus,
-    error: specialGroupsError,
-  } = useQuery(["fetchSpecialGroups"], async () => {
-    const response = await fetch(`${API_BASE_URL}/api/special-groups`);
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message);
-    }
-    return response.json() as Promise<ProcessedSpecialGroup[]>;
-  });
-
-  const [group, setGroup] = useState("");
-  const [id, setId] = useState("");
-  const [registered, setRegistered] = useState(false);
-
-  if (specialGroupsStatus === "loading" || specialGroupsStatus === "idle") {
-    return (
-      <div style={{ position: "relative", minHeight: "80vh" }}>
-        <Loading size="large" thickness="extra-thicc" />
-      </div>
-    );
-  }
-
-  if (specialGroupsStatus === "error") {
-    console.error(specialGroupsError);
-    return <div>Error...</div>;
-  }
-
-  console.log("Logging specialGroups", specialGroups);
-
-  const specialGroupsList: ProcessedSpecialGroup[] = specialGroups;
-  const handleRegistered = (value: boolean) => {
-    setRegistered(value);
-  };
-
-  const close = () => {
-    setGroup("");
-    setRegistered(false);
-  };
-
-  const handleQuery = (query: string) => {
-    setGroup(query);
-  };
-
-  const handleId = (id: string) => {
-    setId(id);
-  };
 
   if (scheduledSlotsStatus === "loading" || scheduledSlotsStatus === "idle") {
     return (
@@ -168,97 +91,10 @@ export const ViewEvent = () => {
 
   console.log("scheduledSlots", scheduledSlots);
 
-  // Retrieve Special Groups
-
-  const addGroup = () => {
-    const results = specialGroupsList.filter((g) => {
-      return g.name === group;
-    });
-
-    if (results.length === 0) {
-      console.log("Creating new group");
-      const body: AddSpecialGroup = {
-        Name: group,
-      };
-      mutate(body);
-    } else {
-      const results = specialGroupsList.filter((g) => {
-        return g.name === group;
-      });
-    }
-  };
   //Tailwind classes
   const sectionHeader =
     "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
   const sectionHeaderIcon = "w-6 lg:w-10";
-
-  // Special group link popup
-  const linkTitle = <div className="text-center">Special Group Link</div>;
-  const noLinkTitle = (
-    <div className="text-center">
-      Cannot generate link because group is already registered!
-    </div>
-  );
-
-  const linkTrigger = (
-    <div>
-      <button
-        onClick={() => addGroup()}
-        disabled={group ? false : true}
-        className="rounded-full bg-newLeafGreen px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-        type="button"
-      >
-        Add Group and Generate Link
-      </button>
-    </div>
-  );
-
-  const linkContent = (
-    <div>
-      <p>{group}</p>
-    </div>
-  );
-
-  // Add special group popup content
-  const addTitle = (
-    <div className="text-center">Add Special Group to Event</div>
-  );
-  const addTrigger = (
-    <button
-      className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-      type="button"
-    >
-      + Add Special Group
-    </button>
-  );
-  const addNext = !registered ? (
-    <div>
-      <Popup
-        title={linkTitle}
-        trigger={linkTrigger}
-        content={linkContent}
-        noCancel
-      />
-    </div>
-  ) : (
-    <div>
-      <Popup title={noLinkTitle} trigger={linkTrigger} noCancel />
-    </div>
-  );
-
-  const addContent = (
-    <div>
-      <div className="flex justify-center gap-5 h-72">
-        <p className="font-bold text-newLeafGreen lg:text-2xl">Group Name:</p>
-        <Dropdown
-          handleQuery={handleQuery}
-          handleRegistered={handleRegistered}
-          specialGroupsList={specialGroups}
-          refetchGroups={refetchGroups}
-        />
-      </div>
-    </div>
-  );
 
   return (
     <>
@@ -324,13 +160,13 @@ export const ViewEvent = () => {
           </div>
 
           <div className="flex flex-col items-start justify-around gap-2 ">
-            <Popup
+            {/* <Popup
               title={addTitle}
               trigger={addTrigger}
               content={addContent}
               next={addNext}
-            />
-
+            /> */}
+            <AddSpecialGroup />
             <button
               className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
               type="button"

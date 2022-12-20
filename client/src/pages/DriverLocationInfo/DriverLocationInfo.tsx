@@ -199,12 +199,13 @@ export function DriverLocationInfo() {
     <>
       <Navbar />
       <div className="p-6 lg:px-14 lg:py-10">
-        <Link to={`/events/${eventId}`}>
+        {/* Not sure why inline-block on the Link is necessary */}
+        <Link className="inline-block" to={`/events/${eventId}`}>
           <button
-            className="flex w-fit shrink-0 items-center gap-3 rounded-full bg-newLeafGreen py-2 px-4 text-lg font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen"
+            className="flex w-fit shrink-0 items-center gap-3 rounded-full bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen lg:px-4 lg:py-2 lg:text-lg"
             type="button"
           >
-            <img className="w-4" src={back} alt="Go back" />
+            <img className="w-2 lg:w-4" src={back} alt="Go back" />
             Go back
           </button>
         </Link>

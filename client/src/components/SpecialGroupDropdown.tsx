@@ -30,8 +30,8 @@ function showHideElements() {
     readyMessage.style.display = "none";
 
     if (input.value === "") {
-      dropdown.style.display = "none";
-      clearButton.style.display = "none";
+      dropdown.style.display = "block";
+      clearButton.style.display = "block";
     } else {
       dropdown.style.display = "block";
       clearButton.style.display = "block";
@@ -54,7 +54,9 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
   // Get allEventIds from ViewEvent
   const location = useLocation();
   const allEventIds = location.state;
+  console.log("allEventIds", allEventIds);
 
+  const [searchQuery, setSearchQuery] = useState<string>("");
   // Create list of all event ids associated with event
   const eventIdsList: string[] = [];
   for (const k in allEventIds) {
@@ -69,7 +71,9 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
   // Handling when input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Result filtering based on input
-    refetchGroups();
+    // refetchGroups();
+    if (e.target.value === "") {
+    }
     const results = specialGroupsList.filter((group) => {
       if (e.target.value === "") return specialGroupsList;
       return group.name.toLowerCase().includes(e.target.value.toLowerCase());
@@ -79,105 +83,110 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
       list: results,
     });
 
-    showHideElements();
+    // showHideElements();
   };
 
   // Clear input
-  const inputRef = useRef<HTMLInputElement>(null);
-  const clearInput = () => {
-    if (inputRef.current != null) {
-      inputRef.current.value = "";
-      setState({
-        query: "",
-        list: [],
-      });
-      showHideElements();
-      handleQuery("");
-      handleRegistered(false);
-    }
-  };
+  // const inputRef = useRef<HTMLInputElement>(null);
+  // const clearInput = () => {
+  //   if (inputRef.current != null) {
+  //     inputRef.current.value = "";
+  //     setState({
+  //       query: "",
+  //       list: [],
+  //     });
+  //     showHideElements();
+  //     handleQuery("");
+  //     handleRegistered(false);
+  //   }
+  // };
 
   // Determines if the special group is already registered for the event and handling
-  const isSpecialGroupRegistered = (
-    specialGroup: ProcessedSpecialGroup,
-    allEventIds: string[]
-  ) => {
-    // Determine if special group's event list includes an id associated with event
-    let registered = false;
-    if (specialGroup.events != null) {
-      registered = allEventIds.some((id) => specialGroup.events.includes(id));
-    }
-    //console.log("registered", registered)
+  // const isSpecialGroupRegistered = (
+  //   specialGroup: ProcessedSpecialGroup,
+  //   allEventIds: string[]
+  // ) => {
+  //   // Determine if special group's event list includes an id associated with event
+  //   let registered = false;
+  //   if (specialGroup.events != null) {
+  //     registered = allEventIds.some((id) => specialGroup.events.includes(id));
+  //   }
+  //   //console.log("registered", registered)
 
-    // Set input value to selected special group name
-    setState({
-      query: specialGroup.name,
-      list: state.list,
-    });
+  //   // Set input value to selected special group name
+  //   setState({
+  //     query: specialGroup.name,
+  //     list: state.list,
+  //   });
 
-    // Set visibility of messages and dropdown
-    const dropdown = document.getElementById("specialGroupDropdown");
-    const alertMessage = document.getElementById("alreadyRegisteredMessage");
-    const readyMessage = document.getElementById("readyToRegisterMessage");
-    if (
-      dropdown != null &&
-      inputRef.current != null &&
-      alertMessage != null &&
-      readyMessage != null
-    ) {
-      dropdown.style.display = "none"; // Hide dropdown
-      if (registered == true) {
-        handleRegistered(true);
-        alertMessage.style.display = "flex";
-        readyMessage.style.display = "none";
-      } else {
-        readyMessage.style.display = "flex";
-        alertMessage.style.display = "none";
-      }
+  //   // Set visibility of messages and dropdown
+  //   const dropdown = document.getElementById("specialGroupDropdown");
+  //   const alertMessage = document.getElementById("alreadyRegisteredMessage");
+  //   const readyMessage = document.getElementById("readyToRegisterMessage");
+  //   if (
+  //     dropdown != null &&
+  //     inputRef.current != null &&
+  //     alertMessage != null &&
+  //     readyMessage != null
+  //   ) {
+  //     dropdown.style.display = "none"; // Hide dropdown
+  //     if (registered == true) {
+  //       handleRegistered(true);
+  //       alertMessage.style.display = "flex";
+  //       readyMessage.style.display = "none";
+  //     } else {
+  //       readyMessage.style.display = "flex";
+  //       alertMessage.style.display = "none";
+  //     }
 
-      handleQuery(specialGroup.name);
-    }
-  };
+  //     handleQuery(specialGroup.name);
+  //   }
+  // };
 
   return (
-    <div className="w-80 grow-0 px-4 py-2">
+    <div className="r grow-0 px-4 lg:w-80">
       {/* Special Group Input */}
       <div className="flex flex-row items-center">
-        <form>
-          <input
-            className="h-8 w-80 rounded-lg border-2 border-softGrayWhite pl-2 pr-7 text-lg text-newLeafGreen placeholder:text-lg placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:outline-softGrayWhite"
-            ref={inputRef}
-            type="text"
-            id="specialGroupInput"
-            autoComplete="off"
-            placeholder="Search through groups..."
-            value={state.query}
-            onChange={handleChange}
-          ></input>
-        </form>
+        <input
+          className="h-8 w-80 rounded-lg border-2 border-softGrayWhite pl-2 pr-7 text-lg text-newLeafGreen placeholder:text-lg placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:outline-softGrayWhite"
+          type="text"
+          id="specialGroupInput"
+          autoComplete="off"
+          placeholder="Search through groups..."
+          // value={state.query}
+          value={searchQuery}
+          // onChange={handleChange}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
 
         {/* Clear button */}
-        <button hidden id="clearBtn" onClick={clearInput}>
-          <img
-            className="bottom-0.25 relative right-6 w-3 sm:w-4"
-            src={x}
-            alt="x"
-          />
-        </button>
+        {searchQuery.length > 0 && (
+          <button id="clearBtn" onClick={() => setSearchQuery("")}>
+            <img
+              className="bottom-0.25 relative right-6 w-3 sm:w-4"
+              src={x}
+              alt="x"
+            />
+          </button>
+        )}
       </div>
 
       {/* Special Group Listing Dropdown */}
-      <ul
-        className="hidden max-h-56 w-80 overflow-y-scroll rounded-lg border-2 border-t-0 border-softGrayWhite py-1 text-newLeafGreen"
-        id="specialGroupDropdown"
-      >
-        <div className="px-2 text-sm text-[#0E7575]">
-          Select existing group or create new one
-        </div>
-
-        {state.query === ""
-          ? ""
-          : state.list.map((specialGroup) => {
+      {searchQuery.length > 0 && (
+        <ul
+          className="max-h-56 w-80 overflow-y-scroll rounded-lg border-2 border-t-0 border-softGrayWhite py-1 text-newLeafGreen"
+          id="specialGroupDropdown"
+        >
+          <div className="px-2 text-sm text-[#0E7575]">
+            Select existing group or create new one
+          </div>
+          {specialGroupsList
+            .filter((specialGroup) => {
+              return specialGroup.name
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
+            })
+            .map((specialGroup) => {
               return (
                 <li
                   className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
@@ -191,20 +200,35 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
                 </li>
               );
             })}
-
-        <li
-          className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
-          onClick={() => {
-            isSpecialGroupRegistered(
-              { name: state.query, events: [] },
-              eventIdsList
+          {/* {state.list.map((specialGroup) => {
+            return (
+              <li
+                className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
+                key={specialGroup.name}
+                onClick={() => {
+                  isSpecialGroupRegistered(specialGroup, eventIdsList);
+                }}
+              >
+                <img className="mr-1 w-2 md:w-4" src={plus} alt="plus-icon" />
+                {specialGroup.name}
+              </li>
             );
-          }}
-        >
-          Create:
-          <div className="pl-2 text-[#0E7575]">{state.query}</div>
-        </li>
-      </ul>
+          })} */}
+
+          <li
+            className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
+            onClick={() => {
+              isSpecialGroupRegistered(
+                { name: state.query, events: [] },
+                eventIdsList
+              );
+            }}
+          >
+            Create:
+            <p className="pl-2 text-[#0E7575]">{searchQuery}</p>
+          </li>
+        </ul>
+      )}
 
       <div className="h-8" />
       {/* Aleady registered message */}

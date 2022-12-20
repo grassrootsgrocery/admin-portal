@@ -30,11 +30,7 @@ const Popup = ({
         <Modal.Portal>
           <Modal.Overlay className="modal-overlay z-20 bg-slate-300" />
           <Modal.Content className="modal-content z-20 flex flex-col rounded-2xl bg-softBeige p-12 drop-shadow-lg">
-            <Modal.Title asChild>
-              <div className="b m-0 flex justify-center text-3xl font-bold text-newLeafGreen">
-                {title}
-              </div>
-            </Modal.Title>
+            <Modal.Title asChild>{title}</Modal.Title>
             <Modal.Description asChild>
               <div className="g flex justify-center">{content}</div>
             </Modal.Description>
@@ -63,9 +59,9 @@ const Popup = ({
               {renderLittleXCloseButton && (
                 <button
                   // onClick={() => (!!props.close ? props.close() : {})}
-                  className="absolute top-7 right-7 flex"
+                  className="absolute top-7 right-7"
                 >
-                  <img src={x} className="w-4 lg:w-8" />
+                  <img src={x} className="w-6 lg:w-8" />
                 </button>
               )}
             </Modal.Close>

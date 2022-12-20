@@ -130,62 +130,68 @@ export const AddSpecialGroup: React.FC<Props> = () => {
     </div>
   );
 
-  // Add special group popup content
-  const addTitle = (
-    <div className="text-center">Add Special Group to Event</div>
-  );
-  const addTrigger = (
-    <button
-      className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-      type="button"
-    >
-      + Add Special Group
-    </button>
-  );
-  const addNext = !registered ? (
-    <div>
-      <Popup
-        title={linkTitle}
-        trigger={linkTrigger}
-        content={linkContent}
-        renderLittleXCloseButton
-        next={<div>next</div>}
-        // noCancel
-      />
-    </div>
-  ) : (
-    <div>
-      <Popup
-        title={noLinkTitle}
-        trigger={linkTrigger}
-        content="Jason"
-        renderLittleXCloseButton
-        // noCancel
-        next={<div>next</div>}
-      />
-    </div>
-  );
+  const getNextButton = () => {
+    if (!registered) {
+      return (
+        <div>
+          <Popup
+            title={linkTitle}
+            trigger={linkTrigger}
+            content={linkContent}
+            renderLittleXCloseButton
+            next={<div>next</div>}
+            // noCancel
+          />
+        </div>
+      );
+    }
 
-  const addContent = (
-    <div>
-      <div className="flex h-72 justify-center gap-5">
-        <p className="font-bold text-newLeafGreen lg:text-2xl">Group Name:</p>
-        <SpecialGroupDropdown
-          handleQuery={handleQuery}
-          handleRegistered={handleRegistered}
-          specialGroupsList={specialGroups}
-          refetchGroups={refetchGroups}
+    return (
+      <div>
+        <Popup
+          title={noLinkTitle}
+          trigger={linkTrigger}
+          content="Jason"
+          renderLittleXCloseButton
+          // noCancel
+          next={<div>next</div>}
         />
       </div>
-    </div>
-  );
+    );
+  };
+
   return (
     <Popup
-      title={addTitle}
-      trigger={addTrigger}
-      content={addContent}
+      trigger={
+        <button
+          className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+          type="button"
+        >
+          + Add Special Group
+        </button>
+      }
+      title={
+        <div className="b m-0 flex justify-center font-bold text-newLeafGreen lg:text-3xl">
+          Add Special Group to Event
+        </div>
+      }
+      content={
+        <div>
+          <div className="r flex h-72 justify-center gap-5">
+            <p className="font-bold text-newLeafGreen lg:text-xl">
+              Group Name:
+            </p>
+            <SpecialGroupDropdown
+              handleQuery={handleQuery}
+              handleRegistered={handleRegistered}
+              specialGroupsList={specialGroups}
+              refetchGroups={refetchGroups}
+            />
+          </div>
+        </div>
+      }
       renderLittleXCloseButton
-      next={addNext}
+      next={getNextButton()}
     />
   );
 };

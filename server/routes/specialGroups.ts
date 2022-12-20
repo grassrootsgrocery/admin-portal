@@ -64,7 +64,7 @@ router.route("/api/special-groups").get(
 
 /**
  * @description Create new special group
- * @route  POST /api/addSpecialGroup
+ * @route  POST /api/add-special-group
  * @access
  */
 router.route("/api/add-special-group").post(
@@ -107,8 +107,8 @@ router.route("/api/add-special-group").post(
 );
 
 /**
- * @description Create new special group
- * @route  PATCH /api/addGroupToEvent
+ * @description Add group to event
+ * @route  PATCH /api/add-group-to-event
  * @access
  */
 router.route("/api/add-group-to-event").post(

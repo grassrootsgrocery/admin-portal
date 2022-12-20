@@ -19,7 +19,7 @@ import { Events } from "./pages/Events";
 import { ViewEvent } from "./pages/ViewEvent";
 import { DriverLocationInfo } from "./pages/DriverLocationInfo";
 
-import { Dropdown } from "./components/SpecialGroupDropdown";
+// import { Dropdown } from "./components/SpecialGroupDropdown";
 
 function App() {
   return (
@@ -36,10 +36,10 @@ function App() {
                 path="/events/driver-location-info/:eventId"
                 element={<DriverLocationInfo />}
               />
-              <Route
+              {/* <Route
                 path="/events/add-special-group/:eventId"
                 element={<Dropdown />}
-              />
+              /> */}
             </Routes>
           </div>
           <ReactQueryDevtools initialIsOpen={false} />

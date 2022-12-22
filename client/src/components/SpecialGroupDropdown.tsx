@@ -9,6 +9,7 @@ import plus from "../assets/plus.svg";
 import x from "../assets/greenX.svg";
 import alert from "../assets/alert.svg";
 import check from "../assets/check.svg";
+import { useAuth } from "../contexts/AuthContext";
 
 // Show/Hide dropdown, clear button, and messages
 function showHideElements() {
@@ -57,6 +58,7 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
   console.log("allEventIds", allEventIds);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
+
   // Create list of all event ids associated with event
   const eventIdsList: string[] = [];
   for (const k in allEventIds) {
@@ -192,7 +194,7 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
                   className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
                   key={specialGroup.name}
                   onClick={() => {
-                    isSpecialGroupRegistered(specialGroup, eventIdsList);
+                    // isSpecialGroupRegistered(specialGroup, eventIdsList);
                   }}
                 >
                   <img className="mr-1 w-2 md:w-4" src={plus} alt="plus-icon" />
@@ -218,10 +220,10 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
           <li
             className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
             onClick={() => {
-              isSpecialGroupRegistered(
-                { name: state.query, events: [] },
-                eventIdsList
-              );
+              // isSpecialGroupRegistered(
+              //   { name: state.query, events: [] },
+              //   eventIdsList
+              // );
             }}
           >
             Create:

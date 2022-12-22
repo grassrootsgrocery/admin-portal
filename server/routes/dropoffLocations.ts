@@ -36,13 +36,13 @@ function processDropOffLocations(
       ? location.fields["Drop off location"]
       : "N/A",
     address: location.fields["Drop-off Address"],
-    neighborhood: location.fields["Neighborhood"]
-      ? location.fields["Neighborhood"][0]
-      : "",
+    neighborhoods: location.fields["Neighborhood (from Zip Code)"]
+      ? location.fields["Neighborhood (from Zip Code)"]
+      : [],
     startTime: startTime.toLocaleString("en-US", optionsTime), // start time in HH:MM AM/PM format
     endTime: endTime.toLocaleString("en-US", optionsTime), // end time in HH:MM AM/PM format
-    deliveriesAssigned: 0, // location.fields[""],        // TODO: update with correct aitable field
-    matchedDrivers: [""], //location.fields[""]          // TODO: update with correct aitable field
+    deliveriesAssigned: 0, // location.fields[""],        // TODO: update with correct airtable field
+    matchedDrivers: [""], //location.fields[""]          // TODO: update with correct airtable field
   };
 }
 
@@ -51,7 +51,7 @@ function getNeighborhoodIdsForUrl(
   location: ProcessedDropoffLocation[]
 ): string {
   let neighborhoodIds: string[] = [];
-  location.forEach((organizer) => neighborhoodIds.push(organizer.neighborhood));
+  location.forEach((organizer) => organizer.neighborhoods.forEach((neighborhood) => neighborhoodIds.push(neighborhood)));
   return neighborhoodIds.join();
 }
 // update the processed organizer's neighborhood field with neighborhood name
@@ -60,10 +60,14 @@ function processNeighborhoodsForLocation(
   neighborhoods: Map<string, string>
 ) {
   locations.forEach(function (location) {
-    const neighborhoodName = neighborhoods.get(location.neighborhood);
-    if (neighborhoodName !== undefined) {
-      location.neighborhood = neighborhoodName;
-    }
+    let locationNeighborhoodNames: string[] = [];
+    location.neighborhoods.forEach( function (neighborhood){
+      const neighborhoodName = neighborhoods.get(neighborhood);
+      if (neighborhoodName !== undefined) {
+        locationNeighborhoodNames.push(neighborhoodName);
+      }
+    });
+    location.neighborhoods = locationNeighborhoodNames;
   });
 }
 /**
@@ -80,7 +84,7 @@ router.route("/api/dropoff-locations/").get(
       `view=Drop-offs for This Weekend` +
       `&fields=Drop off location` + // Name of drop off location
       `&fields=Drop-off Address` + // address
-      `&fields=Neighborhood` + // neighborhood
+      `&fields=Neighborhood (from Zip Code)` + // neighborhood
       `&fields=Starts accepting at` + // startTime
       `&fields=Stops accepting at`; //+  // endTime
 
@@ -126,6 +130,7 @@ router.route("/api/dropoff-locations/").get(
     neighborhoods.records.forEach((neighborhood) =>
       neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
     );
+    console.log(neighborhoodNamesById);
     processNeighborhoodsForLocation(
       processedDropOffLocations,
       neighborhoodNamesById

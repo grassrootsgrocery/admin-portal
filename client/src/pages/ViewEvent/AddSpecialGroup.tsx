@@ -5,9 +5,11 @@ import { SpecialGroupDropdown } from "../../components/SpecialGroupDropdown";
 import Popup from "../../components/Popup";
 import { Loading } from "../../components/Loading";
 import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 interface Props {}
 
 export const AddSpecialGroup: React.FC<Props> = () => {
+  const { token } = useAuth();
   // Retrieve Special Groups
   const {
     data: specialGroups,
@@ -15,7 +17,11 @@ export const AddSpecialGroup: React.FC<Props> = () => {
     status: specialGroupsStatus,
     error: specialGroupsError,
   } = useQuery(["fetchSpecialGroups"], async () => {
-    const response = await fetch(`${API_BASE_URL}/api/special-groups`);
+    const response = await fetch(`${API_BASE_URL}/api/special-groups`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (!response.ok) {
       const data = await response.json();
       throw new Error(data.message);
@@ -28,6 +34,7 @@ export const AddSpecialGroup: React.FC<Props> = () => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });

@@ -6,23 +6,24 @@ import { ProcessedEvent } from "../../types";
 import { EventCard } from "./EventCard";
 import { Loading } from "../../components/Loading";
 import { Navbar } from "../../components/Navbar/Navbar";
+import { compareSync } from "bcryptjs";
+import { useAuth } from "../../contexts/AuthContext";
+import { Navigate } from "react-router-dom";
+import { useFutureEvents } from "../eventHooks";
 
 const newEventLink =
   "https://airtable.com/shrETAYONKTJMVTnZ?prefill_Supplier=Rap+4+Bronx&prefill_Start+Time=01/01/2023+09:00am&prefill_End+Time=01/01/2023+01:00pm&prefill_First+Driving+Slot+Start+Time=01/01/2023+10:30am&prefill_How+long+should+each+Driver+Time+Slot+be?=0:15&prefill_Max+Count+of+Drivers+Per+Slot=30&prefill_How+long+should+the+Logistics+slot+be?=1:30&prefill_Maximum+number+of+drivers+needed+for+this+event+(usually+30)?=30&prefill_Max+Count+of+Distributors+Per+Slot=30";
 
 export function Events() {
+  const { token } = useAuth();
+  if (!token) {
+    return <Navigate to="/" />;
+  }
   const {
     data: futureEvents,
     status: futureEventsStatus,
     error: futureEventsError,
-  } = useQuery(["fetchFutureEvents"], async () => {
-    const response = await fetch(`${API_BASE_URL}/api/events`);
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message);
-    }
-    return response.json() as Promise<ProcessedEvent[]>;
-  });
+  } = useFutureEvents();
 
   if (futureEventsStatus === "loading" || futureEventsStatus === "idle") {
     return (

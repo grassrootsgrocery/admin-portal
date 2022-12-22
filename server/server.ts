@@ -13,23 +13,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false })); //x-www-form-urlencoded
 
 //---- API Start----
+import { protect } from "./middleware/authMiddleware";
 
-//Events
+import authRouter from "./routes/auth";
+app.use("/", authRouter);
+
 import eventRouter from "./routes/events";
-app.use("/", eventRouter);
+app.use("/", protect, eventRouter);
 
-//Messaging
 import messagingRouter from "./routes/messaging";
-app.use("/", messagingRouter);
+app.use("/", protect, messagingRouter);
 
 import volunteersRouter from "./routes/volunteers";
-app.use("/", volunteersRouter);
+app.use("/", protect, volunteersRouter);
 
 import dropoffRouter from "./routes/dropoffLocations";
-app.use("/", dropoffRouter);
+app.use("/", protect, dropoffRouter);
 
 import specialGroupsRouter from "./routes/specialGroups";
-app.use("/", specialGroupsRouter);
+app.use("/", protect, specialGroupsRouter);
+
 //---- API End ----
 
 //Middleware for handling errors. This has to go after the routes.

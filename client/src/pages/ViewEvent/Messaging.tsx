@@ -3,6 +3,8 @@ import { Loading } from "../../components/Loading";
 import { API_BASE_URL } from "../../httpUtils";
 //Assets
 import recruitment from "../../assets/recruitment.svg";
+import { useAuth } from "../../contexts/AuthContext";
+import { Navigate } from "react-router-dom";
 
 // Tailwind classes
 const sectionHeader =
@@ -17,13 +19,22 @@ const btn =
   "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold";
 
 export function Messaging() {
+  const { token } = useAuth();
+  if (!token) {
+    return <Navigate to="/" />;
+  }
   const {
     data: volunteerRecruitmentTextData,
     status: volunteerRecruitmentTextStatus,
     error: volunteerRecruitmentTextError,
   } = useQuery(["fetchVolunteerRecruitmentTextBlueprint"], async () => {
     const resp = await fetch(
-      `${API_BASE_URL}/api/messaging/volunteer-recruitment-text`
+      `${API_BASE_URL}/api/messaging/volunteer-recruitment-text`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     if (!resp.ok) {
       const data = await resp.json();
@@ -31,13 +42,19 @@ export function Messaging() {
     }
     return resp.json();
   });
+
   const {
     data: coordinatorRecruitmentTextData,
     status: coordinatorRecruitmentTextStatus,
     error: coordinatorRecruitmentTextError,
   } = useQuery(["fetchCoordinatorRecruitmentTextBlueprint"], async () => {
     const resp = await fetch(
-      `${API_BASE_URL}/api/messaging/coordinator-recruitment-text`
+      `${API_BASE_URL}/api/messaging/coordinator-recruitment-text`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     if (!resp.ok) {
       const data = await resp.json();
@@ -93,7 +110,6 @@ export function Messaging() {
           <button className={btn}>Recruit Participants</button>
         </div>
       </div>
-      {/* <div className="h-16" /> */}
     </div>
   );
 }

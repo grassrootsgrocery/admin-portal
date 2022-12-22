@@ -65,7 +65,7 @@ function processDropoffLocationsForTable(
       "Coordinator Information", //TODO: coordinator information
       curLocation.dropOffLocation,
       curLocation.address,
-      curLocation.neighborhood,
+      curLocation.neighborhoods.join(", "),
       curLocation.startTime,
       curLocation.endTime,
       curLocation.deliveriesAssigned,

@@ -9,6 +9,7 @@ import plus from "../assets/plus.svg";
 import x from "../assets/greenX.svg";
 import alert from "../assets/alert.svg";
 import check from "../assets/check.svg";
+import { useAuth } from "../contexts/AuthContext";
 
 // Show/Hide dropdown, clear button, and messages
 function showHideElements() {
@@ -43,6 +44,8 @@ export const Dropdown = (props: any) => {
   // Get allEventIds from ViewEvent
   const location = useLocation();
   const allEventIds = location.state;
+
+  const { token } = useAuth();
 
   // Create list of all event ids associated with event
   const eventIdsList: string[] = [];
@@ -131,7 +134,11 @@ export const Dropdown = (props: any) => {
     status: specialGroupsStatus,
     error: specialGroupsError,
   } = useQuery(["fetchSpecialGroups"], async () => {
-    const response = await fetch(`${API_BASE_URL}/api/special-groups`);
+    const response = await fetch(`${API_BASE_URL}/api/special-groups`, {
+      headers: {
+        Authorization: `Bearer ${token as string}`,
+      },
+    });
     if (!response.ok) {
       const data = await response.json();
       throw new Error(data.message);

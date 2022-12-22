@@ -12,6 +12,8 @@ import check_icon from "../../assets/checkbox-icon.svg";
 //Utils
 import { API_BASE_URL } from "../../httpUtils";
 import { toastNotify } from "../../uiUtils";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 interface DropdownItemProps {
   label: string;
   selected: boolean;
@@ -92,6 +94,10 @@ export const AssignLocationDropdown: React.FC<Props> = ({
   driver,
   refetchDrivers,
 }) => {
+  const { token } = useAuth();
+  if (!token) {
+    return <Navigate to="/" />;
+  }
   const [selectedLocations, setSelectedLocations] = useState<boolean[]>(
     getSelectedLocations(locations, driver)
   );
@@ -108,6 +114,7 @@ export const AssignLocationDropdown: React.FC<Props> = ({
     const resp = await fetch(url, {
       method: "PATCH",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ locationIds: locationIds }),

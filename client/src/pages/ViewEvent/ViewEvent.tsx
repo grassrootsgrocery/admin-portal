@@ -19,6 +19,8 @@ import { API_BASE_URL } from "../../httpUtils";
 import { Navbar } from "../../components/Navbar/Navbar";
 import { Dropdown } from "../../components/SpecialGroupDropdown";
 import Popup from "../../components/Popup";
+import PopupDone from "../../components/PopupDone";
+import { DataTable } from "../../components/DataTable";
 
 const HeaderValueDisplay: React.FC<{
   header: string;
@@ -99,6 +101,8 @@ export const ViewEvent = () => {
   const sectionHeader =
     "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
   const sectionHeaderIcon = "w-6 lg:w-10";
+
+  // Add Special Group Pop-up Prop Info
   const addTitle = "Add Special Group to Event";
   const addTrigger = (
     <button
@@ -116,7 +120,6 @@ export const ViewEvent = () => {
       Add Group and Generate Link
     </button>
   );
-
   const addContent = (
     <div>
       <div className="mx-5 mt-5 flex h-72 justify-center gap-5">
@@ -126,6 +129,42 @@ export const ViewEvent = () => {
       <div className="flex justify-center gap-10"></div>
     </div>
   );
+
+    // View Special Groups Pop-up Prop Info
+    const viewTitle = "View Event Special Groups";
+    const viewTrigger = (
+      <button
+        className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+        type="button"
+      >
+        View Special Groups
+      </button>
+    );
+    const viewContent = (
+      <div>
+        <div className="mx-5 mt-5 flex h-72 justify-center gap-5">
+          <DataTable
+            columnHeaders={[
+              "Name",
+              "Sign-up Link",
+            ]}
+            dataRows={tempViewSpecialGroupsFunct()}
+          />
+        </div>
+      </div>
+    );  
+    function tempViewSpecialGroupsFunct() {  
+      /* Idk how this works */
+      const name = "Blackrock";
+      const link = "www.grassrootsgrocery.org/blackrock-delivers"
+        return [
+          /* Special Group Name */
+          [name],
+          /* Sign-up Link */
+          [link],
+        ];
+    }
+
   return (
     <>
       <Navbar />
@@ -197,12 +236,12 @@ export const ViewEvent = () => {
               next={addNext}
             />
 
-            <button
-              className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-              type="button"
-            >
-              View Special Groups
-            </button>
+            <PopupDone
+              title={viewTitle}
+              trigger={viewTrigger}
+              content={viewContent}
+            />
+
           </div>
         </div>
         <div className="h-12" />

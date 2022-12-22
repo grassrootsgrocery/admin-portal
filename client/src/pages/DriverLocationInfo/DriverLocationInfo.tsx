@@ -1,9 +1,9 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { useDriversInfo } from "./driverInfoHooks";
 import { AssignLocationDropdown } from "./AssignLocationDropdown";
 import { useQuery } from "react-query";
 import { API_BASE_URL } from "../../httpUtils";
-import { useFutureEventById } from "../eventHook";
+import { useFutureEventById } from "../eventHooks";
 //Types
 import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 //Components
@@ -14,6 +14,7 @@ import { Loading } from "../../components/Loading";
 import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
 import back from "../../assets/back-white.svg";
+import { useAuth } from "../../contexts/AuthContext";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -96,6 +97,10 @@ const sectionHeader =
 const sectionHeaderIcon = "w-6 lg:w-10";
 
 export function DriverLocationInfo() {
+  const { token } = useAuth();
+  if (!token) {
+    return <Navigate to="/" />;
+  }
   const { eventId } = useParams();
 
   const {
@@ -106,7 +111,12 @@ export function DriverLocationInfo() {
     ["fetchLocationsToDriversText"],
     async () => {
       const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/locations-to-drivers-text`
+        `${API_BASE_URL}/api/messaging/locations-to-drivers-text`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (!resp.ok) {
         const data = await resp.json();
@@ -124,7 +134,12 @@ export function DriverLocationInfo() {
     ["fetchDriverInfoToCoordinatorsText"],
     async () => {
       const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/driver-info-to-coordinators-text`
+        `${API_BASE_URL}/api/messaging/driver-info-to-coordinators-text`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (!resp.ok) {
         const data = await resp.json();
@@ -158,7 +173,12 @@ export function DriverLocationInfo() {
     status: dropoffLocationsStatus,
     error: dropoffLocationsError,
   } = useQuery(["fetchDropOffLocations"], async () => {
-    const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations`);
+    const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (!resp.ok) {
       const data = await resp.json();
       throw new Error(data.messsage);

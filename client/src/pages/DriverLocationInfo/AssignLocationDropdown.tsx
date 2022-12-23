@@ -39,10 +39,13 @@ const AssignLocationDropdownItem: React.FC<DropdownItemProps> = (
   });
   return (
     <DropdownMenu.Item
-      className={`flex select-none items-center justify-between rounded-lg border border-newLeafGreen p-2 font-semibold shadow-md outline-none hover:cursor-pointer ${
+      className={`flex select-none items-center justify-between rounded-lg border  border-newLeafGreen 
+      p-2 font-semibold shadow-md outline-none 
+      hover:cursor-pointer data-[highlighted]:-m-[1px] data-[selected]:cursor-pointer 
+      data-[highlighted]:cursor-pointer data-[highlighted]:border-2 data-[highlighted]:brightness-110 ${
         isChecked
-          ? "bg-newLeafGreen text-white"
-          : "text-newLeafGreen data-[highlighted]:-m-[1px] data-[selected]:cursor-pointer data-[highlighted]:cursor-pointer data-[highlighted]:border-2 data-[highlighted]:brightness-110"
+          ? "bg-newLeafGreen text-white data-[highlighted]:border-softBeige"
+          : "text-newLeafGreen  "
       }`}
       onSelect={(e) => {
         e.preventDefault(); //So that the dropdown doesn' close automatically when an item is selected

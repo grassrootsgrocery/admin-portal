@@ -76,7 +76,7 @@ export interface Neighborhood {
 export interface DropoffLocation {
   "Drop off location": string;
   "Drop-off Address": string;
-  Neighborhood: string;
+  "Neighborhood (from Zip Code)": string[];
   "Starts accepting at": string;
   "Stops accepting at": string;
   // TODO: update with correct airtable field for deliveriesAssigned
@@ -87,7 +87,7 @@ export interface ProcessedDropoffLocation {
   id: string;
   dropOffLocation: string;
   address: string;
-  neighborhood: string;
+  neighborhoods: string[];
   startTime: string;
   endTime: string;
   deliveriesAssigned: number;

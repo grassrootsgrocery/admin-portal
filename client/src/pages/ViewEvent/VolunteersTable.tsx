@@ -13,6 +13,8 @@ import x from "../../assets/x.svg";
 import check_icon from "../../assets/checkbox-icon.svg";
 //Types
 import { Record, ScheduledSlot } from "../../types";
+import { useAuth } from "../../contexts/AuthContext";
+import { Navigate } from "react-router-dom";
 
 /*
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
@@ -217,6 +219,8 @@ export const VolunteersTable: React.FC<Props> = ({
   function processScheduledSlotsForTable(
     scheduledSlots: Record<ScheduledSlot>[]
   ): (string | number | JSX.Element)[][] {
+    const { token } = useAuth();
+
     //Replace the word "Distributor" with "Packer" in the type array
     function getParticipantType(type: string[]) {
       const typeCopy = [...type];
@@ -266,7 +270,8 @@ export const VolunteersTable: React.FC<Props> = ({
           checked={ss.fields["Confirmed?"]}
           mutationFn={applyPatch(
             `${API_BASE_URL}/api/volunteers/confirm/${ss.id}`,
-            { newConfirmationStatus: !ss.fields["Confirmed?"] }
+            { newConfirmationStatus: !ss.fields["Confirmed?"] },
+            token as string
           )}
           onSuccess={() => {
             const toastMessage = `${first} ${last} ${
@@ -282,7 +287,8 @@ export const VolunteersTable: React.FC<Props> = ({
           checked={ss.fields["Can't Come"]}
           mutationFn={applyPatch(
             `${API_BASE_URL}/api/volunteers/going/${ss.id}`,
-            { newGoingStatus: !ss.fields["Can't Come"] }
+            { newGoingStatus: !ss.fields["Can't Come"] },
+            token as string
           )}
           onSuccess={() => {
             const toastMessage = `${first} ${last} ${

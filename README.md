@@ -38,8 +38,10 @@ There are two `.env` files in the project: `.env` in the root of the project and
 
 <!-- - Go to [https://](). Sign in with your whatever. -->
 
-- TODO: Figure out how to get you guys access to the Make API key
-- Go to the root `.env` of the project and add the line `MAKE_API_KEY=<Whatever the key is>`
+<!-- - TODO: Figure out how to get you guys access to the Make API key -->
+<!-- - Go to the root `.env` of the project and add the line `MAKE_API_KEY=<Whatever the key is>` -->
+
+- You don't need the Make API key to do development, but just know that the production deploy of the app does have this API key
 
 ## Using the API keys
 
@@ -66,9 +68,11 @@ const apiKey = import.meta.env.VITE_AIRTABLE_API_KEY;
 2. Run `npm install` in the root directory
 3. Run `npm install` in the `client/` directory
 4. Follow the steps in the section above to set up your API keys (**API Key Access & Management**)
-5. Add `VITE_SERVER_URL='http://localhost:5000'`to your `client/.env` file
-6. Run `npm run dev`
-7. Navigate to `localhost:5173` in your browser
+5. Add `JWT_SECRET=96024` in the root `.env` file
+6. Add `VITE_SERVER_URL='http://localhost:5000'`to your `client/.env` file
+7. Run `npm run dev` in the root directory
+8. Navigate to `localhost:5173` in your browser
+9. Log in with username **grassroots** and password **mypassword**
 
 # Hosting
 

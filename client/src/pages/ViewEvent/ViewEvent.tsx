@@ -1,6 +1,6 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { useQuery } from "react-query";
-import { useFutureEventById } from "../eventHook";
+import { useFutureEventById } from "../eventHooks";
 
 import React, { useEffect, useState } from "react";
 //Types
@@ -19,6 +19,7 @@ import { API_BASE_URL } from "../../httpUtils";
 import { Navbar } from "../../components/Navbar/Navbar";
 import { Dropdown } from "../../components/SpecialGroupDropdown";
 import Popup from "../../components/Popup";
+import { useAuth } from "../../contexts/AuthContext";
 import PopupDone from "../../components/PopupDone";
 import { DataTable } from "../../components/DataTable";
 
@@ -37,6 +38,10 @@ const HeaderValueDisplay: React.FC<{
 };
 
 export const ViewEvent = () => {
+  const { token } = useAuth();
+  if (!token) {
+    return <Navigate to="/" />;
+  }
   const { eventId } = useParams();
   const { event, eventStatus, eventError } = useFutureEventById(eventId);
 
@@ -53,7 +58,12 @@ export const ViewEvent = () => {
       }
       const scheduledSlotsIds = event.scheduledSlots.join(",");
       const response = await fetch(
-        `${API_BASE_URL}/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`
+        `${API_BASE_URL}/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (!response.ok) {
         const data = await response.json();

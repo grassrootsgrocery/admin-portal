@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import chevron_up from "../../assets/chevron-up-green.svg";
 import chevron_down from "../../assets/chevron-down-green.svg";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface FormsDropdownItemProps {
   label: string;
@@ -16,7 +17,7 @@ const FormsDropdownItem = (props: FormsDropdownItemProps) => {
   return (
     <a href={formURL} target="_blank">
       <DropdownMenu.Item
-        className="link select-none rounded-lg border-2 border-newLeafGreen p-2 text-center text-xl text-newLeafGreen underline underline-offset-4 outline-none hover:cursor-pointer hover:bg-newLeafGreen hover:text-softGrayWhite"
+        className="link select-none rounded-lg border-2 border-newLeafGreen p-2 text-center text-sm text-newLeafGreen underline underline-offset-4 outline-none hover:cursor-pointer hover:bg-newLeafGreen hover:text-softGrayWhite md:text-lg lg:text-xl"
         onSelect={(e) => {
           e.preventDefault(); //So that the dropdown doesn' close automatically when an item is selected
         }}
@@ -29,9 +30,15 @@ const FormsDropdownItem = (props: FormsDropdownItemProps) => {
 
 export function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { setToken } = useAuth();
+
+  const handleLogout = () => {
+    setToken(null);
+    localStorage.removeItem("token");
+  };
 
   return (
-    <div className="navbar">
+    <nav className="navbar">
       <div className="logo-box">
         <Link to="/">
           <img alt="Grassroots Grocery Logo" className="logo" src={grgLogo} />
@@ -88,8 +95,11 @@ export function Navbar() {
               </DropdownMenu.Content>
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
+          <Link className="link" to="/" onClick={handleLogout}>
+            Logout
+          </Link>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }

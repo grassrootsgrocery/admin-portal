@@ -5,7 +5,7 @@ import {
   ProcessedEvent,
   ProcessedSpecialGroup,
 } from "../../types";
-import { SpecialGroupDropdown } from "../../components/SpecialGroupDropdown";
+import { SpecialGroupDropdown } from "./SpecialGroupDropdown";
 import Popup from "../../components/Popup";
 import { Loading } from "../../components/Loading";
 import { useState } from "react";

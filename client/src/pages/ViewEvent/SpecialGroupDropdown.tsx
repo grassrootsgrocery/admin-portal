@@ -1,15 +1,15 @@
 import { useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { API_BASE_URL } from "../httpUtils";
-import { Loading } from "./Loading";
-import { ProcessedSpecialGroup, DropdownFilter } from "../types";
+import { API_BASE_URL } from "../../httpUtils";
+import { Loading } from "../../components/Loading";
+import { ProcessedSpecialGroup, DropdownFilter } from "../../types";
 
 //Assets
 import plus from "../assets/plus.svg";
 import x from "../assets/greenX.svg";
 import alert from "../assets/alert.svg";
 import check from "../assets/check.svg";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface Props {
   specialGroupsList: ProcessedSpecialGroup[];

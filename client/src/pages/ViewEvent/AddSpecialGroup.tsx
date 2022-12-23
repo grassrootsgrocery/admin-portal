@@ -6,10 +6,14 @@ import Popup from "../../components/Popup";
 import { Loading } from "../../components/Loading";
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import * as Modal from "@radix-ui/react-dialog";
+import alert from "../../assets/alert.svg";
+import check from "../../assets/check.svg";
 interface Props {}
 
 export const AddSpecialGroup: React.FC<Props> = () => {
   const { token } = useAuth();
+
   // Retrieve Special Groups
   const {
     data: specialGroups,
@@ -54,9 +58,10 @@ export const AddSpecialGroup: React.FC<Props> = () => {
     },
   });
 
-  const [group, setGroup] = useState("");
-  const [id, setId] = useState("");
-  const [registered, setRegistered] = useState(false);
+  const [group, setGroup] = useState<string | null>(null);
+
+  const [hasGroupJustBeenRegistered, setHasGroupJustBeenRegistered] =
+    useState(false);
 
   if (specialGroupsStatus === "loading" || specialGroupsStatus === "idle") {
     return (
@@ -73,96 +78,83 @@ export const AddSpecialGroup: React.FC<Props> = () => {
 
   console.log("Logging specialGroups", specialGroups);
 
-  const specialGroupsList: ProcessedSpecialGroup[] = specialGroups;
-  const handleRegistered = (value: boolean) => {
-    setRegistered(value);
+  const isGroupRegisteredForEvent = (groupName: string) => {
+    //TODO
+    return Math.random() < 0.5;
   };
 
-  const close = () => {
-    setGroup("");
-    setRegistered(false);
-  };
-
-  const handleQuery = (query: string) => {
-    setGroup(query);
-  };
-
-  const handleId = (id: string) => {
-    setId(id);
-  };
-
-  // Retrieve Special Groups
-  const addGroup = () => {
-    const results = specialGroupsList.filter((g) => {
-      return g.name === group;
-    });
-
-    if (results.length === 0) {
-      console.log("Creating new group");
-      const body: AddSpecialGroupRequestBody = {
-        Name: group,
-      };
-      mutate(body);
-    } else {
-      const results = specialGroupsList.filter((g) => {
-        return g.name === group;
-      });
-    }
-  };
-
-  // Special group link popup
-  const linkTitle = <div className="text-center">Special Group Link</div>;
-  const noLinkTitle = (
-    <div className="text-center">
-      Cannot generate link because group is already registered!
-    </div>
-  );
-
-  const linkTrigger = (
-    <div>
-      <button
-        onClick={() => addGroup()}
-        disabled={group ? false : true}
-        className="rounded-full bg-newLeafGreen px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-        type="button"
-      >
-        Add Group and Generate Link
-      </button>
-    </div>
-  );
-
-  const linkContent = (
-    <div>
-      <p>{group}</p>
-    </div>
-  );
-
-  const getNextButton = () => {
-    if (!registered) {
+  const getSpecialGroupPopupContent = () => {
+    if (hasGroupJustBeenRegistered) {
       return (
         <div>
-          <Popup
-            title={linkTitle}
-            trigger={linkTrigger}
-            content={linkContent}
-            renderLittleXCloseButton
-            next={<div>next</div>}
-            // noCancel
-          />
+          <div className="m-0 flex justify-center font-bold text-newLeafGreen lg:text-3xl">
+            Special Group Sign Up Link
+          </div>
         </div>
       );
     }
-
     return (
-      <div>
-        <Popup
-          title={noLinkTitle}
-          trigger={linkTrigger}
-          content="Jason"
-          renderLittleXCloseButton
-          // noCancel
-          next={<div>next</div>}
-        />
+      <div className="">
+        <Modal.Title asChild>
+          <div className="m-0 flex justify-center text-lg font-bold text-newLeafGreen lg:text-3xl">
+            Add Special Group to Event
+          </div>
+        </Modal.Title>
+        <div className="h-1 lg:h-4"></div>
+
+        <div className="h-64 w-full lg:h-96">
+          <SpecialGroupDropdown
+            specialGroupsList={specialGroups}
+            isGroupSelected={!!group}
+            setIsGroupSelected={setGroup}
+          />
+          <div className="h-8" />
+          {group &&
+            (isGroupRegisteredForEvent(group) ? (
+              <div className="flex items-center">
+                <img
+                  className="mt-1 w-4 md:w-6 lg:w-7"
+                  src={alert}
+                  alt="alert-icon"
+                />
+                <p className="flex flex-col items-center px-2 font-semibold leading-5 text-newLeafGreen lg:text-lg">
+                  This group is already registered for the event!
+                </p>
+              </div>
+            ) : (
+              <div className="flex items-center">
+                <img
+                  className="mt-1 w-4 md:w-6 lg:w-7"
+                  src={check}
+                  alt="check-icon"
+                />
+                <p className="px-4 text-lg font-semibold leading-5 text-newLeafGreen">
+                  Ready to generate link!
+                </p>
+              </div>
+            ))}
+        </div>
+
+        <div className="flex justify-center gap-5">
+          <Modal.Close>
+            <button
+              className="rounded-full bg-pumpkinOrange px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+              type="button"
+            >
+              Cancel
+            </button>
+          </Modal.Close>
+          <button
+            onClick={() => {
+              setHasGroupJustBeenRegistered(true);
+            }}
+            disabled={group ? false : true}
+            className="rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:cursor-pointer hover:shadow-md hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+            type="button"
+          >
+            Add Group and Generate Link
+          </button>
+        </div>
       </div>
     );
   };
@@ -173,32 +165,16 @@ export const AddSpecialGroup: React.FC<Props> = () => {
         <button
           className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
           type="button"
+          onClick={() => {}}
         >
           + Add Special Group
         </button>
       }
-      title={
-        <div className="b m-0 flex justify-center font-bold text-newLeafGreen lg:text-3xl">
-          Add Special Group to Event
-        </div>
-      }
-      content={
-        <div>
-          <div className="r flex h-72 justify-center gap-5">
-            <p className="font-bold text-newLeafGreen lg:text-xl">
-              Group Name:
-            </p>
-            <SpecialGroupDropdown
-              handleQuery={handleQuery}
-              handleRegistered={handleRegistered}
-              specialGroupsList={specialGroups}
-              refetchGroups={refetchGroups}
-            />
-          </div>
-        </div>
-      }
-      renderLittleXCloseButton
-      next={getNextButton()}
+      onOpenChange={() => {
+        setHasGroupJustBeenRegistered(false);
+        setGroup(null);
+      }}
+      content={getSpecialGroupPopupContent()}
     />
   );
 };

@@ -41,17 +41,16 @@ function showHideElements() {
 }
 interface Props {
   specialGroupsList: ProcessedSpecialGroup[];
-  refetchGroups: () => void;
-  handleQuery: (s: string) => void;
-  handleRegistered: (b: boolean) => void;
+  isGroupSelected: boolean;
+  setIsGroupSelected: (group: string | null) => void;
 }
 
 export const SpecialGroupDropdown: React.FC<Props> = ({
   specialGroupsList,
-  refetchGroups,
-  handleQuery,
-  handleRegistered,
+  isGroupSelected,
+  setIsGroupSelected,
 }) => {
+  //TODO: Make this work
   // Get allEventIds from ViewEvent
   const location = useLocation();
   const allEventIds = location.state;
@@ -65,189 +64,88 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
     eventIdsList.push(allEventIds[k]);
   }
 
-  const [state, setState] = useState<DropdownFilter>({
-    query: "",
-    list: [],
-  });
-
-  // Handling when input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Result filtering based on input
-    // refetchGroups();
-    if (e.target.value === "") {
-    }
-    const results = specialGroupsList.filter((group) => {
-      if (e.target.value === "") return specialGroupsList;
-      return group.name.toLowerCase().includes(e.target.value.toLowerCase());
-    });
-    setState({
-      query: e.target.value,
-      list: results,
-    });
-
-    // showHideElements();
-  };
-
-  // Clear input
-  // const inputRef = useRef<HTMLInputElement>(null);
-  // const clearInput = () => {
-  //   if (inputRef.current != null) {
-  //     inputRef.current.value = "";
-  //     setState({
-  //       query: "",
-  //       list: [],
-  //     });
-  //     showHideElements();
-  //     handleQuery("");
-  //     handleRegistered(false);
-  //   }
-  // };
-
-  // Determines if the special group is already registered for the event and handling
-  // const isSpecialGroupRegistered = (
-  //   specialGroup: ProcessedSpecialGroup,
-  //   allEventIds: string[]
-  // ) => {
-  //   // Determine if special group's event list includes an id associated with event
-  //   let registered = false;
-  //   if (specialGroup.events != null) {
-  //     registered = allEventIds.some((id) => specialGroup.events.includes(id));
-  //   }
-  //   //console.log("registered", registered)
-
-  //   // Set input value to selected special group name
-  //   setState({
-  //     query: specialGroup.name,
-  //     list: state.list,
-  //   });
-
-  //   // Set visibility of messages and dropdown
-  //   const dropdown = document.getElementById("specialGroupDropdown");
-  //   const alertMessage = document.getElementById("alreadyRegisteredMessage");
-  //   const readyMessage = document.getElementById("readyToRegisterMessage");
-  //   if (
-  //     dropdown != null &&
-  //     inputRef.current != null &&
-  //     alertMessage != null &&
-  //     readyMessage != null
-  //   ) {
-  //     dropdown.style.display = "none"; // Hide dropdown
-  //     if (registered == true) {
-  //       handleRegistered(true);
-  //       alertMessage.style.display = "flex";
-  //       readyMessage.style.display = "none";
-  //     } else {
-  //       readyMessage.style.display = "flex";
-  //       alertMessage.style.display = "none";
-  //     }
-
-  //     handleQuery(specialGroup.name);
-  //   }
-  // };
-
   return (
-    <div className="r grow-0 px-4 lg:w-80">
-      {/* Special Group Input */}
-      <div className="flex flex-row items-center">
-        <input
-          className="h-8 w-80 rounded-lg border-2 border-softGrayWhite pl-2 pr-7 text-lg text-newLeafGreen placeholder:text-lg placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:outline-softGrayWhite"
-          type="text"
-          id="specialGroupInput"
-          autoComplete="off"
-          placeholder="Search through groups..."
-          // value={state.query}
-          value={searchQuery}
-          // onChange={handleChange}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+    <div className="flex flex-col gap-2 md:flex-row md:gap-8">
+      <p className="shrink-0 font-bold text-newLeafGreen lg:text-xl">
+        Group Name:
+      </p>
+      <div className="relative w-64 grow md:w-80">
+        <div className="flex h-8 w-full rounded-lg border-2 border-softGrayWhite px-2">
+          <input
+            className="grow text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:outline-none md:text-lg md:placeholder:text-lg"
+            type="text"
+            id="specialGroupInput"
+            autoComplete="off"
+            placeholder="Search through groups..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setIsGroupSelected(null);
+            }}
+          />
 
-        {/* Clear button */}
-        {searchQuery.length > 0 && (
-          <button id="clearBtn" onClick={() => setSearchQuery("")}>
+          {/* Clear button */}
+          <button
+            onClick={() => {
+              setSearchQuery("");
+              setIsGroupSelected(null);
+            }}
+            className="w-4 "
+          >
             <img
-              className="bottom-0.25 relative right-6 w-3 sm:w-4"
+              className={searchQuery.length === 0 ? "hidden" : "block"}
               src={x}
               alt="x"
             />
           </button>
+          {/* )} */}
+        </div>
+
+        {/* Special Group Listing Dropdown */}
+        {!isGroupSelected && (
+          <ul className="absolute max-h-56 w-full overflow-y-scroll rounded-lg border-2 border-t-0 border-softGrayWhite bg-softBeige p-1  text-newLeafGreen">
+            <div className="px-2 text-sm text-[#0E7575]">
+              Select existing group or create new one
+            </div>
+            {specialGroupsList
+              .filter((specialGroup) => {
+                //Filter based on search query
+                return (
+                  specialGroup.name
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()) ||
+                  searchQuery
+                    .toLowerCase()
+                    .includes(specialGroup.name.toLowerCase())
+                );
+              })
+              .map((specialGroup, idx) => {
+                return (
+                  <li
+                    className="flex flex-row rounded-lg px-2 py-1 hover:cursor-pointer hover:bg-softGrayWhite"
+                    key={idx + specialGroup.name}
+                    onClick={() => {
+                      setSearchQuery(specialGroup.name);
+                      setIsGroupSelected(specialGroup.name);
+                    }}
+                  >
+                    <img className="mr-2 w-4" src={plus} alt="plus-icon" />
+                    {specialGroup.name}
+                  </li>
+                );
+              })}
+
+            <li
+              className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
+              onClick={() => {
+                setIsGroupSelected(searchQuery);
+              }}
+            >
+              Create:
+              <p className="pl-2 text-[#0E7575]">{searchQuery}</p>
+            </li>
+          </ul>
         )}
-      </div>
-
-      {/* Special Group Listing Dropdown */}
-      {searchQuery.length > 0 && (
-        <ul
-          className="max-h-56 w-80 overflow-y-scroll rounded-lg border-2 border-t-0 border-softGrayWhite py-1 text-newLeafGreen"
-          id="specialGroupDropdown"
-        >
-          <div className="px-2 text-sm text-[#0E7575]">
-            Select existing group or create new one
-          </div>
-          {specialGroupsList
-            .filter((specialGroup) => {
-              return specialGroup.name
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase());
-            })
-            .map((specialGroup) => {
-              return (
-                <li
-                  className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
-                  key={specialGroup.name}
-                  onClick={() => {
-                    // isSpecialGroupRegistered(specialGroup, eventIdsList);
-                  }}
-                >
-                  <img className="mr-1 w-2 md:w-4" src={plus} alt="plus-icon" />
-                  {specialGroup.name}
-                </li>
-              );
-            })}
-          {/* {state.list.map((specialGroup) => {
-            return (
-              <li
-                className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
-                key={specialGroup.name}
-                onClick={() => {
-                  isSpecialGroupRegistered(specialGroup, eventIdsList);
-                }}
-              >
-                <img className="mr-1 w-2 md:w-4" src={plus} alt="plus-icon" />
-                {specialGroup.name}
-              </li>
-            );
-          })} */}
-
-          <li
-            className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
-            onClick={() => {
-              // isSpecialGroupRegistered(
-              //   { name: state.query, events: [] },
-              //   eventIdsList
-              // );
-            }}
-          >
-            Create:
-            <p className="pl-2 text-[#0E7575]">{searchQuery}</p>
-          </li>
-        </ul>
-      )}
-
-      <div className="h-8" />
-      {/* Aleady registered message */}
-      <div className="hidden items-center" id="alreadyRegisteredMessage">
-        <img className="mt-1 w-4 md:w-6 lg:w-7" src={alert} alt="alert-icon" />
-        <div className="flex flex-col items-center px-2 text-lg font-semibold leading-5 text-newLeafGreen">
-          <div> This group is already registered for </div>
-          <div> the event! </div>
-        </div>
-      </div>
-
-      {/* Ready message */}
-      <div className="hidden items-center" id="readyToRegisterMessage">
-        <img className="mt-1 w-4 md:w-6 lg:w-7" src={check} alt="check-icon" />
-        <div className="px-4 text-lg font-semibold leading-5 text-newLeafGreen">
-          Ready to generate link!
-        </div>
       </div>
     </div>
   );

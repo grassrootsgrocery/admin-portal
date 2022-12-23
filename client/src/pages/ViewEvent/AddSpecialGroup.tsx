@@ -114,13 +114,13 @@ export const AddSpecialGroup: React.FC<Props> = ({ event }: Props) => {
             Add Special Group to Event
           </div>
         </Modal.Title>
-        <div className="h-1 lg:h-4"></div>
+        <div className="h-1 lg:h-4" />
 
         <div className="h-64 w-full lg:h-96">
           <SpecialGroupDropdown
             specialGroupsList={specialGroups}
             isGroupSelected={!!group}
-            setIsGroupSelected={setGroup}
+            setGroup={setGroup}
           />
           <div className="h-8" />
           {group &&

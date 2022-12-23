@@ -1,26 +1,20 @@
-import { useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { API_BASE_URL } from "../../httpUtils";
-import { Loading } from "../../components/Loading";
-import { ProcessedSpecialGroup, DropdownFilter } from "../../types";
+import { useState } from "react";
+import { ProcessedSpecialGroup } from "../../types";
 
 //Assets
-import plus from "../assets/plus.svg";
-import x from "../assets/greenX.svg";
-import alert from "../assets/alert.svg";
-import check from "../assets/check.svg";
-import { useAuth } from "../../contexts/AuthContext";
+import plus from "../../assets/plus.svg";
+import x from "../../assets/greenX.svg";
 
 interface Props {
   specialGroupsList: ProcessedSpecialGroup[];
   isGroupSelected: boolean;
-  setIsGroupSelected: (group: ProcessedSpecialGroup | null) => void;
+  setGroup: (group: ProcessedSpecialGroup | null) => void;
 }
 
 export const SpecialGroupDropdown: React.FC<Props> = ({
   specialGroupsList,
   isGroupSelected,
-  setIsGroupSelected,
+  setGroup,
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -40,7 +34,7 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
-              setIsGroupSelected(null);
+              setGroup(null);
             }}
           />
 
@@ -48,7 +42,7 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
           <button
             onClick={() => {
               setSearchQuery("");
-              setIsGroupSelected(null);
+              setGroup(null);
             }}
             className="w-4 "
           >
@@ -85,7 +79,7 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
                     key={idx + specialGroup.name}
                     onClick={() => {
                       setSearchQuery(specialGroup.name);
-                      setIsGroupSelected(specialGroup);
+                      setGroup(specialGroup);
                     }}
                   >
                     <img className="mr-2 w-4" src={plus} alt="plus-icon" />
@@ -97,7 +91,7 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
             <li
               className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
               onClick={() => {
-                setIsGroupSelected({ name: searchQuery, events: [] });
+                setGroup({ name: searchQuery, events: [] });
               }}
             >
               Create:

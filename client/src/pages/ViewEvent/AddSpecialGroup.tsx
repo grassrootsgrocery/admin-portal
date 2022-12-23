@@ -1,6 +1,10 @@
 import { useMutation, useQuery } from "react-query";
 import { API_BASE_URL } from "../../httpUtils";
-import { AddSpecialGroupRequestBody, ProcessedSpecialGroup } from "../../types";
+import {
+  AddSpecialGroupRequestBody,
+  ProcessedEvent,
+  ProcessedSpecialGroup,
+} from "../../types";
 import { SpecialGroupDropdown } from "../../components/SpecialGroupDropdown";
 import Popup from "../../components/Popup";
 import { Loading } from "../../components/Loading";
@@ -9,9 +13,11 @@ import { useAuth } from "../../contexts/AuthContext";
 import * as Modal from "@radix-ui/react-dialog";
 import alert from "../../assets/alert.svg";
 import check from "../../assets/check.svg";
-interface Props {}
+interface Props {
+  event: ProcessedEvent;
+}
 
-export const AddSpecialGroup: React.FC<Props> = () => {
+export const AddSpecialGroup: React.FC<Props> = ({ event }: Props) => {
   const { token } = useAuth();
 
   // Retrieve Special Groups
@@ -58,7 +64,7 @@ export const AddSpecialGroup: React.FC<Props> = () => {
     },
   });
 
-  const [group, setGroup] = useState<string | null>(null);
+  const [group, setGroup] = useState<ProcessedSpecialGroup | null>(null);
 
   const [hasGroupJustBeenRegistered, setHasGroupJustBeenRegistered] =
     useState(false);
@@ -78,9 +84,17 @@ export const AddSpecialGroup: React.FC<Props> = () => {
 
   console.log("Logging specialGroups", specialGroups);
 
-  const isGroupRegisteredForEvent = (groupName: string) => {
-    //TODO
-    return Math.random() < 0.5;
+  // const isGroupRegisteredForEvent = (groupName: string) => {
+  const isGroupRegisteredForEvent = (
+    specialGroup: ProcessedSpecialGroup,
+    allEventIds: string[]
+  ) => {
+    // Determine if special group's event list includes an id associated with event
+    let registered = false;
+    if (specialGroup.events != null) {
+      registered = allEventIds.some((id) => specialGroup.events.includes(id));
+    }
+    return registered;
   };
 
   const getSpecialGroupPopupContent = () => {
@@ -110,7 +124,7 @@ export const AddSpecialGroup: React.FC<Props> = () => {
           />
           <div className="h-8" />
           {group &&
-            (isGroupRegisteredForEvent(group) ? (
+            (isGroupRegisteredForEvent(group, event.allEventIds) ? (
               <div className="flex items-center">
                 <img
                   className="mt-1 w-4 md:w-6 lg:w-7"
@@ -165,7 +179,6 @@ export const AddSpecialGroup: React.FC<Props> = () => {
         <button
           className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
           type="button"
-          onClick={() => {}}
         >
           + Add Special Group
         </button>

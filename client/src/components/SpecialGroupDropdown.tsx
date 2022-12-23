@@ -11,38 +11,10 @@ import alert from "../assets/alert.svg";
 import check from "../assets/check.svg";
 import { useAuth } from "../contexts/AuthContext";
 
-// Show/Hide dropdown, clear button, and messages
-function showHideElements() {
-  const input = document.getElementById(
-    "specialGroupInput"
-  ) as HTMLInputElement;
-  const dropdown = document.getElementById("specialGroupDropdown");
-  const clearButton = document.getElementById("clearBtn");
-  const alertMessage = document.getElementById("alreadyRegisteredMessage");
-  const readyMessage = document.getElementById("readyToRegisterMessage");
-
-  if (
-    dropdown != null &&
-    clearButton != null &&
-    alertMessage != null &&
-    readyMessage != null
-  ) {
-    alertMessage.style.display = "none";
-    readyMessage.style.display = "none";
-
-    if (input.value === "") {
-      dropdown.style.display = "block";
-      clearButton.style.display = "block";
-    } else {
-      dropdown.style.display = "block";
-      clearButton.style.display = "block";
-    }
-  }
-}
 interface Props {
   specialGroupsList: ProcessedSpecialGroup[];
   isGroupSelected: boolean;
-  setIsGroupSelected: (group: string | null) => void;
+  setIsGroupSelected: (group: ProcessedSpecialGroup | null) => void;
 }
 
 export const SpecialGroupDropdown: React.FC<Props> = ({
@@ -50,19 +22,7 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
   isGroupSelected,
   setIsGroupSelected,
 }) => {
-  //TODO: Make this work
-  // Get allEventIds from ViewEvent
-  const location = useLocation();
-  const allEventIds = location.state;
-  console.log("allEventIds", allEventIds);
-
   const [searchQuery, setSearchQuery] = useState<string>("");
-
-  // Create list of all event ids associated with event
-  const eventIdsList: string[] = [];
-  for (const k in allEventIds) {
-    eventIdsList.push(allEventIds[k]);
-  }
 
   return (
     <div className="flex flex-col gap-2 md:flex-row md:gap-8">
@@ -98,7 +58,6 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
               alt="x"
             />
           </button>
-          {/* )} */}
         </div>
 
         {/* Special Group Listing Dropdown */}
@@ -126,7 +85,7 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
                     key={idx + specialGroup.name}
                     onClick={() => {
                       setSearchQuery(specialGroup.name);
-                      setIsGroupSelected(specialGroup.name);
+                      setIsGroupSelected(specialGroup);
                     }}
                   >
                     <img className="mr-2 w-4" src={plus} alt="plus-icon" />
@@ -138,7 +97,7 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
             <li
               className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
               onClick={() => {
-                setIsGroupSelected(searchQuery);
+                setIsGroupSelected({ name: searchQuery, events: [] });
               }}
             >
               Create:

@@ -90,6 +90,7 @@ export function Messaging() {
             <textarea
               className={textArea}
               defaultValue={coordinatorRecruitmentTextData}
+              readOnly
             />
           )}
           <button className={btn}>Recruit Coordinators</button>
@@ -105,6 +106,7 @@ export function Messaging() {
             <textarea
               className={textArea}
               defaultValue={volunteerRecruitmentTextData}
+              readOnly
             />
           )}
           <button className={btn}>Recruit Participants</button>

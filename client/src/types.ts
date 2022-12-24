@@ -59,7 +59,7 @@ export interface ProcessedDropoffLocation {
   id: string;
   dropOffLocation: string;
   address: string;
-  neighborhood: string;
+  neighborhoods: string[];
   startTime: string;
   endTime: string;
   deliveriesAssigned: number;

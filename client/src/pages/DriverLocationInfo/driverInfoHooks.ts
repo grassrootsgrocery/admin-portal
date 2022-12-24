@@ -1,15 +1,25 @@
 import { useQuery } from "react-query";
 import { AirtableResponse, ProcessedDriver, Neighborhood } from "../../types";
 import { API_BASE_URL } from "../../httpUtils";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function useDriversInfo() {
+  const { token } = useAuth();
+  if (!token) {
+    throw new Error("No token found in useDriversInfo hook");
+  }
   const {
     data: processedDrivers,
     refetch: refetchDrivers,
     status: processedDriversStatus,
     error: processedDriversError,
   } = useQuery(["fetchDriverInfo"], async () => {
-    const response = await fetch(`${API_BASE_URL}/api/volunteers/drivers`);
+    const response = await fetch(`${API_BASE_URL}/api/volunteers/drivers`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
     if (!response.ok) {
       const data = await response.json();
       throw new Error(data.message);
@@ -32,7 +42,13 @@ export function useDriversInfo() {
       const neighborhoodIds = getNeighborhoodIdsForUrl(processedDrivers);
 
       const response = await fetch(
-        `${API_BASE_URL}/api/neighborhoods?neighborhoodIds=${neighborhoodIds}`
+        `${API_BASE_URL}/api/neighborhoods?neighborhoodIds=${neighborhoodIds}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
       if (!response.ok) {
         const data = await response.json();

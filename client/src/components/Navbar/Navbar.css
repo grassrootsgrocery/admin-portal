@@ -35,12 +35,11 @@
 }
 .navbar-items {
   min-width: 12em;
+  gap: 3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  font-family: "Roboto";
-  font-style: normal;
   font-weight: 400;
   font-size: 1.5rem;
 }
@@ -58,6 +57,9 @@
 }
 
 @media only screen and (max-width: 600px) {
+  .navbar {
+    height: 3rem;
+  }
   .logo-box {
     display: none;
   }
@@ -65,5 +67,9 @@
   .navbar-items-wrap {
     justify-content: center;
     margin-right: 0;
+  }
+
+  .navbar-items {
+    font-size: 1rem;
   }
 }

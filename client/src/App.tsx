@@ -40,6 +40,7 @@ function App() {
                 path="/events/add-special-group/:eventId"
                 element={<Dropdown />}
               />
+              <Route path="*" element={<Login />} />
             </Routes>
           </div>
           <ReactQueryDevtools initialIsOpen={false} />

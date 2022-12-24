@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
+import { protect } from "../middleware/authMiddleware";
 //Status codes
 import { BAD_REQUEST, OK } from "../httpUtils/statusCodes";
 //Types
@@ -26,6 +27,7 @@ const router = express.Router();
  * @access
  */
 router.route("/api/volunteers/").get(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { scheduledSlotsIds } = req.query;
     console.log(`GET /api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`);
@@ -76,6 +78,7 @@ router.route("/api/volunteers/").get(
  * @access
  */
 router.route("/api/volunteers/confirm/:volunteerId").patch(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { volunteerId } = req.params;
     const { newConfirmationStatus } = req.body;
@@ -127,6 +130,7 @@ router.route("/api/volunteers/confirm/:volunteerId").patch(
  * @access
  */
 router.route("/api/volunteers/going/:volunteerId").patch(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { volunteerId } = req.params;
     const { newGoingStatus } = req.body;
@@ -210,6 +214,7 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {
  * @access
  */
 router.route("/api/volunteers/drivers").get(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     console.log("GET /api/volunteers/drivers");
     const url =
@@ -256,6 +261,7 @@ router.route("/api/volunteers/drivers").get(
  * @access
  */
 router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { driverId } = req.params;
     console.log("PATCH /api/volunteers/drivers/assign-location/:driverId");
@@ -302,6 +308,7 @@ router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
  * @access
  */
 router.route("/api/neighborhoods").get(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { neighborhoodIds } = req.query;
     console.log(`GET /api/neighborhoods/?neighborhoddIds=${neighborhoodIds}`);

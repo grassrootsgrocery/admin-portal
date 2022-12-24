@@ -1,5 +1,6 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
+import { protect } from "../middleware/authMiddleware";
 import { Request, Response } from "express";
 import {
   AIRTABLE_ERROR_MESSAGE,
@@ -111,6 +112,7 @@ function processPackerAndDriverCounts(event: ProcessedEvent) {
  * @access
  */
 router.route("/api/events").get(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     console.log("GET /api/events");
     const url =

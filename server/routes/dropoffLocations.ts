@@ -1,5 +1,6 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
+import { protect } from "../middleware/authMiddleware";
 import { Request, Response } from "express";
 import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
@@ -51,7 +52,11 @@ function getNeighborhoodIdsForUrl(
   location: ProcessedDropoffLocation[]
 ): string {
   let neighborhoodIds: string[] = [];
-  location.forEach((organizer) => organizer.neighborhoods.forEach((neighborhood) => neighborhoodIds.push(neighborhood)));
+  location.forEach((organizer) =>
+    organizer.neighborhoods.forEach((neighborhood) =>
+      neighborhoodIds.push(neighborhood)
+    )
+  );
   return neighborhoodIds.join();
 }
 // update the processed organizer's neighborhood field with neighborhood name
@@ -61,7 +66,7 @@ function processNeighborhoodsForLocation(
 ) {
   locations.forEach(function (location) {
     let locationNeighborhoodNames: string[] = [];
-    location.neighborhoods.forEach( function (neighborhood){
+    location.neighborhoods.forEach(function (neighborhood) {
       const neighborhoodName = neighborhoods.get(neighborhood);
       if (neighborhoodName !== undefined) {
         locationNeighborhoodNames.push(neighborhoodName);
@@ -76,6 +81,7 @@ function processNeighborhoodsForLocation(
  * @access
  */
 router.route("/api/dropoff-locations/").get(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     console.log(`GET /api/dropoff-locations/`);
 

@@ -33,6 +33,7 @@ function App() {
                 path="/events/driver-location-info/:eventId"
                 element={<DriverLocationInfo />}
               />
+              <Route path="*" element={<Login />} />
             </Routes>
           </div>
           <ReactQueryDevtools initialIsOpen={false} />

@@ -1,5 +1,6 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
+import { protect } from "../middleware/authMiddleware";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
 import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
@@ -21,6 +22,7 @@ own problems if they were to ever change the Make automations to use different t
  * @access
  */
 router.route("/api/messaging/coordinator-recruitment-text").get(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     const coordinatorRecruitmentTextAutomationId = 278585;
     const resp = await fetch(
@@ -49,6 +51,7 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
  * @access
  */
 router.route("/api/messaging/volunteer-recruitment-text").get(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     const volunteerRecruitmentTextAutomationId = 299639;
     const resp = await fetch(
@@ -77,6 +80,7 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
  * @access
  */
 router.route("/api/messaging/driver-info-to-coordinators-text").get(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     const driverInfoToCoordinatorsTextAutomationId = 321301;
     const resp = await fetch(
@@ -110,6 +114,7 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
  * @access
  */
 router.route("/api/messaging/locations-to-drivers-text").get(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     const driverLocationInfoTextAutomationId = 329564;
     const resp = await fetch(

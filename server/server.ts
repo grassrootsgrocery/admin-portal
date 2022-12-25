@@ -13,25 +13,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false })); //x-www-form-urlencoded
 
 //---- API Start----
-import { protect } from "./middleware/authMiddleware";
 
 import authRouter from "./routes/auth";
 app.use("/", authRouter);
 
 import eventRouter from "./routes/events";
-app.use("/", protect, eventRouter);
+app.use("/", eventRouter);
 
 import messagingRouter from "./routes/messaging";
-app.use("/", protect, messagingRouter);
+app.use("/", messagingRouter);
 
 import volunteersRouter from "./routes/volunteers";
-app.use("/", protect, volunteersRouter);
+app.use("/", volunteersRouter);
 
 import dropoffRouter from "./routes/dropoffLocations";
-app.use("/", protect, dropoffRouter);
+app.use("/", dropoffRouter);
 
 import specialGroupsRouter from "./routes/specialGroups";
-app.use("/", protect, specialGroupsRouter);
+app.use("/", specialGroupsRouter);
 
 //---- API End ----
 

@@ -1,20 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
 import { useMutation } from "react-query";
-import { toastNotify, useClickOutside } from "../../uiUtils";
+import { toastNotify } from "../../uiUtils";
+import { API_BASE_URL, applyPatch } from "../../httpUtils";
 //Components
 import { Loading } from "../../components/Loading";
 import { DataTable } from "../../components/DataTable";
 //Assets
-import { API_BASE_URL, applyPatch } from "../../httpUtils";
 import chevron_up from "../../assets/chevron-up.svg";
 import chevron_down from "../../assets/chevron-down.svg";
 import x from "../../assets/x.svg";
 import check_icon from "../../assets/checkbox-icon.svg";
 //Types
-import { Record, ScheduledSlot } from "../../types";
+import { ProcessedScheduledSlot } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
-import { Navigate } from "react-router-dom";
 
 /*
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
@@ -74,11 +74,16 @@ interface FilterItemProps {
 const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
   const { filterLabel, selected, onSelect } = props;
   return (
-    <li
-      className={`flex min-w-fit shrink-0 items-center gap-1 rounded-lg border border-pumpkinOrange px-2 font-semibold shadow-md hover:cursor-pointer hover:brightness-110 ${
-        selected ? "bg-pumpkinOrange text-white" : "bg-white text-pumpkinOrange"
+    <DropdownMenu.Item
+      className={`flex min-w-fit shrink-0 items-center gap-1 rounded-lg border  px-2 font-semibold shadow-md outline-none hover:cursor-pointer hover:brightness-110 data-[highlighted]:-m-[1px] data-[selected]:cursor-pointer data-[highlighted]:cursor-pointer data-[highlighted]:border-2 data-[highlighted]:brightness-110 ${
+        selected
+          ? "bg-pumpkinOrange text-white data-[highlighted]:border-white"
+          : "border-pumpkinOrange bg-white text-pumpkinOrange "
       }`}
-      onClick={onSelect}
+      onSelect={(e) => {
+        e.preventDefault(); //So that the dropdown doesn' close automatically when an item is selected
+        onSelect();
+      }}
     >
       <div className="w-10/12">{filterLabel}</div>
       <RadixCheckbox.Root
@@ -92,7 +97,7 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
           <img src={check_icon} alt="check" />
         </RadixCheckbox.Indicator>
       </RadixCheckbox.Root>
-    </li>
+    </DropdownMenu.Item>
   );
 };
 
@@ -118,56 +123,57 @@ const FilterButton: React.FC<FilterButtonProps> = ({
 interface DropdownFilterOption {
   label: string;
   isSelected: boolean;
-  filter: (e: Record<ScheduledSlot>) => boolean;
+  filter: (e: ProcessedScheduledSlot) => boolean;
 }
-function createDropdownFilters(scheduledSlots: Record<ScheduledSlot>[]) {
+function createDropdownFilters(scheduledSlots: ProcessedScheduledSlot[]) {
   let dropdownFilters = [
     {
       label: "Confirmed",
       isSelected: false,
-      filter: (ss: Record<ScheduledSlot>) => ss.fields["Confirmed?"],
+      filter: (ss: ProcessedScheduledSlot) => ss.confirmed,
     },
     {
       label: "Not Confirmed",
       isSelected: false,
-      filter: (ss: Record<ScheduledSlot>) => !ss.fields["Confirmed?"],
+      filter: (ss: ProcessedScheduledSlot) => !ss.confirmed,
     },
     {
       label: "Only Packers",
       isSelected: false,
-      filter: (ss: Record<ScheduledSlot>) =>
-        ss.fields.Type.includes("Packer") && !ss.fields.Type.includes("Driver"),
+      filter: (ss: ProcessedScheduledSlot) =>
+        ss.participantType.includes("Packer") &&
+        !ss.participantType.includes("Driver"),
     },
     {
       label: "Only Drivers",
       isSelected: false,
-      filter: (ss: Record<ScheduledSlot>) =>
-        ss.fields.Type.includes("Driver") &&
-        !ss.fields.Type.includes("Distributor"),
+      filter: (ss: ProcessedScheduledSlot) =>
+        ss.participantType.includes("Driver") &&
+        !ss.participantType.includes("Packer"),
     },
     {
       label: "Packers & Drivers",
       isSelected: false,
-      filter: (ss: Record<ScheduledSlot>) =>
-        ss.fields.Type.includes("Distributor") &&
-        ss.fields.Type.includes("Driver"),
+      filter: (ss: ProcessedScheduledSlot) =>
+        ss.participantType.includes("Packer") &&
+        ss.participantType.includes("Driver"),
     },
   ];
 
   let specialGroupsList: string[] = [];
-  scheduledSlots.forEach((ss) => {
-    let specialGroup = ss.fields["Volunteer Group (for MAKE)"];
+  scheduledSlots.forEach((schedSlot) => {
+    let curSpecialGroup = schedSlot.specialGroup;
 
     // Check for a unique special group
-    if (specialGroup && !specialGroupsList.includes(specialGroup)) {
-      specialGroupsList.push(specialGroup);
+    if (curSpecialGroup && !specialGroupsList.includes(curSpecialGroup)) {
+      specialGroupsList.push(curSpecialGroup);
 
       // Add special group as a filter
       let groupFilter = {
-        label: specialGroup,
+        label: curSpecialGroup,
         isSelected: false,
-        filter: (ss: Record<ScheduledSlot>) =>
-          ss.fields["Volunteer Group (for MAKE)"] === specialGroup,
+        filter: (ss: ProcessedScheduledSlot) =>
+          ss.specialGroup === curSpecialGroup,
       };
       dropdownFilters.push(groupFilter);
     }
@@ -176,7 +182,7 @@ function createDropdownFilters(scheduledSlots: Record<ScheduledSlot>[]) {
 }
 
 interface Props {
-  scheduledSlots: Record<ScheduledSlot>[];
+  scheduledSlots: ProcessedScheduledSlot[];
   refetchVolunteers: () => void;
 }
 export const VolunteersTable: React.FC<Props> = ({
@@ -186,7 +192,6 @@ export const VolunteersTable: React.FC<Props> = ({
   const [filters, setFilters] = useState<DropdownFilterOption[]>([]);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [filtered, setFiltered] = useState(scheduledSlots);
-  const [dropdownRef] = useClickOutside(() => setIsFilterDropdownOpen(false));
 
   //Create filters on component mount
   useEffect(() => {
@@ -217,65 +222,30 @@ export const VolunteersTable: React.FC<Props> = ({
 
   //Takes in scheduledSlots array and formats data for DataTable component
   function processScheduledSlotsForTable(
-    scheduledSlots: Record<ScheduledSlot>[]
+    scheduledSlots: ProcessedScheduledSlot[]
   ): (string | number | JSX.Element)[][] {
     const { token } = useAuth();
-
-    //Replace the word "Distributor" with "Packer" in the type array
-    function getParticipantType(type: string[]) {
-      const typeCopy = [...type];
-      for (let i = 0; i < typeCopy.length; i++) {
-        typeCopy[i] = typeCopy[i].replace("Distributor", "Packer");
-      }
-      typeCopy.sort();
-      let typeLabel = typeCopy[0];
-      if (typeCopy.length === 2) {
-        typeLabel += " & " + typeCopy[1];
-      }
-      return typeLabel;
-    }
-
-    function getTimeSlot(timeslot: string) {
-      const optionsTime = {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      } as const;
-      return new Date(timeslot).toLocaleString("en-US", optionsTime);
-    }
-
-    //let rows = [];
     const rows = scheduledSlots.map((ss, i) => {
-      const first = ss.fields["First Name"] ? ss.fields["First Name"][0] : "";
-      const last = ss.fields["Last Name"] ? ss.fields["First Name"][0] : "";
-      const particpantType = getParticipantType(ss.fields["Type"]);
-
       return [
         /* id */
         ss.id,
         /* # */
         i + 1,
-        /* First Name */
-        first,
-        /* Last Name */
-        last,
-        /* Time Slot */
-        ss.fields["Correct slot time"]["error"]
-          ? "Error!"
-          : getTimeSlot(ss.fields["Correct slot time"]),
-        /* Participant Type */
-        particpantType,
+        ss.firstName,
+        ss.lastName,
+        ss.timeSlot,
+        ss.participantType,
         /* Confirmed Checkbox */
         <HttpCheckbox
-          checked={ss.fields["Confirmed?"]}
+          checked={ss.confirmed}
           mutationFn={applyPatch(
             `${API_BASE_URL}/api/volunteers/confirm/${ss.id}`,
-            { newConfirmationStatus: !ss.fields["Confirmed?"] },
+            { newConfirmationStatus: !ss.confirmed },
             token as string
           )}
           onSuccess={() => {
-            const toastMessage = `${first} ${last} ${
-              ss.fields["Confirmed?"] ? "unconfirmed" : "confirmed"
+            const toastMessage = `${ss.firstName} ${ss.lastName} ${
+              ss.confirmed ? "unconfirmed" : "confirmed"
             }`;
             refetchVolunteers();
             toastNotify(toastMessage, "success");
@@ -284,17 +254,15 @@ export const VolunteersTable: React.FC<Props> = ({
         />,
         /* Not Going Checkbox */
         <HttpCheckbox
-          checked={ss.fields["Can't Come"]}
+          checked={ss.cantCome}
           mutationFn={applyPatch(
             `${API_BASE_URL}/api/volunteers/going/${ss.id}`,
-            { newGoingStatus: !ss.fields["Can't Come"] },
+            { newGoingStatus: !ss.cantCome },
             token as string
           )}
           onSuccess={() => {
-            const toastMessage = `${first} ${last} ${
-              ss.fields["Can't Come"]
-                ? "is able to volunteer"
-                : "is unable to volunteer"
+            const toastMessage = `${ss.firstName} ${ss.lastName} ${
+              ss.cantCome ? "is able to volunteer" : "is unable to volunteer"
             }`;
             refetchVolunteers();
             toastNotify(toastMessage, "success");
@@ -303,14 +271,10 @@ export const VolunteersTable: React.FC<Props> = ({
             toastNotify("Unable to modify availability", "failure")
           }
         />,
-        /* Special Group */
-        ss.fields["Volunteer Group (for MAKE)"] || "N/A",
-        /* Delivery Count */
-        particpantType.includes("Driver")
-          ? ss.fields["Total Deliveries"]
-          : "NA",
+        ss.specialGroup ?? "N/A",
+        typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
         /* TODO: Contact Modal */
-        ss.fields["Email"] ? ss.fields["Email"][0] : "",
+        ss.email,
       ];
     });
 
@@ -318,66 +282,65 @@ export const VolunteersTable: React.FC<Props> = ({
   }
 
   filtered.sort((a, b) => {
-    console.log(a.fields["First Name"], b.fields["First Name"]);
-    if (!a.fields["First Name"]) {
+    if (!a.firstName) {
       return 1;
     }
-    if (!b.fields["First Name"]) {
+    if (!b.firstName) {
       return -1;
     }
-
-    return a.fields["First Name"][0] < b.fields["First Name"][0] ? -1 : 1;
+    return a.firstName < b.firstName ? -1 : 1;
   });
   // UI
   return (
     <div className="flex h-screen flex-col pt-6">
       {/* Filtering */}
-      <div
-        className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4"
-        ref={dropdownRef}
-      >
-        {/* Filter dropdown. TODO: This should be converted to use the Radix dropdown menu instead, similar to AssignLocationDropdown.tsx. */}
-        <div className="relative z-20">
-          <h1
-            className={`flex w-44 select-none items-center justify-between rounded-lg border bg-pumpkinOrange px-2 py-1 text-sm font-semibold text-white hover:cursor-pointer hover:brightness-110 md:text-base ${
-              isFilterDropdownOpen ? " brightness-110" : ""
-            }`}
-            onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
-          >
-            Filter
-            <img
-              className="w-2 md:w-3"
-              src={isFilterDropdownOpen ? chevron_up : chevron_down}
-              alt="chevron-icon"
-            />
-          </h1>
-          {/* Filter options */}
-          {
-            <ul
-              className={`absolute flex flex-col gap-2 rounded-lg border bg-softBeige shadow-md ${
-                isFilterDropdownOpen ? "py-2 px-2" : ""
+      <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4">
+        <DropdownMenu.Root
+          open={isFilterDropdownOpen}
+          onOpenChange={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+          modal={false}
+        >
+          <DropdownMenu.Trigger asChild>
+            <h1
+              className={`flex w-44 shrink-0 select-none items-center justify-between rounded-lg border bg-pumpkinOrange px-2 py-1 text-sm font-semibold text-white hover:cursor-pointer hover:brightness-110 md:text-base ${
+                isFilterDropdownOpen ? " brightness-110" : ""
               }`}
             >
-              {isFilterDropdownOpen &&
-                filters.map((item, i) => (
-                  <FilterItem
-                    key={i}
-                    selected={item.isSelected}
-                    onSelect={() => onFilterSelect(i)}
-                    filterLabel={item.label}
-                  />
-                ))}
-            </ul>
-          }
-        </div>
+              Filter
+              <img
+                className="w-2 md:w-3"
+                src={isFilterDropdownOpen ? chevron_up : chevron_down}
+                alt="chevron-icon"
+              />
+            </h1>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              className={`absolute z-20 flex w-44 flex-col gap-2 rounded-lg border bg-softBeige shadow-md ${
+                isFilterDropdownOpen ? "py-2 px-2" : ""
+              }`}
+              avoidCollisions
+              align="start"
+            >
+              {filters.map((item, i) => (
+                <FilterItem
+                  key={i}
+                  selected={item.isSelected}
+                  onSelect={() => onFilterSelect(i)}
+                  filterLabel={item.label}
+                />
+              ))}
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
 
         {/* Applied Filters Labels */}
-        <h1 className="shrink-0 font-semibold text-newLeafGreen lg:text-lg">
+        <h1 className="align-stretch shrink-0 font-semibold text-newLeafGreen lg:text-lg">
           Applied Filters:
         </h1>
 
         {/* Buttons that pops up after filter is clicked */}
-        <div className="scrollbar-thin flex max-w-full grow items-start gap-4 overflow-x-auto overscroll-x-auto py-1 px-2">
+        <div className="scrollbar-thin flex h-11 max-w-full grow items-start gap-4 overflow-x-auto overscroll-x-auto py-1 px-2">
           {filters.map((item, i) => {
             if (!item.isSelected) return null;
             return (

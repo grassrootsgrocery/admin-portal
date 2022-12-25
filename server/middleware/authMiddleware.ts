@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 import { UNAUTHORIZED } from "../httpUtils/statusCodes";
 import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
+import { fetch } from "../httpUtils/nodeFetch";
 
 export const protect = asyncHandler(async (req, res, next) => {
   let token = null;

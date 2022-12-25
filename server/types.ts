@@ -36,16 +36,30 @@ export interface ProcessedEvent {
 }
 
 export interface ScheduledSlot {
-  "First Name": string[];
-  "Last Name": string[];
-  "Total Deliveries": number;
-  "Can't Come": boolean;
-  "Correct slot time": any;
-  Type: string[];
-  "Confirmed?": boolean;
-  "Volunteer Status": string[];
-  Email: string[];
-  "Volunteer Group (for MAKE)": string;
+  "First Name": string[] | undefined;
+  "Last Name": string[] | undefined;
+  "Total Deliveries": number | undefined;
+  "Can't Come": boolean | undefined;
+  "Correct slot time": any | undefined;
+  Type: string[] | undefined;
+  "Confirmed?": boolean | undefined;
+  "Volunteer Status": string[] | undefined;
+  Email: string[] | undefined;
+  "Volunteer Group (for MAKE)": string | undefined;
+}
+
+export interface ProcessedScheduledSlot {
+  id: string;
+  firstName: string;
+  lastName: string;
+  totalDeliveries?: number;
+  cantCome: boolean;
+  timeSlot: string;
+  participantType: string;
+  confirmed: boolean;
+  volunteerStatus: string;
+  email: string;
+  specialGroup: string | null;
 }
 
 export interface Driver {

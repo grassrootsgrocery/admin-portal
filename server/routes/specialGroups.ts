@@ -1,5 +1,6 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
+import { protect } from "../middleware/authMiddleware";
 import { Request, Response } from "express";
 import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
@@ -32,6 +33,7 @@ function processSpecialGroups(
  * @access
  */
 router.route("/api/special-groups").get(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     console.log(`GET /api/special-groups`);
 

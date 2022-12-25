@@ -7,7 +7,7 @@ import {
 } from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
-import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
+import { OK } from "../httpUtils/statusCodes";
 //Types
 import { AirtableResponse, Record, Event, ProcessedEvent } from "../types";
 
@@ -38,8 +38,17 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
         return "th";
     }
   };
+  if (!event.fields["Start Time"]) {
+    //Should never happen
+    throw new Error("Event has no start time");
+  }
 
   const eventDate = new Date(event.fields["Start Time"]);
+
+  const numDrivers = event.fields["Total Count of Drivers for Event"] || 0; // number of total drivers for event
+  const numPackers = event.fields["Total Count of Distributors for Event"] || 0; // number of total packers for event
+  const numtotalParticipants =
+    event.fields["Total Count of Volunteers for Event"] || 0; // number of total participants for event
 
   return {
     id: event.id,
@@ -49,60 +58,52 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
       getOrdinal(new Date(event.fields["Start Time"]).getDate()), // start day in Weekday, Month Day format
 
     time: eventDate.toLocaleString("en-US", optionsTime), // start time in HH:MM AM/PM format
-
-    mainLocation: event.fields["Pickup Address"][0], // event pickup location
-
-    numDrivers: event.fields["Total Count of Drivers for Event"], // number of total drivers for event
-
-    numPackers: event.fields["Total Count of Distributors for Event"], // number of total packers for event
-
-    numtotalParticipants: event.fields["Total Count of Volunteers for Event"], // number of total participants for event
-
+    mainLocation: event.fields["Pickup Address"]
+      ? event.fields["Pickup Address"][0]
+      : "No address", // event pickup location
+    numDrivers: numDrivers,
+    numPackers: numPackers,
+    numtotalParticipants: numtotalParticipants,
     numSpecialGroups: 0, // number of associated special groups
-
-    numOnlyDrivers: 0, // number of only drvers for events
-
-    numOnlyPackers: 0, // number of only packers for events
-
-    numBothDriversAndPackers: 0, // number of both drivers and packers
-
-    scheduledSlots: event.fields["📅 Scheduled Slots"],
-
+    numOnlyDrivers: numtotalParticipants - numPackers,
+    numOnlyPackers: numtotalParticipants - numDrivers,
+    numBothDriversAndPackers: numPackers + numDrivers - numtotalParticipants, // number of both drivers and packers
+    scheduledSlots: event.fields["📅 Scheduled Slots"] || [],
+    supplierId: event.fields.Supplier
+      ? event.fields.Supplier[0]
+      : "No supplier",
     allEventIds: [event.id],
   };
 }
 
-function processSpecialEventsData(
-  event: ProcessedEvent,
-  specialEvents: Record<Event>[]
-): ProcessedEvent {
-  specialEvents.forEach((specialEvent) =>
-    processSpecialEventData(event, specialEvent)
-  );
-  return event;
-}
-
-function processSpecialEventData(
-  event: ProcessedEvent,
-  specialEvent: Record<Event>
+function getSpecialEventsForGeneralEvent(
+  specialEvents: Record<Event>[],
+  generalEvent: Record<Event>
 ) {
-  event.numSpecialGroups += 1;
-  event.numDrivers += specialEvent.fields["Total Count of Drivers for Event"];
-  event.numPackers +=
-    specialEvent.fields["Total Count of Distributors for Event"];
-  event.numtotalParticipants +=
-    specialEvent.fields["Total Count of Volunteers for Event"];
-  event.scheduledSlots = event.scheduledSlots.concat(
-    specialEvent.fields["📅 Scheduled Slots"]
-  );
-  event.allEventIds = event.allEventIds.concat(specialEvent.id);
-}
+  const areEventsSame = (
+    specialEvent: Record<Event>,
+    generalEvent: Record<Event>
+  ) => {
+    if (
+      !specialEvent.fields["Start Time"] ||
+      !generalEvent.fields["Start Time"]
+    ) {
+      //Again, should never happen since we are filtering for this before calling this function
+      throw new Error("Special event has no start time");
+    }
+    const sePickupAddress = specialEvent.fields["Pickup Address"]
+      ? specialEvent.fields["Pickup Address"][0]
+      : "";
+    const gePickupAddress = generalEvent.fields["Pickup Address"]
+      ? generalEvent.fields["Pickup Address"][0]
+      : "";
 
-function processPackerAndDriverCounts(event: ProcessedEvent) {
-  event.numOnlyDrivers = event.numtotalParticipants - event.numPackers;
-  event.numOnlyPackers = event.numtotalParticipants - event.numDrivers;
-  event.numBothDriversAndPackers =
-    event.numPackers - (event.numtotalParticipants - event.numDrivers);
+    return (
+      specialEvent.fields["Start Time"] === generalEvent.fields["Start Time"] &&
+      sePickupAddress === gePickupAddress
+    );
+  };
+  return specialEvents.filter((se) => areEventsSame(se, generalEvent));
 }
 
 /**
@@ -124,6 +125,7 @@ router.route("/api/events").get(
       `&fields=Total Count of Drivers for Event` + // Drivers
       `&fields=Total Count of Volunteers for Event` + // Total Participants
       `&fields=Special Event` + // isSpecialEvent
+      `&fields=Supplier` +
       `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
 
     const resp = await fetch(url, {
@@ -138,29 +140,43 @@ router.route("/api/events").get(
         status: resp.status,
       };
     }
-    const futureEventsData = (await resp.json()) as AirtableResponse<Event>;
-    let futureEvents: ProcessedEvent[] = [];
-    let generalEvents = futureEventsData.records.filter(
+    const futureEventsAirtableResp =
+      (await resp.json()) as AirtableResponse<Event>;
+
+    //An event is invalid if it has no start time
+    let futureEventsData = futureEventsAirtableResp.records.filter(
+      (event) => event.fields["Start Time"]
+    );
+
+    let generalEvents = futureEventsData.filter(
       (event) => !event.fields["Special Event"]
     );
-    let specialEvents = futureEventsData.records.filter(
+    let specialEvents = futureEventsData.filter(
       (event) => event.fields["Special Event"]
     );
-
-    futureEvents = generalEvents.map((generalEvent) =>
-      processSpecialEventsData(
-        processGeneralEventData(generalEvent),
-        specialEvents.filter(
-          (specialEvent) =>
-            specialEvent.fields["Pickup Address"][0] ==
-              generalEvent.fields["Pickup Address"][0] &&
-            specialEvent.fields["Start Time"] ==
-              generalEvent.fields["Start Time"]
-        )
-      )
-    );
-
-    futureEvents.forEach((event) => processPackerAndDriverCounts(event));
+    // let futureEvents: ProcessedEvent[] = [];
+    const futureEvents: ProcessedEvent[] = generalEvents.map((generalEvent) => {
+      const specialEventsForThisGeneralEvent = getSpecialEventsForGeneralEvent(
+        specialEvents,
+        generalEvent
+      );
+      const processedGeneralEvent = processGeneralEventData(generalEvent);
+      //Combine special events with general event
+      for (const se of specialEventsForThisGeneralEvent) {
+        processedGeneralEvent.numSpecialGroups += 1;
+        processedGeneralEvent.numDrivers +=
+          se.fields["Total Count of Drivers for Event"] || 0;
+        processedGeneralEvent.numPackers +=
+          se.fields["Total Count of Distributors for Event"] || 0;
+        processedGeneralEvent.numtotalParticipants +=
+          se.fields["Total Count of Volunteers for Event"] || 0;
+        processedGeneralEvent.scheduledSlots.concat(
+          se.fields["📅 Scheduled Slots"] || []
+        );
+        processedGeneralEvent.allEventIds.push(se.id);
+      }
+      return processedGeneralEvent;
+    });
     futureEvents.sort((a, b) => (a.date < b.date ? -1 : 1));
     res.status(OK).json(futureEvents);
   })

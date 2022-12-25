@@ -247,7 +247,7 @@ export const VolunteersTable: React.FC<Props> = ({
     //let rows = [];
     const rows = scheduledSlots.map((ss, i) => {
       const first = ss.fields["First Name"] ? ss.fields["First Name"][0] : "";
-      const last = ss.fields["Last Name"] ? ss.fields["First Name"][0] : "";
+      const last = ss.fields["Last Name"] ? ss.fields["Last Name"][0] : "";
       const particpantType = getParticipantType(ss.fields["Type"]);
 
       return [

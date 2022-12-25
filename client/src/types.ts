@@ -1,12 +1,3 @@
-export interface AirtableResponse<FieldsType> {
-  records: Record<FieldsType>[];
-}
-export interface Record<T> {
-  id: string;
-  fields: T;
-  createdTime: string;
-}
-
 export interface ProcessedEvent {
   id: string;
   dateDisplay: string;
@@ -24,18 +15,20 @@ export interface ProcessedEvent {
   allEventIds: string[];
 }
 
-export interface ScheduledSlot {
-  "First Name": string[];
-  "Last Name": string[];
-  "Total Deliveries": number;
-  "Correct slot time": any;
-  Type: string[];
-  "Confirmed?": boolean;
-  "Volunteer Status": string[];
-  Email: string[];
-  "Volunteer Group (for MAKE)": string;
-  "Can't Come": boolean;
+export interface ProcessedScheduledSlot {
+  id: string;
+  firstName: string;
+  lastName: string;
+  totalDeliveries?: number;
+  cantCome: boolean;
+  timeSlot: string;
+  participantType: string;
+  confirmed: boolean;
+  volunteerStatus: string;
+  email: string;
+  specialGroup: string | null;
 }
+
 export interface ProcessedDriver {
   id: string;
   firstName: string;

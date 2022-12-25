@@ -14,13 +14,73 @@ import {
   Record,
   ScheduledSlot,
   Neighborhood,
-  DropoffLocation,
-  ProcessedDropoffLocation,
+  ProcessedScheduledSlot,
 } from "../types";
 //Error messages
 import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
 
 const router = express.Router();
+
+function processScheduledSlots(
+  scheduledSlots: AirtableResponse<ScheduledSlot>
+) {
+  function getParticipantType(type: string[] | undefined) {
+    if (!type) {
+      return "";
+    }
+    //Replace the word "Distributor" with "Packer"
+    const typeCopy = [...type];
+    for (let i = 0; i < typeCopy.length; i++) {
+      typeCopy[i] = typeCopy[i].replace("Distributor", "Packer");
+    }
+    typeCopy.sort();
+    let typeLabel = typeCopy[0];
+    if (typeCopy.length === 2) {
+      typeLabel += " & " + typeCopy[1];
+    }
+    return typeLabel;
+  }
+
+  function getTimeSlot(timeslot: string) {
+    const optionsTime = {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    } as const;
+    return new Date(timeslot).toLocaleString("en-US", optionsTime);
+  }
+  const volunteerList: ProcessedScheduledSlot[] = [];
+  for (const ss of scheduledSlots.records) {
+    const participantType = getParticipantType(ss.fields["Type"]);
+    const timeSlot =
+      ss.fields["Correct slot time"] && !ss.fields["Correct slot time"]["error"]
+        ? getTimeSlot(ss.fields["Correct slot time"])
+        : "Error!";
+
+    const volunteer: ProcessedScheduledSlot = {
+      id: ss.id,
+      firstName: ss.fields["First Name"] ? ss.fields["First Name"][0] : "",
+      lastName: ss.fields["Last Name"] ? ss.fields["Last Name"][0] : "",
+      confirmed: ss.fields["Confirmed?"] || false,
+      cantCome: ss.fields["Can't Come"] || false,
+      timeSlot: timeSlot,
+      participantType: participantType,
+      volunteerStatus: ss.fields["Volunteer Status"]
+        ? ss.fields["Volunteer Status"][0]
+        : "",
+      email: ss.fields["Email"] ? ss.fields["Email"][0] : "None",
+      specialGroup: ss.fields["Volunteer Group (for MAKE)"] || null,
+    };
+
+    const isDriver = participantType.includes("Driver");
+    if (isDriver) {
+      volunteer.totalDeliveries = ss.fields["Total Deliveries"];
+    }
+    volunteerList.push(volunteer);
+  }
+
+  return volunteerList;
+}
 /**
  * @description Get all volunteers for event
  * @route  GET /api/volunteers/
@@ -57,7 +117,6 @@ router.route("/api/volunteers/").get(
 
     const resp = await fetch(url, {
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
@@ -67,7 +126,11 @@ router.route("/api/volunteers/").get(
         status: resp.status,
       };
     }
-    const volunteers = (await resp.json()) as AirtableResponse<ScheduledSlot>;
+    const scheduledSlots =
+      (await resp.json()) as AirtableResponse<ScheduledSlot>;
+
+    const volunteers = processScheduledSlots(scheduledSlots);
+
     res.status(OK).json(volunteers);
   })
 );

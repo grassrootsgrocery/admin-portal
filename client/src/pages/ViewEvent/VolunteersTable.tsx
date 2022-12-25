@@ -1,20 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
 import { useMutation } from "react-query";
 import { toastNotify, useClickOutside } from "../../uiUtils";
+import { API_BASE_URL, applyPatch } from "../../httpUtils";
 //Components
 import { Loading } from "../../components/Loading";
 import { DataTable } from "../../components/DataTable";
 //Assets
-import { API_BASE_URL, applyPatch } from "../../httpUtils";
 import chevron_up from "../../assets/chevron-up.svg";
 import chevron_down from "../../assets/chevron-down.svg";
 import x from "../../assets/x.svg";
 import check_icon from "../../assets/checkbox-icon.svg";
 //Types
-import { Record, ScheduledSlot } from "../../types";
+import { ProcessedScheduledSlot } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
-import { Navigate } from "react-router-dom";
 
 /*
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
@@ -118,56 +117,57 @@ const FilterButton: React.FC<FilterButtonProps> = ({
 interface DropdownFilterOption {
   label: string;
   isSelected: boolean;
-  filter: (e: Record<ScheduledSlot>) => boolean;
+  filter: (e: ProcessedScheduledSlot) => boolean;
 }
-function createDropdownFilters(scheduledSlots: Record<ScheduledSlot>[]) {
+function createDropdownFilters(scheduledSlots: ProcessedScheduledSlot[]) {
   let dropdownFilters = [
     {
       label: "Confirmed",
       isSelected: false,
-      filter: (ss: Record<ScheduledSlot>) => ss.fields["Confirmed?"],
+      filter: (ss: ProcessedScheduledSlot) => ss.confirmed,
     },
     {
       label: "Not Confirmed",
       isSelected: false,
-      filter: (ss: Record<ScheduledSlot>) => !ss.fields["Confirmed?"],
+      filter: (ss: ProcessedScheduledSlot) => !ss.confirmed,
     },
     {
       label: "Only Packers",
       isSelected: false,
-      filter: (ss: Record<ScheduledSlot>) =>
-        ss.fields.Type.includes("Packer") && !ss.fields.Type.includes("Driver"),
+      filter: (ss: ProcessedScheduledSlot) =>
+        ss.participantType.includes("Packer") &&
+        !ss.participantType.includes("Driver"),
     },
     {
       label: "Only Drivers",
       isSelected: false,
-      filter: (ss: Record<ScheduledSlot>) =>
-        ss.fields.Type.includes("Driver") &&
-        !ss.fields.Type.includes("Distributor"),
+      filter: (ss: ProcessedScheduledSlot) =>
+        ss.participantType.includes("Driver") &&
+        !ss.participantType.includes("Packer"),
     },
     {
       label: "Packers & Drivers",
       isSelected: false,
-      filter: (ss: Record<ScheduledSlot>) =>
-        ss.fields.Type.includes("Distributor") &&
-        ss.fields.Type.includes("Driver"),
+      filter: (ss: ProcessedScheduledSlot) =>
+        ss.participantType.includes("Packer") &&
+        ss.participantType.includes("Driver"),
     },
   ];
 
   let specialGroupsList: string[] = [];
-  scheduledSlots.forEach((ss) => {
-    let specialGroup = ss.fields["Volunteer Group (for MAKE)"];
+  scheduledSlots.forEach((schedSlot) => {
+    let curSpecialGroup = schedSlot.specialGroup;
 
     // Check for a unique special group
-    if (specialGroup && !specialGroupsList.includes(specialGroup)) {
-      specialGroupsList.push(specialGroup);
+    if (curSpecialGroup && !specialGroupsList.includes(curSpecialGroup)) {
+      specialGroupsList.push(curSpecialGroup);
 
       // Add special group as a filter
       let groupFilter = {
-        label: specialGroup,
+        label: curSpecialGroup,
         isSelected: false,
-        filter: (ss: Record<ScheduledSlot>) =>
-          ss.fields["Volunteer Group (for MAKE)"] === specialGroup,
+        filter: (ss: ProcessedScheduledSlot) =>
+          ss.specialGroup === curSpecialGroup,
       };
       dropdownFilters.push(groupFilter);
     }
@@ -176,7 +176,7 @@ function createDropdownFilters(scheduledSlots: Record<ScheduledSlot>[]) {
 }
 
 interface Props {
-  scheduledSlots: Record<ScheduledSlot>[];
+  scheduledSlots: ProcessedScheduledSlot[];
   refetchVolunteers: () => void;
 }
 export const VolunteersTable: React.FC<Props> = ({
@@ -217,65 +217,30 @@ export const VolunteersTable: React.FC<Props> = ({
 
   //Takes in scheduledSlots array and formats data for DataTable component
   function processScheduledSlotsForTable(
-    scheduledSlots: Record<ScheduledSlot>[]
+    scheduledSlots: ProcessedScheduledSlot[]
   ): (string | number | JSX.Element)[][] {
     const { token } = useAuth();
-
-    //Replace the word "Distributor" with "Packer" in the type array
-    function getParticipantType(type: string[]) {
-      const typeCopy = [...type];
-      for (let i = 0; i < typeCopy.length; i++) {
-        typeCopy[i] = typeCopy[i].replace("Distributor", "Packer");
-      }
-      typeCopy.sort();
-      let typeLabel = typeCopy[0];
-      if (typeCopy.length === 2) {
-        typeLabel += " & " + typeCopy[1];
-      }
-      return typeLabel;
-    }
-
-    function getTimeSlot(timeslot: string) {
-      const optionsTime = {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      } as const;
-      return new Date(timeslot).toLocaleString("en-US", optionsTime);
-    }
-
-    //let rows = [];
     const rows = scheduledSlots.map((ss, i) => {
-      const first = ss.fields["First Name"] ? ss.fields["First Name"][0] : "";
-      const last = ss.fields["Last Name"] ? ss.fields["Last Name"][0] : "";
-      const particpantType = getParticipantType(ss.fields["Type"]);
-
       return [
         /* id */
         ss.id,
         /* # */
         i + 1,
-        /* First Name */
-        first,
-        /* Last Name */
-        last,
-        /* Time Slot */
-        ss.fields["Correct slot time"]["error"]
-          ? "Error!"
-          : getTimeSlot(ss.fields["Correct slot time"]),
-        /* Participant Type */
-        particpantType,
+        ss.firstName,
+        ss.lastName,
+        ss.timeSlot,
+        ss.participantType,
         /* Confirmed Checkbox */
         <HttpCheckbox
-          checked={ss.fields["Confirmed?"]}
+          checked={ss.confirmed}
           mutationFn={applyPatch(
             `${API_BASE_URL}/api/volunteers/confirm/${ss.id}`,
-            { newConfirmationStatus: !ss.fields["Confirmed?"] },
+            { newConfirmationStatus: !ss.confirmed },
             token as string
           )}
           onSuccess={() => {
-            const toastMessage = `${first} ${last} ${
-              ss.fields["Confirmed?"] ? "unconfirmed" : "confirmed"
+            const toastMessage = `${ss.firstName} ${ss.lastName} ${
+              ss.confirmed ? "unconfirmed" : "confirmed"
             }`;
             refetchVolunteers();
             toastNotify(toastMessage, "success");
@@ -284,17 +249,15 @@ export const VolunteersTable: React.FC<Props> = ({
         />,
         /* Not Going Checkbox */
         <HttpCheckbox
-          checked={ss.fields["Can't Come"]}
+          checked={ss.cantCome}
           mutationFn={applyPatch(
             `${API_BASE_URL}/api/volunteers/going/${ss.id}`,
-            { newGoingStatus: !ss.fields["Can't Come"] },
+            { newGoingStatus: !ss.cantCome },
             token as string
           )}
           onSuccess={() => {
-            const toastMessage = `${first} ${last} ${
-              ss.fields["Can't Come"]
-                ? "is able to volunteer"
-                : "is unable to volunteer"
+            const toastMessage = `${ss.firstName} ${ss.lastName} ${
+              ss.cantCome ? "is able to volunteer" : "is unable to volunteer"
             }`;
             refetchVolunteers();
             toastNotify(toastMessage, "success");
@@ -303,14 +266,10 @@ export const VolunteersTable: React.FC<Props> = ({
             toastNotify("Unable to modify availability", "failure")
           }
         />,
-        /* Special Group */
-        ss.fields["Volunteer Group (for MAKE)"] || "N/A",
-        /* Delivery Count */
-        particpantType.includes("Driver")
-          ? ss.fields["Total Deliveries"]
-          : "NA",
+        ss.specialGroup ?? "N/A",
+        typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
         /* TODO: Contact Modal */
-        ss.fields["Email"] ? ss.fields["Email"][0] : "",
+        ss.email,
       ];
     });
 
@@ -318,15 +277,13 @@ export const VolunteersTable: React.FC<Props> = ({
   }
 
   filtered.sort((a, b) => {
-    console.log(a.fields["First Name"], b.fields["First Name"]);
-    if (!a.fields["First Name"]) {
+    if (!a.firstName) {
       return 1;
     }
-    if (!b.fields["First Name"]) {
+    if (!b.firstName) {
       return -1;
     }
-
-    return a.fields["First Name"][0] < b.fields["First Name"][0] ? -1 : 1;
+    return a.firstName < b.firstName ? -1 : 1;
   });
   // UI
   return (

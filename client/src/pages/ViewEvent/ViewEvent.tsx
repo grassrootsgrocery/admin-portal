@@ -4,7 +4,7 @@ import { useFutureEventById } from "../eventHooks";
 
 import React, { useEffect, useState } from "react";
 //Types
-import { AirtableResponse, ProcessedEvent, ScheduledSlot } from "../../types";
+import { ProcessedScheduledSlot } from "../../types";
 //Components
 import { Loading } from "../../components/Loading";
 import { VolunteersTable } from "./VolunteersTable";
@@ -49,7 +49,7 @@ export const ViewEvent = () => {
     status: scheduledSlotsStatus,
     error: scheduledSlotsError,
   } = useQuery(
-    ["fetchScheduledSlotsForEvent", eventId],
+    ["fetchVolunteersForEvent", eventId],
     async () => {
       if (typeof event === "undefined") {
         return Promise.reject(new Error("Undefined event"));
@@ -67,7 +67,7 @@ export const ViewEvent = () => {
         const data = await response.json();
         throw new Error(data.message);
       }
-      return response.json() as Promise<AirtableResponse<ScheduledSlot>>;
+      return response.json() as Promise<ProcessedScheduledSlot[]>;
     },
     { enabled: eventStatus === "success" }
   );
@@ -99,10 +99,7 @@ export const ViewEvent = () => {
     return <div>Error...</div>;
   }
 
-  scheduledSlots.records.sort((a, b) =>
-    a.fields["First Name"] < b.fields["First Name"] ? -1 : 1
-  );
-
+  scheduledSlots.sort((a, b) => (a.firstName < b.firstName ? -1 : 1));
   console.log("scheduledSlots", scheduledSlots);
 
   //Tailwind classes
@@ -223,7 +220,7 @@ export const ViewEvent = () => {
         </h1>
         {/* Volunteer Table */}
         <VolunteersTable
-          scheduledSlots={scheduledSlots.records}
+          scheduledSlots={scheduledSlots}
           refetchVolunteers={refetchScheduledSlots}
         />
         <div className="h-4" />

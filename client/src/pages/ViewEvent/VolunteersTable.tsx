@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
 import { useMutation } from "react-query";
-import { toastNotify, useClickOutside } from "../../uiUtils";
+import { toastNotify } from "../../uiUtils";
 import { API_BASE_URL, applyPatch } from "../../httpUtils";
 //Components
 import { Loading } from "../../components/Loading";
@@ -73,11 +74,16 @@ interface FilterItemProps {
 const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
   const { filterLabel, selected, onSelect } = props;
   return (
-    <li
-      className={`flex min-w-fit shrink-0 items-center gap-1 rounded-lg border border-pumpkinOrange px-2 font-semibold shadow-md hover:cursor-pointer hover:brightness-110 ${
-        selected ? "bg-pumpkinOrange text-white" : "bg-white text-pumpkinOrange"
+    <DropdownMenu.Item
+      className={`flex min-w-fit shrink-0 items-center gap-1 rounded-lg border  px-2 font-semibold shadow-md outline-none hover:cursor-pointer hover:brightness-110 data-[highlighted]:-m-[1px] data-[selected]:cursor-pointer data-[highlighted]:cursor-pointer data-[highlighted]:border-2 data-[highlighted]:brightness-110 ${
+        selected
+          ? "bg-pumpkinOrange text-white data-[highlighted]:border-white"
+          : "border-pumpkinOrange bg-white text-pumpkinOrange "
       }`}
-      onClick={onSelect}
+      onSelect={(e) => {
+        e.preventDefault(); //So that the dropdown doesn' close automatically when an item is selected
+        onSelect();
+      }}
     >
       <div className="w-10/12">{filterLabel}</div>
       <RadixCheckbox.Root
@@ -91,7 +97,7 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
           <img src={check_icon} alt="check" />
         </RadixCheckbox.Indicator>
       </RadixCheckbox.Root>
-    </li>
+    </DropdownMenu.Item>
   );
 };
 
@@ -186,7 +192,6 @@ export const VolunteersTable: React.FC<Props> = ({
   const [filters, setFilters] = useState<DropdownFilterOption[]>([]);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [filtered, setFiltered] = useState(scheduledSlots);
-  const [dropdownRef] = useClickOutside(() => setIsFilterDropdownOpen(false));
 
   //Create filters on component mount
   useEffect(() => {
@@ -289,52 +294,53 @@ export const VolunteersTable: React.FC<Props> = ({
   return (
     <div className="flex h-screen flex-col pt-6">
       {/* Filtering */}
-      <div
-        className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4"
-        ref={dropdownRef}
-      >
-        {/* Filter dropdown. TODO: This should be converted to use the Radix dropdown menu instead, similar to AssignLocationDropdown.tsx. */}
-        <div className="relative z-20">
-          <h1
-            className={`flex w-44 select-none items-center justify-between rounded-lg border bg-pumpkinOrange px-2 py-1 text-sm font-semibold text-white hover:cursor-pointer hover:brightness-110 md:text-base ${
-              isFilterDropdownOpen ? " brightness-110" : ""
-            }`}
-            onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
-          >
-            Filter
-            <img
-              className="w-2 md:w-3"
-              src={isFilterDropdownOpen ? chevron_up : chevron_down}
-              alt="chevron-icon"
-            />
-          </h1>
-          {/* Filter options */}
-          {
-            <ul
-              className={`absolute flex flex-col gap-2 rounded-lg border bg-softBeige shadow-md ${
-                isFilterDropdownOpen ? "py-2 px-2" : ""
+      <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4">
+        <DropdownMenu.Root
+          open={isFilterDropdownOpen}
+          onOpenChange={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+          modal={false}
+        >
+          <DropdownMenu.Trigger asChild>
+            <h1
+              className={`flex w-44 shrink-0 select-none items-center justify-between rounded-lg border bg-pumpkinOrange px-2 py-1 text-sm font-semibold text-white hover:cursor-pointer hover:brightness-110 md:text-base ${
+                isFilterDropdownOpen ? " brightness-110" : ""
               }`}
             >
-              {isFilterDropdownOpen &&
-                filters.map((item, i) => (
-                  <FilterItem
-                    key={i}
-                    selected={item.isSelected}
-                    onSelect={() => onFilterSelect(i)}
-                    filterLabel={item.label}
-                  />
-                ))}
-            </ul>
-          }
-        </div>
+              Filter
+              <img
+                className="w-2 md:w-3"
+                src={isFilterDropdownOpen ? chevron_up : chevron_down}
+                alt="chevron-icon"
+              />
+            </h1>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              className={`absolute z-20 flex w-44 flex-col gap-2 rounded-lg border bg-softBeige shadow-md ${
+                isFilterDropdownOpen ? "py-2 px-2" : ""
+              }`}
+              avoidCollisions
+              align="start"
+            >
+              {filters.map((item, i) => (
+                <FilterItem
+                  key={i}
+                  selected={item.isSelected}
+                  onSelect={() => onFilterSelect(i)}
+                  filterLabel={item.label}
+                />
+              ))}
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
 
         {/* Applied Filters Labels */}
-        <h1 className="shrink-0 font-semibold text-newLeafGreen lg:text-lg">
+        <h1 className="align-stretch shrink-0 font-semibold text-newLeafGreen lg:text-lg">
           Applied Filters:
         </h1>
 
         {/* Buttons that pops up after filter is clicked */}
-        <div className="scrollbar-thin flex max-w-full grow items-start gap-4 overflow-x-auto overscroll-x-auto py-1 px-2">
+        <div className="scrollbar-thin flex h-11 max-w-full grow items-start gap-4 overflow-x-auto overscroll-x-auto py-1 px-2">
           {filters.map((item, i) => {
             if (!item.isSelected) return null;
             return (

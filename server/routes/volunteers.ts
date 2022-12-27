@@ -144,8 +144,9 @@ router.route("/api/volunteers/confirm/:volunteerId").patch(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { volunteerId } = req.params;
-    const { newConfirmationStatus } = req.body;
     console.log(`PATCH /api/volunteers/confirm/${volunteerId}`);
+    console.log("Request body: ", req.body);
+    const { newConfirmationStatus } = req.body;
 
     const isValidRequest =
       volunteerId &&

@@ -4,7 +4,7 @@
 @import '@radix-ui/colors/violet.css'; */
 
 .modal-overlay {
-  opacity: 0.5;
+  opacity: 0.4;
   position: fixed;
   inset: 0;
   animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -14,7 +14,7 @@
     opacity: 0;
   }
   to {
-    opacity: 0.5;
+    opacity: 0.4;
   }
 }
 

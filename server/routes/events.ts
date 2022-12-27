@@ -172,9 +172,10 @@ router.route("/api/events").get(
           se.fields["Total Count of Distributors for Event"] || 0;
         processedGeneralEvent.numtotalParticipants +=
           se.fields["Total Count of Volunteers for Event"] || 0;
-        processedGeneralEvent.scheduledSlots.concat(
-          se.fields["📅 Scheduled Slots"] || []
-        );
+        processedGeneralEvent.scheduledSlots =
+          processedGeneralEvent.scheduledSlots.concat(
+            se.fields["📅 Scheduled Slots"] || []
+          );
         processedGeneralEvent.allEventIds.push(se.id);
       }
       return processedGeneralEvent;

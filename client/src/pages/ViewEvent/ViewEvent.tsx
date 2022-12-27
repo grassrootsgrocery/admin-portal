@@ -1,7 +1,6 @@
 import { Link, useParams, Navigate } from "react-router-dom";
 import { useQuery, useMutation } from "react-query";
 import { useFutureEventById } from "../eventHooks";
-import { ProcessedSpecialGroup, AddSpecialGroupRequestBody } from "../../types";
 
 import React, { useEffect, useState } from "react";
 //Types
@@ -43,7 +42,8 @@ export const ViewEvent = () => {
     return <Navigate to="/" />;
   }
   const { eventId } = useParams();
-  const { event, eventStatus, eventError } = useFutureEventById(eventId);
+  const { event, refetchEvent, eventStatus, eventError } =
+    useFutureEventById(eventId);
 
   const {
     data: scheduledSlots,
@@ -74,18 +74,18 @@ export const ViewEvent = () => {
     { enabled: eventStatus === "success" }
   );
 
+  if (eventStatus === "error" || scheduledSlotsStatus === "error") {
+    const error = eventError || scheduledSlotsError;
+    console.error(error);
+    return <div>Error...</div>;
+  }
+
   if (scheduledSlotsStatus === "loading" || scheduledSlotsStatus === "idle") {
     return (
       <div className="relative h-full">
         <Loading size="large" thickness="extra-thicc" />
       </div>
     );
-  }
-
-  if (scheduledSlotsStatus === "error") {
-    const error = eventError || scheduledSlotsError;
-    console.error(error);
-    return <div>Error...</div>;
   }
 
   if (event === undefined) {
@@ -173,7 +173,7 @@ export const ViewEvent = () => {
               content={addContent}
               next={addNext}
             /> */}
-            <AddSpecialGroup event={event} />
+            <AddSpecialGroup event={event} refetchEvent={refetchEvent} />
             <button
               className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
               type="button"

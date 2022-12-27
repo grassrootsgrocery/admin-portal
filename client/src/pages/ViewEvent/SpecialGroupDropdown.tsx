@@ -8,7 +8,9 @@ import x from "../../assets/greenX.svg";
 interface Props {
   specialGroupsList: ProcessedSpecialGroup[];
   isGroupSelected: boolean;
-  setGroup: (group: ProcessedSpecialGroup | null) => void;
+  setGroup: (
+    group: (ProcessedSpecialGroup & { isNewSpecialGroup: boolean }) | null
+  ) => void;
 }
 
 export const SpecialGroupDropdown: React.FC<Props> = ({
@@ -79,7 +81,7 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
                     key={idx + specialGroup.name}
                     onClick={() => {
                       setSearchQuery(specialGroup.name);
-                      setGroup(specialGroup);
+                      setGroup({ ...specialGroup, isNewSpecialGroup: false });
                     }}
                   >
                     <img className="mr-2 w-4" src={plus} alt="plus-icon" />
@@ -91,7 +93,12 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
             <li
               className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
               onClick={() => {
-                setGroup({ name: searchQuery, events: [] });
+                setGroup({
+                  id: "NEW GROUP, NOT A REAL ID",
+                  name: searchQuery,
+                  events: [],
+                  isNewSpecialGroup: true,
+                });
               }}
             >
               Create:

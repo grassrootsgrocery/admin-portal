@@ -32,6 +32,7 @@ export interface ProcessedEvent {
   numBothDriversAndPackers: number;
   numSpecialGroups: number;
   scheduledSlots: string[];
+  supplierId: string;
   allEventIds: string[];
 }
 
@@ -115,6 +116,7 @@ export interface SpecialGroup {
 }
 
 export interface ProcessedSpecialGroup {
+  id: string;
   name: string;
   events: string[];
 }

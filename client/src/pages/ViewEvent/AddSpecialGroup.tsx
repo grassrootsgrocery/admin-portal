@@ -1,10 +1,6 @@
 import { useMutation, useQuery } from "react-query";
 import { API_BASE_URL } from "../../httpUtils";
-import {
-  AddSpecialGroupRequestBody,
-  ProcessedEvent,
-  ProcessedSpecialGroup,
-} from "../../types";
+import { ProcessedEvent, ProcessedSpecialGroup } from "../../types";
 import { SpecialGroupDropdown } from "./SpecialGroupDropdown";
 import Popup from "../../components/Popup";
 import { Loading } from "../../components/Loading";
@@ -13,11 +9,17 @@ import { useAuth } from "../../contexts/AuthContext";
 import * as Modal from "@radix-ui/react-dialog";
 import alert from "../../assets/alert.svg";
 import check from "../../assets/check.svg";
+import { toastNotify } from "../../uiUtils";
+
 interface Props {
   event: ProcessedEvent;
+  refetchEvent: () => void;
 }
 
-export const AddSpecialGroup: React.FC<Props> = ({ event }: Props) => {
+export const AddSpecialGroup: React.FC<Props> = ({
+  event,
+  refetchEvent,
+}: Props) => {
   const { token } = useAuth();
 
   // Retrieve Special Groups
@@ -38,75 +40,121 @@ export const AddSpecialGroup: React.FC<Props> = ({ event }: Props) => {
     }
     return response.json() as Promise<ProcessedSpecialGroup[]>;
   });
-  const createSpecialGroup = async (data: AddSpecialGroupRequestBody) => {
-    const response = await fetch(`${API_BASE_URL}/api/add-special-group`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message);
-    }
 
-    return response.json();
-  };
-  const { mutate, isLoading } = useMutation(createSpecialGroup, {
-    onSuccess: (data) => {
-      console.log(data); // the response
+  const createSpecialGroupAndAddToEvent = useMutation({
+    mutationFn: async ({ specialGroupName }: { specialGroupName: string }) => {
+      const response = await fetch(`${API_BASE_URL}/api/special-groups/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ specialGroupName }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
+
+      return response.json();
     },
-    onError: (error) => {
+    onSuccess: (data, variables, context) => {
+      console.log(data); // the response
+      addSpecialGroupToEvent.mutate({ specialGroupId: data.records[0].id });
+      //toastNotify("Special Group Added!", "success");
+    },
+    onError: (error, variables, context) => {
       console.log(error); // the error if that is the case
+      toastNotify("Unable to create special group", "failure");
     },
   });
 
-  const [group, setGroup] = useState<ProcessedSpecialGroup | null>(null);
+  const addSpecialGroupToEvent = useMutation({
+    mutationFn: async ({ specialGroupId }: { specialGroupId: string }) => {
+      const response = await fetch(
+        `${API_BASE_URL}/api/special-groups/add-special-group-to-event`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ eventId: event.id, specialGroupId }),
+        }
+      );
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
 
-  const [hasGroupJustBeenRegistered, setHasGroupJustBeenRegistered] =
-    useState(false);
+      return response.json();
+    },
+    onSuccess: (data, variables, context) => {
+      setNewlyAddedGroupSignUpLink(
+        data.records[0].fields["Volunteer Group Form"]
+      );
+      refetchGroups();
+      refetchEvent();
+    },
+    onError: (error, variables, context) => {
+      toastNotify("Unable to add special group to event", "failure");
+    },
+  });
 
-  if (specialGroupsStatus === "loading" || specialGroupsStatus === "idle") {
-    return (
-      <div className="relative h-full">
-        <Loading size="large" thickness="extra-thicc" />
-      </div>
-    );
-  }
-
-  if (specialGroupsStatus === "error") {
-    console.error(specialGroupsError);
-    return <div>Error...</div>;
-  }
+  const [selectedGroup, setSelectedGroup] = useState<
+    (ProcessedSpecialGroup & { isNewSpecialGroup: boolean }) | null
+  >(null);
+  const [newlyAddedGroupSignUpLink, setNewlyAddedGroupSignUpLink] =
+    useState("");
 
   console.log("Logging specialGroups", specialGroups);
 
-  // const isGroupRegisteredForEvent = (groupName: string) => {
   const isGroupRegisteredForEvent = (
-    specialGroup: ProcessedSpecialGroup,
+    specialGroup: ProcessedSpecialGroup | null,
     allEventIds: string[]
   ) => {
-    // Determine if special group's event list includes an id associated with event
-    let registered = false;
-    if (specialGroup.events != null) {
-      registered = allEventIds.some((id) => specialGroup.events.includes(id));
+    if (specialGroup === null) {
+      return false;
     }
-    return registered;
+    // Determine if special group's event list includes an id associated with event
+    return allEventIds.some((id) => specialGroup.events.includes(id));
+  };
+
+  const addSpecialGroup = () => {
+    if (selectedGroup === null) {
+      return;
+    }
+    if (selectedGroup.isNewSpecialGroup) {
+      createSpecialGroupAndAddToEvent.mutate({
+        specialGroupName: selectedGroup.name,
+      });
+    } else {
+      addSpecialGroupToEvent.mutate({ specialGroupId: selectedGroup.id });
+    }
   };
 
   const getSpecialGroupPopupContent = () => {
-    if (hasGroupJustBeenRegistered) {
+    const hasGroupJustBeenAddedToEvent = newlyAddedGroupSignUpLink !== "";
+    if (hasGroupJustBeenAddedToEvent) {
       return (
         <div>
           <div className="m-0 flex justify-center font-bold text-newLeafGreen lg:text-3xl">
             Special Group Sign Up Link
           </div>
+          <p>{newlyAddedGroupSignUpLink}</p>
         </div>
       );
     }
+
+    const isGroupAlreadyRegisteredForEvent = isGroupRegisteredForEvent(
+      selectedGroup,
+      event.allEventIds
+    );
+    const addGroupAndGenerateLinkDisabled =
+      createSpecialGroupAndAddToEvent.status === "loading" ||
+      !selectedGroup ||
+      isGroupAlreadyRegisteredForEvent;
+
     return (
       <div className="">
         <Modal.Title asChild>
@@ -118,13 +166,13 @@ export const AddSpecialGroup: React.FC<Props> = ({ event }: Props) => {
 
         <div className="h-64 w-full lg:h-96">
           <SpecialGroupDropdown
-            specialGroupsList={specialGroups}
-            isGroupSelected={!!group}
-            setGroup={setGroup}
+            specialGroupsList={specialGroups!}
+            isGroupSelected={!!selectedGroup}
+            setGroup={setSelectedGroup}
           />
           <div className="h-8" />
-          {group &&
-            (isGroupRegisteredForEvent(group, event.allEventIds) ? (
+          {selectedGroup &&
+            (isGroupAlreadyRegisteredForEvent ? (
               <div className="flex items-center">
                 <img
                   className="mt-1 w-4 md:w-6 lg:w-7"
@@ -150,7 +198,7 @@ export const AddSpecialGroup: React.FC<Props> = ({ event }: Props) => {
         </div>
 
         <div className="flex justify-center gap-5">
-          <Modal.Close>
+          <Modal.Close asChild>
             <button
               className="rounded-full bg-pumpkinOrange px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
               type="button"
@@ -159,33 +207,51 @@ export const AddSpecialGroup: React.FC<Props> = ({ event }: Props) => {
             </button>
           </Modal.Close>
           <button
-            onClick={() => {
-              setHasGroupJustBeenRegistered(true);
-            }}
-            disabled={group ? false : true}
-            className="rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:cursor-pointer hover:shadow-md hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+            onClick={addSpecialGroup}
+            disabled={addGroupAndGenerateLinkDisabled}
+            className={`rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen  lg:px-5 lg:py-3 lg:text-base lg:font-bold ${
+              addGroupAndGenerateLinkDisabled
+                ? "opacity-50"
+                : "transition-all hover:-translate-y-0.5 hover:cursor-pointer hover:shadow-md hover:shadow-newLeafGreen"
+            }`}
             type="button"
           >
-            Add Group and Generate Link
+            {createSpecialGroupAndAddToEvent.status === "loading" ? (
+              <Loading size="small" thickness="thin" />
+            ) : (
+              "Add Group and Generate Link"
+            )}
           </button>
         </div>
       </div>
     );
   };
 
+  const addSpecialGroupButtonDisabled =
+    specialGroupsStatus === "error" ||
+    specialGroupsStatus === "loading" ||
+    specialGroupsStatus === "idle";
+
   return (
     <Popup
       trigger={
         <button
-          className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+          // className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+          className={
+            "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all lg:px-5 lg:py-3 lg:text-base lg:font-bold " +
+            (addSpecialGroupButtonDisabled
+              ? "opacity-50"
+              : "hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen ")
+          }
+          disabled={addSpecialGroupButtonDisabled}
           type="button"
         >
           + Add Special Group
         </button>
       }
       onOpenChange={() => {
-        setHasGroupJustBeenRegistered(false);
-        setGroup(null);
+        setNewlyAddedGroupSignUpLink("");
+        setSelectedGroup(null);
       }}
       content={getSpecialGroupPopupContent()}
     />

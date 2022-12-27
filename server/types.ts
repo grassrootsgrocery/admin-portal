@@ -117,3 +117,22 @@ export interface ProcessedSpecialGroup {
   name: string;
   events: string[];
 }
+
+export interface DropOffOrganizer {
+  "Drop off location": string;
+  "Drop-off Address": string;
+  "Neighborhood (from Zip Code)": string[];
+  "Starts accepting at": string;
+  "Stops accepting at": string;
+  "Total Loads": number;
+}
+
+export interface ProcessedDropOffOrganizer {
+  id: string;
+  siteName: string;
+  address: string;
+  neighborhoods: string[];
+  startTime: string;
+  endTime: string;
+  deliveriesNeeded: number;
+}

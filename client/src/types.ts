@@ -73,3 +73,13 @@ export interface DropdownFilter {
   query: string;
   list: ProcessedSpecialGroup[];
 }
+
+export interface ProcessedDropOffOrganizer {
+  id: string;
+  siteName: string;
+  address: string;
+  neighborhoods: string[];
+  startTime: string;
+  endTime: string;
+  deliveriesNeeded: number;
+}

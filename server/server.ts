@@ -26,6 +26,9 @@ app.use("/", messagingRouter);
 import volunteersRouter from "./routes/volunteers";
 app.use("/", volunteersRouter);
 
+import neighborhoodsRouter from "./routes/neighborhoods";
+app.use("/", neighborhoodsRouter);
+
 import dropoffRouter from "./routes/dropoffLocations";
 app.use("/", dropoffRouter);
 
@@ -42,13 +45,13 @@ app.listen(port, () => console.log(`Server started on port ${port}`));
 
 //Serve frontend
 import path from "path";
-//if (process.env.NODE_ENV === "production") {
-app.use(express.static(path.join(__dirname, "../", "client/dist")));
-app.get("*", (req, res) =>
-  res.sendFile(path.resolve(__dirname, "../", "client", "dist", "index.html"))
-);
-// } else {
-//   app.get("/", (req, res) => {
-//     res.send("Please set NODE_ENV to 'production'");
-//   });
-// }
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../", "client/dist")));
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname, "../", "client", "dist", "index.html"))
+  );
+} else {
+  app.get("/", (req, res) => {
+    res.send("Please set NODE_ENV to 'production'");
+  });
+}

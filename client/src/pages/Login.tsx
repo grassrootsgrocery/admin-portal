@@ -1,10 +1,9 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useRef } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import React from "react";
 import event_coordinator from "../assets/event-coordinator.svg";
 import logo from "../assets/grassroots-logo.svg";
-import { AuthError } from "firebase/auth";
 import { useMutation } from "react-query";
 import { API_BASE_URL } from "../httpUtils";
 import { toastNotify } from "../uiUtils";

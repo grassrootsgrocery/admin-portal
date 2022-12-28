@@ -8,13 +8,14 @@ export interface Record<T> {
 }
 
 export interface Event {
-  "Start Time": string;
-  "Pickup Address": string[];
-  "Total Count of Drivers for Event": number;
-  "Total Count of Distributors for Event": number;
-  "Total Count of Volunteers for Event": number;
-  "Special Event": boolean;
-  "📅 Scheduled Slots": string[];
+  "Start Time": string | undefined;
+  "Pickup Address": string[] | undefined;
+  "Total Count of Drivers for Event": number | undefined;
+  "Total Count of Distributors for Event": number | undefined;
+  "Total Count of Volunteers for Event": number | undefined;
+  "Special Event": boolean | undefined;
+  Supplier: string[] | undefined;
+  "📅 Scheduled Slots": string[] | undefined;
 }
 
 export interface ProcessedEvent {
@@ -31,6 +32,7 @@ export interface ProcessedEvent {
   numBothDriversAndPackers: number;
   numSpecialGroups: number;
   scheduledSlots: string[];
+  supplierId: string;
   allEventIds: string[];
 }
 
@@ -84,6 +86,7 @@ export interface ProcessedDriver {
 }
 
 export interface Neighborhood {
+  id: string;
   Name: string;
 }
 
@@ -111,9 +114,11 @@ export interface ProcessedDropoffLocation {
 export interface SpecialGroup {
   Name: string;
   "🚛 Supplier Pickup Events": string[];
+  "Shortened Link to Special Event Signup Form": string;
 }
 
 export interface ProcessedSpecialGroup {
+  id: string;
   name: string;
   events: string[];
 }

@@ -11,15 +11,12 @@ const queryClient = new QueryClient({
 }); //Set staleTime to 3 minutes since this is not the kind of application that needs to refetch data very often
 
 //Components
-import { Navbar } from "./components/Navbar/Navbar";
 import { Toaster } from "react-hot-toast";
 //Pages
 import { Login } from "./pages/Login";
 import { Events } from "./pages/Events";
 import { ViewEvent } from "./pages/ViewEvent";
 import { DriverLocationInfo } from "./pages/DriverLocationInfo";
-
-import { Dropdown } from "./components/SpecialGroupDropdown";
 
 function App() {
   return (
@@ -35,10 +32,6 @@ function App() {
               <Route
                 path="/events/driver-location-info/:eventId"
                 element={<DriverLocationInfo />}
-              />
-              <Route
-                path="/events/add-special-group/:eventId"
-                element={<Dropdown />}
               />
               <Route path="*" element={<Login />} />
             </Routes>

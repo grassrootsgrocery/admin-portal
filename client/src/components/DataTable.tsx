@@ -1,16 +1,33 @@
 import React from "react";
-import { AirtableResponse, ScheduledSlot } from "../types";
 
 interface Props {
   columnHeaders: string[];
   dataRows: (string | number | JSX.Element)[][];
+  borderColor: "softGrayWhite" | "newLeafGreen";
+}
+
+function getBorderColorClassName(
+  borderColor: "softGrayWhite" | "newLeafGreen"
+) {
+  switch (borderColor) {
+    case "newLeafGreen":
+      return "border-newLeafGreen";
+    case "softGrayWhite":
+      return "border-softGrayWhite";
+  }
 }
 export const DataTable: React.FC<Props> = ({
   columnHeaders,
   dataRows,
+  borderColor,
 }: Props) => {
   return (
-    <div className="hide-scroll h-full w-full overflow-scroll rounded-lg border-4 border-softGrayWhite">
+    <div
+      className={`hide-scroll h-full w-full overflow-scroll rounded-lg border-4 ${getBorderColorClassName(
+        borderColor
+      )}`}
+    >
+      {/* Note that you cannot do border-${borderColor} above because of how Tailwind purges classes at build time*/}
       <table className="table w-full border-separate border-spacing-0  rounded-lg">
         <thead className="sticky top-0 z-10 border-b-2 border-newLeafGreen bg-softBeige">
           <tr>

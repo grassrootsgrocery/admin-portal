@@ -4,6 +4,7 @@ import { AssignLocationDropdown } from "./AssignLocationDropdown";
 import { useQuery } from "react-query";
 import { API_BASE_URL } from "../../httpUtils";
 import { useFutureEventById } from "../eventHooks";
+import { useAuth } from "../../contexts/AuthContext";
 //Types
 import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 //Components
@@ -14,7 +15,6 @@ import { Loading } from "../../components/Loading";
 import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
 import back from "../../assets/back-white.svg";
-import { useAuth } from "../../contexts/AuthContext";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -238,12 +238,13 @@ export function DriverLocationInfo() {
     <>
       <Navbar />
       <div className="p-6 lg:px-14 lg:py-10">
-        <Link to={`/events/${eventId}`}>
+        {/* Not sure why inline-block on the Link is necessary */}
+        <Link className="inline-block" to={`/events/${eventId}`}>
           <button
-            className="flex w-fit shrink-0 items-center gap-3 rounded-full bg-newLeafGreen py-2 px-4 text-lg font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen"
+            className="flex w-fit shrink-0 items-center gap-3 rounded-full bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen lg:px-4 lg:py-2 lg:text-lg"
             type="button"
           >
-            <img className="w-4" src={back} alt="Go back" />
+            <img className="w-2 lg:w-4" src={back} alt="Go back" />
             Go back
           </button>
         </Link>
@@ -278,6 +279,7 @@ export function DriverLocationInfo() {
 
         <div className="h-screen">
           <DataTable
+            borderColor="softGrayWhite"
             columnHeaders={[
               "#",
               "First Name",
@@ -323,6 +325,7 @@ export function DriverLocationInfo() {
         <div className="h-8" />
         <div className="h-screen">
           <DataTable
+            borderColor="softGrayWhite"
             columnHeaders={[
               "#",
               "Coordinator Information",

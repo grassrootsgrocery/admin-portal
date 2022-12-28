@@ -11,6 +11,7 @@ import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 import { Navbar } from "../../components/Navbar/Navbar";
 import { DataTable } from "../../components/DataTable";
 import { Loading } from "../../components/Loading";
+import { PopupDropoffOrganizer } from "./PopupDropoffOrganizer";
 //Assets
 import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
@@ -168,6 +169,7 @@ export function DriverLocationInfo() {
   } = useDriversInfo();
   console.log("driversInfo", driversInfo);
 
+  /* Copied to PopupDropoffOrganizer 
   const {
     data: dropoffOrganizers,
     status: dropoffOrganizersStatus,
@@ -188,6 +190,7 @@ export function DriverLocationInfo() {
     return resp.json();
   });
   console.log("dropoffOrganizers", dropoffOrganizers);
+  */
 
   const {
     data: dropoffLocations,
@@ -364,9 +367,7 @@ export function DriverLocationInfo() {
               Send Driver Info to Coordinators
             </button>
           </div>
-          <button className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold">
-            + Add Dropoff Location
-          </button>
+          <PopupDropoffOrganizer />
         </div>
         <div className="h-16" />
       </div>

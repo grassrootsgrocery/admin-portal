@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
-import { OK } from "../httpUtils/statusCodes";
+import { OK, OK_CREATED } from "../httpUtils/statusCodes";
 //Types
 import {
   AirtableResponse,
@@ -18,6 +18,7 @@ import {
 } from "../types";
 //Error messages
 import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
+import { request } from "http";
 
 const router = express.Router();
 
@@ -207,7 +208,6 @@ router.route("/api/dropoff-locations/partner-organizers").get(
 
     const resp = await fetch(url, {
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
@@ -255,6 +255,57 @@ router.route("/api/dropoff-locations/partner-organizers").get(
     res.status(OK).json(processedDropOffOrganizers) as Response<
       ProcessedDropoffLocation[]
     >;
+  })
+);
+
+/**
+ * @description Set start time, end time, and deliveries needed for drop off locations
+ * @route  PATCH /api/dropoff-locations/
+ * @access
+ */
+router.route("/api/dropoff-locations/").patch(
+  protect,
+  asyncHandler(async (req: Request, res: Response) => {
+    console.log(req.body, `PATCH /api/dropoff-locations/`);
+    /*
+    records = [
+      {
+        "id": "recRMO4c6PTJqAoVv",
+        "fields": {
+          "Deliveries Needed": "whatever",
+          "Starts accepting at": "2022-11-05T10:00:00.000Z",
+          "Stops accepting at": "2022-11-05T14:00:00.000Z",
+    */
+    const records = Object.keys(req.body).map((locationId) => {
+      return {
+        id: locationId,
+        fields: {
+          "Starts accepting at": req.body[locationId].startTime,
+          "Stops accepting at": req.body[locationId].endTime,
+        },
+      };
+    });
+
+    const url = `${AIRTABLE_URL_BASE}/📍 Drop off locations`;
+
+    const resp = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+      body: JSON.stringify({
+        records: records,
+      }),
+    });
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
+    }
+    const dropoffOrganizers = await resp.json();
+    res.status(OK_CREATED).json(dropoffOrganizers);
   })
 );
 

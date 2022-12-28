@@ -8,9 +8,16 @@ import {
 } from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
-import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
+import { INTERNAL_SERVER_ERROR, OK, BAD_REQUEST } from "../httpUtils/statusCodes";
 //Types
-import { AirtableResponse, Record, Event, ProcessedEvent } from "../types";
+import { 
+  AirtableResponse, 
+  Record, 
+  Event, 
+  ProcessedEvent, 
+  SpecialEvent,
+  ProcessedSpecialEvent,
+} from "../types";
 
 const router = express.Router();
 
@@ -165,6 +172,73 @@ router.route("/api/events").get(
     futureEvents.forEach((event) => processPackerAndDriverCounts(event));
     futureEvents.sort((a, b) => (a.date < b.date ? -1 : 1));
     res.status(OK).json(futureEvents);
+  })
+);
+
+function processSpecialEvents(
+  specialEvent: Record<SpecialEvent>
+): ProcessedSpecialEvent {
+  return {
+    id: specialEvent.id,
+    specialGroupName: specialEvent.fields["Volunteer Group"][0],
+    eventSignUpLink: specialEvent.fields["Link to Special Event Signup Form"]
+  };
+}
+
+/**
+ * @description Get event specific special group sign up links
+ * @route  GET /api/events/view-event-special-groups
+ * @access
+ */
+router.route("/api/events/view-event-special-groups/").get(
+  protect,
+  asyncHandler(async (req: Request, res: Response) => {
+    const { eventIds } = req.query;
+    console.log(`GET /api/events/view-event-special-groups/?eventIds=${eventIds}`);
+
+    const isValidRequest =
+      eventIds &&
+      typeof eventIds === "string";
+
+    if (!isValidRequest) {
+      res.status(BAD_REQUEST);
+      throw new Error(
+        "Please provide a 'eventIds' as a query param of type 'string'."
+      );
+    }
+
+    const url =
+      `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
+
+      // get special events that are associated with the specific event
+      `filterByFormula=AND(SEARCH(RECORD_ID(), "${eventIds}") != "",` + 
+      `IS_AFTER({Start Time}, NOW()),` + // filter future events
+      `{Special Event})` +    //  get events that are special events
+
+      `&fields=Volunteer Group`+ // Special Group
+      `&fields=Link to Special Event Signup Form`; // Special Event Link
+
+    const resp = await fetch(url, {
+      headers: {
+        method: "GET",
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+    });
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
+    }
+    
+    const specialEvents = (await resp.json()) as AirtableResponse<SpecialEvent>;
+    let processedSpecialEvent = specialEvents.records.map((specialEvent) =>
+      processSpecialEvents(specialEvent)
+    );
+
+    res.status(OK).json(processedSpecialEvent) as Response<
+      ProcessedSpecialEvent[]
+    >;
   })
 );
 

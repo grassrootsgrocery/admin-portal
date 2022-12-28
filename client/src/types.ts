@@ -65,6 +65,7 @@ export interface SpecialGroup {
 }
 
 export interface ProcessedSpecialGroup {
+  id: string
   name: string;
   events: string[];
 }
@@ -72,4 +73,10 @@ export interface ProcessedSpecialGroup {
 export interface DropdownFilter {
   query: string;
   list: ProcessedSpecialGroup[];
+}
+
+export interface ProcessedSpecialEvent {
+  id: string;
+  specialGroupName: string;
+  eventSignUpLink: string;
 }

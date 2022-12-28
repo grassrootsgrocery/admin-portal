@@ -18,6 +18,7 @@ import { Login } from "./pages/Login";
 import { Events } from "./pages/Events";
 import { ViewEvent } from "./pages/ViewEvent";
 import { DriverLocationInfo } from "./pages/DriverLocationInfo";
+import { ViewEventSpecialGroups } from "./pages/ViewEvent/ViewEventSpecialGroups"
 
 import { Dropdown } from "./components/SpecialGroupDropdown";
 
@@ -39,6 +40,10 @@ function App() {
               <Route
                 path="/events/add-special-group/:eventId"
                 element={<Dropdown />}
+              />
+              <Route
+                path="/events/:eventId/view-event-special-groups"
+                element={<ViewEventSpecialGroups />}
               />
               <Route path="*" element={<Login />} />
             </Routes>

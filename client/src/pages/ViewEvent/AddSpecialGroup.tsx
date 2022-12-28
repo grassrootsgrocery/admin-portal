@@ -59,9 +59,9 @@ export const AddSpecialGroup: React.FC<Props> = ({
       return response.json();
     },
     onSuccess: (data, variables, context) => {
-      console.log(data); // the response
+      console.log("Data returned from POST /api/special-groups/", data); // the response
+      //We should maybe type the response?
       addSpecialGroupToEvent.mutate({ specialGroupId: data.records[0].id });
-      //toastNotify("Special Group Added!", "success");
     },
     onError: (error, variables, context) => {
       console.log(error); // the error if that is the case
@@ -90,8 +90,15 @@ export const AddSpecialGroup: React.FC<Props> = ({
       return response.json();
     },
     onSuccess: (data, variables, context) => {
+      console.log(
+        "Data returned from POST /api/special-groups/add-special-group-to-event",
+        data
+      );
+      //We should maybe type the response?
       setNewlyAddedGroupSignUpLink(
-        data.records[0].fields["Volunteer Group Form"]
+        data.records[0].fields["Shortened Link to Special Event Signup Form"] ||
+          data.records[0].fields["Link to Special Event Signup Form"] ||
+          "Uh oh, where is the link?"
       );
       refetchGroups();
       refetchEvent();
@@ -134,29 +141,43 @@ export const AddSpecialGroup: React.FC<Props> = ({
   };
 
   const getSpecialGroupPopupContent = () => {
-    const hasGroupJustBeenAddedToEvent = newlyAddedGroupSignUpLink !== "";
+    const hasGroupJustBeenAddedToEvent = newlyAddedGroupSignUpLink.length > 0;
     if (hasGroupJustBeenAddedToEvent) {
+      console.log("newlyAddedGroupSignUpLink", newlyAddedGroupSignUpLink);
       return (
-        <div>
-          <div className="m-0 flex justify-center font-bold text-newLeafGreen lg:text-3xl">
+        <div className="">
+          <Modal.Title className="m-0 flex justify-center font-bold text-newLeafGreen lg:text-3xl">
             Special Group Sign Up Link
+          </Modal.Title>
+          <div className="h-4" />
+          <div className="overflow-auto">
+            <p className="text-emerald-800 hover:text-emerald-700">
+              <a
+                href={newlyAddedGroupSignUpLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {newlyAddedGroupSignUpLink}
+              </a>
+            </p>
           </div>
-          <p>{newlyAddedGroupSignUpLink}</p>
+          <div className="h-4" />
+          <div className="flex justify-center">
+            <Modal.Close className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl">
+              Done
+            </Modal.Close>
+          </div>
         </div>
       );
     }
 
-    const isGroupAlreadyRegisteredForEvent = isGroupRegisteredForEvent(
-      selectedGroup,
-      event.allEventIds
-    );
     const addGroupAndGenerateLinkDisabled =
       createSpecialGroupAndAddToEvent.status === "loading" ||
-      !selectedGroup ||
-      isGroupAlreadyRegisteredForEvent;
+      addSpecialGroupToEvent.status === "loading" ||
+      !selectedGroup;
 
     return (
-      <div className="">
+      <div className="w-full">
         <Modal.Title asChild>
           <div className="m-0 flex justify-center text-lg font-bold text-newLeafGreen lg:text-3xl">
             Add Special Group to Event
@@ -166,45 +187,34 @@ export const AddSpecialGroup: React.FC<Props> = ({
 
         <div className="h-64 w-full lg:h-96">
           <SpecialGroupDropdown
-            specialGroupsList={specialGroups!}
+            specialGroupsList={specialGroups}
+            isGroupAlreadyRegisteredForEvent={(specialGroup) =>
+              isGroupRegisteredForEvent(specialGroup, event.allEventIds)
+            }
             isGroupSelected={!!selectedGroup}
             setGroup={setSelectedGroup}
           />
           <div className="h-8" />
-          {selectedGroup &&
-            (isGroupAlreadyRegisteredForEvent ? (
-              <div className="flex items-center">
-                <img
-                  className="mt-1 w-4 md:w-6 lg:w-7"
-                  src={alert}
-                  alt="alert-icon"
-                />
-                <p className="flex flex-col items-center px-2 font-semibold leading-5 text-newLeafGreen lg:text-lg">
-                  This group is already registered for the event!
-                </p>
-              </div>
-            ) : (
-              <div className="flex items-center">
-                <img
-                  className="mt-1 w-4 md:w-6 lg:w-7"
-                  src={check}
-                  alt="check-icon"
-                />
-                <p className="px-4 text-lg font-semibold leading-5 text-newLeafGreen">
-                  Ready to generate link!
-                </p>
-              </div>
-            ))}
+          {selectedGroup && (
+            <div className="flex items-center">
+              <img
+                className="mt-1 w-4 md:w-6 lg:w-7"
+                src={check}
+                alt="check-icon"
+              />
+              <p className="px-4 text-lg font-semibold leading-5 text-newLeafGreen">
+                Ready to generate link!
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-center gap-5">
-          <Modal.Close asChild>
-            <button
-              className="rounded-full bg-pumpkinOrange px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-              type="button"
-            >
-              Cancel
-            </button>
+          <Modal.Close
+            className="rounded-full bg-pumpkinOrange px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+            type="button"
+          >
+            Cancel
           </Modal.Close>
           <button
             onClick={addSpecialGroup}
@@ -216,11 +226,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
             }`}
             type="button"
           >
-            {createSpecialGroupAndAddToEvent.status === "loading" ? (
-              <Loading size="small" thickness="thin" />
-            ) : (
-              "Add Group and Generate Link"
-            )}
+            Add Group and Generate Link
           </button>
         </div>
       </div>

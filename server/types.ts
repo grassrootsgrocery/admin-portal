@@ -113,6 +113,7 @@ export interface ProcessedDropoffLocation {
 export interface SpecialGroup {
   Name: string;
   "🚛 Supplier Pickup Events": string[];
+  "Shortened Link to Special Event Signup Form": string;
 }
 
 export interface ProcessedSpecialGroup {

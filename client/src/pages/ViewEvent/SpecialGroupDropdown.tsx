@@ -6,8 +6,11 @@ import plus from "../../assets/plus.svg";
 import x from "../../assets/greenX.svg";
 
 interface Props {
-  specialGroupsList: ProcessedSpecialGroup[];
+  specialGroupsList: ProcessedSpecialGroup[] | undefined;
   isGroupSelected: boolean;
+  isGroupAlreadyRegisteredForEvent: (
+    specialGroup: ProcessedSpecialGroup
+  ) => boolean;
   setGroup: (
     group: (ProcessedSpecialGroup & { isNewSpecialGroup: boolean }) | null
   ) => void;
@@ -15,6 +18,7 @@ interface Props {
 
 export const SpecialGroupDropdown: React.FC<Props> = ({
   specialGroupsList,
+  isGroupAlreadyRegisteredForEvent,
   isGroupSelected,
   setGroup,
 }) => {
@@ -62,39 +66,48 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
             <div className="px-2 text-sm text-[#0E7575]">
               Select existing group or create new one
             </div>
-            {specialGroupsList
-              .filter((specialGroup) => {
-                //Filter based on search query
-                return (
-                  specialGroup.name
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase()) ||
-                  searchQuery
-                    .toLowerCase()
-                    .includes(specialGroup.name.toLowerCase())
-                );
-              })
-              .map((specialGroup, idx) => {
-                return (
-                  <li
-                    className="flex flex-row rounded-lg px-2 py-1 hover:cursor-pointer hover:bg-softGrayWhite"
-                    key={idx + specialGroup.name}
-                    onClick={() => {
-                      setSearchQuery(specialGroup.name);
-                      setGroup({ ...specialGroup, isNewSpecialGroup: false });
-                    }}
-                  >
-                    <img className="mr-2 w-4" src={plus} alt="plus-icon" />
-                    {specialGroup.name}
-                  </li>
-                );
-              })}
+            {specialGroupsList &&
+              specialGroupsList
+                .filter((specialGroup) => {
+                  //Filter based on search query
+                  return (
+                    specialGroup.name
+                      .toLowerCase()
+                      .includes(searchQuery.toLowerCase()) ||
+                    searchQuery
+                      .toLowerCase()
+                      .includes(specialGroup.name.toLowerCase())
+                  );
+                })
+                .map((specialGroup, idx) => {
+                  return (
+                    <li
+                      className={`my-1 flex flex-row rounded-lg px-2 py-1 ${
+                        isGroupAlreadyRegisteredForEvent(specialGroup)
+                          ? "bg-softGrayWhite"
+                          : "hover:cursor-pointer hover:bg-softGrayWhite hover:brightness-110"
+                      }`}
+                      key={idx + specialGroup.name}
+                      onClick={() => {
+                        if (isGroupAlreadyRegisteredForEvent(specialGroup)) {
+                          return;
+                        }
+                        setSearchQuery(specialGroup.name);
+                        setGroup({ ...specialGroup, isNewSpecialGroup: false });
+                      }}
+                    >
+                      <img className="mr-2 w-4" src={plus} alt="plus-icon" />
+                      {specialGroup.name}
+                    </li>
+                  );
+                })}
 
             <li
               className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
               onClick={() => {
+                if (searchQuery.length === 0) return;
                 setGroup({
-                  id: "NEW GROUP, NOT A REAL ID",
+                  id: "NEW GROUP, PLACEHOLDER ID",
                   name: searchQuery,
                   events: [],
                   isNewSpecialGroup: true,

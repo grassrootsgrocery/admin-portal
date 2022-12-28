@@ -260,6 +260,7 @@ export function DriverLocationInfo() {
 
         <div className="h-screen">
           <DataTable
+            borderColor="softGrayWhite"
             columnHeaders={[
               "#",
               "First Name",
@@ -305,6 +306,7 @@ export function DriverLocationInfo() {
         <div className="h-8" />
         <div className="h-screen">
           <DataTable
+            borderColor="softGrayWhite"
             columnHeaders={[
               "#",
               "Coordinator Information",

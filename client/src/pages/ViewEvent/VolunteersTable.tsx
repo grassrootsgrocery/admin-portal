@@ -369,9 +369,9 @@ export const VolunteersTable: React.FC<Props> = ({
         </button>
       </div>
       <div className="h-16" />
-
       {/* Table */}
       <DataTable
+        borderColor="softGrayWhite"
         columnHeaders={[
           "#",
           "First",

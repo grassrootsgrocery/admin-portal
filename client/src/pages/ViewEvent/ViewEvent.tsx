@@ -21,6 +21,7 @@ import { Navbar } from "../../components/Navbar/Navbar";
 import Popup from "../../components/Popup";
 import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
+import { ViewSpecialGroups } from "./ViewSpecialGroups";
 
 const HeaderValueDisplay: React.FC<{
   header: string;
@@ -167,19 +168,8 @@ export const ViewEvent = () => {
           </div>
 
           <div className="flex flex-col items-start justify-around gap-2 ">
-            {/* <Popup
-              title={addTitle}
-              trigger={addTrigger}
-              content={addContent}
-              next={addNext}
-            /> */}
             <AddSpecialGroup event={event} refetchEvent={refetchEvent} />
-            <button
-              className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-              type="button"
-            >
-              View Special Groups
-            </button>
+            <ViewSpecialGroups />
           </div>
         </div>
         <div className="h-12" />

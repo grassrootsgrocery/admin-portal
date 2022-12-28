@@ -216,7 +216,7 @@ router.route("/api/events/view-event-special-groups/").get(
       `{Special Event})` +    //  get events that are special events
 
       `&fields=Volunteer Group`+ // Special Group
-      `&fields=Link to Special Event Signup Form`; // Special Event Link
+      `&fields=Shortened Link to Special Event Signup Form`; // Special Event Link
 
     const resp = await fetch(url, {
       headers: {

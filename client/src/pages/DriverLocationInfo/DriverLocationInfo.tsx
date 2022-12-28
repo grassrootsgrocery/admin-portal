@@ -173,12 +173,14 @@ export function DriverLocationInfo() {
     status: dropoffOrganizersStatus,
     error: dropoffOrganizersError,
   } = useQuery(["fetchDropOffLocations"], async () => {
-    const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations/partner-organizers`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const resp = await fetch(
+      `${API_BASE_URL}/api/dropoff-locations/partner-organizers`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     if (!resp.ok) {
       const data = await resp.json();
       throw new Error(data.messsage);

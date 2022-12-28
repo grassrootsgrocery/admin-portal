@@ -69,7 +69,7 @@ export interface ProcessedDropOffOrganizer {
   siteName: string;
   address: string;
   neighborhoods: string[];
-  startTime: string;
-  endTime: string;
+  startTime: string | null;
+  endTime: string | null;
   deliveriesNeeded: number;
 }

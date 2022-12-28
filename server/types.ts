@@ -124,12 +124,12 @@ export interface ProcessedSpecialGroup {
 }
 
 export interface DropOffOrganizer {
-  "Drop off location": string;
-  "Drop-off Address": string;
-  "Neighborhood (from Zip Code)": string[];
-  "Starts accepting at": string;
-  "Stops accepting at": string;
-  "Total Loads": number;
+  "Drop off location": string | undefined;
+  "Drop-off Address": string | undefined;
+  "Neighborhood (from Zip Code)": string[] | undefined;
+  "Starts accepting at": string | undefined;
+  "Stops accepting at": string | undefined;
+  "Total Loads": number | undefined;
 }
 
 export interface ProcessedDropOffOrganizer {
@@ -137,7 +137,7 @@ export interface ProcessedDropOffOrganizer {
   siteName: string;
   address: string;
   neighborhoods: string[];
-  startTime: string;
-  endTime: string;
+  startTime: string | null;
+  endTime: string | null;
   deliveriesNeeded: number;
 }

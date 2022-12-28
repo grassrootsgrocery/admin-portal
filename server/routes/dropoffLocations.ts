@@ -142,10 +142,7 @@ router.route("/api/dropoff-locations/").get(
     );
 
     // console.log(neighborhoodNamesById);
-    processNeighborhoodsForLocation(
-      processedDropOffLocations,
-      neighborhoodNamesById
-    );
+    processNeighborhoods(processedDropOffLocations, neighborhoodNamesById);
 
     res.status(OK).json(processedDropOffLocations) as Response<
       ProcessedDropoffLocation[]
@@ -153,24 +150,37 @@ router.route("/api/dropoff-locations/").get(
   })
 );
 
-function processDropOffOrganizers(organizer: Record<DropOffOrganizer>): ProcessedDropOffOrganizer {
+function processDropOffOrganizers(
+  organizer: Record<DropOffOrganizer>
+): ProcessedDropOffOrganizer {
   const optionsTime = {
     hour: "numeric",
     minute: "numeric",
     hour12: true,
   } as const;
 
-  const startTime = new Date(organizer.fields["Starts accepting at"]);
-  const endTime = new Date(organizer.fields["Stops accepting at"]);
+  let startTime = null;
+  if (organizer.fields["Starts accepting at"]) {
+    startTime = new Date(
+      organizer.fields["Starts accepting at"]
+    ).toLocaleString("en-US", optionsTime);
+  }
+  let endTime = null;
+  if (organizer.fields["Stops accepting at"]) {
+    endTime = new Date(organizer.fields["Stops accepting at"]).toLocaleString(
+      "en-US",
+      optionsTime
+    );
+  }
 
   return {
     id: organizer.id,
-    siteName: organizer.fields["Drop off location"],
-    address: organizer.fields["Drop-off Address"],
-    neighborhoods: organizer.fields["Neighborhood (from Zip Code)"]? organizer.fields["Neighborhood (from Zip Code)"] : [],
-    startTime: startTime.toLocaleString("en-US", optionsTime),  // start time in HH:MM AM/PM format
-    endTime: endTime.toLocaleString("en-US", optionsTime),      // end time in HH:MM AM/PM format
-    deliveriesNeeded: organizer.fields["Total Loads"]
+    siteName: organizer.fields["Drop off location"] || "No name",
+    address: organizer.fields["Drop-off Address"] || "No address",
+    neighborhoods: organizer.fields["Neighborhood (from Zip Code)"] || [],
+    startTime,
+    endTime,
+    deliveriesNeeded: organizer.fields["Total Loads"] || 0,
   };
 }
 
@@ -186,15 +196,14 @@ router.route("/api/dropoff-locations/partner-organizers").get(
 
     const url =
       `${AIRTABLE_URL_BASE}/📍 Drop off locations?` +
-    // Get organizers who are regular saturday partners
-    `&filterByFormula={Regular Saturday Partner?}` +
-    
-    `&fields=Drop off location` +   // siteName
-    `&fields=Drop-off Address` +    // address
-    `&fields=Neighborhood (from Zip Code)` +  // neighborhood
-    `&fields=Starts accepting at` + // startTime
-    `&fields=Stops accepting at` +  // endTime
-    `&fields=Total Loads`;          // deliveriesNeeded
+      // Get organizers who are regular saturday partners
+      `&filterByFormula={Regular Saturday Partner?}` +
+      `&fields=Drop off location` + // siteName
+      `&fields=Drop-off Address` + // address
+      `&fields=Neighborhood (from Zip Code)` + // neighborhood
+      `&fields=Starts accepting at` + // startTime
+      `&fields=Stops accepting at` + // endTime
+      `&fields=Total Loads`; // deliveriesNeeded
 
     const resp = await fetch(url, {
       headers: {
@@ -210,11 +219,13 @@ router.route("/api/dropoff-locations/partner-organizers").get(
     }
     const dropoffOrganizers =
       (await resp.json()) as AirtableResponse<DropOffOrganizer>;
-    let processedDropOffOrganizers = dropoffOrganizers.records.map((organizer) =>
-      processDropOffOrganizers(organizer)
+    let processedDropOffOrganizers = dropoffOrganizers.records.map(
+      (organizer) => processDropOffOrganizers(organizer)
     );
 
-    const neighborhoodIds = getNeighborhoodIdsForUrl(processedDropOffOrganizers);
+    const neighborhoodIds = getNeighborhoodIdsForUrl(
+      processedDropOffOrganizers
+    );
     const neighborhoodsUrl =
       `${AIRTABLE_URL_BASE}/🏡 Neighborhoods?` +
       `filterByFormula=SEARCH(RECORD_ID(), "${neighborhoodIds}") != ""` +
@@ -238,11 +249,8 @@ router.route("/api/dropoff-locations/partner-organizers").get(
     neighborhoods.records.forEach((neighborhood) =>
       neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
     );
-    console.log(neighborhoodNamesById);
-    processNeighborhoods(
-      processedDropOffOrganizers,
-      neighborhoodNamesById
-    );
+    //console.log(neighborhoodNamesById);
+    processNeighborhoods(processedDropOffOrganizers, neighborhoodNamesById);
 
     res.status(OK).json(processedDropOffOrganizers) as Response<
       ProcessedDropoffLocation[]

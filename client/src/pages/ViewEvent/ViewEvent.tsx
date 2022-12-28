@@ -4,7 +4,7 @@ import { useFutureEventById } from "../eventHooks";
 
 import React, { useEffect, useState } from "react";
 //Types
-import { ProcessedScheduledSlot } from "../../types";
+import { ProcessedScheduledSlot, ProcessedSpecialEvent } from "../../types";
 //Components
 import { Loading } from "../../components/Loading";
 import { VolunteersTable } from "./VolunteersTable";
@@ -72,6 +72,30 @@ export const ViewEvent = () => {
     { enabled: eventStatus === "success" }
   );
 
+  const eventIds = event?.allEventIds.join(",");
+  const {
+    data: specialEvents,
+    refetch: refetchSpecialEvents,
+    status: specialEventsStatus,
+    error: specialEventsError,
+  } = useQuery(
+    ["fetchViewEventSpecialEvents", eventIds], 
+    async () => {
+      const response = await fetch(`${API_BASE_URL}/api/events/view-event-special-groups?eventIds=${eventIds}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
+      return response.json() as Promise<ProcessedSpecialEvent[]>;
+    },
+    { enabled: eventStatus === "success" }
+  );
+  console.log("specialEvents", specialEvents);
+
   const [group, setGroup] = useState("");
 
   const handleQuery = (query: string) => {
@@ -101,6 +125,7 @@ export const ViewEvent = () => {
 
   scheduledSlots.sort((a, b) => (a.firstName < b.firstName ? -1 : 1));
   console.log("scheduledSlots", scheduledSlots);
+
 
   //Tailwind classes
   const sectionHeader =

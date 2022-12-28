@@ -1,15 +1,13 @@
-import { useMutation, useQuery } from "react-query";
-import { API_BASE_URL } from "../../httpUtils";
-import { ProcessedEvent, ProcessedSpecialGroup } from "../../types";
-import { SpecialGroupDropdown } from "./SpecialGroupDropdown";
-import Popup from "../../components/Popup";
-import { Loading } from "../../components/Loading";
 import { useState } from "react";
-import { useAuth } from "../../contexts/AuthContext";
+import { useMutation, useQuery } from "react-query";
+import { API_BASE_URL } from "../../../httpUtils";
+import { useAuth } from "../../../contexts/AuthContext";
 import * as Modal from "@radix-ui/react-dialog";
-import alert from "../../assets/alert.svg";
-import check from "../../assets/check.svg";
-import { toastNotify } from "../../uiUtils";
+import { Popup } from "../../../components/Popup";
+import { SpecialGroupDropdown } from "./SpecialGroupDropdown";
+import { toastNotify } from "../../../uiUtils";
+import { ProcessedEvent, ProcessedSpecialGroup } from "../../../types";
+import check from "../../../assets/check.svg";
 
 interface Props {
   event: ProcessedEvent;
@@ -59,12 +57,12 @@ export const AddSpecialGroup: React.FC<Props> = ({
       return response.json();
     },
     onSuccess: (data, variables, context) => {
-      console.log("Data returned from POST /api/special-groups/", data); // the response
-      //We should maybe type the response?
+      console.log("Data returned from POST /api/special-groups/", data);
+      //TODO: We should maybe type the response?
       addSpecialGroupToEvent.mutate({ specialGroupId: data.records[0].id });
     },
     onError: (error, variables, context) => {
-      console.log(error); // the error if that is the case
+      console.log(error);
       toastNotify("Unable to create special group", "failure");
     },
   });
@@ -94,7 +92,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
         "Data returned from POST /api/special-groups/add-special-group-to-event",
         data
       );
-      //We should maybe type the response?
+      //TODO: We should maybe type the response?
       setNewlyAddedGroupSignUpLink(
         data.records[0].fields["Shortened Link to Special Event Signup Form"] ||
           data.records[0].fields["Link to Special Event Signup Form"] ||
@@ -143,9 +141,8 @@ export const AddSpecialGroup: React.FC<Props> = ({
   const getSpecialGroupPopupContent = () => {
     const hasGroupJustBeenAddedToEvent = newlyAddedGroupSignUpLink.length > 0;
     if (hasGroupJustBeenAddedToEvent) {
-      console.log("newlyAddedGroupSignUpLink", newlyAddedGroupSignUpLink);
       return (
-        <div className="">
+        <div>
           <Modal.Title className="m-0 flex justify-center font-bold text-newLeafGreen lg:text-3xl">
             Special Group Sign Up Link
           </Modal.Title>

@@ -156,7 +156,6 @@ router.route("/api/events").get(
     let specialEvents = futureEventsData.filter(
       (event) => event.fields["Special Event"]
     );
-    // let futureEvents: ProcessedEvent[] = [];
     const futureEvents: ProcessedEvent[] = generalEvents.map((generalEvent) => {
       const specialEventsForThisGeneralEvent = getSpecialEventsForGeneralEvent(
         specialEvents,

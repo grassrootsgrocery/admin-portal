@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { ProcessedSpecialGroup } from "../../types";
-
+import { ProcessedSpecialGroup } from "../../../types";
 //Assets
-import plus from "../../assets/plus.svg";
-import x from "../../assets/greenX.svg";
+import plus from "../../../assets/plus.svg";
+import x from "../../../assets/greenX.svg";
 
 interface Props {
   specialGroupsList: ProcessedSpecialGroup[] | undefined;

@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { AirtableResponse, ProcessedDriver, Neighborhood } from "../../types";
+import { Neighborhood, ProcessedDriver } from "../../types";
 import { API_BASE_URL } from "../../httpUtils";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -54,7 +54,7 @@ export function useDriversInfo() {
         const data = await response.json();
         throw new Error(data.messsage);
       }
-      return response.json() as Promise<AirtableResponse<Neighborhood>>;
+      return response.json() as Promise<Neighborhood[]>;
     },
     {
       enabled: processedDriversStatus === "success",
@@ -66,8 +66,8 @@ export function useDriversInfo() {
     neighborhoodsStatus === "success"
   ) {
     let neighborhoodNamesById: Map<string, string> = new Map();
-    neighborhoods.records.forEach((neighborhood) =>
-      neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
+    neighborhoods.forEach((neighborhood) =>
+      neighborhoodNamesById.set(neighborhood.id, neighborhood.Name)
     );
     processNeighborhoodsForDriver(processedDrivers, neighborhoodNamesById);
 

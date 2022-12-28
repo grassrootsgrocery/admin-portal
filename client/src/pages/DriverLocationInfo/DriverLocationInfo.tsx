@@ -4,6 +4,7 @@ import { AssignLocationDropdown } from "./AssignLocationDropdown";
 import { useQuery } from "react-query";
 import { API_BASE_URL } from "../../httpUtils";
 import { useFutureEventById } from "../eventHooks";
+import { useAuth } from "../../contexts/AuthContext";
 //Types
 import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 //Components
@@ -14,7 +15,6 @@ import { Loading } from "../../components/Loading";
 import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
 import back from "../../assets/back-white.svg";
-import { useAuth } from "../../contexts/AuthContext";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used

@@ -1,8 +1,7 @@
 import { Link, useParams, Navigate } from "react-router-dom";
-import { useQuery, useMutation } from "react-query";
+import { useQuery } from "react-query";
 import { useFutureEventById } from "../eventHooks";
-
-import React, { useEffect, useState } from "react";
+import React from "react";
 //Types
 import { ProcessedScheduledSlot } from "../../types";
 //Components
@@ -17,8 +16,6 @@ import roster from "../../assets/roster.svg";
 import { Messaging } from "./Messaging";
 import { API_BASE_URL } from "../../httpUtils";
 import { Navbar } from "../../components/Navbar/Navbar";
-// import { Dropdown } from "../../components/SpecialGroupDropdown";
-import Popup from "../../components/Popup";
 import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
 import { ViewSpecialGroups } from "./ViewSpecialGroups";

@@ -1,6 +1,6 @@
 import { DataTable } from "../../components/DataTable";
 import * as Modal from "@radix-ui/react-dialog";
-import Popup from "../../components/Popup";
+import { Popup } from "../../components/Popup";
 
 interface Props {}
 function tempViewSpecialGroupsFunct() {

@@ -283,8 +283,7 @@ router.route("/api/volunteers/drivers").get(
     console.log("GET /api/volunteers/drivers");
     const url =
       `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
-      `view=Assign Location ` + // tested with view "Drivers - Last Week"
-      //`view=Drivers - Last Week` +
+      `view=Assign Location ` +
       // Get fields for driver info table
       `&fields=First Name` + // First Name
       `&fields=Last Name` + // Last Name
@@ -366,45 +365,4 @@ router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
     res.status(OK).json(result);
   })
 );
-/**
- * @description
- * @route  GET /api/neighborhoods
- * @access
- */
-router.route("/api/neighborhoods").get(
-  protect,
-  asyncHandler(async (req: Request, res: Response) => {
-    const { neighborhoodIds } = req.query;
-    console.log(`GET /api/neighborhoods/?neighborhoddIds=${neighborhoodIds}`);
-
-    const isValidRequest = typeof neighborhoodIds === "string";
-    if (!isValidRequest) {
-      res.status(BAD_REQUEST);
-      throw new Error(
-        "Please provide a 'neighborhoodIds' as a query param of type 'string'."
-      );
-    }
-
-    const url =
-      `${AIRTABLE_URL_BASE}/🏡 Neighborhoods?` +
-      `filterByFormula=SEARCH(RECORD_ID(), "${neighborhoodIds}") != ""` +
-      `&fields%5B%5D=Name`;
-
-    const resp = await fetch(url, {
-      headers: {
-        method: "GET",
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-    });
-    if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const neighborhoods = (await resp.json()) as AirtableResponse<Neighborhood>;
-    res.status(OK).json(neighborhoods);
-  })
-);
-
 export default router;

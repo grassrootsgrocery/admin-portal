@@ -86,6 +86,7 @@ export interface ProcessedDriver {
 }
 
 export interface Neighborhood {
+  id: string;
   Name: string;
 }
 

@@ -136,7 +136,7 @@ router.route("/api/dropoff-locations/").get(
     neighborhoods.records.forEach((neighborhood) =>
       neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
     );
-    console.log(neighborhoodNamesById);
+    // console.log(neighborhoodNamesById);
     processNeighborhoodsForLocation(
       processedDropOffLocations,
       neighborhoodNamesById

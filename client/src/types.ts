@@ -58,3 +58,8 @@ export interface ProcessedSpecialGroup {
   name: string;
   events: string[];
 }
+
+export interface Neighborhood {
+  id: string;
+  Name: string;
+}

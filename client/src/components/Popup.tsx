@@ -1,18 +1,12 @@
-import React from "react";
 import * as Modal from "@radix-ui/react-dialog";
 import "./Popup.css";
-import x from "../assets/ex.svg";
 
-const itemWrap = "flex gap-4";
-const itemLabel = "b text-lg text-newLeafGreen font-bold flex justify-end";
-const itemValue = "b text-lg grow flex justify-end";
 interface Props {
   trigger: JSX.Element;
   onOpenChange?: () => void;
-  renderLittleXCloseButton?: boolean;
   content: JSX.Element;
 }
-const Popup = ({ trigger, content, onOpenChange }: Props) => {
+export const Popup = ({ trigger, content, onOpenChange }: Props) => {
   return (
     <Modal.Root onOpenChange={onOpenChange}>
       <Modal.Trigger asChild>{trigger}</Modal.Trigger>
@@ -25,5 +19,3 @@ const Popup = ({ trigger, content, onOpenChange }: Props) => {
     </Modal.Root>
   );
 };
-
-export default Popup;

@@ -1,12 +1,6 @@
-import { useQuery } from "react-query";
-import { API_BASE_URL } from "../../httpUtils";
-//Types
-import { ProcessedEvent } from "../../types";
-//Components
 import { EventCard } from "./EventCard";
 import { Loading } from "../../components/Loading";
 import { Navbar } from "../../components/Navbar/Navbar";
-import { compareSync } from "bcryptjs";
 import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { useFutureEvents } from "../eventHooks";

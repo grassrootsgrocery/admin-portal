@@ -63,3 +63,13 @@ export interface Neighborhood {
   id: string;
   Name: string;
 }
+
+export interface ProcessedDropOffOrganizer {
+  id: string;
+  siteName: string;
+  address: string;
+  neighborhoods: string[];
+  startTime: string | null;
+  endTime: string | null;
+  deliveriesNeeded: number;
+}

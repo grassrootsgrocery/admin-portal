@@ -122,3 +122,22 @@ export interface ProcessedSpecialGroup {
   name: string;
   events: string[];
 }
+
+export interface DropOffOrganizer {
+  "Drop off location": string | undefined;
+  "Drop-off Address": string | undefined;
+  "Neighborhood (from Zip Code)": string[] | undefined;
+  "Starts accepting at": string | undefined;
+  "Stops accepting at": string | undefined;
+  "Total Loads": number | undefined;
+}
+
+export interface ProcessedDropOffOrganizer {
+  id: string;
+  siteName: string;
+  address: string;
+  neighborhoods: string[];
+  startTime: string | null;
+  endTime: string | null;
+  deliveriesNeeded: number;
+}

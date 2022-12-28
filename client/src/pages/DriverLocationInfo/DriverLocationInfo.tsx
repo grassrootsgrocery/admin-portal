@@ -169,6 +169,27 @@ export function DriverLocationInfo() {
   console.log("driversInfo", driversInfo);
 
   const {
+    data: dropoffOrganizers,
+    status: dropoffOrganizersStatus,
+    error: dropoffOrganizersError,
+  } = useQuery(["fetchDropOffLocations"], async () => {
+    const resp = await fetch(
+      `${API_BASE_URL}/api/dropoff-locations/partner-organizers`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!resp.ok) {
+      const data = await resp.json();
+      throw new Error(data.messsage);
+    }
+    return resp.json();
+  });
+  console.log("dropoffOrganizers", dropoffOrganizers);
+
+  const {
     data: dropoffLocations,
     status: dropoffLocationsStatus,
     error: dropoffLocationsError,

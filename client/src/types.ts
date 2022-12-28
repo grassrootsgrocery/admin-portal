@@ -73,3 +73,9 @@ export interface DropdownFilter {
   query: string;
   list: ProcessedSpecialGroup[];
 }
+
+export interface ProcessedSpecialEvent {
+  id: string;
+  specialGroupName: string;
+  eventSignUpLink: string;
+}

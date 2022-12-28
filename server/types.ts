@@ -114,6 +114,18 @@ export interface SpecialGroup {
 }
 
 export interface ProcessedSpecialGroup {
+  id: string;
   name: string;
   events: string[];
+}
+
+export interface SpecialEvent {
+  "Volunteer Group": string;
+  "Link to Special Event Signup Form": string;
+}
+
+export interface ProcessedSpecialEvent {
+  id: string;
+  specialGroupName: string;
+  eventSignUpLink: string;
 }

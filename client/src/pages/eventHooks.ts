@@ -46,38 +46,3 @@ export function useFutureEventById(eventId: string | undefined) {
     eventError: futureEventsError,
   };
 }
-
-// /*
-export function useSpecialGroups(event: ProcessedEvent | undefined) {
-  const { token } = useAuth();
-  const eventIds = event?.allEventIds.join(",");
-  const {
-    data: specialEvents,
-    refetch: refetchSpecialEvents,
-    status: specialEventsStatus,
-    error: specialEventsError,
-  } = useQuery(
-    ["fetchViewEventSpecialEvents", eventIds], 
-    async () => {
-      const response = await fetch(`${API_BASE_URL}/api/events/view-event-special-groups?eventIds=${eventIds}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message);
-      }
-      return response.json() as Promise<ProcessedSpecialEvent[]>;
-    },
-    { enabled: eventStatus === "success" }
-  );
-
-  return {
-    specialEvents,
-    refetchSpecialEvents: refetchSpecialEvents,
-    specialEventsStatus: specialEventsStatus,
-    specialEventsError: specialEventsError
-  }
-}
-// */

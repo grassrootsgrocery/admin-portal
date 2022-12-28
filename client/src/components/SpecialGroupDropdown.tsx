@@ -220,7 +220,7 @@ export const Dropdown = (props: any) => {
           className="flex flex-row rounded-lg px-2 hover:cursor-pointer hover:bg-softGrayWhite"
           onClick={() => {
             isSpecialGroupRegistered(
-              { name: state.query, events: [] },
+              { name: state.query, events: [] },      // FIX: need to add an id field
               eventIdsList
             );
           }}

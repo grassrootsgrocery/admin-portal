@@ -242,12 +242,11 @@ export const AddSpecialGroup: React.FC<Props> = ({
     <Popup
       trigger={
         <button
-          // className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
           className={
             "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all lg:px-5 lg:py-3 lg:text-base lg:font-bold " +
             (addSpecialGroupButtonDisabled
               ? "opacity-50"
-              : "hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen ")
+              : "hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen")
           }
           disabled={addSpecialGroupButtonDisabled}
           type="button"

@@ -44,11 +44,12 @@ export interface ProcessedDriver {
 
 export interface ProcessedDropoffLocation {
   id: string;
-  dropOffLocation: string;
+  siteName: string;
   address: string;
   neighborhoods: string[];
-  startTime: string;
-  endTime: string;
+  startTime: string | null;
+  endTime: string | null;
+  deliveriesNeeded: number;
   deliveriesAssigned: number;
   matchedDrivers: string[];
 }
@@ -64,12 +65,3 @@ export interface Neighborhood {
   Name: string;
 }
 
-export interface ProcessedDropOffOrganizer {
-  id: string;
-  siteName: string;
-  address: string;
-  neighborhoods: string[];
-  startTime: string | null;
-  endTime: string | null;
-  deliveriesNeeded: number;
-}

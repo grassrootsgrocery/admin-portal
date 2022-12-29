@@ -41,7 +41,7 @@ function processDriversForTable(
       curDriver.restrictedLocations.join(", "),
       <AssignLocationDropdown
         locations={processedDropOffLocations.sort((a, b) =>
-          a.dropOffLocation < b.dropOffLocation ? -1 : 1
+          a.siteName < b.siteName ? -1 : 1
         )}
         driver={curDriver}
         refetchDrivers={refetchDrivers}
@@ -64,11 +64,11 @@ function processDropoffLocationsForTable(
       curLocation.id, //id
       i + 1, //#
       "Coordinator Information", //TODO: coordinator information
-      curLocation.dropOffLocation,
+      curLocation.siteName,
       curLocation.address,
       curLocation.neighborhoods.join(", "),
-      curLocation.startTime,
-      curLocation.endTime,
+      typeof curLocation.startTime === "string"? curLocation.startTime : "N/A",
+      typeof curLocation.endTime === "string"? curLocation.endTime : "N/A",
       curLocation.deliveriesAssigned,
       <ul className="scrollbar-thin flex w-[600px] gap-4 overflow-x-auto pb-2">
         {drivers
@@ -168,13 +168,14 @@ export function DriverLocationInfo() {
   } = useDriversInfo();
   console.log("driversInfo", driversInfo);
 
+  // REMOVE (start) - use in drop off location organizer table
   const {
-    data: dropoffOrganizers,
-    status: dropoffOrganizersStatus,
-    error: dropoffOrganizersError,
-  } = useQuery(["fetchDropOffLocations"], async () => {
+    data: partnerDropoffLocations,
+    status: partnerDropoffLocationsStatus,
+    error: partnerDropoffLocationsError,
+  } = useQuery(["fetchPartnerDropOffLocations"], async () => {
     const resp = await fetch(
-      `${API_BASE_URL}/api/dropoff-locations/partner-organizers`,
+      `${API_BASE_URL}/api/dropoff-locations/partner-locations`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -187,13 +188,14 @@ export function DriverLocationInfo() {
     }
     return resp.json();
   });
-  console.log("dropoffOrganizers", dropoffOrganizers);
+  console.log("partnerDropoffLocations", partnerDropoffLocations);
+  // REMOVE (end)
 
   const {
-    data: dropoffLocations,
-    status: dropoffLocationsStatus,
-    error: dropoffLocationsError,
-  } = useQuery(["fetchDropOffLocations"], async () => {
+    data: eventDropoffLocations,
+    status: eventDropoffLocationsStatus,
+    error: eventDropoffLocationsError,
+  } = useQuery(["fetchEventDropOffLocations"], async () => {
     const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations`, {
       headers: {
         "Content-Type": "application/json",
@@ -206,12 +208,12 @@ export function DriverLocationInfo() {
     }
     return resp.json();
   });
-  console.log("dropoffLocations", dropoffLocations);
+  console.log("eventDropoffLocations", eventDropoffLocations);
 
   if (
     driversInfoIsLoading ||
-    dropoffLocationsStatus === "loading" ||
-    dropoffLocationsStatus === "idle"
+    eventDropoffLocationsStatus === "loading" ||
+    eventDropoffLocationsStatus === "idle"
   ) {
     return (
       <div className="relative h-full">
@@ -219,8 +221,8 @@ export function DriverLocationInfo() {
       </div>
     );
   }
-  if (driversInfoIsError || dropoffLocationsStatus === "error") {
-    const error = driversInfoError || dropoffLocationsError;
+  if (driversInfoIsError || eventDropoffLocationsStatus === "error") {
+    const error = driversInfoError || eventDropoffLocationsError;
     console.error(error);
     return <div>Error...</div>;
   }
@@ -295,7 +297,7 @@ export function DriverLocationInfo() {
             ]}
             dataRows={processDriversForTable(
               driversInfo,
-              dropoffLocations,
+              eventDropoffLocations,
               refetchDrivers
             )}
           />
@@ -341,7 +343,7 @@ export function DriverLocationInfo() {
             ]}
             dataRows={processDropoffLocationsForTable(
               driversInfo,
-              dropoffLocations
+              eventDropoffLocations
             )}
           />
         </div>

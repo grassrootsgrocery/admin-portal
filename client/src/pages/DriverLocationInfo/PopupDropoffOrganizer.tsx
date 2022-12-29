@@ -24,19 +24,6 @@ function processDropoffOrganizerForPopUp(
   const validTime = /^(0?[1-9]|1[012]):([0-5]\d) ([AaPp][Mm])$/g;
 
   for (let i = 0; i < processedDropOffOrganizer.length; i++) {
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
-    const [isInvalidStart, setIsInvalidStart] = useState(false);
-    const [isInvalidEnd, setIsInvalidEnd] = useState(false);
-
-    const invalidStart = (a: boolean) => {
-      setIsInvalidStart(a);
-    };
-
-    const invalidEnd = (a: boolean) => {
-      setIsInvalidEnd(a);
-    };
-
     const curLocation = processedDropOffOrganizer[i];
     let curRow = [
       curLocation.id, //id
@@ -48,27 +35,52 @@ function processDropoffOrganizerForPopUp(
       <input
         className={`h-10 w-20 border bg-softBeige p-1 ${
           dropoffStore[curLocation.id]?.isValid
-            ? "border-red-600 focus:outline-red-600"
-            : "border-softGrayWhite focus:outline-softGrayWhite"
+            ? "border-softGrayWhite focus:outline-softGrayWhite"
+            : "border-red-600 focus:outline-red-600"
         } text-center text-newLeafGreen placeholder:text-center placeholder:text-newLeafGreen placeholder:text-opacity-50`}
         type="text"
         placeholder={curLocation.startTime || "00:00 AM"}
-        value={startTime}
+        value={dropoffStore.startTime}
         onChange={(e) => {
           if (e.target.value && !validTime.test(e.target.value)) {
             setDropoffValue(curLocation.id, "startTime", e.target.value, false);
-            setStartTime(e.target.value);
-            invalidStart(true);
-            console.log("Invalid start time");
           } else {
-            setDropoffValue(curLocation.id, "startTime", e.target.value, true);
-            setStartTime(e.target.value);
-            invalidStart(false);
+            setDropoffValue(
+              curLocation.id,
+              "startTime",
+              e.target.value,
+              true
+            );
           }
         }}
       ></input>,
 
       // EndTime Input,
+      <input
+        className={`h-10 w-20 border bg-softBeige p-1 ${
+          dropoffStore[curLocation.id]?.isValid
+            ? "border-softGrayWhite focus:outline-softGrayWhite"
+            : "border-red-600 focus:outline-red-600"
+        } text-center text-newLeafGreen placeholder:text-center placeholder:text-newLeafGreen placeholder:text-opacity-50`}
+        type="text"
+        placeholder={curLocation.endTime || "00:00 AM"}
+        value={dropoffStore.endTime}
+        onChange={(e) => {
+          if (e.target.value && !validTime.test(e.target.value)) {
+            setDropoffValue(curLocation.id, "endTime", e.target.value, false);
+            console.log("Invalid end time");
+          } else {
+            setDropoffValue(
+              curLocation.id,
+              "endTime",
+              e.target.value,
+              true
+            );
+          }
+        }}
+      ></input>,
+
+      /* Old input reference
       <input
         className={`h-10 w-20 border bg-softBeige p-1 ${
           isInvalidEnd ? "border-red-600" : "border-softGrayWhite"
@@ -89,6 +101,7 @@ function processDropoffOrganizerForPopUp(
           }
         }}
       ></input>,
+      */
 
       // Deliveries Needed Input
       <input
@@ -153,7 +166,7 @@ export const PopupDropoffOrganizer: React.FC<Props> = () => {
     }
     return resp.json();
   });
-  console.log("dropoffOrganizers", dropoffOrganizers);
+  // console.log("dropoffOrganizers", dropoffOrganizers);
 
   const [dropoffStore, setDropoffStore] = useState<any>({});
 
@@ -192,11 +205,7 @@ export const PopupDropoffOrganizer: React.FC<Props> = () => {
       return resp.json();
     },
   });
-  /* 
-    object key of id {id -> object {startTime, endTime, deliveriesNeeded}}
-    Update useState somehow
-  */
-  console.log(dropoffStore);
+  console.log("DropoffStore: ", dropoffStore);
 
   return (
     <Popup

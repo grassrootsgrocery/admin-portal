@@ -93,7 +93,7 @@ router.route("/api/volunteers/").get(
     console.log(`GET /api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`);
 
     const isValidRequest =
-      scheduledSlotsIds && typeof scheduledSlotsIds === "string";
+      scheduledSlotsIds !== undefined && typeof scheduledSlotsIds === "string";
     if (!isValidRequest) {
       res.status(BAD_REQUEST);
       throw new Error(
@@ -335,7 +335,7 @@ router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
     if (!isValidRequest) {
       res.status(BAD_REQUEST);
       throw new Error(
-        "Please provide a 'locationIds' on the request body with type string[]"
+        "Please provide 'driverId' as a query param and locationIds' with type string[] on the request body"
       );
     }
     console.log(`PATCH /api/volunteers/drivers/assign-location/${driverId}`);

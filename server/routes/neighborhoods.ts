@@ -24,7 +24,8 @@ router.route("/api/neighborhoods").get(
     const { neighborhoodIds } = req.query;
     console.log(`GET /api/neighborhoods/?neighborhoodIds=${neighborhoodIds}`);
 
-    const isValidRequest = typeof neighborhoodIds === "string";
+    const isValidRequest =
+      neighborhoodIds !== undefined && typeof neighborhoodIds === "string";
     if (!isValidRequest) {
       res.status(BAD_REQUEST);
       throw new Error(

@@ -40,7 +40,7 @@ function processDropOffLocations(
     endTime: endTime.toLocaleString("en-US", optionsTime), // end time in HH:MM AM/PM format
     deliveriesNeeded: location.fields["# of Loads Requested"] || 0,
     deliveriesAssigned: location.fields["Total Loads"] || 0,
-    matchedDrivers: [""],                                // TODO: update with correct airtable field
+    matchedDrivers: [""],
   };
 }
 
@@ -93,7 +93,7 @@ router.route("/api/dropoff-locations/").get(
       `&fields=Starts accepting at` + // startTime
       `&fields=Stops accepting at` + // endTime
       `&fields=Total Loads` + // deliveriesAssigned
-      `&fields=# of Loads Requested`; // deliveriesNeeded
+      `&fields%5B%5D=%23+of+Loads+Requested`; // deliveriesNeeded
 
     const resp = await fetch(url, {
       headers: {
@@ -102,6 +102,7 @@ router.route("/api/dropoff-locations/").get(
       },
     });
     if (!resp.ok) {
+      console.log(`${resp.status} ` + `${AIRTABLE_ERROR_MESSAGE}`);
       throw {
         message: AIRTABLE_ERROR_MESSAGE,
         status: resp.status,
@@ -109,6 +110,7 @@ router.route("/api/dropoff-locations/").get(
     }
     const dropoffLocations =
       (await resp.json()) as AirtableResponse<DropoffLocation>;
+      console.log(dropoffLocations.records);
     let processedDropOffLocations = dropoffLocations.records.map((location) =>
       processDropOffLocations(location)
     );

@@ -73,6 +73,7 @@ export interface Driver {
   "Restricted Neighborhoods": string[];
   "📍 Drop off location": string[];
 }
+
 export interface ProcessedDriver {
   id: string;
   firstName: string;
@@ -96,17 +97,19 @@ export interface DropoffLocation {
   "Neighborhood (from Zip Code)": string[];
   "Starts accepting at": string;
   "Stops accepting at": string;
-  // TODO: update with correct airtable field for deliveriesAssigned
+  "Total Loads": number | undefined;
+  // TODO: update with correct airtable field for deliveriesNeeded
   // TODO: update with correct airtable field for matchedDrivers
 }
 
 export interface ProcessedDropoffLocation {
   id: string;
-  dropOffLocation: string;
+  siteName: string;
   address: string;
   neighborhoods: string[];
-  startTime: string;
-  endTime: string;
+  startTime: string | null;
+  endTime: string | null;
+  deliveriesNeeded: number;
   deliveriesAssigned: number;
   matchedDrivers: string[];
 }
@@ -123,21 +126,3 @@ export interface ProcessedSpecialGroup {
   events: string[];
 }
 
-export interface DropOffOrganizer {
-  "Drop off location": string | undefined;
-  "Drop-off Address": string | undefined;
-  "Neighborhood (from Zip Code)": string[] | undefined;
-  "Starts accepting at": string | undefined;
-  "Stops accepting at": string | undefined;
-  "Total Loads": number | undefined;
-}
-
-export interface ProcessedDropOffOrganizer {
-  id: string;
-  siteName: string;
-  address: string;
-  neighborhoods: string[];
-  startTime: string | null;
-  endTime: string | null;
-  deliveriesNeeded: number;
-}

@@ -69,7 +69,7 @@ function processDropoffLocationsForTable(
       curLocation.neighborhoods.join(", "),
       typeof curLocation.startTime === "string"? curLocation.startTime : "N/A",
       typeof curLocation.endTime === "string"? curLocation.endTime : "N/A",
-      curLocation.deliveriesAssigned,
+      `${curLocation.deliveriesAssigned}/${curLocation.deliveriesNeeded}`,
       <ul className="scrollbar-thin flex w-[600px] gap-4 overflow-x-auto pb-2">
         {drivers
           .filter((d) => d.dropoffLocations.some((l) => l === curLocation.id))

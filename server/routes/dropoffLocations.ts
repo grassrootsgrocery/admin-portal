@@ -38,7 +38,7 @@ function processDropOffLocations(
     neighborhoods: location.fields["Neighborhood (from Zip Code)"]  || [],
     startTime: startTime.toLocaleString("en-US", optionsTime), // start time in HH:MM AM/PM format
     endTime: endTime.toLocaleString("en-US", optionsTime), // end time in HH:MM AM/PM format
-    deliveriesNeeded: 0,                                 // TODO: update with correct airtable field
+    deliveriesNeeded: location.fields["# of Loads Requested"] || 0,
     deliveriesAssigned: location.fields["Total Loads"] || 0,
     matchedDrivers: [""],                                // TODO: update with correct airtable field
   };
@@ -87,11 +87,13 @@ router.route("/api/dropoff-locations/").get(
     const url =
       `${AIRTABLE_URL_BASE}/📍 Drop off locations?` +
       `view=Drop-offs for This Weekend` +
-      `&fields=Drop off location` + // Name of drop off location
+      `&fields=Drop off location` + // siteName
       `&fields=Drop-off Address` + // address
-      `&fields=Neighborhood (from Zip Code)` + // neighborhood
+      `&fields=Neighborhood (from Zip Code)` + // neighborhoods
       `&fields=Starts accepting at` + // startTime
-      `&fields=Stops accepting at`; //+  // endTime
+      `&fields=Stops accepting at` + // endTime
+      `&fields=Total Loads` + // deliveriesAssigned
+      `&fields=# of Loads Requested`; // deliveriesNeeded
 
     const resp = await fetch(url, {
       headers: {
@@ -160,7 +162,7 @@ router.route("/api/dropoff-locations/partner-locations").get(
       `&filterByFormula={Regular Saturday Partner?}` +
       `&fields=Drop off location` + // siteName
       `&fields=Drop-off Address` + // address
-      `&fields=Neighborhood (from Zip Code)` + // neighborhood
+      `&fields=Neighborhood (from Zip Code)` + // neighborhoods
       `&fields=Starts accepting at` + // startTime
       `&fields=Stops accepting at` + // endTime
       `&fields=Total Loads`; // deliveriesNeeded

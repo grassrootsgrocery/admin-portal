@@ -94,7 +94,7 @@ function processDropoffOrganizerForPopUp(
 
 /**
  * Uses processedDropOffOrganizer from query to initialize dropoffStore values
- * @param processedDropOffOrganizer 
+ * @param processedDropOffOrganizer
  * @returns initialized dropoffStore
  */
 function populateStoreWithFetchedData(
@@ -119,7 +119,7 @@ const validTime = /^(0?[1-9]|1[012]):([0-5]\d) ([AaPp][Mm])$/g;
 
 // Convert 12 hour to ISO 8601
 function toISO(time: string) {
-  let date = "31 December 2022"; // Temporary date - change to correct
+  let date = "7 January 2023"; // Temporary date - change to correct
 
   if (!time) {
     let defaultTime = new Date(date + " 00:00");
@@ -164,6 +164,7 @@ export const PopupDropoffOrganizer: React.FC<Props> = () => {
       }
     );
     if (!resp.ok) {
+      console.log("Resp: ", resp);
       const data = await resp.json();
       throw new Error(data.messsage);
     }
@@ -203,11 +204,11 @@ export const PopupDropoffOrganizer: React.FC<Props> = () => {
         dropoffAirtableStore[id] = {
           startTime: toISO(dropoffStore[id].startTime) || "",
           endTime: toISO(dropoffStore[id].endTime) || "",
-          // deliveriesNeeded: dropoffStore[id].deliveriesNeeded || 0,
+          deliveriesNeeded: dropoffStore[id].deliveriesNeeded || 0,
           // isValid: true,
         };
       }
-      console.log("DropoffAirtableStore: ", dropoffAirtableStore);
+      console.log("DropoffAirtableStore: Before Patching", dropoffAirtableStore);
 
       const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations/`, {
         method: "PATCH",

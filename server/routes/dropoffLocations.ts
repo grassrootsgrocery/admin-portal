@@ -274,6 +274,7 @@ router.route("/api/dropoff-locations/").patch(
         fields: {
           "Starts accepting at": req.body[locationId].startTime,
           "Stops accepting at": req.body[locationId].endTime,
+          "# of Loads Requested": req.body[locationId].deliveriesNeeded,
         },
       };
     });
@@ -293,17 +294,20 @@ router.route("/api/dropoff-locations/").patch(
           records: records.slice(start, start + 10),
         }),
       });
-      const data = await resp.json();
-      console.log("Data Backend: ", data);
+      start += 10;
 
-      if (!resp.ok) {
-        throw {
-          message: AIRTABLE_ERROR_MESSAGE,
-          status: resp.status,
-        };
-      }
-      const dropoffOrganizers = await resp.json();
-      res.status(OK_CREATED).json(dropoffOrganizers);
+      // const data = await resp.json();
+      // console.log("Data Backend: ", data);
+
+      // if (!resp.ok) {
+      //   console.log("resp: ", resp);
+      //   throw {
+      //     message: AIRTABLE_ERROR_MESSAGE,
+      //     status: resp.status,
+      //   };
+      // }
+      // const dropoffOrganizers = await resp.json();
+      // res.status(OK_CREATED).json(dropoffOrganizers);
     }
   })
 );

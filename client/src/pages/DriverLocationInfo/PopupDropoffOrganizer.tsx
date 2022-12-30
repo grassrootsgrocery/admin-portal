@@ -8,6 +8,7 @@ import { ProcessedDropOffOrganizer } from "../../types";
 import { DataTable } from "../../components/DataTable";
 import { Popup } from "../../components/Popup";
 import * as Modal from "@radix-ui/react-dialog";
+import { constants } from "buffer";
 
 interface Props {}
 function processDropoffOrganizerForPopUp(
@@ -40,17 +41,12 @@ function processDropoffOrganizerForPopUp(
         } text-center text-newLeafGreen placeholder:text-center placeholder:text-newLeafGreen placeholder:text-opacity-50`}
         type="text"
         placeholder={curLocation.startTime || "00:00 AM"}
-        value={dropoffStore.startTime}
+        value={dropoffStore[curLocation.id].startTime}
         onChange={(e) => {
           if (e.target.value && !validTime.test(e.target.value)) {
             setDropoffValue(curLocation.id, "startTime", e.target.value, false);
           } else {
-            setDropoffValue(
-              curLocation.id,
-              "startTime",
-              e.target.value,
-              true
-            );
+            setDropoffValue(curLocation.id, "startTime", e.target.value, true);
           }
         }}
       ></input>,
@@ -64,44 +60,15 @@ function processDropoffOrganizerForPopUp(
         } text-center text-newLeafGreen placeholder:text-center placeholder:text-newLeafGreen placeholder:text-opacity-50`}
         type="text"
         placeholder={curLocation.endTime || "00:00 AM"}
-        value={dropoffStore.endTime}
+        value={dropoffStore[curLocation.id].endTime}
         onChange={(e) => {
           if (e.target.value && !validTime.test(e.target.value)) {
             setDropoffValue(curLocation.id, "endTime", e.target.value, false);
-            console.log("Invalid end time");
           } else {
-            setDropoffValue(
-              curLocation.id,
-              "endTime",
-              e.target.value,
-              true
-            );
+            setDropoffValue(curLocation.id, "endTime", e.target.value, true);
           }
         }}
       ></input>,
-
-      /* Old input reference
-      <input
-        className={`h-10 w-20 border bg-softBeige p-1 ${
-          isInvalidEnd ? "border-red-600" : "border-softGrayWhite"
-        } text-center text-newLeafGreen placeholder:text-center placeholder:text-newLeafGreen placeholder:text-opacity-50 ${
-          isInvalidEnd ? "focus:outline-red-600" : "focus:outline-softGrayWhite"
-        }`}
-        type="text"
-        placeholder={curLocation.endTime || "00:00 AM"}
-        value={endTime}
-        onChange={(e) => {
-          if (e.target.value && !validTime.test(e.target.value)) {
-            setEndTime(e.target.value);
-            invalidEnd(true);
-            console.log("Invalid end time");
-          } else {
-            setEndTime(e.target.value);
-            invalidEnd(false);
-          }
-        }}
-      ></input>,
-      */
 
       // Deliveries Needed Input
       <input
@@ -109,6 +76,15 @@ function processDropoffOrganizerForPopUp(
         type="number"
         min="0"
         placeholder={`${curLocation.deliveriesNeeded || 0}`}
+        value={dropoffStore[curLocation.id].deliveriesNeeded}
+        onChange={(e) => {
+          setDropoffValue(
+            curLocation.id,
+            "deliveriesNeeded",
+            e.target.value,
+            false
+          );
+        }}
       ></input>,
     ];
     output.push(curRow);
@@ -116,36 +92,63 @@ function processDropoffOrganizerForPopUp(
   return output;
 }
 
+/**
+ * Uses processedDropOffOrganizer from query to initialize dropoffStore values
+ * @param processedDropOffOrganizer 
+ * @returns initialized dropoffStore
+ */
+function populateStoreWithFetchedData(
+  processedDropOffOrganizer: ProcessedDropOffOrganizer[]
+) {
+  const dropoffStore: any = {};
+  for (let i = 0; i < processedDropOffOrganizer.length; i++) {
+    const curLocation = processedDropOffOrganizer[i];
+
+    dropoffStore[curLocation.id] = {
+      startTime: curLocation.startTime || "",
+      endTime: curLocation.endTime || "",
+      deliveriesNeeded: curLocation.deliveriesNeeded || 0,
+      isValid: true,
+    };
+  }
+  return dropoffStore;
+}
+
+// Convert time
+const validTime = /^(0?[1-9]|1[012]):([0-5]\d) ([AaPp][Mm])$/g;
+
+// Convert 12 hour to ISO 8601
+function toISO(time: string) {
+  let date = "31 December 2022"; // Temporary date - change to correct
+
+  if (!time) {
+    let defaultTime = new Date(date + " 00:00");
+    return defaultTime.toISOString();
+  }
+
+  let results = [...time.matchAll(validTime)];
+  let hours = results[0][1];
+  let minutes = results[0][2];
+
+  // Convert 12 hour to 24 hour format
+  if (hours === "12") {
+    hours = "00";
+  }
+  if (/^[Pp][Mm]$/.test(results[0][3])) {
+    hours = (parseInt(hours, 10) + 12).toString();
+  }
+
+  // Convert to UTC
+  let dateTime = new Date(date + " " + hours + ":" + minutes);
+  // console.log("ISO Return Val: ", dateTime.toISOString());
+  return dateTime.toISOString();
+}
+
 export const PopupDropoffOrganizer: React.FC<Props> = () => {
   const { token } = useAuth();
   if (!token) {
     return <Navigate to="/" />;
   }
-
-  const validTime = /^(0?[1-9]|1[012]):([0-5]\d) ([AaPp][Mm])$/g;
-
-  // Convert 12 hour to ISO 8601
-  const toISO = function (time: string) {
-    let results = [...time.matchAll(validTime)];
-    //console.log(results[0]);
-    let hours = results[0][1];
-    let minutes = results[0][2];
-
-    // Convert 12 hour to 24 hour format
-    if (hours === "12") {
-      hours = "00";
-    }
-    if (/^[Pp][Mm]$/.test(results[0][3])) {
-      console.log("This is PM");
-      hours = (parseInt(hours, 10) + 12).toString();
-    }
-
-    // Convert to UTC
-    let date = "24 December 2022"; // Temporary date - change to correct
-    let dateTime = new Date(date + " " + hours + ":" + minutes);
-    console.log(dateTime.toISOString());
-    return dateTime.toISOString();
-  };
 
   const {
     data: dropoffOrganizers,
@@ -168,7 +171,9 @@ export const PopupDropoffOrganizer: React.FC<Props> = () => {
   });
   // console.log("dropoffOrganizers", dropoffOrganizers);
 
-  const [dropoffStore, setDropoffStore] = useState<any>({});
+  const [dropoffStore, setDropoffStore] = useState<any>(
+    populateStoreWithFetchedData(dropoffOrganizers)
+  );
 
   const setDropoffValue = (
     id: string,
@@ -190,13 +195,27 @@ export const PopupDropoffOrganizer: React.FC<Props> = () => {
 
   const saveDropoffLocations = useMutation({
     mutationFn: async () => {
+      const dropoffAirtableStore: any = {}; // Copied dropoffStore with converted times for airtable call
+      console.log("DropoffStore: ", dropoffStore);
+
+      // Traverses dropoffStore, converting the times toISO and copying to dropoffAirtableStore
+      for (const id in dropoffStore) {
+        dropoffAirtableStore[id] = {
+          startTime: toISO(dropoffStore[id].startTime) || "",
+          endTime: toISO(dropoffStore[id].endTime) || "",
+          // deliveriesNeeded: dropoffStore[id].deliveriesNeeded || 0,
+          // isValid: true,
+        };
+      }
+      console.log("DropoffAirtableStore: ", dropoffAirtableStore);
+
       const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(dropoffStore),
+        body: JSON.stringify(dropoffAirtableStore),
       });
       if (!resp.ok) {
         const data = await resp.json();
@@ -205,7 +224,6 @@ export const PopupDropoffOrganizer: React.FC<Props> = () => {
       return resp.json();
     },
   });
-  console.log("DropoffStore: ", dropoffStore);
 
   return (
     <Popup
@@ -244,7 +262,7 @@ export const PopupDropoffOrganizer: React.FC<Props> = () => {
           <div className="h-4" />
           <div className="flex justify-evenly ">
             <Modal.Close className="rounded-full bg-pumpkinOrange px-2 py-1 text-xs font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl">
-              Cancel
+              Close
             </Modal.Close>
             <button
               className="rounded-full bg-newLeafGreen  px-2 py-1 text-xs font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl"

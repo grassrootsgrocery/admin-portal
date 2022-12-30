@@ -110,7 +110,6 @@ router.route("/api/dropoff-locations/").get(
     }
     const dropoffLocations =
       (await resp.json()) as AirtableResponse<DropoffLocation>;
-      console.log(dropoffLocations.records);
     let processedDropOffLocations = dropoffLocations.records.map((location) =>
       processDropOffLocations(location)
     );

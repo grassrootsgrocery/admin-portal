@@ -10,7 +10,9 @@ import { Popup } from "../../components/Popup";
 import * as Modal from "@radix-ui/react-dialog";
 import { constants } from "buffer";
 
-interface Props {}
+interface Props {
+  date: Date;
+}
 function processDropoffOrganizerForPopUp(
   processedDropOffOrganizer: ProcessedDropOffOrganizer[],
   dropoffStore: any,
@@ -118,12 +120,12 @@ function populateStoreWithFetchedData(
 const validTime = /^(0?[1-9]|1[012]):([0-5]\d) ([AaPp][Mm])$/g;
 
 // Convert 12 hour to ISO 8601
-function toISO(time: string) {
-  let date = "7 January 2023"; // Temporary date - change to correct
+function toISO(time: string, date: Date) {
+  let newDate = new Date(date);
 
   if (!time) {
-    let defaultTime = new Date(date + " 00:00");
-    return defaultTime.toISOString();
+    newDate.setHours(0, 0);
+    return newDate.toISOString();
   }
 
   let results = [...time.matchAll(validTime)];
@@ -139,12 +141,12 @@ function toISO(time: string) {
   }
 
   // Convert to UTC
-  let dateTime = new Date(date + " " + hours + ":" + minutes);
+  newDate.setHours(parseInt(hours), parseInt(minutes));
   // console.log("ISO Return Val: ", dateTime.toISOString());
-  return dateTime.toISOString();
+  return newDate.toISOString();
 }
 
-export const PopupDropoffOrganizer: React.FC<Props> = () => {
+export const PopupDropoffOrganizer: React.FC<Props> = ({ date }) => {
   const { token } = useAuth();
   if (!token) {
     return <Navigate to="/" />;
@@ -198,17 +200,20 @@ export const PopupDropoffOrganizer: React.FC<Props> = () => {
     mutationFn: async () => {
       const dropoffAirtableStore: any = {}; // Copied dropoffStore with converted times for airtable call
       console.log("DropoffStore: ", dropoffStore);
-
+      console.log("Date: ", date);
       // Traverses dropoffStore, converting the times toISO and copying to dropoffAirtableStore
       for (const id in dropoffStore) {
         dropoffAirtableStore[id] = {
-          startTime: toISO(dropoffStore[id].startTime) || "",
-          endTime: toISO(dropoffStore[id].endTime) || "",
+          startTime: toISO(dropoffStore[id].startTime, date) || "",
+          endTime: toISO(dropoffStore[id].endTime, date) || "",
           deliveriesNeeded: dropoffStore[id].deliveriesNeeded || 0,
           // isValid: true,
         };
       }
-      console.log("DropoffAirtableStore: Before Patching", dropoffAirtableStore);
+      console.log(
+        "DropoffAirtableStore: Before Patching",
+        dropoffAirtableStore
+      );
 
       const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations/`, {
         method: "PATCH",

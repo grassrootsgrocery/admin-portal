@@ -367,7 +367,7 @@ export function DriverLocationInfo() {
               Send Driver Info to Coordinators
             </button>
           </div>
-          <PopupDropoffOrganizer />
+          <PopupDropoffOrganizer date={event.date}/>
         </div>
         <div className="h-16" />
       </div>

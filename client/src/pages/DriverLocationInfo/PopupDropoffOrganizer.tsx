@@ -146,6 +146,20 @@ function toISO(time: string, date: Date) {
   return newDate.toISOString();
 }
 
+/**
+ * Checks if inputs are valid to disable Save Changes button
+ * @param dropoffStore state of inputs with isValid property
+ * @returns false if any input is INVALID; true otherwise
+ */
+function isValidInput(dropoffStore: any) {
+  for (const id in dropoffStore) {
+    if (!dropoffStore[id].isValid) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export const PopupDropoffOrganizer: React.FC<Props> = ({ date }) => {
   const { token } = useAuth();
   if (!token) {
@@ -271,6 +285,7 @@ export const PopupDropoffOrganizer: React.FC<Props> = ({ date }) => {
               Close
             </Modal.Close>
             <button
+              disabled={!isValidInput(dropoffStore)}
               className="rounded-full bg-newLeafGreen  px-2 py-1 text-xs font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl"
               type="button"
               onClick={() => saveDropoffLocations.mutate()}

@@ -67,6 +67,6 @@ export interface Neighborhood {
 
 export interface ProcessedSpecialEvent {
   id: string;
-  specialGroupName: string;
+  specialGroupId: string;
   eventSignUpLink: string;
 }

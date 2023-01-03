@@ -130,7 +130,7 @@ router.route("/api/events").get(
     const url =
       `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
       // Get events after today
-      `&filterByFormula=IS_BEFORE({Start Time}, NOW())` +
+      `&filterByFormula=IS_AFTER({Start Time}, NOW())` +
       // Get fields for upcoming events dashboard
       `&fields=Start Time` + // Day, Time
       `&fields=Pickup Address` + // Main Location
@@ -200,8 +200,12 @@ function processSpecialEvents(
 ): ProcessedSpecialEvent {
   return {
     id: specialEvent.id,
-    specialGroupName: specialEvent.fields["Volunteer Group"][0],
-    eventSignUpLink: specialEvent.fields["Link to Special Event Signup Form"],
+    specialGroupId: specialEvent.fields["Volunteer Group"]
+      ? specialEvent.fields["Volunteer Group"][0]
+      : "NO ID",
+    eventSignUpLink:
+      specialEvent.fields["Link to Special Event Signup Form"] ||
+      "No sign up link",
   };
 }
 
@@ -231,7 +235,6 @@ router.route("/api/events/view-event-special-groups/").get(
       `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
       // get special events that are associated with the specific event
       `filterByFormula=AND(SEARCH(RECORD_ID(), "${eventIds}") != "",` +
-      `IS_AFTER({Start Time}, NOW()),` + // filter future events
       `{Special Event})` + //  get events that are special events
       `&fields=Volunteer Group` + // Special Group
       `&fields=Shortened Link to Special Event Signup Form`; // Special Event Link
@@ -250,11 +253,11 @@ router.route("/api/events/view-event-special-groups/").get(
     }
 
     const specialEvents = (await resp.json()) as AirtableResponse<SpecialEvent>;
-    let processedSpecialEvent = specialEvents.records.map((specialEvent) =>
+    let processedSpecialEvents = specialEvents.records.map((specialEvent) =>
       processSpecialEvents(specialEvent)
     );
 
-    res.status(OK).json(processedSpecialEvent) as Response<
+    res.status(OK).json(processedSpecialEvents) as Response<
       ProcessedSpecialEvent[]
     >;
   })

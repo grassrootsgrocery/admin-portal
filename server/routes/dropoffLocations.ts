@@ -33,34 +33,32 @@ function processDropOffLocations(
 
   return {
     id: location.id,
-    dropOffLocation: location.fields["Drop off location"]
-      ? location.fields["Drop off location"]
-      : "N/A",
-    address: location.fields["Drop-off Address"],
-    neighborhoods: location.fields["Neighborhood (from Zip Code)"]
-      ? location.fields["Neighborhood (from Zip Code)"]
-      : [],
+    siteName: location.fields["Drop off location"] || "No name",
+    address: location.fields["Drop-off Address"] || "No address",
+    neighborhoods: location.fields["Neighborhood (from Zip Code)"] || [],
     startTime: startTime.toLocaleString("en-US", optionsTime), // start time in HH:MM AM/PM format
     endTime: endTime.toLocaleString("en-US", optionsTime), // end time in HH:MM AM/PM format
-    deliveriesAssigned: 0, // location.fields[""],        // TODO: update with correct airtable field
-    matchedDrivers: [""], //location.fields[""]          // TODO: update with correct airtable field
+    deliveriesNeeded: 0, // TODO: update with correct airtable field
+    deliveriesAssigned: location.fields["Total Loads"] || 0,
+    matchedDrivers: [""], // TODO: update with correct airtable field
   };
 }
 
 // create string with needed neighborhood ids for url in neighborhood table query
 function getNeighborhoodIdsForUrl(
-  location: ProcessedDropoffLocation[]
+  locations: ProcessedDropoffLocation[]
 ): string {
   let neighborhoodIds: string[] = [];
-  location.forEach((organizer) =>
-    organizer.neighborhoods.forEach((neighborhood) =>
+  locations.forEach((location) =>
+    location.neighborhoods.forEach((neighborhood) =>
       neighborhoodIds.push(neighborhood)
     )
   );
   return neighborhoodIds.join();
 }
-// update the processed organizer's neighborhood field with neighborhood name
-function processNeighborhoodsForLocation(
+
+// update the processed location's neighborhood field with neighborhood name
+function processNeighborhoodsForLocations(
   locations: ProcessedDropoffLocation[],
   neighborhoods: Map<string, string>
 ) {
@@ -75,6 +73,7 @@ function processNeighborhoodsForLocation(
     location.neighborhoods = locationNeighborhoodNames;
   });
 }
+
 /**
  * @description Get dropoff locations for event
  * @route  GET /api/dropoff-locations/
@@ -95,8 +94,8 @@ router.route("/api/dropoff-locations/").get(
       `&fields=Stops accepting at`; //+  // endTime
 
     const resp = await fetch(url, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
@@ -119,8 +118,8 @@ router.route("/api/dropoff-locations/").get(
       `&fields%5B%5D=Name`;
 
     const neighborhoodResp = await fetch(neighborhoodsUrl, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
@@ -136,13 +135,89 @@ router.route("/api/dropoff-locations/").get(
     neighborhoods.records.forEach((neighborhood) =>
       neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
     );
-    console.log(neighborhoodNamesById);
-    processNeighborhoodsForLocation(
+
+    processNeighborhoodsForLocations(
       processedDropOffLocations,
       neighborhoodNamesById
     );
 
     res.status(OK).json(processedDropOffLocations) as Response<
+      ProcessedDropoffLocation[]
+    >;
+  })
+);
+
+/**
+ * @description Get partner locations for drop off organizer pop up
+ * @route  GET /api/dropoff-locations/partner-locations
+ * @access
+ */
+router.route("/api/dropoff-locations/partner-locations").get(
+  protect,
+  asyncHandler(async (req: Request, res: Response) => {
+    console.log(`GET /api/dropoff-locations/partner-locations`);
+
+    const url =
+      `${AIRTABLE_URL_BASE}/📍 Drop off locations?` +
+      // Get locations who are regular saturday partners
+      `&filterByFormula={Regular Saturday Partner?}` +
+      `&fields=Drop off location` + // siteName
+      `&fields=Drop-off Address` + // address
+      `&fields=Neighborhood (from Zip Code)` + // neighborhood
+      `&fields=Starts accepting at` + // startTime
+      `&fields=Stops accepting at` + // endTime
+      `&fields=Total Loads`; // deliveriesNeeded
+
+    const resp = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+    });
+    if (!resp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: resp.status,
+      };
+    }
+    const partnerDropoffLocations =
+      (await resp.json()) as AirtableResponse<DropoffLocation>;
+    let processedPartnerDropOffLocations = partnerDropoffLocations.records.map(
+      (location) => processDropOffLocations(location)
+    );
+
+    const neighborhoodIds = getNeighborhoodIdsForUrl(
+      processedPartnerDropOffLocations
+    );
+    const neighborhoodsUrl =
+      `${AIRTABLE_URL_BASE}/🏡 Neighborhoods?` +
+      `filterByFormula=SEARCH(RECORD_ID(), "${neighborhoodIds}") != ""` +
+      `&fields%5B%5D=Name`;
+
+    const neighborhoodResp = await fetch(neighborhoodsUrl, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+    });
+    if (!neighborhoodResp.ok) {
+      throw {
+        message: AIRTABLE_ERROR_MESSAGE,
+        status: neighborhoodResp.status,
+      };
+    }
+    const neighborhoods =
+      (await neighborhoodResp.json()) as AirtableResponse<Neighborhood>;
+    let neighborhoodNamesById: Map<string, string> = new Map();
+    neighborhoods.records.forEach((neighborhood) =>
+      neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
+    );
+    processNeighborhoodsForLocations(
+      processedPartnerDropOffLocations,
+      neighborhoodNamesById
+    );
+
+    res.status(OK).json(processedPartnerDropOffLocations) as Response<
       ProcessedDropoffLocation[]
     >;
   })

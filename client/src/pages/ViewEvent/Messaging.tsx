@@ -11,7 +11,7 @@ const sectionHeader =
   "flex items-start gap-3 text-2xl font-bold text-newLeafGreen lg:text-3xl";
 const sectionHeaderIcon = "w-8 lg:w-10";
 const recruitCard =
-  "flex min-w-max grow flex-col gap-4 items-start lg:items-center";
+  "flex min-h-full min-w-fit grow flex-col gap-4 items-start lg:items-center";
 const cardHeader = "text-xl lg:text-2xl font-semibold text-newLeafGreen";
 const textArea =
   "grow overflow-scroll w-full resize-none rounded-md border-4 border-softGrayWhite py-2 px-4 text-base lg:text-xl";
@@ -78,7 +78,7 @@ export function Messaging() {
         <img className={sectionHeaderIcon} src={recruitment} alt="people" />
         Recruitment
       </h1>
-      <div className="flex grow flex-wrap gap-16 lg:px-32">
+      <div className="flex grow flex-col gap-16 md:flex-row lg:px-8">
         {/* Coordinators Recruitment card */}
         <div className={recruitCard}>
           <h2 className={cardHeader}>For Coordinators</h2>
@@ -90,6 +90,7 @@ export function Messaging() {
             <textarea
               className={textArea}
               defaultValue={coordinatorRecruitmentTextData}
+              readOnly
             />
           )}
           <button className={btn}>Recruit Coordinators</button>
@@ -105,6 +106,7 @@ export function Messaging() {
             <textarea
               className={textArea}
               defaultValue={volunteerRecruitmentTextData}
+              readOnly
             />
           )}
           <button className={btn}>Recruit Participants</button>

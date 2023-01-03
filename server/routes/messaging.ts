@@ -28,8 +28,8 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
     const resp = await fetch(
       `https://us1.make.com/api/v2/scenarios/${coordinatorRecruitmentTextAutomationId}/blueprint`,
       {
+        method: "GET",
         headers: {
-          method: "GET",
           Authorization: `Token ${process.env.MAKE_API_KEY}`,
         },
       }
@@ -57,8 +57,8 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
     const resp = await fetch(
       `https://us1.make.com/api/v2/scenarios/${volunteerRecruitmentTextAutomationId}/blueprint`,
       {
+        method: "GET",
         headers: {
-          method: "GET",
           Authorization: `Token ${process.env.MAKE_API_KEY}`,
         },
       }
@@ -86,8 +86,8 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
     const resp = await fetch(
       `https://us1.make.com/api/v2/scenarios/${driverInfoToCoordinatorsTextAutomationId}/blueprint`,
       {
+        method: "GET",
         headers: {
-          method: "GET",
           Authorization: `Token ${process.env.MAKE_API_KEY}`,
         },
       }
@@ -120,8 +120,8 @@ router.route("/api/messaging/locations-to-drivers-text").get(
     const resp = await fetch(
       `https://us1.make.com/api/v2/scenarios/${driverLocationInfoTextAutomationId}/blueprint`,
       {
+        method: "GET",
         headers: {
-          method: "GET",
           Authorization: `Token ${process.env.MAKE_API_KEY}`,
         },
       }

@@ -23,7 +23,7 @@ const router = express.Router();
 
 function processScheduledSlots(
   scheduledSlots: AirtableResponse<ScheduledSlot>
-) {
+): ProcessedScheduledSlot[] {
   function getParticipantType(type: string[] | undefined) {
     if (!type) {
       return "";
@@ -82,7 +82,7 @@ function processScheduledSlots(
   return volunteerList;
 }
 /**
- * @description Get all volunteers for event
+ * @description Get all volunteers who match the ids in the query param
  * @route  GET /api/volunteers/
  * @access
  */
@@ -93,7 +93,7 @@ router.route("/api/volunteers/").get(
     console.log(`GET /api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`);
 
     const isValidRequest =
-      scheduledSlotsIds && typeof scheduledSlotsIds === "string";
+      scheduledSlotsIds !== undefined && typeof scheduledSlotsIds === "string";
     if (!isValidRequest) {
       res.status(BAD_REQUEST);
       throw new Error(
@@ -144,8 +144,9 @@ router.route("/api/volunteers/confirm/:volunteerId").patch(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { volunteerId } = req.params;
-    const { newConfirmationStatus } = req.body;
     console.log(`PATCH /api/volunteers/confirm/${volunteerId}`);
+    console.log("Request body: ", req.body);
+    const { newConfirmationStatus } = req.body;
 
     const isValidRequest =
       volunteerId &&
@@ -282,8 +283,7 @@ router.route("/api/volunteers/drivers").get(
     console.log("GET /api/volunteers/drivers");
     const url =
       `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
-      `view=Assign Location ` + // tested with view "Drivers - Last Week"
-      //`view=Drivers - Last Week` +
+      `view=Assign Location ` +
       // Get fields for driver info table
       `&fields=First Name` + // First Name
       `&fields=Last Name` + // Last Name
@@ -295,8 +295,8 @@ router.route("/api/volunteers/drivers").get(
       `&fields=📍 Drop off location`; // Restricted Locations
 
     const resp = await fetch(url, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
@@ -307,7 +307,7 @@ router.route("/api/volunteers/drivers").get(
       };
     }
     const drivers = (await resp.json()) as AirtableResponse<Driver>;
-    let processedDrivers = drivers.records.map((driver) =>
+    let processedDrivers: ProcessedDriver[] = drivers.records.map((driver) =>
       processDriverData(driver)
     );
     processedDrivers.sort((driver1, driver2) =>
@@ -335,7 +335,7 @@ router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
     if (!isValidRequest) {
       res.status(BAD_REQUEST);
       throw new Error(
-        "Please provide a 'locationIds' on the request body with type string[]"
+        "Please provide 'driverId' as a query param and locationIds' with type string[] on the request body"
       );
     }
     console.log(`PATCH /api/volunteers/drivers/assign-location/${driverId}`);
@@ -365,45 +365,4 @@ router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
     res.status(OK).json(result);
   })
 );
-/**
- * @description
- * @route  GET /api/neighborhoods
- * @access
- */
-router.route("/api/neighborhoods").get(
-  protect,
-  asyncHandler(async (req: Request, res: Response) => {
-    const { neighborhoodIds } = req.query;
-    console.log(`GET /api/neighborhoods/?neighborhoddIds=${neighborhoodIds}`);
-
-    const isValidRequest = typeof neighborhoodIds === "string";
-    if (!isValidRequest) {
-      res.status(BAD_REQUEST);
-      throw new Error(
-        "Please provide a 'neighborhoodIds' as a query param of type 'string'."
-      );
-    }
-
-    const url =
-      `${AIRTABLE_URL_BASE}/🏡 Neighborhoods?` +
-      `filterByFormula=SEARCH(RECORD_ID(), "${neighborhoodIds}") != ""` +
-      `&fields%5B%5D=Name`;
-
-    const resp = await fetch(url, {
-      headers: {
-        method: "GET",
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-    });
-    if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const neighborhoods = (await resp.json()) as AirtableResponse<Neighborhood>;
-    res.status(OK).json(neighborhoods);
-  })
-);
-
 export default router;

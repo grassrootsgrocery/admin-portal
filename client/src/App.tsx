@@ -1,5 +1,3 @@
-import React from "react";
-import { app } from "./firebaseConfig";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -11,16 +9,12 @@ const queryClient = new QueryClient({
 }); //Set staleTime to 3 minutes since this is not the kind of application that needs to refetch data very often
 
 //Components
-import { Navbar } from "./components/Navbar/Navbar";
 import { Toaster } from "react-hot-toast";
 //Pages
 import { Login } from "./pages/Login";
 import { Events } from "./pages/Events";
 import { ViewEvent } from "./pages/ViewEvent";
 import { DriverLocationInfo } from "./pages/DriverLocationInfo";
-import { ViewEventSpecialGroups } from "./pages/ViewEvent/ViewEventSpecialGroups"
-
-import { Dropdown } from "./components/SpecialGroupDropdown";
 
 function App() {
   return (
@@ -36,14 +30,6 @@ function App() {
               <Route
                 path="/events/driver-location-info/:eventId"
                 element={<DriverLocationInfo />}
-              />
-              <Route
-                path="/events/add-special-group/:eventId"
-                element={<Dropdown />}
-              />
-              <Route
-                path="/events/:eventId/view-event-special-groups"
-                element={<ViewEventSpecialGroups />}
               />
               <Route path="*" element={<Login />} />
             </Routes>

@@ -1,8 +1,7 @@
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, useParams, Navigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import { useFutureEventById } from "../eventHooks";
-
-import React, { useEffect, useState } from "react";
+import React from "react";
 //Types
 import { ProcessedScheduledSlot, ProcessedSpecialEvent } from "../../types";
 //Components
@@ -17,9 +16,9 @@ import roster from "../../assets/roster.svg";
 import { Messaging } from "./Messaging";
 import { API_BASE_URL } from "../../httpUtils";
 import { Navbar } from "../../components/Navbar/Navbar";
-import { Dropdown } from "../../components/SpecialGroupDropdown";
-import Popup from "../../components/Popup";
+import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
+import { ViewSpecialGroups } from "./ViewSpecialGroups";
 
 const HeaderValueDisplay: React.FC<{
   header: string;
@@ -41,7 +40,8 @@ export const ViewEvent = () => {
     return <Navigate to="/" />;
   }
   const { eventId } = useParams();
-  const { event, eventStatus, eventError } = useFutureEventById(eventId);
+  const { event, refetchEvent, eventStatus, eventError } =
+    useFutureEventById(eventId);
 
   const {
     data: scheduledSlots,
@@ -72,11 +72,11 @@ export const ViewEvent = () => {
     { enabled: eventStatus === "success" }
   );
 
-  const [group, setGroup] = useState("");
-
-  const handleQuery = (query: string) => {
-    setGroup(query);
-  };
+  if (eventStatus === "error" || scheduledSlotsStatus === "error") {
+    const error = eventError || scheduledSlotsError;
+    console.error(error);
+    return <div>Error...</div>;
+  }
 
   if (scheduledSlotsStatus === "loading" || scheduledSlotsStatus === "idle") {
     return (
@@ -84,12 +84,6 @@ export const ViewEvent = () => {
         <Loading size="large" thickness="extra-thicc" />
       </div>
     );
-  }
-
-  if (scheduledSlotsStatus === "error") {
-    const error = eventError || scheduledSlotsError;
-    console.error(error);
-    return <div>Error...</div>;
   }
 
   if (event === undefined) {
@@ -102,39 +96,11 @@ export const ViewEvent = () => {
   scheduledSlots.sort((a, b) => (a.firstName < b.firstName ? -1 : 1));
   console.log("scheduledSlots", scheduledSlots);
 
-
   //Tailwind classes
   const sectionHeader =
     "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
   const sectionHeaderIcon = "w-6 lg:w-10";
-  const addTitle = "Add Special Group to Event";
-  const addTrigger = (
-    <button
-      className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-      type="button"
-      disabled
-    >
-      + Add Special Group
-    </button>
-  );
-  const addNext = (
-    <button
-      className="rounded-full bg-newLeafGreen px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-      type="button"
-    >
-      Add Group and Generate Link
-    </button>
-  );
 
-  const addContent = (
-    <div>
-      <div className="mx-5 mt-5 flex h-72 justify-center gap-5">
-        <p className="font-bold text-newLeafGreen lg:text-2xl">Group Name:</p>
-        <Dropdown handleQuery={handleQuery} />
-      </div>
-      <div className="flex justify-center gap-10"></div>
-    </div>
-  );
   return (
     <>
       <Navbar />
@@ -199,19 +165,8 @@ export const ViewEvent = () => {
           </div>
 
           <div className="flex flex-col items-start justify-around gap-2 ">
-            <Popup
-              title={addTitle}
-              trigger={addTrigger}
-              content={addContent}
-              next={addNext}
-            />
-
-            <button
-              className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-              type="button"
-            >
-              View Special Groups
-            </button>
+            <AddSpecialGroup event={event} refetchEvent={refetchEvent} />
+            <ViewSpecialGroups event={event} />
           </div>
         </div>
         <div className="h-12" />

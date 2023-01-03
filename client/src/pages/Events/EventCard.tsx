@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-
 //Assets
 import alert from "../../assets/alert.svg";
 import check from "../../assets/check.svg";

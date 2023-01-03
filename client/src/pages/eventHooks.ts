@@ -31,6 +31,7 @@ export function useFutureEvents() {
 export function useFutureEventById(eventId: string | undefined) {
   const {
     data: futureEvents,
+    refetch: refetchEvent,
     status: futureEventsStatus,
     error: futureEventsError,
   } = useFutureEvents();
@@ -42,6 +43,7 @@ export function useFutureEventById(eventId: string | undefined) {
 
   return {
     event,
+    refetchEvent,
     eventStatus: futureEventsStatus,
     eventError: futureEventsError,
   };

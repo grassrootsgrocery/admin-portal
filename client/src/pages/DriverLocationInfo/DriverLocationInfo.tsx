@@ -4,6 +4,7 @@ import { AssignLocationDropdown } from "./AssignLocationDropdown";
 import { useQuery } from "react-query";
 import { API_BASE_URL } from "../../httpUtils";
 import { useFutureEventById } from "../eventHooks";
+import { useAuth } from "../../contexts/AuthContext";
 //Types
 import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 //Components
@@ -14,7 +15,6 @@ import { Loading } from "../../components/Loading";
 import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
 import back from "../../assets/back-white.svg";
-import { useAuth } from "../../contexts/AuthContext";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -41,7 +41,7 @@ function processDriversForTable(
       curDriver.restrictedLocations.join(", "),
       <AssignLocationDropdown
         locations={processedDropOffLocations.sort((a, b) =>
-          a.dropOffLocation < b.dropOffLocation ? -1 : 1
+          a.siteName < b.siteName ? -1 : 1
         )}
         driver={curDriver}
         refetchDrivers={refetchDrivers}
@@ -64,11 +64,11 @@ function processDropoffLocationsForTable(
       curLocation.id, //id
       i + 1, //#
       "Coordinator Information", //TODO: coordinator information
-      curLocation.dropOffLocation,
+      curLocation.siteName,
       curLocation.address,
       curLocation.neighborhoods.join(", "),
-      curLocation.startTime,
-      curLocation.endTime,
+      typeof curLocation.startTime === "string"? curLocation.startTime : "N/A",
+      typeof curLocation.endTime === "string"? curLocation.endTime : "N/A",
       curLocation.deliveriesAssigned,
       <ul className="scrollbar-thin flex w-[600px] gap-4 overflow-x-auto pb-2">
         {drivers
@@ -168,11 +168,34 @@ export function DriverLocationInfo() {
   } = useDriversInfo();
   console.log("driversInfo", driversInfo);
 
+  // REMOVE (start) - use in drop off location organizer table
   const {
-    data: dropoffLocations,
-    status: dropoffLocationsStatus,
-    error: dropoffLocationsError,
-  } = useQuery(["fetchDropOffLocations"], async () => {
+    data: partnerDropoffLocations,
+    status: partnerDropoffLocationsStatus,
+    error: partnerDropoffLocationsError,
+  } = useQuery(["fetchPartnerDropOffLocations"], async () => {
+    const resp = await fetch(
+      `${API_BASE_URL}/api/dropoff-locations/partner-locations`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!resp.ok) {
+      const data = await resp.json();
+      throw new Error(data.messsage);
+    }
+    return resp.json();
+  });
+  console.log("partnerDropoffLocations", partnerDropoffLocations);
+  // REMOVE (end)
+
+  const {
+    data: eventDropoffLocations,
+    status: eventDropoffLocationsStatus,
+    error: eventDropoffLocationsError,
+  } = useQuery(["fetchEventDropOffLocations"], async () => {
     const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations`, {
       headers: {
         "Content-Type": "application/json",
@@ -185,12 +208,12 @@ export function DriverLocationInfo() {
     }
     return resp.json();
   });
-  console.log("dropoffLocations", dropoffLocations);
+  console.log("eventDropoffLocations", eventDropoffLocations);
 
   if (
     driversInfoIsLoading ||
-    dropoffLocationsStatus === "loading" ||
-    dropoffLocationsStatus === "idle"
+    eventDropoffLocationsStatus === "loading" ||
+    eventDropoffLocationsStatus === "idle"
   ) {
     return (
       <div className="relative h-full">
@@ -198,8 +221,8 @@ export function DriverLocationInfo() {
       </div>
     );
   }
-  if (driversInfoIsError || dropoffLocationsStatus === "error") {
-    const error = driversInfoError || dropoffLocationsError;
+  if (driversInfoIsError || eventDropoffLocationsStatus === "error") {
+    const error = driversInfoError || eventDropoffLocationsError;
     console.error(error);
     return <div>Error...</div>;
   }
@@ -219,12 +242,13 @@ export function DriverLocationInfo() {
     <>
       <Navbar />
       <div className="p-6 lg:px-14 lg:py-10">
-        <Link to={`/events/${eventId}`}>
+        {/* Not sure why inline-block on the Link is necessary */}
+        <Link className="inline-block" to={`/events/${eventId}`}>
           <button
-            className="flex w-fit shrink-0 items-center gap-3 rounded-full bg-newLeafGreen py-2 px-4 text-lg font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen"
+            className="flex w-fit shrink-0 items-center gap-3 rounded-full bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen lg:px-4 lg:py-2 lg:text-lg"
             type="button"
           >
-            <img className="w-4" src={back} alt="Go back" />
+            <img className="w-2 lg:w-4" src={back} alt="Go back" />
             Go back
           </button>
         </Link>
@@ -259,6 +283,7 @@ export function DriverLocationInfo() {
 
         <div className="h-screen">
           <DataTable
+            borderColor="softGrayWhite"
             columnHeaders={[
               "#",
               "First Name",
@@ -272,7 +297,7 @@ export function DriverLocationInfo() {
             ]}
             dataRows={processDriversForTable(
               driversInfo,
-              dropoffLocations,
+              eventDropoffLocations,
               refetchDrivers
             )}
           />
@@ -304,6 +329,7 @@ export function DriverLocationInfo() {
         <div className="h-8" />
         <div className="h-screen">
           <DataTable
+            borderColor="softGrayWhite"
             columnHeaders={[
               "#",
               "Coordinator Information",
@@ -317,7 +343,7 @@ export function DriverLocationInfo() {
             ]}
             dataRows={processDropoffLocationsForTable(
               driversInfo,
-              dropoffLocations
+              eventDropoffLocations
             )}
           />
         </div>

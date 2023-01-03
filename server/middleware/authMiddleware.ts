@@ -16,7 +16,7 @@ export const protect = asyncHandler(async (req, res, next) => {
       //Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET || "");
       if (typeof decoded === "string") {
-        console.log("decoded token is a string: ", decoded);
+        console.log("Decoded token is a string: ", decoded);
         res.status(UNAUTHORIZED);
         throw new Error("Not authorized, token failed");
       }

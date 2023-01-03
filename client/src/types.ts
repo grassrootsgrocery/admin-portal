@@ -12,6 +12,7 @@ export interface ProcessedEvent {
   numBothDriversAndPackers: number;
   numSpecialGroups: number;
   scheduledSlots: string[];
+  supplierId: string;
   allEventIds: string[];
 }
 
@@ -41,38 +42,27 @@ export interface ProcessedDriver {
   dropoffLocations: string[];
 }
 
-export interface Neighborhood {
-  Name: string;
-}
-export interface DropoffLocation {
-  "Drop off location": string;
-}
-
 export interface ProcessedDropoffLocation {
   id: string;
-  dropOffLocation: string;
+  siteName: string;
   address: string;
   neighborhoods: string[];
-  startTime: string;
-  endTime: string;
+  startTime: string | null;
+  endTime: string | null;
+  deliveriesNeeded: number;
   deliveriesAssigned: number;
   matchedDrivers: string[];
 }
 
-export interface SpecialGroup {
-  Name: string;
-  "🚛 Supplier Pickup Events": string[];
-}
-
 export interface ProcessedSpecialGroup {
-  id: string
+  id: string;
   name: string;
   events: string[];
 }
 
-export interface DropdownFilter {
-  query: string;
-  list: ProcessedSpecialGroup[];
+export interface Neighborhood {
+  id: string;
+  Name: string;
 }
 
 export interface ProcessedSpecialEvent {

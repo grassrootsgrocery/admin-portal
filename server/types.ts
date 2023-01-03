@@ -8,13 +8,14 @@ export interface Record<T> {
 }
 
 export interface Event {
-  "Start Time": string;
-  "Pickup Address": string[];
-  "Total Count of Drivers for Event": number;
-  "Total Count of Distributors for Event": number;
-  "Total Count of Volunteers for Event": number;
-  "Special Event": boolean;
-  "📅 Scheduled Slots": string[];
+  "Start Time": string | undefined;
+  "Pickup Address": string[] | undefined;
+  "Total Count of Drivers for Event": number | undefined;
+  "Total Count of Distributors for Event": number | undefined;
+  "Total Count of Volunteers for Event": number | undefined;
+  "Special Event": boolean | undefined;
+  Supplier: string[] | undefined;
+  "📅 Scheduled Slots": string[] | undefined;
 }
 
 export interface ProcessedEvent {
@@ -31,6 +32,7 @@ export interface ProcessedEvent {
   numBothDriversAndPackers: number;
   numSpecialGroups: number;
   scheduledSlots: string[];
+  supplierId: string;
   allEventIds: string[];
 }
 
@@ -71,6 +73,7 @@ export interface Driver {
   "Restricted Neighborhoods": string[];
   "📍 Drop off location": string[];
 }
+
 export interface ProcessedDriver {
   id: string;
   firstName: string;
@@ -84,6 +87,7 @@ export interface ProcessedDriver {
 }
 
 export interface Neighborhood {
+  id: string;
   Name: string;
 }
 
@@ -93,17 +97,19 @@ export interface DropoffLocation {
   "Neighborhood (from Zip Code)": string[];
   "Starts accepting at": string;
   "Stops accepting at": string;
-  // TODO: update with correct airtable field for deliveriesAssigned
+  "Total Loads": number | undefined;
+  // TODO: update with correct airtable field for deliveriesNeeded
   // TODO: update with correct airtable field for matchedDrivers
 }
 
 export interface ProcessedDropoffLocation {
   id: string;
-  dropOffLocation: string;
+  siteName: string;
   address: string;
   neighborhoods: string[];
-  startTime: string;
-  endTime: string;
+  startTime: string | null;
+  endTime: string | null;
+  deliveriesNeeded: number;
   deliveriesAssigned: number;
   matchedDrivers: string[];
 }
@@ -111,6 +117,7 @@ export interface ProcessedDropoffLocation {
 export interface SpecialGroup {
   Name: string;
   "🚛 Supplier Pickup Events": string[];
+  "Shortened Link to Special Event Signup Form": string;
 }
 
 export interface ProcessedSpecialGroup {

@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { AirtableResponse, ProcessedDriver, Neighborhood } from "../../types";
+import { Neighborhood, ProcessedDriver } from "../../types";
 import { API_BASE_URL } from "../../httpUtils";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -26,7 +26,6 @@ export function useDriversInfo() {
     }
     return response.json() as Promise<ProcessedDriver[]>;
   });
-
   // query for neighborhood names from neighborhood table
   const {
     data: neighborhoods,
@@ -54,25 +53,28 @@ export function useDriversInfo() {
         const data = await response.json();
         throw new Error(data.messsage);
       }
-      return response.json() as Promise<AirtableResponse<Neighborhood>>;
+      return response.json() as Promise<Neighborhood[]>;
     },
     {
       enabled: processedDriversStatus === "success",
     }
   );
-
+  let driversWithNeighborhoodNames: ProcessedDriver[] = [];
   if (
     processedDriversStatus === "success" &&
     neighborhoodsStatus === "success"
   ) {
     let neighborhoodNamesById: Map<string, string> = new Map();
-    neighborhoods.records.forEach((neighborhood) =>
-      neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
+    neighborhoods.forEach((neighborhood) =>
+      neighborhoodNamesById.set(neighborhood.id, neighborhood.Name)
     );
-    processNeighborhoodsForDriver(processedDrivers, neighborhoodNamesById);
+    driversWithNeighborhoodNames = processNeighborhoodsForDriver(
+      processedDrivers,
+      neighborhoodNamesById
+    );
 
     // sort drivers by first name
-    processedDrivers.sort((driver1, driver2) =>
+    driversWithNeighborhoodNames.sort((driver1, driver2) =>
       driver1.firstName < driver2.firstName ? -1 : 1
     );
   }
@@ -87,7 +89,7 @@ export function useDriversInfo() {
     processedDriversStatus === "error" || neighborhoodsStatus === "error";
 
   return {
-    driversInfo: processedDrivers,
+    driversInfo: driversWithNeighborhoodNames,
     refetchDrivers,
     driversInfoIsLoading: isLoading,
     driversInfoIsError: isError,
@@ -111,14 +113,15 @@ function processNeighborhoodsForDriver(
   drivers: ProcessedDriver[],
   neighborhoods: Map<string, string>
 ) {
-  drivers.forEach(function (driver) {
+  return drivers.map((driver) => {
     let neighborhoodNames: string[] = [];
-    driver.restrictedLocations.forEach(function (neighborhoodId) {
+    driver.restrictedLocations.forEach((neighborhoodId) => {
       const neighborhoodName = neighborhoods.get(neighborhoodId);
       if (neighborhoodName !== undefined) {
         neighborhoodNames.push(neighborhoodName);
       }
     });
-    driver.restrictedLocations = neighborhoodNames;
+    //driver.restrictedLocations = neighborhoodNames;
+    return { ...driver, restrictedLocations: neighborhoodNames };
   });
 }

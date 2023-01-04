@@ -3,7 +3,7 @@ import asyncHandler from "express-async-handler";
 import { protect } from "../middleware/authMiddleware";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
-import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
+import { FORBIDDEN, OK } from "../httpUtils/statusCodes";
 
 import { Request, Response } from "express";
 import { MAKE_ERROR_MESSAGE } from "../httpUtils/make";
@@ -17,7 +17,7 @@ own problems if they were to ever change the Make automations to use different t
 */
 
 /**
- * @description Get "Send Coordinator Recruitment Text (Wed afternoon)" blueprint from Make
+ * @description Get the "Send Coordinator Recruitment Text (Wed afternoon)" blueprint from Make
  * @route  GET /api/messaging/coordinator-recruitment-text
  * @access
  */
@@ -46,7 +46,37 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
 );
 
 /**
- * @description Get "Send Tuesday recruitment texts" blueprint from Make
+ * @description Start the "Send Coordinator Recruitment Text (Wed afternoon)" Make automation
+ * @route  POST /api/messaging/coordinator-recruitment-text
+ * @access
+ */
+router.route("/api/messaging/coordinator-recruitment-text").post(
+  protect,
+  asyncHandler(async (req: Request, res: Response) => {
+    if (process.env.NODE_ENV !== "production") {
+      res.status(FORBIDDEN);
+      throw new Error(
+        "'NODE_ENV' must be set to 'production' to start Make automations."
+      );
+    }
+    const sendCoordinatorRecruitmentTextWebhook =
+      "https://hook.us1.make.com/573p5mfp7d594jx91vwny8nxjdlvjqew";
+    const resp = await fetch(sendCoordinatorRecruitmentTextWebhook);
+    if (!resp.ok) {
+      throw {
+        message: MAKE_ERROR_MESSAGE,
+        status: resp.status,
+      };
+    }
+    res.status(OK).json({
+      message:
+        "'Send Coordinator Recruitment Text (Wed afternoon)' Make automation started.",
+    });
+  })
+);
+
+/**
+ * @description Get the "Send Tuesday recruitment texts" blueprint from Make
  * @route  GET /api/messaging/volunteer-recruitment-text
  * @access
  */
@@ -71,6 +101,35 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
     }
     const data = await resp.json();
     res.status(OK).json(data.response.blueprint.flow[2].mapper.body);
+  })
+);
+
+/**
+ * @description Start the "Send Tuesday recruitment texts" Make automation
+ * @route  POST /api/messaging/volunteer-recruitment-text
+ * @access
+ */
+router.route("/api/messaging/volunteer-recruitment-text").post(
+  protect,
+  asyncHandler(async (req: Request, res: Response) => {
+    if (process.env.NODE_ENV !== "production") {
+      res.status(FORBIDDEN);
+      throw new Error(
+        "'NODE_ENV' must be set to 'production' to start Make automations."
+      );
+    }
+    const sendTuesdayRecruitmentTextAutomationWebhook =
+      "https://hook.us1.make.com/ni1ndj7x5ecrgt8ku9tj23cmsvwcrubu";
+    const resp = await fetch(sendTuesdayRecruitmentTextAutomationWebhook);
+    if (!resp.ok) {
+      throw {
+        message: MAKE_ERROR_MESSAGE,
+        status: resp.status,
+      };
+    }
+    res.status(OK).json({
+      message: "'Send Tuesday recruitment texts' Make automation started.",
+    });
   })
 );
 
@@ -109,6 +168,35 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
 );
 
 /**
+ * @description Start the "Send Driver Info To Coordinators" Make automation
+ * @route  POST /api/messaging/driver-info-to-coordinators-text
+ * @access
+ */
+router.route("/api/messaging/driver-info-to-coordinators-text").post(
+  protect,
+  asyncHandler(async (req: Request, res: Response) => {
+    if (process.env.NODE_ENV !== "production") {
+      res.status(FORBIDDEN);
+      throw new Error(
+        "'NODE_ENV' must be set to 'production' to start Make automations."
+      );
+    }
+    const sendDriverInfoToCoordinatorsWebhook =
+      "https://hook.us1.make.com/5x6qncf3nmcg0ytbmscnxfdqm8t5j97o";
+    const resp = await fetch(sendDriverInfoToCoordinatorsWebhook);
+    if (!resp.ok) {
+      throw {
+        message: MAKE_ERROR_MESSAGE,
+        status: resp.status,
+      };
+    }
+    res.status(OK).json({
+      message: "'Send Driver Info To Coordinators' Make automation started.",
+    });
+  })
+);
+
+/**
  * @description Get the "[NEW] Send Locations and POC details to volunteer drivers (only text, no email)" text message blueprint from Make
  * @route  GET /api/messaging/locations-to-drivers-text
  * @access
@@ -134,6 +222,36 @@ router.route("/api/messaging/locations-to-drivers-text").get(
     }
     const data = await resp.json();
     res.status(OK).json(data.response.blueprint.flow[5].mapper.body);
+  })
+);
+
+/**
+ * @description Start the "[NEW] Send Locations and POC details to volunteer drivers (only text, no email)" Make automation
+ * @route  POST /api/messaging/locations-to-drivers-text
+ * @access
+ */
+router.route("/api/messaging/locations-to-drivers-text").post(
+  protect,
+  asyncHandler(async (req: Request, res: Response) => {
+    if (process.env.NODE_ENV !== "production") {
+      res.status(FORBIDDEN);
+      throw new Error(
+        "'NODE_ENV' must be set to 'production' to start Make automations."
+      );
+    }
+    const sendLocationsAndPOCDetailsWebhook =
+      "https://hook.us1.make.com/ot8o7kkpx80bjm1zh63all8a0uegt5t2";
+    const resp = await fetch(sendLocationsAndPOCDetailsWebhook);
+    if (!resp.ok) {
+      throw {
+        message: MAKE_ERROR_MESSAGE,
+        status: resp.status,
+      };
+    }
+    res.status(OK).json({
+      message:
+        "'[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' Make automation started.",
+    });
   })
 );
 

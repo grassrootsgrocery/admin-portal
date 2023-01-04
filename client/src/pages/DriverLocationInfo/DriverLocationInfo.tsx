@@ -15,6 +15,7 @@ import { Loading } from "../../components/Loading";
 import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
 import back from "../../assets/back-white.svg";
+import { SendTextMessageButton } from "./SendTextMesssageButton";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -67,8 +68,8 @@ function processDropoffLocationsForTable(
       curLocation.siteName,
       curLocation.address,
       curLocation.neighborhoods.join(", "),
-      typeof curLocation.startTime === "string"? curLocation.startTime : "N/A",
-      typeof curLocation.endTime === "string"? curLocation.endTime : "N/A",
+      typeof curLocation.startTime === "string" ? curLocation.startTime : "N/A",
+      typeof curLocation.endTime === "string" ? curLocation.endTime : "N/A",
       curLocation.deliveriesAssigned,
       <ul className="scrollbar-thin flex w-[600px] gap-4 overflow-x-auto pb-2">
         {drivers
@@ -198,7 +199,6 @@ export function DriverLocationInfo() {
   } = useQuery(["fetchEventDropOffLocations"], async () => {
     const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations`, {
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -316,9 +316,16 @@ export function DriverLocationInfo() {
               defaultValue={locationsToDriversText}
             />
           )}
-          <button className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold">
+          <SendTextMessageButton
+            label="Send Locations to Drivers"
+            loading={locationsToDriversTextLoading}
+            url={`${API_BASE_URL}/api/messaging/locations-to-drivers-text`}
+            successMessage="Location information to drivers Make automation started"
+            errorMessage="Unable to start Make automation"
+          />
+          {/* <button className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold">
             Send Locations to Drivers
-          </button>
+          </button> */}
         </div>
 
         <div className="h-16" />
@@ -362,9 +369,13 @@ export function DriverLocationInfo() {
                 defaultValue={driverInfoToCoordinatorsText}
               />
             )}
-            <button className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold">
-              Send Driver Info to Coordinators
-            </button>
+            <SendTextMessageButton
+              label="Send Driver Info to Coordinators"
+              loading={driverInfoToCoordinatorsLoading}
+              url={`${API_BASE_URL}/api/messaging/driver-info-to-coordinators-text`}
+              successMessage="Driver information to coordinators Make automation started"
+              errorMessage="Unable to start Make automation"
+            />
           </div>
           <button className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold">
             + Add Dropoff Location

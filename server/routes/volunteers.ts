@@ -23,7 +23,7 @@ const router = express.Router();
 
 function processScheduledSlots(
   scheduledSlots: AirtableResponse<ScheduledSlot>
-) {
+): ProcessedScheduledSlot[] {
   function getParticipantType(type: string[] | undefined) {
     if (!type) {
       return "";
@@ -82,7 +82,7 @@ function processScheduledSlots(
   return volunteerList;
 }
 /**
- * @description Get all volunteers for event
+ * @description Get all volunteers who match the ids in the query param
  * @route  GET /api/volunteers/
  * @access
  */
@@ -295,8 +295,8 @@ router.route("/api/volunteers/drivers").get(
       `&fields=📍 Drop off location`; // Restricted Locations
 
     const resp = await fetch(url, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
@@ -307,7 +307,7 @@ router.route("/api/volunteers/drivers").get(
       };
     }
     const drivers = (await resp.json()) as AirtableResponse<Driver>;
-    let processedDrivers = drivers.records.map((driver) =>
+    let processedDrivers: ProcessedDriver[] = drivers.records.map((driver) =>
       processDriverData(driver)
     );
     processedDrivers.sort((driver1, driver2) =>

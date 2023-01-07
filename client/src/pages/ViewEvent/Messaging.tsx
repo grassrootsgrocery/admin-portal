@@ -1,10 +1,11 @@
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { Loading } from "../../components/Loading";
 import { API_BASE_URL } from "../../httpUtils";
 //Assets
 import recruitment from "../../assets/recruitment.svg";
 import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
+import { toastNotify } from "../../uiUtils";
 
 // Tailwind classes
 const sectionHeader =
@@ -23,14 +24,17 @@ export function Messaging() {
   if (!token) {
     return <Navigate to="/" />;
   }
+
+  //Coordinators
   const {
-    data: volunteerRecruitmentTextData,
-    status: volunteerRecruitmentTextStatus,
-    error: volunteerRecruitmentTextError,
-  } = useQuery(["fetchVolunteerRecruitmentTextBlueprint"], async () => {
+    data: coordinatorRecruitmentTextData,
+    status: coordinatorRecruitmentTextStatus,
+    error: coordinatorRecruitmentTextError,
+  } = useQuery(["fetchCoordinatorRecruitmentTextBlueprint"], async () => {
     const resp = await fetch(
-      `${API_BASE_URL}/api/messaging/volunteer-recruitment-text`,
+      `${API_BASE_URL}/api/messaging/coordinator-recruitment-text`,
       {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -43,14 +47,43 @@ export function Messaging() {
     return resp.json();
   });
 
+  const recruitCoordinators = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(
+        `${API_BASE_URL}/api/messaging/coordinator-recruitment-text/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
+
+      return response.json();
+    },
+    onSuccess(data, variables, context) {
+      toastNotify("Coordinator recruitment text automation started", "success");
+    },
+    onError(error, variables, context) {
+      console.error(error);
+      toastNotify("Unable to start text automation", "failure");
+    },
+  });
+
+  //Volunteers
   const {
-    data: coordinatorRecruitmentTextData,
-    status: coordinatorRecruitmentTextStatus,
-    error: coordinatorRecruitmentTextError,
-  } = useQuery(["fetchCoordinatorRecruitmentTextBlueprint"], async () => {
+    data: volunteerRecruitmentTextData,
+    status: volunteerRecruitmentTextStatus,
+    error: volunteerRecruitmentTextError,
+  } = useQuery(["fetchVolunteerRecruitmentTextBlueprint"], async () => {
     const resp = await fetch(
-      `${API_BASE_URL}/api/messaging/coordinator-recruitment-text`,
+      `${API_BASE_URL}/api/messaging/volunteer-recruitment-text`,
       {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -61,6 +94,33 @@ export function Messaging() {
       throw new Error(data.message);
     }
     return resp.json();
+  });
+
+  const recruitVolunteers = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(
+        `${API_BASE_URL}/api/messaging/volunteer-recruitment-text`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
+
+      return response.json();
+    },
+    onSuccess(data, variables, context) {
+      toastNotify("Volunteer recruitment text automation started", "success");
+    },
+    onError(error, variables, context) {
+      console.error(error);
+      toastNotify("Unable to start text automation", "failure");
+    },
   });
 
   const volunteerTextLoading =
@@ -93,7 +153,9 @@ export function Messaging() {
               readOnly
             />
           )}
-          <button className={btn}>Recruit Coordinators</button>
+          <button className={btn} onClick={() => recruitCoordinators.mutate()}>
+            Recruit Coordinators
+          </button>
         </div>
         {/* Participants RecruitmentCard */}
         <div className={recruitCard}>
@@ -109,7 +171,9 @@ export function Messaging() {
               readOnly
             />
           )}
-          <button className={btn}>Recruit Participants</button>
+          <button className={btn} onClick={() => recruitVolunteers.mutate()}>
+            Recruit Participants
+          </button>
         </div>
       </div>
     </div>

@@ -125,3 +125,13 @@ export interface ProcessedSpecialGroup {
   events: string[];
 }
 
+export interface SpecialEvent {
+  "Volunteer Group": string | undefined;
+  "Link to Special Event Signup Form": string | undefined;
+}
+
+export interface ProcessedSpecialEvent {
+  id: string;
+  specialGroupId: string;
+  eventSignUpLink: string;
+}

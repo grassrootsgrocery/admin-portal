@@ -35,7 +35,7 @@ function processDropOffLocations(
     id: location.id,
     siteName: location.fields["Drop off location"] || "No name",
     address: location.fields["Drop-off Address"] || "No address",
-    neighborhoods: location.fields["Neighborhood (from Zip Code)"]  || [],
+    neighborhoods: location.fields["Neighborhood (from Zip Code)"] || [],
     startTime: startTime.toLocaleString("en-US", optionsTime), // start time in HH:MM AM/PM format
     endTime: endTime.toLocaleString("en-US", optionsTime), // end time in HH:MM AM/PM format
     deliveriesNeeded: location.fields["# of Loads Requested"] || 0,
@@ -96,8 +96,8 @@ router.route("/api/dropoff-locations/").get(
       `&fields%5B%5D=%23+of+Loads+Requested`; // deliveriesNeeded
 
     const resp = await fetch(url, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
@@ -121,8 +121,8 @@ router.route("/api/dropoff-locations/").get(
       `&fields%5B%5D=Name`;
 
     const neighborhoodResp = await fetch(neighborhoodsUrl, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
@@ -139,7 +139,10 @@ router.route("/api/dropoff-locations/").get(
       neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
     );
 
-    processNeighborhoodsForLocations(processedDropOffLocations, neighborhoodNamesById);
+    processNeighborhoodsForLocations(
+      processedDropOffLocations,
+      neighborhoodNamesById
+    );
 
     res.status(OK).json(processedDropOffLocations) as Response<
       ProcessedDropoffLocation[]
@@ -169,8 +172,8 @@ router.route("/api/dropoff-locations/partner-locations").get(
       `&fields=Total Loads`; // deliveriesNeeded
 
     const resp = await fetch(url, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
@@ -195,8 +198,8 @@ router.route("/api/dropoff-locations/partner-locations").get(
       `&fields%5B%5D=Name`;
 
     const neighborhoodResp = await fetch(neighborhoodsUrl, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
@@ -212,7 +215,10 @@ router.route("/api/dropoff-locations/partner-locations").get(
     neighborhoods.records.forEach((neighborhood) =>
       neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
     );
-    processNeighborhoodsForLocations(processedPartnerDropOffLocations, neighborhoodNamesById);
+    processNeighborhoodsForLocations(
+      processedPartnerDropOffLocations,
+      neighborhoodNamesById
+    );
 
     res.status(OK).json(processedPartnerDropOffLocations) as Response<
       ProcessedDropoffLocation[]

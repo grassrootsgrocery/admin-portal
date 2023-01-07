@@ -39,8 +39,8 @@ router.route("/api/neighborhoods").get(
       `&fields%5B%5D=Name`;
 
     const resp = await fetch(url, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });

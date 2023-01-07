@@ -98,8 +98,7 @@ export interface DropoffLocation {
   "Starts accepting at": string;
   "Stops accepting at": string;
   "Total Loads": number | undefined;
-  // TODO: update with correct airtable field for deliveriesNeeded
-  // TODO: update with correct airtable field for matchedDrivers
+  "# of Loads Requested": number | undefined;
 }
 
 export interface ProcessedDropoffLocation {

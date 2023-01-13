@@ -8,6 +8,7 @@ import { SpecialGroupDropdown } from "./SpecialGroupDropdown";
 import { toastNotify } from "../../../uiUtils";
 import { ProcessedEvent, ProcessedSpecialGroup } from "../../../types";
 import check from "../../../assets/check.svg";
+import { useSpecialGroups } from "../specialGroupsHooks";
 
 interface Props {
   event: ProcessedEvent;
@@ -20,24 +21,12 @@ export const AddSpecialGroup: React.FC<Props> = ({
 }: Props) => {
   const { token } = useAuth();
 
-  // Retrieve Special Groups
   const {
     data: specialGroups,
     refetch: refetchGroups,
     status: specialGroupsStatus,
     error: specialGroupsError,
-  } = useQuery(["fetchSpecialGroups"], async () => {
-    const response = await fetch(`${API_BASE_URL}/api/special-groups`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message);
-    }
-    return response.json() as Promise<ProcessedSpecialGroup[]>;
-  });
+  } = useSpecialGroups();
 
   const createSpecialGroupAndAddToEvent = useMutation({
     mutationFn: async ({ specialGroupName }: { specialGroupName: string }) => {

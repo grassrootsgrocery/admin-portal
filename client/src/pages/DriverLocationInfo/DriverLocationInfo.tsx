@@ -16,6 +16,7 @@ import { PopupDropoffOrganizer } from "./PopupDropoffOrganizer";
 import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
 import back from "../../assets/back-white.svg";
+import { SendTextMessageButton } from "./SendTextMesssageButton";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -42,7 +43,7 @@ function processDriversForTable(
       curDriver.restrictedLocations.join(", "),
       <AssignLocationDropdown
         locations={processedDropOffLocations.sort((a, b) =>
-          a.dropOffLocation < b.dropOffLocation ? -1 : 1
+          a.siteName < b.siteName ? -1 : 1
         )}
         driver={curDriver}
         refetchDrivers={refetchDrivers}
@@ -65,12 +66,12 @@ function processDropoffLocationsForTable(
       curLocation.id, //id
       i + 1, //#
       "Coordinator Information", //TODO: coordinator information
-      curLocation.dropOffLocation,
+      curLocation.siteName,
       curLocation.address,
       curLocation.neighborhoods.join(", "),
-      curLocation.startTime,
-      curLocation.endTime,
-      curLocation.deliveriesAssigned,
+      typeof curLocation.startTime === "string" ? curLocation.startTime : "N/A",
+      typeof curLocation.endTime === "string" ? curLocation.endTime : "N/A",
+      `${curLocation.deliveriesAssigned}/${curLocation.deliveriesNeeded}`,
       <ul className="scrollbar-thin flex w-[600px] gap-4 overflow-x-auto pb-2">
         {drivers
           .filter((d) => d.dropoffLocations.some((l) => l === curLocation.id))
@@ -171,12 +172,12 @@ export function DriverLocationInfo() {
 
   /* Copied to PopupDropoffOrganizer 
   const {
-    data: dropoffOrganizers,
-    status: dropoffOrganizersStatus,
-    error: dropoffOrganizersError,
-  } = useQuery(["fetchDropOffLocations"], async () => {
+    data: partnerDropoffLocations,
+    status: partnerDropoffLocationsStatus,
+    error: partnerDropoffLocationsError,
+  } = useQuery(["fetchPartnerDropOffLocations"], async () => {
     const resp = await fetch(
-      `${API_BASE_URL}/api/dropoff-locations/partner-organizers`,
+      `${API_BASE_URL}/api/dropoff-locations/partner-locations`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -193,13 +194,12 @@ export function DriverLocationInfo() {
   */
 
   const {
-    data: dropoffLocations,
-    status: dropoffLocationsStatus,
-    error: dropoffLocationsError,
-  } = useQuery(["fetchDropOffLocations"], async () => {
+    data: eventDropoffLocations,
+    status: eventDropoffLocationsStatus,
+    error: eventDropoffLocationsError,
+  } = useQuery(["fetchEventDropOffLocations"], async () => {
     const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations`, {
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -209,12 +209,12 @@ export function DriverLocationInfo() {
     }
     return resp.json();
   });
-  console.log("dropoffLocations", dropoffLocations);
+  console.log("eventDropoffLocations", eventDropoffLocations);
 
   if (
     driversInfoIsLoading ||
-    dropoffLocationsStatus === "loading" ||
-    dropoffLocationsStatus === "idle"
+    eventDropoffLocationsStatus === "loading" ||
+    eventDropoffLocationsStatus === "idle"
   ) {
     return (
       <div className="relative h-full">
@@ -222,8 +222,8 @@ export function DriverLocationInfo() {
       </div>
     );
   }
-  if (driversInfoIsError || dropoffLocationsStatus === "error") {
-    const error = driversInfoError || dropoffLocationsError;
+  if (driversInfoIsError || eventDropoffLocationsStatus === "error") {
+    const error = driversInfoError || eventDropoffLocationsError;
     console.error(error);
     return <div>Error...</div>;
   }
@@ -298,7 +298,7 @@ export function DriverLocationInfo() {
             ]}
             dataRows={processDriversForTable(
               driversInfo,
-              dropoffLocations,
+              eventDropoffLocations,
               refetchDrivers
             )}
           />
@@ -317,9 +317,16 @@ export function DriverLocationInfo() {
               defaultValue={locationsToDriversText}
             />
           )}
-          <button className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold">
+          <SendTextMessageButton
+            label="Send Locations to Drivers"
+            loading={locationsToDriversTextLoading}
+            url={`${API_BASE_URL}/api/messaging/locations-to-drivers-text`}
+            successMessage="Location information to drivers Make automation started"
+            errorMessage="Unable to start Make automation"
+          />
+          {/* <button className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold">
             Send Locations to Drivers
-          </button>
+          </button> */}
         </div>
 
         <div className="h-16" />
@@ -344,7 +351,7 @@ export function DriverLocationInfo() {
             ]}
             dataRows={processDropoffLocationsForTable(
               driversInfo,
-              dropoffLocations
+              eventDropoffLocations
             )}
           />
         </div>
@@ -363,11 +370,15 @@ export function DriverLocationInfo() {
                 defaultValue={driverInfoToCoordinatorsText}
               />
             )}
-            <button className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold">
-              Send Driver Info to Coordinators
-            </button>
+            <SendTextMessageButton
+              label="Send Driver Info to Coordinators"
+              loading={driverInfoToCoordinatorsLoading}
+              url={`${API_BASE_URL}/api/messaging/driver-info-to-coordinators-text`}
+              successMessage="Driver information to coordinators Make automation started"
+              errorMessage="Unable to start Make automation"
+            />
           </div>
-          <PopupDropoffOrganizer date={event.date}/>
+          <PopupDropoffOrganizer date={event.date} />
         </div>
         <div className="h-16" />
       </div>

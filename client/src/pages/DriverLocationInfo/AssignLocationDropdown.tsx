@@ -155,7 +155,7 @@ export const AssignLocationDropdown: React.FC<Props> = ({
             <AssignLocationDropdownItem
               key={item.id}
               selected={selectedLocations[i]}
-              label={item.dropOffLocation}
+              label={item.siteName}
               mutationFn={assignLocation(item.id, i)}
               onSuccess={() => {
                 const newSelectedLocations = [...selectedLocations];

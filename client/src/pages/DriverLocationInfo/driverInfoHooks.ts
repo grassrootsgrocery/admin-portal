@@ -26,7 +26,6 @@ export function useDriversInfo() {
     }
     return response.json() as Promise<ProcessedDriver[]>;
   });
-
   // query for neighborhood names from neighborhood table
   const {
     data: neighborhoods,
@@ -60,7 +59,7 @@ export function useDriversInfo() {
       enabled: processedDriversStatus === "success",
     }
   );
-
+  let driversWithNeighborhoodNames: ProcessedDriver[] = [];
   if (
     processedDriversStatus === "success" &&
     neighborhoodsStatus === "success"
@@ -69,10 +68,13 @@ export function useDriversInfo() {
     neighborhoods.forEach((neighborhood) =>
       neighborhoodNamesById.set(neighborhood.id, neighborhood.Name)
     );
-    processNeighborhoodsForDriver(processedDrivers, neighborhoodNamesById);
+    driversWithNeighborhoodNames = processNeighborhoodsForDriver(
+      processedDrivers,
+      neighborhoodNamesById
+    );
 
     // sort drivers by first name
-    processedDrivers.sort((driver1, driver2) =>
+    driversWithNeighborhoodNames.sort((driver1, driver2) =>
       driver1.firstName < driver2.firstName ? -1 : 1
     );
   }
@@ -87,7 +89,7 @@ export function useDriversInfo() {
     processedDriversStatus === "error" || neighborhoodsStatus === "error";
 
   return {
-    driversInfo: processedDrivers,
+    driversInfo: driversWithNeighborhoodNames,
     refetchDrivers,
     driversInfoIsLoading: isLoading,
     driversInfoIsError: isError,
@@ -111,14 +113,15 @@ function processNeighborhoodsForDriver(
   drivers: ProcessedDriver[],
   neighborhoods: Map<string, string>
 ) {
-  drivers.forEach(function (driver) {
+  return drivers.map((driver) => {
     let neighborhoodNames: string[] = [];
-    driver.restrictedLocations.forEach(function (neighborhoodId) {
+    driver.restrictedLocations.forEach((neighborhoodId) => {
       const neighborhoodName = neighborhoods.get(neighborhoodId);
       if (neighborhoodName !== undefined) {
         neighborhoodNames.push(neighborhoodName);
       }
     });
-    driver.restrictedLocations = neighborhoodNames;
+    //driver.restrictedLocations = neighborhoodNames;
+    return { ...driver, restrictedLocations: neighborhoodNames };
   });
 }

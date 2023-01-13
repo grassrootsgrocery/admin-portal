@@ -12,8 +12,6 @@ import {
   Record,
   DropoffLocation,
   ProcessedDropoffLocation,
-  DropOffOrganizer,
-  ProcessedDropOffOrganizer,
   Neighborhood,
 } from "../types";
 //Error messages
@@ -36,36 +34,33 @@ function processDropOffLocations(
 
   return {
     id: location.id,
-    dropOffLocation: location.fields["Drop off location"]
-      ? location.fields["Drop off location"]
-      : "N/A",
-    address: location.fields["Drop-off Address"],
-    neighborhoods: location.fields["Neighborhood (from Zip Code)"]
-      ? location.fields["Neighborhood (from Zip Code)"]
-      : [],
+    siteName: location.fields["Drop off location"] || "No name",
+    address: location.fields["Drop-off Address"] || "No address",
+    neighborhoods: location.fields["Neighborhood (from Zip Code)"] || [],
     startTime: startTime.toLocaleString("en-US", optionsTime), // start time in HH:MM AM/PM format
     endTime: endTime.toLocaleString("en-US", optionsTime), // end time in HH:MM AM/PM format
-    deliveriesAssigned: 0, // location.fields[""],        // TODO: update with correct airtable field
-    matchedDrivers: [""], //location.fields[""]          // TODO: update with correct airtable field
+    deliveriesNeeded: location.fields["# of Loads Requested"] || 0,
+    deliveriesAssigned: location.fields["Total Loads"] || 0,
+    matchedDrivers: [""],
   };
 }
 
 // create string with needed neighborhood ids for url in neighborhood table query
 function getNeighborhoodIdsForUrl(
-  location: ProcessedDropoffLocation[] | ProcessedDropOffOrganizer[]
+  locations: ProcessedDropoffLocation[]
 ): string {
   let neighborhoodIds: string[] = [];
-  location.forEach((organizer) =>
-    organizer.neighborhoods.forEach((neighborhood) =>
+  locations.forEach((location) =>
+    location.neighborhoods.forEach((neighborhood) =>
       neighborhoodIds.push(neighborhood)
     )
   );
   return neighborhoodIds.join();
 }
 
-// update the processed location or organizer's neighborhood field with neighborhood name
-function processNeighborhoods(
-  locations: ProcessedDropoffLocation[] | ProcessedDropOffOrganizer[],
+// update the processed location's neighborhood field with neighborhood name
+function processNeighborhoodsForLocations(
+  locations: ProcessedDropoffLocation[],
   neighborhoods: Map<string, string>
 ) {
   locations.forEach(function (location) {
@@ -93,19 +88,22 @@ router.route("/api/dropoff-locations/").get(
     const url =
       `${AIRTABLE_URL_BASE}/📍 Drop off locations?` +
       `view=Drop-offs for This Weekend` +
-      `&fields=Drop off location` + // Name of drop off location
+      `&fields=Drop off location` + // siteName
       `&fields=Drop-off Address` + // address
-      `&fields=Neighborhood (from Zip Code)` + // neighborhood
+      `&fields=Neighborhood (from Zip Code)` + // neighborhoods
       `&fields=Starts accepting at` + // startTime
-      `&fields=Stops accepting at`; //+  // endTime
+      `&fields=Stops accepting at` + // endTime
+      `&fields=Total Loads` + // deliveriesAssigned
+      `&fields%5B%5D=%23+of+Loads+Requested`; // deliveriesNeeded
 
     const resp = await fetch(url, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
     if (!resp.ok) {
+      console.log(`${resp.status} ` + `${AIRTABLE_ERROR_MESSAGE}`);
       throw {
         message: AIRTABLE_ERROR_MESSAGE,
         status: resp.status,
@@ -124,8 +122,8 @@ router.route("/api/dropoff-locations/").get(
       `&fields%5B%5D=Name`;
 
     const neighborhoodResp = await fetch(neighborhoodsUrl, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
@@ -142,8 +140,10 @@ router.route("/api/dropoff-locations/").get(
       neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
     );
 
-    // console.log(neighborhoodNamesById);
-    processNeighborhoods(processedDropOffLocations, neighborhoodNamesById);
+    processNeighborhoodsForLocations(
+      processedDropOffLocations,
+      neighborhoodNamesById
+    );
 
     res.status(OK).json(processedDropOffLocations) as Response<
       ProcessedDropoffLocation[]
@@ -151,62 +151,29 @@ router.route("/api/dropoff-locations/").get(
   })
 );
 
-function processDropOffOrganizers(
-  organizer: Record<DropOffOrganizer>
-): ProcessedDropOffOrganizer {
-  const optionsTime = {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  } as const;
-
-  let startTime = null;
-  if (organizer.fields["Starts accepting at"]) {
-    startTime = new Date(
-      organizer.fields["Starts accepting at"]
-    ).toLocaleString("en-US", optionsTime);
-  }
-  let endTime = null;
-  if (organizer.fields["Stops accepting at"]) {
-    endTime = new Date(organizer.fields["Stops accepting at"]).toLocaleString(
-      "en-US",
-      optionsTime
-    );
-  }
-
-  return {
-    id: organizer.id,
-    siteName: organizer.fields["Drop off location"] || "No name",
-    address: organizer.fields["Drop-off Address"] || "No address",
-    neighborhoods: organizer.fields["Neighborhood (from Zip Code)"] || [],
-    startTime,
-    endTime,
-    deliveriesNeeded: organizer.fields["Total Loads"] || 0,
-  };
-}
-
 /**
- * @description Get regular saturday partners for drop off organizer pop up
- * @route  GET /api/dropoff-locations/partner-organizers
+ * @description Get partner locations for drop off organizer pop up
+ * @route  GET /api/dropoff-locations/partner-locations
  * @access
  */
-router.route("/api/dropoff-locations/partner-organizers").get(
+router.route("/api/dropoff-locations/partner-locations").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    console.log(`GET /api/dropoff-locations/partner-organizers`);
+    console.log(`GET /api/dropoff-locations/partner-locations`);
 
     const url =
       `${AIRTABLE_URL_BASE}/📍 Drop off locations?` +
-      // Get organizers who are regular saturday partners
+      // Get locations who are regular saturday partners
       `&filterByFormula={Regular Saturday Partner?}` +
       `&fields=Drop off location` + // siteName
       `&fields=Drop-off Address` + // address
-      `&fields=Neighborhood (from Zip Code)` + // neighborhood
+      `&fields=Neighborhood (from Zip Code)` + // neighborhoods
       `&fields=Starts accepting at` + // startTime
       `&fields=Stops accepting at` + // endTime
       `&fields=Total Loads`; // deliveriesNeeded
 
     const resp = await fetch(url, {
+      method: "GET",
       headers: {
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
@@ -217,14 +184,14 @@ router.route("/api/dropoff-locations/partner-organizers").get(
         status: resp.status,
       };
     }
-    const dropoffOrganizers =
-      (await resp.json()) as AirtableResponse<DropOffOrganizer>;
-    let processedDropOffOrganizers = dropoffOrganizers.records.map(
-      (organizer) => processDropOffOrganizers(organizer)
+    const partnerDropoffLocations =
+      (await resp.json()) as AirtableResponse<DropoffLocation>;
+    let processedPartnerDropOffLocations = partnerDropoffLocations.records.map(
+      (location) => processDropOffLocations(location)
     );
 
     const neighborhoodIds = getNeighborhoodIdsForUrl(
-      processedDropOffOrganizers
+      processedPartnerDropOffLocations
     );
     const neighborhoodsUrl =
       `${AIRTABLE_URL_BASE}/🏡 Neighborhoods?` +
@@ -232,8 +199,8 @@ router.route("/api/dropoff-locations/partner-organizers").get(
       `&fields%5B%5D=Name`;
 
     const neighborhoodResp = await fetch(neighborhoodsUrl, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });
@@ -249,10 +216,12 @@ router.route("/api/dropoff-locations/partner-organizers").get(
     neighborhoods.records.forEach((neighborhood) =>
       neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
     );
-    //console.log(neighborhoodNamesById);
-    processNeighborhoods(processedDropOffOrganizers, neighborhoodNamesById);
+    processNeighborhoodsForLocations(
+      processedPartnerDropOffLocations,
+      neighborhoodNamesById
+    );
 
-    res.status(OK).json(processedDropOffOrganizers) as Response<
+    res.status(OK).json(processedPartnerDropOffLocations) as Response<
       ProcessedDropoffLocation[]
     >;
   })

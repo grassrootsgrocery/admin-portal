@@ -2,7 +2,7 @@ import { useQuery } from "react-query";
 import { useAuth } from "../contexts/AuthContext";
 import { API_BASE_URL } from "../httpUtils";
 //Types
-import { ProcessedEvent } from "../types";
+import { ProcessedEvent, ProcessedSpecialEvent } from "../types";
 
 //Query all upcoming events
 export function useFutureEvents() {

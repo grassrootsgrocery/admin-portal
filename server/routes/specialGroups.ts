@@ -23,6 +23,16 @@ import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
 
 const router = express.Router();
 
+function processSpecialGroups(
+  specialGroup: Record<SpecialGroup>
+): ProcessedSpecialGroup {
+  return {
+    id: specialGroup.id,
+    name: specialGroup.fields["Name"] ? specialGroup.fields["Name"] : "N/A",
+    events: specialGroup.fields["🚛 Supplier Pickup Events"],
+  };
+}
+
 /**
  * @description Get all special groups
  * @route  GET /api/special-groups
@@ -38,8 +48,8 @@ router.route("/api/special-groups").get(
       `&fields=🚛 Supplier Pickup Events`; // Supplier Pickup Events -> list of events group is registered for
 
     const resp = await fetch(url, {
+      method: "GET",
       headers: {
-        method: "GET",
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
       },
     });

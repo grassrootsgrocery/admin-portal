@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import { useFutureEventById } from "../eventHooks";
 import React from "react";
 //Types
-import { ProcessedScheduledSlot } from "../../types";
+import { ProcessedScheduledSlot, ProcessedSpecialEvent } from "../../types";
 //Components
 import { Loading } from "../../components/Loading";
 import { VolunteersTable } from "./VolunteersTable";
@@ -166,7 +166,7 @@ export const ViewEvent = () => {
 
           <div className="flex flex-col items-start justify-around gap-2 ">
             <AddSpecialGroup event={event} refetchEvent={refetchEvent} />
-            <ViewSpecialGroups />
+            <ViewSpecialGroups event={event} />
           </div>
         </div>
         <div className="h-12" />

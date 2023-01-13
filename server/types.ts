@@ -73,6 +73,7 @@ export interface Driver {
   "Restricted Neighborhoods": string[];
   "📍 Drop off location": string[];
 }
+
 export interface ProcessedDriver {
   id: string;
   firstName: string;
@@ -96,17 +97,18 @@ export interface DropoffLocation {
   "Neighborhood (from Zip Code)": string[];
   "Starts accepting at": string;
   "Stops accepting at": string;
-  // TODO: update with correct airtable field for deliveriesAssigned
-  // TODO: update with correct airtable field for matchedDrivers
+  "Total Loads": number | undefined;
+  "# of Loads Requested": number | undefined;
 }
 
 export interface ProcessedDropoffLocation {
   id: string;
-  dropOffLocation: string;
+  siteName: string;
   address: string;
   neighborhoods: string[];
-  startTime: string;
-  endTime: string;
+  startTime: string | null;
+  endTime: string | null;
+  deliveriesNeeded: number;
   deliveriesAssigned: number;
   matchedDrivers: string[];
 }
@@ -123,21 +125,13 @@ export interface ProcessedSpecialGroup {
   events: string[];
 }
 
-export interface DropOffOrganizer {
-  "Drop off location": string | undefined;
-  "Drop-off Address": string | undefined;
-  "Neighborhood (from Zip Code)": string[] | undefined;
-  "Starts accepting at": string | undefined;
-  "Stops accepting at": string | undefined;
-  "Total Loads": number | undefined;
+export interface SpecialEvent {
+  "Volunteer Group": string | undefined;
+  "Link to Special Event Signup Form": string | undefined;
 }
 
-export interface ProcessedDropOffOrganizer {
+export interface ProcessedSpecialEvent {
   id: string;
-  siteName: string;
-  address: string;
-  neighborhoods: string[];
-  startTime: string | null;
-  endTime: string | null;
-  deliveriesNeeded: number;
+  specialGroupId: string;
+  eventSignUpLink: string;
 }

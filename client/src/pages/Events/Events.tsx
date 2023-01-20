@@ -31,7 +31,6 @@ export function Events() {
     return <div>Error...</div>;
   }
 
-  console.log("Logging futureEvents", futureEvents);
   return (
     <>
       <Navbar />

@@ -202,7 +202,6 @@ export const VolunteersTable: React.FC<Props> = ({
   //Filter items on filter selection
   useEffect(() => {
     let filteredItems = scheduledSlots;
-    console.log("ss", scheduledSlots);
     for (let i = 0; i < filters.length; i++) {
       if (filters[i].isSelected) {
         filteredItems = filteredItems.filter(filters[i].filter);

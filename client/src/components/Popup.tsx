@@ -12,7 +12,7 @@ export const Popup = ({ trigger, content, onOpenChange }: Props) => {
       <Modal.Trigger asChild>{trigger}</Modal.Trigger>
       <Modal.Portal>
         <Modal.Overlay className="modal-overlay z-20 bg-gray-500" />
-        <Modal.Content className="modal-content z-20 flex flex-col rounded-2xl bg-softBeige p-12 drop-shadow-lg">
+        <Modal.Content className="modal-content z-20 flex flex-col rounded-2xl bg-softBeige drop-shadow-lg lg:p-12">
           {content}
         </Modal.Content>
       </Modal.Portal>

@@ -94,7 +94,6 @@ export const ViewEvent = () => {
   }
 
   scheduledSlots.sort((a, b) => (a.firstName < b.firstName ? -1 : 1));
-  console.log("scheduledSlots", scheduledSlots);
 
   //Tailwind classes
   const sectionHeader =

@@ -1,11 +1,11 @@
-import express from "express";
+import express, { response } from "express";
 import asyncHandler from "express-async-handler";
 import { protect } from "../middleware/authMiddleware";
 import { Request, Response } from "express";
 import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
-import { OK, OK_CREATED } from "../httpUtils/statusCodes";
+import { BAD_REQUEST, OK, OK_CREATED } from "../httpUtils/statusCodes";
 //Types
 import {
   AirtableResponse,
@@ -16,7 +16,6 @@ import {
 } from "../types";
 //Error messages
 import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
-import { request } from "http";
 
 const router = express.Router();
 
@@ -29,16 +28,26 @@ function processDropOffLocations(
     hour12: true,
   } as const;
 
-  const startTime = new Date(location.fields["Starts accepting at"]);
-  const endTime = new Date(location.fields["Stops accepting at"]);
+  const startTime = location.fields["Starts accepting at"]
+    ? new Date(location.fields["Starts accepting at"]).toLocaleString(
+        "en-US",
+        optionsTime
+      )
+    : "";
+  const endTime = location.fields["Stops accepting at"]
+    ? new Date(location.fields["Stops accepting at"]).toLocaleString(
+        "en-US",
+        optionsTime
+      )
+    : "";
 
   return {
     id: location.id,
     siteName: location.fields["Drop off location"] || "No name",
     address: location.fields["Drop-off Address"] || "No address",
     neighborhoods: location.fields["Neighborhood (from Zip Code)"] || [],
-    startTime: startTime.toLocaleString("en-US", optionsTime), // start time in HH:MM AM/PM format
-    endTime: endTime.toLocaleString("en-US", optionsTime), // end time in HH:MM AM/PM format
+    startTime: startTime, // start time in HH:MM AM/PM format
+    endTime: endTime, // end time in HH:MM AM/PM format
     deliveriesNeeded: location.fields["# of Loads Requested"] || 0,
     deliveriesAssigned: location.fields["Total Loads"] || 0,
     matchedDrivers: [""],
@@ -94,7 +103,7 @@ router.route("/api/dropoff-locations/").get(
       `&fields=Starts accepting at` + // startTime
       `&fields=Stops accepting at` + // endTime
       `&fields=Total Loads` + // deliveriesAssigned
-      `&fields%5B%5D=%23+of+Loads+Requested`; // deliveriesNeeded
+      `&fields%5B%5D=%23+of+Loads+Requested`; // deliveriesNeeded. This needs to be url encoded for reasons that I don't understand.
 
     const resp = await fetch(url, {
       method: "GET",
@@ -152,7 +161,7 @@ router.route("/api/dropoff-locations/").get(
 );
 
 /**
- * @description Get partner locations for drop off organizer pop up
+ * @description Get all dropoff locations
  * @route  GET /api/dropoff-locations/partner-locations
  * @access
  */
@@ -170,7 +179,8 @@ router.route("/api/dropoff-locations/partner-locations").get(
       `&fields=Neighborhood (from Zip Code)` + // neighborhoods
       `&fields=Starts accepting at` + // startTime
       `&fields=Stops accepting at` + // endTime
-      `&fields=Total Loads`; // deliveriesNeeded
+      `&fields=Total Loads` + // deliveriesAssigned
+      `&fields%5B%5D=%23+of+Loads+Requested`; // deliveriesNeeded. This needs to be url encoded for reasons that I don't understand.
 
     const resp = await fetch(url, {
       method: "GET",
@@ -235,22 +245,38 @@ router.route("/api/dropoff-locations/partner-locations").get(
 router.route("/api/dropoff-locations/").patch(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    console.log(req.body, `PATCH /api/dropoff-locations/`);
+    console.log(`PATCH /api/dropoff-locations/`);
+    console.log("Request body: ", req.body);
+
+    const isValidRequest =
+      Object.keys(req.body).filter(
+        (locationId) =>
+          typeof req.body[locationId].startTime !== "string" ||
+          typeof req.body[locationId].endTime !== "string" ||
+          typeof req.body[locationId].deliveriesNeeded !== "number"
+      ).length === 0;
+
+    if (!isValidRequest) {
+      res.status(BAD_REQUEST);
+      throw new Error(
+        "Please ensure that the request body if of form { [locationId: string]: { 'startTime': string, 'endTime': string, 'deliveriesNeeded': number } }."
+      );
+    }
 
     const records = Object.keys(req.body).map((locationId) => {
       return {
         id: locationId,
         fields: {
-          "Starts accepting at": req.body[locationId].startTime,
-          "Stops accepting at": req.body[locationId].endTime,
+          "Starts accepting at": req.body[locationId].startTime || null,
+          "Stops accepting at": req.body[locationId].endTime || null,
           "# of Loads Requested": req.body[locationId].deliveriesNeeded,
         },
       };
     });
-    // console.log("Records: ", records);
 
     const url = `${AIRTABLE_URL_BASE}/📍 Drop off locations`;
 
+    //Use this loop to make the requests because Airtable can only update the records 10 at a time.
     let start = 0;
     while (start + 10 <= records.length) {
       const resp = await fetch(url, {
@@ -263,21 +289,15 @@ router.route("/api/dropoff-locations/").patch(
           records: records.slice(start, start + 10),
         }),
       });
+      if (!resp.ok) {
+        throw {
+          message: AIRTABLE_ERROR_MESSAGE,
+          status: resp.status,
+        };
+      }
       start += 10;
-
-      // const data = await resp.json();
-      // console.log("Data Backend: ", data);
-
-      // if (!resp.ok) {
-      //   console.log("resp: ", resp);
-      //   throw {
-      //     message: AIRTABLE_ERROR_MESSAGE,
-      //     status: resp.status,
-      //   };
-      // }
-      // const dropoffOrganizers = await resp.json();
-      // res.status(OK_CREATED).json(dropoffOrganizers);
     }
+    res.status(OK).json({ message: "Dropoff locations updated" });
   })
 );
 

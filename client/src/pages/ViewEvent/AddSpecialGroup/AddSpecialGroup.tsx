@@ -51,7 +51,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
       addSpecialGroupToEvent.mutate({ specialGroupId: data.records[0].id });
     },
     onError: (error, variables, context) => {
-      console.log(error);
+      console.error(error);
       toastNotify("Unable to create special group", "failure");
     },
   });
@@ -100,8 +100,6 @@ export const AddSpecialGroup: React.FC<Props> = ({
   >(null);
   const [newlyAddedGroupSignUpLink, setNewlyAddedGroupSignUpLink] =
     useState("");
-
-  console.log("Logging specialGroups", specialGroups);
 
   const isGroupRegisteredForEvent = (
     specialGroup: ProcessedSpecialGroup | null,

@@ -29,7 +29,7 @@ function processSpecialGroups(
   return {
     id: specialGroup.id,
     name: specialGroup.fields["Name"] ? specialGroup.fields["Name"] : "N/A",
-    events: specialGroup.fields["🚛 Supplier Pickup Events"],
+    events: specialGroup.fields["🚛 Supplier Pickup Events"] || [],
   };
 }
 

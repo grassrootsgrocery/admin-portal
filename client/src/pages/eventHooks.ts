@@ -13,7 +13,6 @@ export function useFutureEvents() {
   }
 
   return useQuery(["fetchFutureEvents"], async () => {
-    console.log("Fetching future events...");
     const response = await fetch(`${API_BASE_URL}/api/events`, {
       headers: { Authorization: `Bearer ${token}` },
     });

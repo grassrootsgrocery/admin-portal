@@ -64,14 +64,14 @@ export interface ProcessedScheduledSlot {
 }
 
 export interface Driver {
-  "First Name": string;
-  "Last Name": string;
-  "Driving Slot Time": string;
-  "Total Deliveries": number;
-  "Zip Code": string;
-  "Transportation Types": string;
-  "Restricted Neighborhoods": string[];
-  "📍 Drop off location": string[];
+  "First Name": string[] | undefined;
+  "Last Name": string[] | undefined;
+  "Driving Slot Time": string[] | undefined;
+  "Total Deliveries": number | undefined;
+  "Zip Code": string[] | undefined;
+  "Transportation Types": string[] | undefined;
+  "Restricted Neighborhoods": string[] | undefined;
+  "📍 Drop off location": string[] | undefined;
 }
 
 export interface ProcessedDriver {
@@ -92,11 +92,11 @@ export interface Neighborhood {
 }
 
 export interface DropoffLocation {
-  "Drop off location": string;
-  "Drop-off Address": string;
-  "Neighborhood (from Zip Code)": string[];
-  "Starts accepting at": string;
-  "Stops accepting at": string;
+  "Drop off location": string | undefined;
+  "Drop-off Address": string | undefined;
+  "Neighborhood (from Zip Code)": string[] | undefined;
+  "Starts accepting at": string | undefined;
+  "Stops accepting at": string | undefined;
   "Total Loads": number | undefined;
   "# of Loads Requested": number | undefined;
 }
@@ -114,9 +114,9 @@ export interface ProcessedDropoffLocation {
 }
 
 export interface SpecialGroup {
-  Name: string;
-  "🚛 Supplier Pickup Events": string[];
-  "Shortened Link to Special Event Signup Form": string;
+  Name: string | undefined;
+  "🚛 Supplier Pickup Events": string[] | undefined;
+  "Shortened Link to Special Event Signup Form": string | undefined;
 }
 
 export interface ProcessedSpecialGroup {

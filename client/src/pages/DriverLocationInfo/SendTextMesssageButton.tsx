@@ -1,6 +1,5 @@
 import { useMutation } from "react-query";
 import { useAuth } from "../../contexts/AuthContext";
-import { API_BASE_URL } from "../../httpUtils";
 import { toastNotify } from "../../uiUtils";
 
 // TODO: This component can probably also be used on the "ViewEvent.tsx" page

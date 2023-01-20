@@ -248,7 +248,12 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {
     hour12: true,
   } as const;
 
-  const timeSlot = new Date(driver.fields["Driving Slot Time"][0]);
+  const timeSlot = driver.fields["Driving Slot Time"]
+    ? new Date(driver.fields["Driving Slot Time"][0]).toLocaleString(
+        "en-US",
+        optionsTime
+      )
+    : "";
 
   return {
     // validate each data type data, returns N/A for null values
@@ -259,8 +264,8 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {
     lastName: driver.fields["Last Name"]
       ? driver.fields["Last Name"][0]
       : "N/A",
-    timeSlot: timeSlot.toLocaleString("en-US", optionsTime), // time slot in HH:MM AM/PM format
-    deliveryCount: driver.fields["Total Deliveries"],
+    timeSlot: timeSlot, // time slot in HH:MM AM/PM format
+    deliveryCount: driver.fields["Total Deliveries"] || 0,
     zipCode: driver.fields["Zip Code"] ? driver.fields["Zip Code"][0] : "N/A",
     vehicle: driver.fields["Transportation Types"]
       ? driver.fields["Transportation Types"][0]

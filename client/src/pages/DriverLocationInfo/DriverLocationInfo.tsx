@@ -11,7 +11,7 @@ import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 import { Navbar } from "../../components/Navbar/Navbar";
 import { DataTable } from "../../components/DataTable";
 import { Loading } from "../../components/Loading";
-import { PopupDropoffOrganizer } from "./PopupDropoffOrganizer";
+import { DropoffOrganizerPopup } from "./DropoffOrganizerPopup";
 //Assets
 import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
@@ -59,10 +59,8 @@ function processDropoffLocationsForTable(
   drivers: ProcessedDriver[],
   processedDropOffLocations: ProcessedDropoffLocation[]
 ) {
-  let output = [];
-  for (let i = 0; i < processedDropOffLocations.length; i++) {
-    const curLocation = processedDropOffLocations[i];
-    let curRow = [
+  return processedDropOffLocations.map((curLocation, i) => {
+    return [
       curLocation.id, //id
       i + 1, //#
       "Coordinator Information", //TODO: coordinator information
@@ -87,9 +85,7 @@ function processDropoffLocationsForTable(
           })}
       </ul>,
     ];
-    output.push(curRow);
-  }
-  return output;
+  });
 }
 //Tailwind classes
 const label = "text-sm md:text-base lg:text-xl ";
@@ -168,33 +164,10 @@ export function DriverLocationInfo() {
     driversInfoIsError,
     driversInfoError,
   } = useDriversInfo();
-  console.log("driversInfo", driversInfo);
-
-  /* Copied to PopupDropoffOrganizer 
-  const {
-    data: partnerDropoffLocations,
-    status: partnerDropoffLocationsStatus,
-    error: partnerDropoffLocationsError,
-  } = useQuery(["fetchPartnerDropOffLocations"], async () => {
-    const resp = await fetch(
-      `${API_BASE_URL}/api/dropoff-locations/partner-locations`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (!resp.ok) {
-      const data = await resp.json();
-      throw new Error(data.messsage);
-    }
-    return resp.json();
-  });
-  console.log("dropoffOrganizers", dropoffOrganizers);
-  */
 
   const {
     data: eventDropoffLocations,
+    refetch: refetchEventDropoffLocations,
     status: eventDropoffLocationsStatus,
     error: eventDropoffLocationsError,
   } = useQuery(["fetchEventDropOffLocations"], async () => {
@@ -209,7 +182,6 @@ export function DriverLocationInfo() {
     }
     return resp.json();
   });
-  console.log("eventDropoffLocations", eventDropoffLocations);
 
   if (
     driversInfoIsLoading ||
@@ -324,14 +296,10 @@ export function DriverLocationInfo() {
             successMessage="Location information to drivers Make automation started"
             errorMessage="Unable to start Make automation"
           />
-          {/* <button className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold">
-            Send Locations to Drivers
-          </button> */}
         </div>
-
         <div className="h-16" />
         <div className={sectionHeader}>
-          <img className={sectionHeaderIcon} src={driving}></img>
+          <img className={sectionHeaderIcon} src={driving} />
           <h1>Location Information</h1>
         </div>
         <div className="h-8" />
@@ -378,7 +346,10 @@ export function DriverLocationInfo() {
               errorMessage="Unable to start Make automation"
             />
           </div>
-          <PopupDropoffOrganizer date={event.date} />
+          <DropoffOrganizerPopup
+            date={event.date}
+            refetchEventDropoffLocations={refetchEventDropoffLocations}
+          />
         </div>
         <div className="h-16" />
       </div>

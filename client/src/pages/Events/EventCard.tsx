@@ -43,7 +43,7 @@ export const EventCard: React.FC<Props> = ({
             <h3 className={labelBold}>{time}</h3>
           </div>
           {/* Main Location */}
-          <div className="dev-border col-span-4 md:col-span-4">
+          <div className="col-span-4 md:col-span-4">
             <p className={label}>Main Location</p>
             <h3 className={`${labelBold} line-clamp-2`}>{location}</h3>
           </div>

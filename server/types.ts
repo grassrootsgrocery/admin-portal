@@ -45,6 +45,7 @@ export interface ScheduledSlot {
   Type: string[] | undefined;
   "Confirmed?": boolean | undefined;
   "Volunteer Status": string[] | undefined;
+  "Phone Formula": string | undefined;
   Email: string[] | undefined;
   "Volunteer Group (for MAKE)": string | undefined;
 }
@@ -60,6 +61,7 @@ export interface ProcessedScheduledSlot {
   confirmed: boolean;
   volunteerStatus: string;
   email: string;
+  phoneNumber: string;
   specialGroup: string | null;
 }
 

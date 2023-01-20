@@ -69,6 +69,7 @@ function processScheduledSlots(
         ? ss.fields["Volunteer Status"][0]
         : "",
       email: ss.fields["Email"] ? ss.fields["Email"][0] : "None",
+      phoneNumber: ss.fields["Phone Formula"] || "None",
       specialGroup: ss.fields["Volunteer Group (for MAKE)"] || null,
     };
 
@@ -108,6 +109,7 @@ router.route("/api/volunteers/").get(
       `&fields=Last Name` +
       `&fields=Correct slot time` +
       `&fields=Type` +
+      `&fields=Phone Formula` +
       `&fields=Total Deliveries` +
       `&fields=Confirmed?` +
       `&fields=Volunteer Status` +

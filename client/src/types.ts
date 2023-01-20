@@ -27,6 +27,7 @@ export interface ProcessedScheduledSlot {
   confirmed: boolean;
   volunteerStatus: string;
   email: string;
+  phoneNumber: string;
   specialGroup: string | null;
 }
 

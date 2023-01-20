@@ -181,33 +181,13 @@ function isValidInput(dropoffStore: DropoffLocationsStore) {
 
 export const DropoffOrganizerPopup: React.FC<{
   date: Date;
-  refetchEventDropoffLocations: () => void;
-}> = ({ date, refetchEventDropoffLocations }) => {
+  dropoffLocations: ProcessedDropoffLocation[];
+  refetchDropoffLocations: () => void;
+}> = ({ date, dropoffLocations, refetchDropoffLocations }) => {
   const { token } = useAuth();
   if (!token) {
     return <Navigate to="/" />;
   }
-
-  const {
-    data: dropoffLocations,
-    refetch: refetchDropoffOrganizerDropoffLocations,
-    status: dropoffLocationsStatus,
-    error: dropoffLocationsError,
-  } = useQuery(["fetchDropOffLocations"], async () => {
-    const resp = await fetch(
-      `${API_BASE_URL}/api/dropoff-locations/partner-locations`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (!resp.ok) {
-      const data = await resp.json();
-      throw new Error(data.messsage);
-    }
-    return resp.json() as Promise<ProcessedDropoffLocation[]>;
-  });
 
   const saveDropoffLocations = useMutation({
     mutationFn: async () => {
@@ -243,8 +223,7 @@ export const DropoffOrganizerPopup: React.FC<{
     },
     onSuccess(data, variables, context) {
       toastNotify("Drop-off locations saved successfully", "success");
-      refetchEventDropoffLocations();
-      refetchDropoffOrganizerDropoffLocations();
+      refetchDropoffLocations();
     },
     onError(error, variables, context) {
       console.error(error);
@@ -257,26 +236,11 @@ export const DropoffOrganizerPopup: React.FC<{
     setDropoffStore(populateStoreWithFetchedData(dropoffLocations));
   }, [dropoffLocations]);
 
-  const addDropoffLocationButtonDisabled =
-    dropoffLocationsStatus === "loading" ||
-    dropoffLocationsStatus === "idle" ||
-    dropoffLocationsStatus === "error";
-
-  if (dropoffLocationsStatus === "error") {
-    console.error("dropoffLocationsError", dropoffLocationsError);
-  }
-
   return (
     <Popup
       trigger={
         <button
-          disabled={addDropoffLocationButtonDisabled}
-          className={
-            "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all lg:px-5 lg:py-3 lg:text-base lg:font-bold " +
-            (addDropoffLocationButtonDisabled
-              ? "opacity-50"
-              : "hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen")
-          }
+          className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
           type="button"
         >
           + Add Dropoff Location

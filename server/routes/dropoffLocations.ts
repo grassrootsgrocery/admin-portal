@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
-import { BAD_REQUEST, OK, OK_CREATED } from "../httpUtils/statusCodes";
+import { BAD_REQUEST, OK } from "../httpUtils/statusCodes";
 //Types
 import {
   AirtableResponse,
@@ -41,6 +41,7 @@ function processDropOffLocations(
       )
     : "";
 
+  console.log("location", location);
   return {
     id: location.id,
     siteName: location.fields["Drop off location"] || "No name",
@@ -51,6 +52,13 @@ function processDropOffLocations(
     deliveriesNeeded: location.fields["# of Loads Requested"] || 0,
     deliveriesAssigned: location.fields["Total Loads"] || 0,
     matchedDrivers: [""],
+    pocNameList: location.fields["POC Name List"]
+      ? location.fields["POC Name List"].split(";")
+      : [],
+    pocPhoneNumberList: location.fields["POC Phone Number List"]
+      ? location.fields["POC Phone Number List"].split(";")
+      : [],
+    locationEmail: location.fields["Location Email"] || "None",
   };
 }
 
@@ -85,7 +93,7 @@ function processNeighborhoodsForLocations(
 }
 
 /**
- * @description Get dropoff locations for event
+ * @description Get all dropoff locations
  * @route  GET /api/dropoff-locations/
  * @access
  */
@@ -96,13 +104,17 @@ router.route("/api/dropoff-locations/").get(
 
     const url =
       `${AIRTABLE_URL_BASE}/📍 Drop off locations?` +
-      `view=Drop-offs for This Weekend` +
+      // Get locations who are regular saturday partners
+      `&filterByFormula={Regular Saturday Partner?}` +
       `&fields=Drop off location` + // siteName
       `&fields=Drop-off Address` + // address
       `&fields=Neighborhood (from Zip Code)` + // neighborhoods
       `&fields=Starts accepting at` + // startTime
       `&fields=Stops accepting at` + // endTime
       `&fields=Total Loads` + // deliveriesAssigned
+      `&fields=POC Name List` + // Points of contact
+      `&fields=POC Phone Number List` + // Points of contact phone numbers
+      `&fields=Location Email` + // email
       `&fields%5B%5D=%23+of+Loads+Requested`; // deliveriesNeeded. This needs to be url encoded for reasons that I don't understand.
 
     const resp = await fetch(url, {
@@ -112,7 +124,6 @@ router.route("/api/dropoff-locations/").get(
       },
     });
     if (!resp.ok) {
-      console.log(`${resp.status} ` + `${AIRTABLE_ERROR_MESSAGE}`);
       throw {
         message: AIRTABLE_ERROR_MESSAGE,
         status: resp.status,
@@ -155,83 +166,6 @@ router.route("/api/dropoff-locations/").get(
     );
 
     res.status(OK).json(processedDropOffLocations) as Response<
-      ProcessedDropoffLocation[]
-    >;
-  })
-);
-
-/**
- * @description Get all dropoff locations
- * @route  GET /api/dropoff-locations/partner-locations
- * @access
- */
-router.route("/api/dropoff-locations/partner-locations").get(
-  protect,
-  asyncHandler(async (req: Request, res: Response) => {
-    console.log(`GET /api/dropoff-locations/partner-locations`);
-
-    const url =
-      `${AIRTABLE_URL_BASE}/📍 Drop off locations?` +
-      // Get locations who are regular saturday partners
-      `&filterByFormula={Regular Saturday Partner?}` +
-      `&fields=Drop off location` + // siteName
-      `&fields=Drop-off Address` + // address
-      `&fields=Neighborhood (from Zip Code)` + // neighborhoods
-      `&fields=Starts accepting at` + // startTime
-      `&fields=Stops accepting at` + // endTime
-      `&fields=Total Loads` + // deliveriesAssigned
-      `&fields%5B%5D=%23+of+Loads+Requested`; // deliveriesNeeded. This needs to be url encoded for reasons that I don't understand.
-
-    const resp = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-    });
-    if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const partnerDropoffLocations =
-      (await resp.json()) as AirtableResponse<DropoffLocation>;
-    let processedPartnerDropOffLocations = partnerDropoffLocations.records.map(
-      (location) => processDropOffLocations(location)
-    );
-
-    const neighborhoodIds = getNeighborhoodIdsForUrl(
-      processedPartnerDropOffLocations
-    );
-    const neighborhoodsUrl =
-      `${AIRTABLE_URL_BASE}/🏡 Neighborhoods?` +
-      `filterByFormula=SEARCH(RECORD_ID(), "${neighborhoodIds}") != ""` +
-      `&fields%5B%5D=Name`;
-
-    const neighborhoodResp = await fetch(neighborhoodsUrl, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-    });
-    if (!neighborhoodResp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: neighborhoodResp.status,
-      };
-    }
-    const neighborhoods =
-      (await neighborhoodResp.json()) as AirtableResponse<Neighborhood>;
-    let neighborhoodNamesById: Map<string, string> = new Map();
-    neighborhoods.records.forEach((neighborhood) =>
-      neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
-    );
-    processNeighborhoodsForLocations(
-      processedPartnerDropOffLocations,
-      neighborhoodNamesById
-    );
-
-    res.status(OK).json(processedPartnerDropOffLocations) as Response<
       ProcessedDropoffLocation[]
     >;
   })

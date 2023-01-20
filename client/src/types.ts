@@ -53,6 +53,9 @@ export interface ProcessedDropoffLocation {
   startTime: string | null;
   endTime: string | null;
   deliveriesNeeded: number;
+  pocNameList: string[];
+  pocPhoneNumberList: string[];
+  locationEmail: string;
   deliveriesAssigned: number;
   matchedDrivers: string[];
 }

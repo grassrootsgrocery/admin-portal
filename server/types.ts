@@ -104,6 +104,9 @@ export interface DropoffLocation {
   "Starts accepting at": string | undefined;
   "Stops accepting at": string | undefined;
   "Total Loads": number | undefined;
+  "POC Name List": string | undefined;
+  "POC Phone Number List": string | undefined;
+  "Location Email": string | undefined;
   "# of Loads Requested": number | undefined;
 }
 
@@ -115,6 +118,9 @@ export interface ProcessedDropoffLocation {
   startTime: string | null;
   endTime: string | null;
   deliveriesNeeded: number;
+  pocNameList: string[];
+  pocPhoneNumberList: string[];
+  locationEmail: string;
   deliveriesAssigned: number;
   matchedDrivers: string[];
 }

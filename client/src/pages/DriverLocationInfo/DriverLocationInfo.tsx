@@ -18,6 +18,7 @@ import driving from "../../assets/driving.svg";
 import back from "../../assets/back-white.svg";
 import { SendTextMessageButton } from "./SendTextMesssageButton";
 import { ContactModal } from "../../components/ContactModal";
+import { CoordinatorInfoPopup } from "./CoordinatorInfoPopup";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -29,6 +30,9 @@ function processDriversForTable(
   processedDropOffLocations: ProcessedDropoffLocation[],
   refetchDrivers: any
 ) {
+  const dropoffLocationsSorted = processedDropOffLocations.sort((a, b) =>
+    a.siteName < b.siteName ? -1 : 1
+  );
   return drivers.map((curDriver, i) => {
     return [
       curDriver.id, //id
@@ -41,9 +45,7 @@ function processDriversForTable(
       curDriver.vehicle,
       curDriver.restrictedLocations.join(", "),
       <AssignLocationDropdown
-        locations={processedDropOffLocations.sort((a, b) =>
-          a.siteName < b.siteName ? -1 : 1
-        )}
+        locations={dropoffLocationsSorted}
         driver={curDriver}
         refetchDrivers={refetchDrivers}
       />,
@@ -64,7 +66,11 @@ function processDropoffLocationsForTable(
     return [
       curLocation.id, //id
       i + 1, //#
-      "Coordinator Information", //TODO: coordinator information
+      <CoordinatorInfoPopup
+        coordinatorPOCNames={curLocation.pocNameList}
+        coordinatorPOCPhoneNumbers={curLocation.pocPhoneNumberList}
+        locationEmail={curLocation.locationEmail}
+      />,
       curLocation.siteName,
       curLocation.address,
       curLocation.neighborhoods.join(", "),
@@ -88,6 +94,15 @@ function processDropoffLocationsForTable(
     ];
   });
 }
+
+const getDropoffLocationsForEvent = (
+  dropoffLocations: ProcessedDropoffLocation[]
+) => {
+  //Currently, the way it works is that any location that has non-empty start and end times considered to be registered for the most recent upcoming event
+  return dropoffLocations.filter(
+    (location) => location.startTime && location.endTime
+  );
+};
 //Tailwind classes
 const label = "text-sm md:text-base lg:text-xl ";
 const text = "text-sm font-bold text-newLeafGreen md:text-base lg:text-xl";
@@ -167,10 +182,10 @@ export function DriverLocationInfo() {
   } = useDriversInfo();
 
   const {
-    data: eventDropoffLocations,
-    refetch: refetchEventDropoffLocations,
-    status: eventDropoffLocationsStatus,
-    error: eventDropoffLocationsError,
+    data: dropoffLocations,
+    refetch: refetchDropoffLocations,
+    status: dropoffLocationsStatus,
+    error: dropoffLocationsError,
   } = useQuery(["fetchEventDropOffLocations"], async () => {
     const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations`, {
       headers: {
@@ -186,8 +201,10 @@ export function DriverLocationInfo() {
 
   if (
     driversInfoIsLoading ||
-    eventDropoffLocationsStatus === "loading" ||
-    eventDropoffLocationsStatus === "idle"
+    eventStatus === "loading" ||
+    eventStatus === "idle" ||
+    dropoffLocationsStatus === "loading" ||
+    dropoffLocationsStatus === "idle"
   ) {
     return (
       <div className="relative h-full">
@@ -195,8 +212,12 @@ export function DriverLocationInfo() {
       </div>
     );
   }
-  if (driversInfoIsError || eventDropoffLocationsStatus === "error") {
-    const error = driversInfoError || eventDropoffLocationsError;
+  if (
+    driversInfoIsError ||
+    dropoffLocationsStatus === "error" ||
+    eventStatus === "error"
+  ) {
+    const error = driversInfoError || dropoffLocationsError || eventError;
     console.error(error);
     return <div>Error...</div>;
   }
@@ -212,6 +233,8 @@ export function DriverLocationInfo() {
     );
     return <div>Error...</div>;
   }
+  const dropoffLocationsForEvent =
+    getDropoffLocationsForEvent(dropoffLocations);
   return (
     <>
       <Navbar />
@@ -272,7 +295,7 @@ export function DriverLocationInfo() {
             ]}
             dataRows={processDriversForTable(
               driversInfo,
-              eventDropoffLocations,
+              dropoffLocationsForEvent,
               refetchDrivers
             )}
           />
@@ -321,7 +344,7 @@ export function DriverLocationInfo() {
             ]}
             dataRows={processDropoffLocationsForTable(
               driversInfo,
-              eventDropoffLocations
+              dropoffLocationsForEvent
             )}
           />
         </div>
@@ -350,7 +373,8 @@ export function DriverLocationInfo() {
           </div>
           <DropoffOrganizerPopup
             date={event.date}
-            refetchEventDropoffLocations={refetchEventDropoffLocations}
+            dropoffLocations={dropoffLocations}
+            refetchDropoffLocations={refetchDropoffLocations}
           />
         </div>
         <div className="h-16" />

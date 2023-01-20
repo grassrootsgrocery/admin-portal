@@ -41,6 +41,8 @@ export interface ProcessedDriver {
   vehicle: string;
   restrictedLocations: string[];
   dropoffLocations: string[];
+  phoneNumber: string;
+  email: string;
 }
 
 export interface ProcessedDropoffLocation {

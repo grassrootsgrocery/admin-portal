@@ -74,6 +74,8 @@ export interface Driver {
   "Transportation Types": string[] | undefined;
   "Restricted Neighborhoods": string[] | undefined;
   "📍 Drop off location": string[] | undefined;
+  "Phone Formula": string | undefined;
+  Email: string[] | undefined;
 }
 
 export interface ProcessedDriver {
@@ -86,6 +88,8 @@ export interface ProcessedDriver {
   vehicle: string;
   restrictedLocations: string[];
   dropoffLocations: string[];
+  phoneNumber: string;
+  email: string;
 }
 
 export interface Neighborhood {

@@ -276,6 +276,8 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {
       ? driver.fields["Restricted Neighborhoods"]
       : [],
     dropoffLocations: driver.fields["📍 Drop off location"] || [],
+    phoneNumber: driver.fields["Phone Formula"] || "None",
+    email: driver.fields["Email"] ? driver.fields["Email"][0] : "None",
   };
 }
 
@@ -297,6 +299,8 @@ router.route("/api/volunteers/drivers").get(
       `&fields=Driving Slot Time` + // Time Slot
       `&fields=Total Deliveries` + // Delivery Type
       `&fields=Zip Code` + // Zip Code
+      `&fields=Phone Formula` +
+      `&fields=Email` +
       `&fields=Transportation Types` + // Vehicle
       `&fields=Restricted Neighborhoods` + // Restricted Locations
       `&fields=📍 Drop off location`; // Restricted Locations

@@ -1,5 +1,8 @@
 # Grassroots Groceries Events Portal
 
+# Point of Contact
+For inquiries about the project, contact Jason Cavanaugh at jason.p.cavanaugh@gmail.com.
+
 # Project Info
 
 [Grassroots Groceries](https://www.grassrootsgrocery.org/) (previously Mott Haven Fridge) is an organization founded by Dan Zauderer that delivers free produce to areas that need it in NYC. The organization hosts produce-packing events every Saturday, where volunteers come to a designated location and load produce into vehicles. Volunteers then drive the vehicles to various dropoff locations.

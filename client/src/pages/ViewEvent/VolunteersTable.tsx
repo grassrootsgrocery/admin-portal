@@ -15,8 +15,7 @@ import check_icon from "../../assets/checkbox-icon.svg";
 //Types
 import { ProcessedScheduledSlot } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
-import { Popup } from "../../components/Popup";
-import { ContactModal } from "../../components/ContactModal";
+import { ContactPopup } from "../../components/ContactPopup";
 
 /*
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
@@ -275,7 +274,7 @@ export const VolunteersTable: React.FC<Props> = ({
         ss.specialGroup ?? "N/A",
         typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
         /* Contact Modal */
-        <ContactModal phoneNumber={ss.phoneNumber} email={ss.email} />,
+        <ContactPopup phoneNumber={ss.phoneNumber} email={ss.email} />,
       ];
     });
 

@@ -17,8 +17,9 @@ import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
 import back from "../../assets/back-white.svg";
 import { SendTextMessageButton } from "./SendTextMesssageButton";
-import { ContactModal } from "../../components/ContactModal";
+import { ContactPopup } from "../../components/ContactPopup";
 import { CoordinatorInfoPopup } from "./CoordinatorInfoPopup";
+import { LocationPopup } from "./LocationPopup";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -27,13 +28,16 @@ in the VolunteersTable.tsx file.
 //Takes in ProcessedDriver array and formats data for DataTable component
 function processDriversForTable(
   drivers: ProcessedDriver[],
-  processedDropOffLocations: ProcessedDropoffLocation[],
+  dropoffLocations: ProcessedDropoffLocation[],
   refetchDrivers: any
 ) {
-  const dropoffLocationsSorted = processedDropOffLocations.sort((a, b) =>
+  const dropoffLocationsSorted = dropoffLocations.sort((a, b) =>
     a.siteName < b.siteName ? -1 : 1
   );
   return drivers.map((curDriver, i) => {
+    const dropoffLocationsForDriver = dropoffLocations.filter((location) =>
+      curDriver.dropoffLocations.includes(location.id)
+    );
     return [
       curDriver.id, //id
       i + 1, //#
@@ -49,7 +53,8 @@ function processDriversForTable(
         driver={curDriver}
         refetchDrivers={refetchDrivers}
       />,
-      <ContactModal
+      <LocationPopup dropoffLocations={dropoffLocationsForDriver} />,
+      <ContactPopup
         email={curDriver.email}
         phoneNumber={curDriver.phoneNumber}
       />,
@@ -291,6 +296,7 @@ export function DriverLocationInfo() {
               "Vehicle",
               "Restricted Locations",
               "Assign Location",
+              "Location Information",
               "Contact",
             ]}
             dataRows={processDriversForTable(

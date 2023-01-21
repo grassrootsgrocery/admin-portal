@@ -6,7 +6,7 @@ interface Props {
   phoneNumber: string;
   email: string;
 }
-export const ContactModal: React.FC<Props> = ({ phoneNumber, email }) => {
+export const ContactPopup: React.FC<Props> = ({ phoneNumber, email }) => {
   return (
     <Popup
       trigger={

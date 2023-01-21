@@ -224,6 +224,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
 
   return (
     <Popup
+      shouldDodgeKeyboard
       trigger={
         <button
           className={

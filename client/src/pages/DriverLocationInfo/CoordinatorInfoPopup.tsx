@@ -7,13 +7,15 @@ interface Props {
   coordinatorPOCPhoneNumbers: string[];
   locationEmail: string;
 }
+
+const labelClasses = "col-span-1 font-semibold text-newLeafGreen";
+const valueClasses = "col-span-4 lg:text-xl";
+
 export const CoordinatorInfoPopup: React.FC<Props> = ({
   coordinatorPOCNames,
   coordinatorPOCPhoneNumbers,
   locationEmail,
 }) => {
-  const labelClasses = "col-span-1 font-semibold text-newLeafGreen lg:text-xl";
-  const valueClasses = "col-span-4";
   return (
     <Popup
       trigger={

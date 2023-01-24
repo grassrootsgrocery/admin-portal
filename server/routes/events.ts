@@ -129,8 +129,8 @@ router.route("/api/events").get(
     console.log("GET /api/events");
     const url =
       `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
-      // Get events after today
-      `&filterByFormula=IS_AFTER({Start Time}, NOW())` +
+      // Get all events that are after yesterday. We want it to be after yesterday because we want the event to still show up on the day of the event
+      `&filterByFormula=IS_AFTER({Start Time}, (DATEADD(TODAY(), -1, 'days')))` +
       // Get fields for upcoming events dashboard
       `&fields=Start Time` + // Day, Time
       `&fields=Pickup Address` + // Main Location

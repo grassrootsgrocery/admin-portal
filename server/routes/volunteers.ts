@@ -46,6 +46,7 @@ function processScheduledSlots(
       hour: "numeric",
       minute: "numeric",
       hour12: true,
+      timeZone: "America/New_York",
     } as const;
     return new Date(timeslot).toLocaleString("en-US", optionsTime);
   }
@@ -248,6 +249,7 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {
     hour: "numeric",
     minute: "numeric",
     hour12: true,
+    timeZone: "America/New_York",
   } as const;
 
   const timeSlot = driver.fields["Driving Slot Time"]

@@ -30,11 +30,13 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
     weekday: "long",
     month: "long",
     day: "numeric",
+    timeZone: "America/New_York",
   } as const;
   const optionsTime = {
     hour: "numeric",
     minute: "numeric",
     hour12: true,
+    timeZone: "America/New_York",
   } as const;
 
   const getOrdinal = function (d: number) {
@@ -191,6 +193,7 @@ router.route("/api/events").get(
       return processedGeneralEvent;
     });
     futureEvents.sort((a, b) => (a.date < b.date ? -1 : 1));
+    console.log("futureEvents", futureEvents);
     res.status(OK).json(futureEvents);
   })
 );

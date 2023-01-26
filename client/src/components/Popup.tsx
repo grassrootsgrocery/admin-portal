@@ -19,9 +19,18 @@ export const Popup = ({
       <Modal.Portal>
         <Modal.Overlay className="modal-overlay z-20 bg-gray-500" />
         <Modal.Content
-          className={`modal-content z-20 flex flex-col rounded-2xl bg-softBeige px-5 py-3 drop-shadow-lg lg:px-8 lg:py-6 ${
-            shouldDodgeKeyboard ? " dodge-keyboard" : ""
-          }`}
+          className="
+          modal-open-animation 
+          fixed 
+          top-1/2
+          left-1/2 
+          z-20 
+          flex max-w-full 
+          -translate-x-1/2 -translate-y-1/2 flex-col 
+          rounded-lg bg-softBeige 
+          py-3 px-5 drop-shadow-lg 
+          lg:px-8 lg:py-6
+          "
         >
           {content}
         </Modal.Content>

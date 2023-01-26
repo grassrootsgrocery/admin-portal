@@ -193,24 +193,9 @@ router.route("/api/events").get(
       return processedGeneralEvent;
     });
     futureEvents.sort((a, b) => (a.date < b.date ? -1 : 1));
-    console.log("futureEvents", futureEvents);
     res.status(OK).json(futureEvents);
   })
 );
-
-function processSpecialEvents(
-  specialEvent: Record<SpecialEvent>
-): ProcessedSpecialEvent {
-  return {
-    id: specialEvent.id,
-    specialGroupId: specialEvent.fields["Volunteer Group"]
-      ? specialEvent.fields["Volunteer Group"][0]
-      : "NO ID",
-    eventSignUpLink:
-      specialEvent.fields["Link to Special Event Signup Form"] ||
-      "No sign up link",
-  };
-}
 
 /**
  * @description Get event specific special group sign up links
@@ -256,9 +241,18 @@ router.route("/api/events/view-event-special-groups/").get(
     }
 
     const specialEvents = (await resp.json()) as AirtableResponse<SpecialEvent>;
-    let processedSpecialEvents = specialEvents.records.map((specialEvent) =>
-      processSpecialEvents(specialEvent)
-    );
+    let processedSpecialEvents: ProcessedSpecialEvent[] =
+      specialEvents.records.map((specialEvent) => {
+        return {
+          id: specialEvent.id,
+          specialGroupId: specialEvent.fields["Volunteer Group"]
+            ? specialEvent.fields["Volunteer Group"][0]
+            : "NO ID",
+          eventSignUpLink:
+            specialEvent.fields["Link to Special Event Signup Form"] ||
+            "No sign up link",
+        };
+      });
 
     res.status(OK).json(processedSpecialEvents) as Response<
       ProcessedSpecialEvent[]

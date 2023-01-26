@@ -284,6 +284,7 @@ export function DriverLocationInfo() {
         <div className="h-8" />
 
         <div className="h-screen">
+          {/* Drivers table */}
           <DataTable
             borderColor="softGrayWhite"
             columnHeaders={[
@@ -299,11 +300,12 @@ export function DriverLocationInfo() {
               "Location Information",
               "Contact",
             ]}
-            dataRows={processDriversForTable(
-              driversInfo,
-              dropoffLocationsForEvent,
-              refetchDrivers
-            )}
+            // dataRows={processDriversForTable(
+            //   driversInfo,
+            //   dropoffLocationsForEvent,
+            //   refetchDrivers
+            // )}
+            dataRows={[]}
           />
         </div>
         <div className="h-12" />
@@ -335,6 +337,7 @@ export function DriverLocationInfo() {
         </div>
         <div className="h-8" />
         <div className="h-screen">
+          {/* Locations Table */}
           <DataTable
             borderColor="softGrayWhite"
             columnHeaders={[

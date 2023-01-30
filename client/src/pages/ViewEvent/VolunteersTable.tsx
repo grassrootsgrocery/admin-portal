@@ -76,10 +76,10 @@ const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
   const { filterLabel, selected, onSelect } = props;
   return (
     <DropdownMenu.Item
-      className={`flex min-w-fit shrink-0 items-center gap-1 rounded-lg border  px-2 font-semibold shadow-md outline-none hover:cursor-pointer hover:brightness-110 data-[highlighted]:-m-[1px] data-[selected]:cursor-pointer data-[highlighted]:cursor-pointer data-[highlighted]:border-2 data-[highlighted]:brightness-110 ${
+      className={`flex min-w-fit shrink-0 items-center gap-1 rounded-lg border px-2 font-semibold shadow-md outline-none hover:cursor-pointer hover:brightness-110 data-[highlighted]:-m-[1px] data-[selected]:cursor-pointer data-[highlighted]:cursor-pointer data-[highlighted]:border-2 data-[highlighted]:brightness-110 ${
         selected
           ? "bg-pumpkinOrange text-white data-[highlighted]:border-white"
-          : "border-pumpkinOrange bg-white text-pumpkinOrange "
+          : "border-pumpkinOrange bg-white text-pumpkinOrange"
       }`}
       onSelect={(e) => {
         e.preventDefault(); //So that the dropdown doesn' close automatically when an item is selected
@@ -159,6 +159,16 @@ function createDropdownFilters(scheduledSlots: ProcessedScheduledSlot[]) {
         ss.participantType.includes("Packer") &&
         ss.participantType.includes("Driver"),
     },
+    {
+      label: "Signed Up",
+      isSelected: true,
+      filter: (ss: ProcessedScheduledSlot) => !ss.cantCome,
+    },
+    {
+      label: "Can't Come",
+      isSelected: false,
+      filter: (ss: ProcessedScheduledSlot) => ss.cantCome,
+    },
   ];
 
   let specialGroupsList: string[] = [];
@@ -186,30 +196,36 @@ interface Props {
   scheduledSlots: ProcessedScheduledSlot[];
   refetchVolunteers: () => void;
 }
+const applySelectedFilters = (
+  selectedFilters: DropdownFilterOption[],
+  scheduledSlots: ProcessedScheduledSlot[]
+) => {
+  let filteredItems = scheduledSlots;
+  selectedFilters.forEach((curFilter) => {
+    if (curFilter.isSelected) {
+      //It's rather unfortunate that 'filter' is both a noun and a verb
+      filteredItems = filteredItems.filter(curFilter.filter);
+    }
+  });
+  return filteredItems;
+};
+
 export const VolunteersTable: React.FC<Props> = ({
   scheduledSlots,
   refetchVolunteers,
 }) => {
-  const [filters, setFilters] = useState<DropdownFilterOption[]>([]);
+  const [filters, setFilters] = useState<DropdownFilterOption[]>(
+    createDropdownFilters(scheduledSlots)
+  );
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
-  const [filtered, setFiltered] = useState(scheduledSlots);
-
-  //Create filters on component mount
-  useEffect(() => {
-    let dropdownFilters = createDropdownFilters(scheduledSlots);
-    setFilters(dropdownFilters);
-  }, []);
+  const [filtered, setFiltered] = useState(
+    applySelectedFilters(filters, scheduledSlots)
+  );
 
   //Filter items on filter selection
   useEffect(() => {
-    let filteredItems = scheduledSlots;
-    for (let i = 0; i < filters.length; i++) {
-      if (filters[i].isSelected) {
-        filteredItems = filteredItems.filter(filters[i].filter);
-      }
-    }
-    setFiltered(filteredItems);
-  }, [filters, scheduledSlots]);
+    setFiltered(applySelectedFilters(filters, scheduledSlots));
+  }, [scheduledSlots]);
 
   const onFilterSelect = (i: number) => {
     let newSelectedFilters = [...filters];
@@ -218,6 +234,7 @@ export const VolunteersTable: React.FC<Props> = ({
       isSelected: !filters[i].isSelected,
     };
     setFilters(newSelectedFilters);
+    setFiltered(applySelectedFilters(newSelectedFilters, scheduledSlots));
   };
 
   //Takes in scheduledSlots array and formats data for DataTable component
@@ -379,7 +396,7 @@ export const VolunteersTable: React.FC<Props> = ({
           "Time Slot",
           "Participant Type",
           "Confirmed",
-          "Not Going",
+          "Can't Come",
           "Special Group",
           "Delivery Count",
           "Contact",

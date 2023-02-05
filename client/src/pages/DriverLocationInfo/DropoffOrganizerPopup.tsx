@@ -240,7 +240,7 @@ export const DropoffOrganizerPopup: React.FC<{
     <Popup
       trigger={
         <button
-          className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+          className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen"
           type="button"
         >
           + Add Dropoff Location
@@ -272,7 +272,7 @@ export const DropoffOrganizerPopup: React.FC<{
           </div>
           <div className="h-4" />
           <div className="flex justify-evenly">
-            <Modal.Close className="rounded-full bg-pumpkinOrange px-2 py-1 text-xs font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl">
+            <Modal.Close className="rounded-full bg-pumpkinOrange px-2 py-1 text-xs font-semibold text-white outline-none md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen">
               Close
             </Modal.Close>
             <button
@@ -281,10 +281,10 @@ export const DropoffOrganizerPopup: React.FC<{
                 saveDropoffLocations.status === "loading"
               }
               className={
-                "rounded-full bg-newLeafGreen  px-2 py-1 text-xs font-semibold text-white shadow-md shadow-newLeafGreen outline-none  hover:shadow-newLeafGreen md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl " +
+                "rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white outline-none md:px-4 md:py-2  lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:hover:shadow-newLeafGreen " +
                 (isValidInput(dropoffStore) &&
                 saveDropoffLocations.status !== "loading"
-                  ? "transition-all hover:-translate-y-1 hover:shadow-lg"
+                  ? "lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg"
                   : "opacity-50")
               }
               type="button"

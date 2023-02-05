@@ -247,7 +247,7 @@ export function DriverLocationInfo() {
         {/* Not sure why inline-block on the Link is necessary */}
         <Link className="inline-block" to={`/events/${eventId}`}>
           <button
-            className="flex w-fit shrink-0 items-center gap-3 rounded-full bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen lg:px-4 lg:py-2 lg:text-lg"
+            className="flex w-fit shrink-0 items-center gap-3 rounded-full bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white lg:px-4 lg:py-2 lg:text-lg lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
             type="button"
           >
             <img className="w-2 lg:w-4" src={back} alt="Go back" />
@@ -300,12 +300,11 @@ export function DriverLocationInfo() {
               "Location Information",
               "Contact",
             ]}
-            // dataRows={processDriversForTable(
-            //   driversInfo,
-            //   dropoffLocationsForEvent,
-            //   refetchDrivers
-            // )}
-            dataRows={[]}
+            dataRows={processDriversForTable(
+              driversInfo,
+              dropoffLocationsForEvent,
+              refetchDrivers
+            )}
           />
         </div>
         <div className="h-12" />

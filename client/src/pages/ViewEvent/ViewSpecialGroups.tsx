@@ -72,10 +72,10 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
       trigger={
         <button
           className={
-            "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all lg:px-5 lg:py-3 lg:text-base lg:font-bold " +
+            "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all " +
             (disabled
               ? "opacity-50"
-              : "hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen")
+              : "lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen")
           }
           type="button"
         >
@@ -99,7 +99,7 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
           )}
           <div className="h-4" />
           <div className="flex justify-center">
-            <Modal.Close className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl">
+            <Modal.Close className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white outline-none md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen">
               Done
             </Modal.Close>
           </div>

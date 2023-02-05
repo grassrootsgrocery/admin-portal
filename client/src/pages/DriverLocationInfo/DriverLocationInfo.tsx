@@ -8,7 +8,7 @@ import { useAuth } from "../../contexts/AuthContext";
 //Types
 import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 //Components
-import { Navbar } from "../../components/Navbar/Navbar";
+import { Navbar } from "../../components/Navbar";
 import { DataTable } from "../../components/DataTable";
 import { Loading } from "../../components/Loading";
 import { DropoffOrganizerPopup } from "./DropoffOrganizerPopup";

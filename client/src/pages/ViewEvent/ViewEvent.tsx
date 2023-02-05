@@ -15,7 +15,7 @@ import people from "../../assets/people.svg";
 import roster from "../../assets/roster.svg";
 import { Messaging } from "./Messaging";
 import { API_BASE_URL } from "../../httpUtils";
-import { Navbar } from "../../components/Navbar/Navbar";
+import { Navbar } from "../../components/Navbar";
 import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
 import { ViewSpecialGroups } from "./ViewSpecialGroups";

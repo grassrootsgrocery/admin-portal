@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import chevron_up from "../../assets/chevron-up-green.svg";
 import chevron_down from "../../assets/chevron-down-green.svg";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
 interface FormsDropdownItemProps {
   label: string;

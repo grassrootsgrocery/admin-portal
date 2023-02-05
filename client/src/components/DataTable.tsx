@@ -1,4 +1,6 @@
 import React from "react";
+import { useEffect, useRef } from "react";
+import autoAnimate from "@formkit/auto-animate";
 
 interface Props {
   columnHeaders: string[];
@@ -21,6 +23,11 @@ export const DataTable: React.FC<Props> = ({
   dataRows,
   borderColor,
 }: Props) => {
+  const parent = useRef(null);
+  useEffect(() => {
+    parent.current && autoAnimate(parent.current);
+  }, [parent]);
+
   return (
     <div
       className={`hide-scroll h-full w-full overflow-scroll rounded-lg border-4 ${getBorderColorClassName(
@@ -43,7 +50,7 @@ export const DataTable: React.FC<Props> = ({
             })}
           </tr>
         </thead>
-        <tbody>
+        <tbody ref={parent}>
           {dataRows.map((row) => {
             const [id, ...data] = row;
             if (typeof id !== "string" && typeof id !== "number") {

@@ -3,7 +3,7 @@ import asyncHandler from "express-async-handler";
 import { protect } from "../middleware/authMiddleware";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
-import { FORBIDDEN, OK } from "../httpUtils/statusCodes";
+import { FORBIDDEN, INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
 
 import { Request, Response } from "express";
 import { MAKE_ERROR_MESSAGE } from "../httpUtils/make";
@@ -59,9 +59,12 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
         "'NODE_ENV' must be set to 'production' to start Make automations."
       );
     }
-    const sendCoordinatorRecruitmentTextWebhook =
-      "https://hook.us1.make.com/573p5mfp7d594jx91vwny8nxjdlvjqew";
-    const resp = await fetch(sendCoordinatorRecruitmentTextWebhook);
+    if (!process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK) {
+      res.status(INTERNAL_SERVER_ERROR);
+      throw new Error("'COORDINATOR_RECRUITMENT_TEXT_WEBHOOK' not set.");
+    }
+
+    const resp = await fetch(process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK);
     if (!resp.ok) {
       throw {
         message: MAKE_ERROR_MESSAGE,
@@ -118,9 +121,12 @@ router.route("/api/messaging/volunteer-recruitment-text").post(
         "'NODE_ENV' must be set to 'production' to start Make automations."
       );
     }
-    const sendTuesdayRecruitmentTextAutomationWebhook =
-      "https://hook.us1.make.com/ni1ndj7x5ecrgt8ku9tj23cmsvwcrubu";
-    const resp = await fetch(sendTuesdayRecruitmentTextAutomationWebhook);
+    if (!process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK) {
+      res.status(INTERNAL_SERVER_ERROR);
+      throw new Error("'TUESDAY_RECRUITMENT_TEXT_WEBHOOK' not set.");
+    }
+
+    const resp = await fetch(process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK);
     if (!resp.ok) {
       throw {
         message: MAKE_ERROR_MESSAGE,
@@ -181,9 +187,14 @@ router.route("/api/messaging/driver-info-to-coordinators-text").post(
         "'NODE_ENV' must be set to 'production' to start Make automations."
       );
     }
-    const sendDriverInfoToCoordinatorsWebhook =
-      "https://hook.us1.make.com/5x6qncf3nmcg0ytbmscnxfdqm8t5j97o";
-    const resp = await fetch(sendDriverInfoToCoordinatorsWebhook);
+    if (!process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK) {
+      res.status(INTERNAL_SERVER_ERROR);
+      throw new Error("'SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK' not set.");
+    }
+
+    const resp = await fetch(
+      process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK
+    );
     if (!resp.ok) {
       throw {
         message: MAKE_ERROR_MESSAGE,
@@ -239,9 +250,13 @@ router.route("/api/messaging/locations-to-drivers-text").post(
         "'NODE_ENV' must be set to 'production' to start Make automations."
       );
     }
-    const sendLocationsAndPOCDetailsWebhook =
-      "https://hook.us1.make.com/ot8o7kkpx80bjm1zh63all8a0uegt5t2";
-    const resp = await fetch(sendLocationsAndPOCDetailsWebhook);
+    if (!process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK) {
+      res.status(INTERNAL_SERVER_ERROR);
+      throw new Error("'SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK' not set.");
+    }
+    const resp = await fetch(
+      process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK
+    );
     if (!resp.ok) {
       throw {
         message: MAKE_ERROR_MESSAGE,

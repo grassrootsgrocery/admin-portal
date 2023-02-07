@@ -48,10 +48,10 @@ export const SendTextMessageButton: React.FC<Props> = ({
     <button
       onClick={() => sendTextMessage.mutate()}
       disabled={loading || sendTextMessage.status === "loading"}
-      className={`rounded-full bg-pumpkinOrange px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen  lg:px-5 lg:py-3 lg:text-base lg:font-bold ${
+      className={`rounded-full bg-pumpkinOrange px-3 py-2 text-xs font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen ${
         loading
           ? "opacity-50"
-          : "transition-all hover:-translate-y-0.5 hover:cursor-pointer hover:shadow-md hover:shadow-newLeafGreen"
+          : "hover:shadow-lg hover:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:cursor-pointer"
       }`}
     >
       {label}

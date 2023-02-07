@@ -21,6 +21,12 @@ input[type="checkbox"]:hover {
   width: 10px;
   padding-top: 10px;
 }
+
+@media only screen and (max-width: 1000px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+}
 .scrollbar-thin::-webkit-scrollbar {
   height: 6px; /* Sets the size of the scrollbar when it's horizontal */
   width: 6px;

@@ -82,7 +82,7 @@ export const EventCard: React.FC<Props> = ({
           </div>
           <div className="flex grow items-center lg:justify-end">
             <Link to={`/events/${eventId}`}>
-              <button className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-medium text-softGrayWhite shadow-md shadow-newLeafGreen transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl">
+              <button className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-medium text-softGrayWhite md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen">
                 View Event
               </button>
             </Link>

@@ -195,7 +195,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
 
         <div className="flex justify-center gap-5">
           <Modal.Close
-            className="rounded-full bg-pumpkinOrange px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+            className="rounded-full bg-pumpkinOrange px-3 py-2 text-xs font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
             type="button"
           >
             Cancel
@@ -203,10 +203,10 @@ export const AddSpecialGroup: React.FC<Props> = ({
           <button
             onClick={addSpecialGroup}
             disabled={addGroupAndGenerateLinkDisabled}
-            className={`rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen  lg:px-5 lg:py-3 lg:text-base lg:font-bold ${
+            className={`rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-sm lg:shadow-newLeafGreen ${
               addGroupAndGenerateLinkDisabled
                 ? "opacity-50"
-                : "transition-all hover:-translate-y-0.5 hover:cursor-pointer hover:shadow-md hover:shadow-newLeafGreen"
+                : "hover:cursor-pointer lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
             }`}
             type="button"
           >
@@ -228,10 +228,10 @@ export const AddSpecialGroup: React.FC<Props> = ({
       trigger={
         <button
           className={
-            "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white shadow-md shadow-newLeafGreen outline-none transition-all lg:px-5 lg:py-3 lg:text-base lg:font-bold " +
+            "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all " +
             (addSpecialGroupButtonDisabled
               ? "opacity-50"
-              : "hover:-translate-y-1 hover:shadow-lg hover:shadow-newLeafGreen")
+              : "lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen")
           }
           disabled={addSpecialGroupButtonDisabled}
           type="button"

@@ -1,4 +1,3 @@
-import "./Navbar.css";
 import { useState } from "react";
 import grgLogo from "../../assets/grassroots-logo.png";
 import eventCoordinatorText from "../../assets/event-coordinator-text.png";
@@ -6,7 +5,7 @@ import { Link } from "react-router-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import chevron_up from "../../assets/chevron-up-green.svg";
 import chevron_down from "../../assets/chevron-down-green.svg";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
 interface FormsDropdownItemProps {
   label: string;
@@ -17,7 +16,7 @@ const FormsDropdownItem = (props: FormsDropdownItemProps) => {
   return (
     <a href={formURL} target="_blank">
       <DropdownMenu.Item
-        className="link select-none rounded-lg border-2 border-newLeafGreen p-2 text-center text-sm text-newLeafGreen underline underline-offset-4 outline-none hover:cursor-pointer hover:bg-newLeafGreen hover:text-softGrayWhite md:text-lg lg:text-xl"
+        className="select-none rounded-lg border-2 border-newLeafGreen p-2 text-center text-sm text-newLeafGreen underline underline-offset-4 outline-none hover:cursor-pointer hover:bg-newLeafGreen hover:text-softGrayWhite md:text-lg md:text-lg lg:text-2xl lg:text-xl"
         onSelect={(e) => {
           e.preventDefault(); //So that the dropdown doesn' close automatically when an item is selected
         }}
@@ -27,6 +26,8 @@ const FormsDropdownItem = (props: FormsDropdownItemProps) => {
     </a>
   );
 };
+
+const navBarItemClassNames = "text-sm md:text-lg lg:text-2xl";
 
 export function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -38,23 +39,27 @@ export function Navbar() {
   };
 
   return (
-    <nav className="navbar">
-      <div className="logo-box">
+    <nav className="flex items-center bg-softGrayWhite py-2 md:py-0 md:px-3">
+      <div className="hidden gap-2 md:flex md:flex-col md:items-center">
         <Link to="/">
-          <img alt="Grassroots Grocery Logo" className="logo" src={grgLogo} />
+          <img
+            alt="Grassroots Grocery Logo"
+            className="m-0 w-48"
+            src={grgLogo}
+          />
         </Link>
         <Link to="/">
           <img
             alt="Event Coordinator"
-            className="event-coordinator-text"
+            className="m-0 w-28 -translate-y-2 p-0"
             src={eventCoordinatorText}
           />
         </Link>
       </div>
 
-      <div className="navbar-items-wrap">
-        <div className="navbar-items">
-          <Link className="link" to="/events">
+      <div className="flex grow justify-center md:justify-end md:pr-4">
+        <div className="flex min-w-[12em] items-center justify-between gap-12">
+          <Link className={navBarItemClassNames} to="/events">
             Events
           </Link>
 
@@ -64,10 +69,10 @@ export function Navbar() {
             modal={false}
           >
             <DropdownMenu.Trigger asChild>
-              <div className="link flex w-4/5 min-w-fit items-center justify-center space-x-2 hover:cursor-pointer">
-                <h2 className="link">Forms</h2>
+              <div className="flex w-4/5 min-w-fit items-center justify-center space-x-2 hover:cursor-pointer">
+                <h2 className={navBarItemClassNames}>Forms</h2>
                 <img
-                  className="w-5"
+                  className="w-2 md:w-4"
                   src={isDropdownOpen ? chevron_up : chevron_down}
                   alt="chevron-icon"
                 />
@@ -81,21 +86,21 @@ export function Navbar() {
                 align="start"
               >
                 <FormsDropdownItem
-                  label={"Attendance Form"}
-                  formURL={"https://form.jotform.com/222106405249145"}
+                  label="Attendance Form"
+                  formURL="https://form.jotform.com/222106405249145"
                 />
                 <FormsDropdownItem
-                  label={"Driver Form"}
-                  formURL={"https://form.jotform.com/222228365139153"}
+                  label="Driver Form"
+                  formURL="https://form.jotform.com/222228365139153"
                 />
                 <FormsDropdownItem
-                  label={"Food Allocation Form"}
-                  formURL={"https://submit.jotform.com/222325901439049"}
+                  label="Food Allocation Form"
+                  formURL="https://submit.jotform.com/222325901439049"
                 />
               </DropdownMenu.Content>
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
-          <Link className="link" to="/" onClick={handleLogout}>
+          <Link className={navBarItemClassNames} to="/" onClick={handleLogout}>
             Logout
           </Link>
         </div>

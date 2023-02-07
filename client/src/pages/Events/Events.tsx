@@ -1,6 +1,6 @@
 import { EventCard } from "./EventCard";
 import { Loading } from "../../components/Loading";
-import { Navbar } from "../../components/Navbar/Navbar";
+import { Navbar } from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { useFutureEvents } from "../eventHooks";

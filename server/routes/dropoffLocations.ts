@@ -42,7 +42,6 @@ function processDropOffLocations(
       )
     : "";
 
-  console.log("location", location);
   return {
     id: location.id,
     siteName: location.fields["Drop off location"] || "No name",

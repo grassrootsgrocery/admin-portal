@@ -1,9 +1,9 @@
 /*
 "Base" is Airtable lingo for database. 
-So this "base id" is the id for the Mott Haven Fridge/Grassroots Groceries Airtable database.
+So this "base id" is the id for the Grassroots Groceries Airtable database.
 */
-const AIRTABLE_BASE_ID_PROD = "app7zige4DRGqIaL2";
-const AIRTABLE_BASE_ID_DEV = "app18BBTcWqsoNjb2";
+const AIRTABLE_BASE_ID_PROD = process.env.AIRTABLE_BASE_ID_PROD
+const AIRTABLE_BASE_ID_DEV = process.env.AIRTABLE_BASE_ID_DEV
 //"Base" here just has the normal definition
 export const AIRTABLE_URL_BASE = `https://api.airtable.com/v0/${
   process.env.NODE_ENV === "production"

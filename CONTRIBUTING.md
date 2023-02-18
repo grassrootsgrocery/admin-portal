@@ -15,7 +15,7 @@ Check out our list of open issues [here](https://github.com/grassrootsgrocery/ad
 
 ### Submit changes as a new pull request
 
-Once your changes are complete, submit as a new [pull request](https://github.com/grassrootsgrocery/admin-portal/compare) to the 'main' branch. Include description of what you changes, screenshots, etc, to help reviewers understand the change.
+Once your changes are complete, submit as a new [pull request](https://github.com/grassrootsgrocery/admin-portal/compare) to the 'main' branch. Include description of what you changes, screenshots, etc, to help reviewers understand the change. Also, make sure to reference the corresponding GitHub issue (just reference the issue number in the description like "Issue #4"). We generally expect all new PRs to reference one or more issues.
 
 Once the PR is approved, it will be merged to 'main' branch. The live site, https://portal.grassrootsgrocery.org/, pulls from the 'production' branch, which is periodically synced to from 'main'. 
 

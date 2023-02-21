@@ -22,6 +22,8 @@ import {
   SpecialEvent,
   ProcessedSpecialEvent,
 } from "../types";
+//Logger
+import { logger } from "../loggerUtils/logger";
 
 const router = express.Router();
 
@@ -128,7 +130,7 @@ function getSpecialEventsForGeneralEvent(
 router.route("/api/events").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    console.log("GET /api/events");
+    logger.info("GET /api/events");
     const url =
       `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
       // Get all events that are after yesterday. We want it to be after yesterday because we want the event to still show up on the day of the event
@@ -206,7 +208,7 @@ router.route("/api/events/view-event-special-groups/").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { eventIds } = req.query;
-    console.log(
+    logger.info(
       `GET /api/events/view-event-special-groups/?eventIds=${eventIds}`
     );
 

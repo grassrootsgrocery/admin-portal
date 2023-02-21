@@ -10,6 +10,8 @@ import { BAD_REQUEST, OK } from "../httpUtils/statusCodes";
 import { AirtableResponse, Neighborhood } from "../types";
 //Error messages
 import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
+//Logger
+import { logger } from "../loggerUtils/logger";
 
 const router = express.Router();
 
@@ -22,7 +24,7 @@ router.route("/api/neighborhoods").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { neighborhoodIds } = req.query;
-    console.log(`GET /api/neighborhoods/?neighborhoodIds=${neighborhoodIds}`);
+    logger.info(`GET /api/neighborhoods/?neighborhoodIds=${neighborhoodIds}`);
 
     const isValidRequest =
       neighborhoodIds !== undefined && typeof neighborhoodIds === "string";

@@ -18,6 +18,8 @@ import {
 } from "../types";
 //Error messages
 import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
+//Logger
+import { logger } from "../loggerUtils/logger";
 
 const router = express.Router();
 
@@ -92,7 +94,7 @@ router.route("/api/volunteers/").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { scheduledSlotsIds } = req.query;
-    console.log(`GET /api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`);
+    logger.info(`GET /api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`);
 
     const isValidRequest =
       scheduledSlotsIds !== undefined && typeof scheduledSlotsIds === "string";
@@ -147,8 +149,8 @@ router.route("/api/volunteers/confirm/:volunteerId").patch(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { volunteerId } = req.params;
-    console.log(`PATCH /api/volunteers/confirm/${volunteerId}`);
-    console.log("Request body: ", req.body);
+    logger.info(`PATCH /api/volunteers/confirm/${volunteerId}`);
+    logger.info("Request body: ", req.body);
     const { newConfirmationStatus } = req.body;
 
     const isValidRequest =
@@ -201,7 +203,7 @@ router.route("/api/volunteers/going/:volunteerId").patch(
   asyncHandler(async (req: Request, res: Response) => {
     const { volunteerId } = req.params;
     const { newGoingStatus } = req.body;
-    console.log(`PATCH /api/volunteers/going/${volunteerId}`);
+    logger.info(`PATCH /api/volunteers/going/${volunteerId}`);
 
     const isValidRequest =
       volunteerId &&
@@ -291,7 +293,7 @@ function processDriverData(driver: Record<Driver>): ProcessedDriver {
 router.route("/api/volunteers/drivers").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    console.log("GET /api/volunteers/drivers");
+    logger.info("GET /api/volunteers/drivers");
     const url =
       `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
       `view=Assign Location ` +
@@ -340,7 +342,7 @@ router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { driverId } = req.params;
-    console.log("PATCH /api/volunteers/drivers/assign-location/:driverId");
+    logger.info("PATCH /api/volunteers/drivers/assign-location/:driverId");
     const { locationIds } = req.body;
 
     const isValidRequest =
@@ -351,7 +353,7 @@ router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
         "Please provide 'driverId' as a query param and locationIds' with type string[] on the request body"
       );
     }
-    console.log(`PATCH /api/volunteers/drivers/assign-location/${driverId}`);
+    logger.info(`PATCH /api/volunteers/drivers/assign-location/${driverId}`);
 
     const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slots`, {
       method: "PATCH",

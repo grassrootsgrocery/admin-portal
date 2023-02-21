@@ -13,6 +13,8 @@ import {
 //Types
 //Error messages
 import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
+//Logger
+import { logger } from "../loggerUtils/logger";
 
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
@@ -119,7 +121,7 @@ router.route("/api/auth/login").post(
     });
     const data = await checkUserExistenceResp.json();
     if (data.records.length === 0) {
-      console.log("User doesn't exist");
+      logger.info("User doesn't exist");
       res.status(BAD_REQUEST);
       throw new Error("Incorrect credentials");
     }
@@ -136,7 +138,7 @@ router.route("/api/auth/login").post(
       user.fields.Password
     );
     if (!isPasswordCorrect) {
-      console.log("Incorrect password");
+      logger.info("Incorrect password");
       res.status(BAD_REQUEST);
       throw new Error("Incorrect credentials");
     }

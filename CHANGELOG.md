@@ -5,6 +5,10 @@
 - Set up build scripts
 - Set up hosting using [Railway](https://railway.app/)
 
+## General
+
+- Set up Winston for logging to the server
+
 ## Authentication
 
 - Set up simple authentication using Express, bcrypt, and local storage.

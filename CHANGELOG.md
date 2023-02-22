@@ -21,6 +21,7 @@
 
 - Created button that links to event creation form
 - Fetched all upcoming events from Airtable and displayed them in the UI
+- Added a static date variable to set `TODAY` via environment variable when `NODE_ENV` is `'dev'`
 
 ## Volunteers
 

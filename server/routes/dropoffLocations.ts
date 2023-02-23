@@ -16,6 +16,8 @@ import {
 } from "../types";
 //Error messages
 import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
+//Logger
+import { logger } from "../loggerUtils/logger";
 
 const router = express.Router();
 
@@ -100,7 +102,7 @@ function processNeighborhoodsForLocations(
 router.route("/api/dropoff-locations/").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    console.log(`GET /api/dropoff-locations/`);
+    logger.info(`GET /api/dropoff-locations/`);
 
     const url =
       `${AIRTABLE_URL_BASE}/📍 Drop off locations?` +
@@ -179,8 +181,8 @@ router.route("/api/dropoff-locations/").get(
 router.route("/api/dropoff-locations/").patch(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    console.log(`PATCH /api/dropoff-locations/`);
-    console.log("Request body: ", req.body);
+    logger.info(`PATCH /api/dropoff-locations/`);
+    logger.info("Request body: ", req.body);
 
     const isValidRequest =
       Object.keys(req.body).filter(

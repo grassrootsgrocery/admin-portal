@@ -22,8 +22,17 @@ import {
   SpecialEvent,
   ProcessedSpecialEvent,
 } from "../types";
+//Logger
+import { logger } from "../loggerUtils/logger";
+import dotenv from "dotenv";
 
 const router = express.Router();
+dotenv.config();
+
+let today = "TODAY()";
+if (process.env.NODE_ENV === "dev" && process.env.TODAY) {
+  today = `"${process.env.TODAY}"`;
+}
 
 function processGeneralEventData(event: Record<Event>): ProcessedEvent {
   const optionsDay = {
@@ -128,11 +137,11 @@ function getSpecialEventsForGeneralEvent(
 router.route("/api/events").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    console.log("GET /api/events");
+    logger.info("GET /api/events");
     const url =
       `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
       // Get all events that are after yesterday. We want it to be after yesterday because we want the event to still show up on the day of the event
-      `&filterByFormula=IS_AFTER({Start Time}, (DATEADD(TODAY(), -1, 'days')))` +
+      `&filterByFormula=IS_AFTER({Start Time}, (DATEADD(${today}, -1, 'days')))` +
       // Get fields for upcoming events dashboard
       `&fields=Start Time` + // Day, Time
       `&fields=Pickup Address` + // Main Location
@@ -206,7 +215,7 @@ router.route("/api/events/view-event-special-groups/").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     const { eventIds } = req.query;
-    console.log(
+    logger.info(
       `GET /api/events/view-event-special-groups/?eventIds=${eventIds}`
     );
 

@@ -20,6 +20,8 @@ import {
 } from "../types";
 //Error messages
 import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
+//Logger
+import { logger } from "../loggerUtils/logger";
 
 const router = express.Router();
 
@@ -40,7 +42,7 @@ function processSpecialGroups(
  */
 router.route("/api/special-groups").get(
   asyncHandler(async (req: Request, res: Response) => {
-    console.log(`GET /api/special-groups`);
+    logger.info(`GET /api/special-groups`);
 
     const url =
       `${AIRTABLE_URL_BASE}/👨‍👨‍👧 Volunteer Groups?` +
@@ -82,8 +84,8 @@ router.route("/api/special-groups").get(
  */
 router.route("/api/special-groups/").post(
   asyncHandler(async (req: Request, res: Response) => {
-    console.log(`POST /api/special-groups`);
-    console.log("Request body: ", req.body);
+    logger.info(`POST /api/special-groups`);
+    logger.info("Request body: ", req.body);
     const { specialGroupName } = req.body;
     if (!specialGroupName || typeof specialGroupName !== "string") {
       throw {
@@ -133,8 +135,8 @@ interface EventForSpecialGroup {
  */
 router.route("/api/special-groups/add-special-group-to-event").post(
   asyncHandler(async (req: Request, res: Response) => {
-    console.log(`POST /api/special-groups/add-special-group-to-event`);
-    console.log("Request body: ", req.body);
+    logger.info(`POST /api/special-groups/add-special-group-to-event`);
+    logger.info("Request body: ", req.body);
 
     const { eventId, specialGroupId } = req.body;
     const isBodyValid =

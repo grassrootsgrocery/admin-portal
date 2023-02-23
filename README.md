@@ -1,6 +1,7 @@
 # Grassroots Groceries Events Portal
 
 # Point of Contact
+
 For inquiries about the project, contact Jason Cavanaugh at jason.p.cavanaugh@gmail.com.
 
 # Project Info
@@ -67,15 +68,21 @@ const apiKey = import.meta.env.VITE_AIRTABLE_API_KEY;
 
 # Running the dev server
 
-1. Clone the repo and `cd` into it
-2. Run `npm install` in the root directory
-3. Run `npm install` in the `client/` directory
-4. Follow the steps in the section above to set up your API keys (**API Key Access & Management**)
-5. Add `JWT_SECRET=96024` in the root `.env` file
-6. Add `VITE_SERVER_URL='http://localhost:5000'`to your `client/.env` file
-7. Run `npm run dev` in the root directory
-8. Navigate to `localhost:5173` in your browser
-9. Log in with username **grassroots** and password **mypassword**
+1.  Clone the repo and `cd` into it
+2.  Run `npm install` in the root directory
+3.  Run `npm install` in the `client/` directory
+4.  Follow the steps in the section above to set up your API keys (**API Key Access & Management**)
+5.  Add to the root `.env` file:
+
+        JWT_SECRET=96024
+        TODAY=<YYYY-MM-DD>
+
+    _i.e. `TODAY=2023-02-01`_
+
+6.  Add `VITE_SERVER_URL='http://localhost:5000'`to your `client/.env` file
+7.  Run `npm run dev` in the root directory
+8.  Navigate to `localhost:5173` in your browser
+9.  Log in with username **grassroots** and password **mypassword**
 
 # Hosting
 

@@ -15,7 +15,7 @@ const logLevels = {
 
 export const logger = winston.createLogger({
   levels: logLevels,
-  level: process.env.NODE_ENV !== "dev" ? "warn" : "trace",
+  level: process.env.NODE_ENV !== "dev" ? "info" : "trace",
   format: combine(errors({ stack: true }), timestamp(), json(), prettyPrint()),
   transports: [new winston.transports.Console()],
   exceptionHandlers: [

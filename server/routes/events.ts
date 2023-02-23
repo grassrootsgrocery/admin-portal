@@ -29,8 +29,10 @@ import dotenv from "dotenv";
 const router = express.Router();
 dotenv.config();
 
-const TODAY =
-  process.env.NODE_ENV === "production" ? "TODAY()" : `"${process.env.TODAY}"`;
+let today = "TODAY()";
+if (process.env.NODE_ENV === "dev" && process.env.TODAY) {
+  today = `"${process.env.TODAY}"`;
+}
 
 function processGeneralEventData(event: Record<Event>): ProcessedEvent {
   const optionsDay = {
@@ -139,7 +141,7 @@ router.route("/api/events").get(
     const url =
       `${AIRTABLE_URL_BASE}/🚛 Supplier Pickup Events?` +
       // Get all events that are after yesterday. We want it to be after yesterday because we want the event to still show up on the day of the event
-      `&filterByFormula=IS_AFTER({Start Time}, (DATEADD(${TODAY}, -1, 'days')))` +
+      `&filterByFormula=IS_AFTER({Start Time}, (DATEADD(${today}, -1, 'days')))` +
       // Get fields for upcoming events dashboard
       `&fields=Start Time` + // Day, Time
       `&fields=Pickup Address` + // Main Location

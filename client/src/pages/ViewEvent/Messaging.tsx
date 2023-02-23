@@ -26,26 +26,25 @@ export function Messaging() {
   }
 
   //Coordinators
-  const {
-    data: coordinatorRecruitmentTextData,
-    status: coordinatorRecruitmentTextStatus,
-    error: coordinatorRecruitmentTextError,
-  } = useQuery(["fetchCoordinatorRecruitmentTextBlueprint"], async () => {
-    const resp = await fetch(
-      `${API_BASE_URL}/api/messaging/coordinator-recruitment-text`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const coordinatorRecruitmentTextQuery = useQuery(
+    ["fetchCoordinatorRecruitmentTextBlueprint"],
+    async () => {
+      const resp = await fetch(
+        `${API_BASE_URL}/api/messaging/coordinator-recruitment-text`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!resp.ok) {
+        const data = await resp.json();
+        throw new Error(data.message);
       }
-    );
-    if (!resp.ok) {
-      const data = await resp.json();
-      throw new Error(data.message);
+      return resp.json() as Promise<string>;
     }
-    return resp.json();
-  });
+  );
 
   const recruitCoordinators = useMutation({
     mutationFn: async () => {
@@ -75,26 +74,25 @@ export function Messaging() {
   });
 
   //Volunteers
-  const {
-    data: volunteerRecruitmentTextData,
-    status: volunteerRecruitmentTextStatus,
-    error: volunteerRecruitmentTextError,
-  } = useQuery(["fetchVolunteerRecruitmentTextBlueprint"], async () => {
-    const resp = await fetch(
-      `${API_BASE_URL}/api/messaging/volunteer-recruitment-text`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const volunteerRecruitmentTextQuery = useQuery(
+    ["fetchVolunteerRecruitmentTextBlueprint"],
+    async () => {
+      const resp = await fetch(
+        `${API_BASE_URL}/api/messaging/volunteer-recruitment-text`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!resp.ok) {
+        const data = await resp.json();
+        throw new Error(data.message);
       }
-    );
-    if (!resp.ok) {
-      const data = await resp.json();
-      throw new Error(data.message);
+      return resp.json() as Promise<string>;
     }
-    return resp.json();
-  });
+  );
 
   const recruitVolunteers = useMutation({
     mutationFn: async () => {
@@ -124,12 +122,12 @@ export function Messaging() {
   });
 
   const volunteerTextLoading =
-    volunteerRecruitmentTextStatus === "loading" ||
-    volunteerRecruitmentTextStatus === "idle";
+    volunteerRecruitmentTextQuery.status === "loading" ||
+    volunteerRecruitmentTextQuery.status === "idle";
 
   const coordinatorTextLoading =
-    coordinatorRecruitmentTextStatus === "loading" ||
-    coordinatorRecruitmentTextStatus === "idle";
+    coordinatorRecruitmentTextQuery.status === "loading" ||
+    coordinatorRecruitmentTextQuery.status === "idle";
 
   //UI
   return (
@@ -149,7 +147,7 @@ export function Messaging() {
           ) : (
             <textarea
               className={textArea}
-              defaultValue={coordinatorRecruitmentTextData}
+              defaultValue={coordinatorRecruitmentTextQuery.data}
               readOnly
             />
           )}
@@ -167,7 +165,7 @@ export function Messaging() {
           ) : (
             <textarea
               className={textArea}
-              defaultValue={volunteerRecruitmentTextData}
+              defaultValue={volunteerRecruitmentTextQuery.data}
               readOnly
             />
           )}

@@ -8,12 +8,8 @@ export function useDriversInfo() {
   if (!token) {
     throw new Error("No token found in useDriversInfo hook");
   }
-  const {
-    data: processedDrivers,
-    refetch: refetchDrivers,
-    status: processedDriversStatus,
-    error: processedDriversError,
-  } = useQuery(["fetchDriverInfo"], async () => {
+
+  const driversQuery = useQuery(["fetchDriverInfo"], async () => {
     const response = await fetch(`${API_BASE_URL}/api/volunteers/drivers`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -26,19 +22,15 @@ export function useDriversInfo() {
     }
     return response.json() as Promise<ProcessedDriver[]>;
   });
-  // query for neighborhood names from neighborhood table
-  const {
-    data: neighborhoods,
-    status: neighborhoodsStatus,
-    error: neighborhoodsError,
-  } = useQuery(
+
+  const neighborhoodsQuery = useQuery(
     ["fetchNeighborhoodNames"],
     async () => {
-      if (typeof processedDrivers === "undefined") {
-        return Promise.reject(new Error("Undefined driver info"));
+      if (typeof driversQuery.data === "undefined") {
+        return Promise.reject(new Error("Undefined driversQuery.data"));
       }
 
-      const neighborhoodIds = getNeighborhoodIdsForUrl(processedDrivers);
+      const neighborhoodIds = getNeighborhoodIdsForUrl(driversQuery.data);
 
       const response = await fetch(
         `${API_BASE_URL}/api/neighborhoods?neighborhoodIds=${neighborhoodIds}`,
@@ -56,20 +48,20 @@ export function useDriversInfo() {
       return response.json() as Promise<Neighborhood[]>;
     },
     {
-      enabled: processedDriversStatus === "success",
+      enabled: driversQuery.status === "success",
     }
   );
   let driversWithNeighborhoodNames: ProcessedDriver[] = [];
   if (
-    processedDriversStatus === "success" &&
-    neighborhoodsStatus === "success"
+    driversQuery.status === "success" &&
+    neighborhoodsQuery.status === "success"
   ) {
     let neighborhoodNamesById: Map<string, string> = new Map();
-    neighborhoods.forEach((neighborhood) =>
+    neighborhoodsQuery.data.forEach((neighborhood) =>
       neighborhoodNamesById.set(neighborhood.id, neighborhood.Name)
     );
     driversWithNeighborhoodNames = processNeighborhoodsForDriver(
-      processedDrivers,
+      driversQuery.data,
       neighborhoodNamesById
     );
 
@@ -80,20 +72,20 @@ export function useDriversInfo() {
   }
 
   const isLoading =
-    processedDriversStatus === "loading" ||
-    processedDriversStatus === "idle" ||
-    neighborhoodsStatus === "loading" ||
-    neighborhoodsStatus === "idle";
+    driversQuery.status === "loading" ||
+    driversQuery.status === "idle" ||
+    neighborhoodsQuery.status === "loading" ||
+    neighborhoodsQuery.status === "idle";
 
   const isError =
-    processedDriversStatus === "error" || neighborhoodsStatus === "error";
+    driversQuery.status === "error" || neighborhoodsQuery.status === "error";
 
   return {
-    driversInfo: driversWithNeighborhoodNames,
-    refetchDrivers,
-    driversInfoIsLoading: isLoading,
-    driversInfoIsError: isError,
-    driversInfoError: processedDriversError || neighborhoodsError,
+    data: driversWithNeighborhoodNames,
+    refetch: driversQuery.refetch,
+    isLoading,
+    isError,
+    error: driversQuery.error || neighborhoodsQuery.error,
   };
 }
 

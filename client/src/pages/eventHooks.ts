@@ -28,22 +28,17 @@ export function useFutureEvents() {
  * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
  * */
 export function useFutureEventById(eventId: string | undefined) {
-  const {
-    data: futureEvents,
-    refetch: refetchEvent,
-    status: futureEventsStatus,
-    error: futureEventsError,
-  } = useFutureEvents();
+  const futureEventsQuery = useFutureEvents();
 
   let event = undefined;
-  if (futureEventsStatus === "success") {
-    event = futureEvents.filter((fe) => eventId === fe.id)[0];
+  if (futureEventsQuery.status === "success") {
+    event = futureEventsQuery.data.filter((fe) => eventId === fe.id)[0];
   }
 
   return {
-    event,
-    refetchEvent,
-    eventStatus: futureEventsStatus,
-    eventError: futureEventsError,
+    data: event,
+    refetch: futureEventsQuery.refetch,
+    status: futureEventsQuery.status,
+    error: futureEventsQuery.error,
   };
 }

@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Configure logger
-const { combine, errors, timestamp, json, prettyPrint } = winston.format;
+const { combine, errors, timestamp, json, printf } = winston.format;
+
 const logLevels = {
   fatal: 0,
   error: 1,
@@ -12,11 +13,21 @@ const logLevels = {
   debug: 4,
   trace: 5,
 };
+const serverLogFormat = printf(({ level, message, timestamp, stack }) => {
+  return `[${timestamp}] ${level.toLocaleUpperCase()}: ${message} ${
+    stack !== undefined ? "STACK: " + stack : ""
+  }`;
+});
 
 export const logger = winston.createLogger({
   levels: logLevels,
-  level: process.env.NODE_ENV === "production" ? "info" : "trace",
-  format: combine(errors({ stack: true }), timestamp(), json(), prettyPrint()),
+  level: process.env.NODE_ENV !== "dev" ? "warn" : "trace",
+  format: combine(
+    errors({ stack: true }),
+    timestamp(),
+    json(),
+    serverLogFormat
+  ),
   transports: [new winston.transports.Console()],
   exceptionHandlers: [
     new winston.transports.Console({ consoleWarnLevels: ["error"] }),

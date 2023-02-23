@@ -30,7 +30,7 @@ const router = express.Router();
 dotenv.config();
 
 const TODAY =
-  process.env.NODE_ENV !== "dev" ? "TODAY()" : `"${process.env.TODAY}"`;
+  process.env.NODE_ENV === "production" ? "TODAY()" : `"${process.env.TODAY}"`;
 
 function processGeneralEventData(event: Record<Event>): ProcessedEvent {
   const optionsDay = {

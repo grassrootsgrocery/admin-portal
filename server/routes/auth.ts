@@ -121,7 +121,7 @@ router.route("/api/auth/login").post(
     });
     const data = await checkUserExistenceResp.json();
     if (data.records.length === 0) {
-      logger.error(new Error("User doesn't exist"));
+      logger.info("User doesn't exist");
       res.status(BAD_REQUEST);
       throw new Error("Incorrect credentials");
     }

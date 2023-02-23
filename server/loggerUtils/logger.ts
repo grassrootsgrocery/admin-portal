@@ -13,15 +13,18 @@ const logLevels = {
   debug: 4,
   trace: 5,
 };
-const serverLogFormat = printf(({ level, message, timestamp, stack }) => {
-  return `[${timestamp}] ${level.toLocaleUpperCase()}: ${message} ${
-    stack !== undefined ? "STACK: " + stack : ""
-  }`;
+// const serverLogFormat = printf(({ level, message, timestamp, stack }) => {
+//   return `[${timestamp}] ${level.toLocaleUpperCase()}: ${message} ${
+//     stack !== undefined ? "STACK: " + stack : ""
+//   }`;
+// });
+const serverLogFormat = printf(({ level, message, timestamp }) => {
+  return `[${timestamp}] ${level.toLocaleUpperCase()}: ${message}`;
 });
 
 export const logger = winston.createLogger({
   levels: logLevels,
-  level: process.env.NODE_ENV !== "dev" ? "warn" : "trace",
+  level: process.env.NODE_ENV === "production" ? "info" : "trace",
   format: combine(
     errors({ stack: true }),
     timestamp(),

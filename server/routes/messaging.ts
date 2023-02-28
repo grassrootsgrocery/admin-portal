@@ -57,7 +57,7 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
   asyncHandler(async (req: Request, res: Response) => {
     if (process.env.NODE_ENV !== "production") {
       res.status(FORBIDDEN);
-      logger.erro(
+      logger.error(
         new Error(
           "'NODE_ENV' must be set to 'production' to start Make automations."
         )
@@ -191,13 +191,17 @@ router.route("/api/messaging/driver-info-to-coordinators-text").post(
   asyncHandler(async (req: Request, res: Response) => {
     if (process.env.NODE_ENV !== "production") {
       res.status(FORBIDDEN);
-      throw new Error(
-        "'NODE_ENV' must be set to 'production' to start Make automations."
+      logger.error(
+        new Error(
+          "'NODE_ENV' must be set to 'production' to start Make automations."
+        )
       );
     }
     if (!process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK) {
       res.status(INTERNAL_SERVER_ERROR);
-      throw new Error("'SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK' not set.");
+      logger.error(
+        new Error("'SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK' not set.")
+      );
     }
 
     const resp = await fetch(

@@ -70,7 +70,9 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
       );
     }
 
-    const resp = await fetch(process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK);
+    const resp = await fetch(
+      `${process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK}`
+    );
     if (!resp.ok) {
       throw {
         message: MAKE_ERROR_MESSAGE,
@@ -134,7 +136,7 @@ router.route("/api/messaging/volunteer-recruitment-text").post(
       logger.error(new Error("'TUESDAY_RECRUITMENT_TEXT_WEBHOOK' not set."));
     }
 
-    const resp = await fetch(process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK);
+    const resp = await fetch(`${process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK}`);
     if (!resp.ok) {
       throw {
         message: MAKE_ERROR_MESSAGE,
@@ -205,7 +207,7 @@ router.route("/api/messaging/driver-info-to-coordinators-text").post(
     }
 
     const resp = await fetch(
-      process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK
+      `${process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK}`
     );
     if (!resp.ok) {
       throw {
@@ -271,7 +273,7 @@ router.route("/api/messaging/locations-to-drivers-text").post(
       );
     }
     const resp = await fetch(
-      process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK
+      `${process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK}`
     );
     if (!resp.ok) {
       throw {

@@ -4,6 +4,8 @@ import { protect } from "../middleware/authMiddleware";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
 import { FORBIDDEN, INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
+//Logger
+import { logger } from "../loggerUtils/logger";
 
 import { Request, Response } from "express";
 import { MAKE_ERROR_MESSAGE } from "../httpUtils/make";
@@ -55,13 +57,17 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
   asyncHandler(async (req: Request, res: Response) => {
     if (process.env.NODE_ENV !== "production") {
       res.status(FORBIDDEN);
-      throw new Error(
-        "'NODE_ENV' must be set to 'production' to start Make automations."
+      logger.erro(
+        new Error(
+          "'NODE_ENV' must be set to 'production' to start Make automations."
+        )
       );
     }
     if (!process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK) {
       res.status(INTERNAL_SERVER_ERROR);
-      throw new Error("'COORDINATOR_RECRUITMENT_TEXT_WEBHOOK' not set.");
+      logger.error(
+        new Error("'COORDINATOR_RECRUITMENT_TEXT_WEBHOOK' not set.")
+      );
     }
 
     const resp = await fetch(process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK);
@@ -117,13 +123,15 @@ router.route("/api/messaging/volunteer-recruitment-text").post(
   asyncHandler(async (req: Request, res: Response) => {
     if (process.env.NODE_ENV !== "production") {
       res.status(FORBIDDEN);
-      throw new Error(
-        "'NODE_ENV' must be set to 'production' to start Make automations."
+      logger.error(
+        new Error(
+          "'NODE_ENV' must be set to 'production' to start Make automations."
+        )
       );
     }
     if (!process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK) {
       res.status(INTERNAL_SERVER_ERROR);
-      throw new Error("'TUESDAY_RECRUITMENT_TEXT_WEBHOOK' not set.");
+      logger.error(new Error("'TUESDAY_RECRUITMENT_TEXT_WEBHOOK' not set."));
     }
 
     const resp = await fetch(process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK);
@@ -246,13 +254,17 @@ router.route("/api/messaging/locations-to-drivers-text").post(
   asyncHandler(async (req: Request, res: Response) => {
     if (process.env.NODE_ENV !== "production") {
       res.status(FORBIDDEN);
-      throw new Error(
-        "'NODE_ENV' must be set to 'production' to start Make automations."
+      logger.error(
+        new Error(
+          "'NODE_ENV' must be set to 'production' to start Make automations."
+        )
       );
     }
     if (!process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK) {
       res.status(INTERNAL_SERVER_ERROR);
-      throw new Error("'SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK' not set.");
+      logger.error(
+        new Error("'SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK' not set.")
+      );
     }
     const resp = await fetch(
       process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK

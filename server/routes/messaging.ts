@@ -37,10 +37,7 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
       }
     );
     if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
+      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
     }
     const data = await resp.json();
     res.status(OK).json(data.response.blueprint.flow[4].mapper.body);
@@ -74,10 +71,7 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
       `${process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK}`
     );
     if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
+      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
     }
     res.status(OK).json({
       message:
@@ -105,10 +99,7 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
       }
     );
     if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
+      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
     }
     const data = await resp.json();
     res.status(OK).json(data.response.blueprint.flow[2].mapper.body);
@@ -138,10 +129,7 @@ router.route("/api/messaging/volunteer-recruitment-text").post(
 
     const resp = await fetch(`${process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK}`);
     if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
+      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
     }
     res.status(OK).json({
       message: "'Send Tuesday recruitment texts' Make automation started.",
@@ -168,10 +156,7 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
       }
     );
     if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
+      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
     }
     const data = await resp.json();
     res
@@ -210,10 +195,7 @@ router.route("/api/messaging/driver-info-to-coordinators-text").post(
       `${process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK}`
     );
     if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
+      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
     }
     res.status(OK).json({
       message: "'Send Driver Info To Coordinators' Make automation started.",
@@ -240,10 +222,7 @@ router.route("/api/messaging/locations-to-drivers-text").get(
       }
     );
     if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
+      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
     }
     const data = await resp.json();
     res.status(OK).json(data.response.blueprint.flow[5].mapper.body);
@@ -276,10 +255,7 @@ router.route("/api/messaging/locations-to-drivers-text").post(
       `${process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK}`
     );
     if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
+      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
     }
     res.status(OK).json({
       message:

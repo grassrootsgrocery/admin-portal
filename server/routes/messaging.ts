@@ -37,7 +37,11 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
       }
     );
     if (!resp.ok) {
-      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
+      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      throw {
+        status: resp.status,
+        message: MAKE_ERROR_MESSAGE,
+      };
     }
     const data = await resp.json();
     res.status(OK).json(data.response.blueprint.flow[4].mapper.body);
@@ -53,25 +57,25 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     if (process.env.NODE_ENV !== "production") {
+      const errorMessage =
+        "'NODE_ENV' must be set to 'production' to start Make automations.";
       res.status(FORBIDDEN);
-      logger.error(
-        new Error(
-          "'NODE_ENV' must be set to 'production' to start Make automations."
-        )
-      );
+      logger.error(new Error(errorMessage));
+      throw new Error(errorMessage);
     }
     if (!process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK) {
+      const errorMessage = "'COORDINATOR_RECRUITMENT_TEXT_WEBHOOK' not set.";
       res.status(INTERNAL_SERVER_ERROR);
-      logger.error(
-        new Error("'COORDINATOR_RECRUITMENT_TEXT_WEBHOOK' not set.")
-      );
+      logger.error(new Error(errorMessage));
+      throw new Error(errorMessage);
     }
 
-    const resp = await fetch(
-      `${process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK}`
-    );
+    const resp = await fetch(process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK);
     if (!resp.ok) {
-      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
+      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      throw {
+        message: MAKE_ERROR_MESSAGE,
+      };
     }
     res.status(OK).json({
       message:
@@ -99,7 +103,10 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
       }
     );
     if (!resp.ok) {
-      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
+      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      throw {
+        message: MAKE_ERROR_MESSAGE,
+      };
     }
     const data = await resp.json();
     res.status(OK).json(data.response.blueprint.flow[2].mapper.body);
@@ -115,21 +122,25 @@ router.route("/api/messaging/volunteer-recruitment-text").post(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     if (process.env.NODE_ENV !== "production") {
+      const errorMessage =
+        "'NODE_ENV' must be set to 'production' to start Make automations.";
       res.status(FORBIDDEN);
-      logger.error(
-        new Error(
-          "'NODE_ENV' must be set to 'production' to start Make automations."
-        )
-      );
+      logger.error(new Error(errorMessage));
+      throw new Error(errorMessage);
     }
     if (!process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK) {
+      const errorMessage = "'TUESDAY_RECRUITMENT_TEXT_WEBHOOK' not set.";
       res.status(INTERNAL_SERVER_ERROR);
-      logger.error(new Error("'TUESDAY_RECRUITMENT_TEXT_WEBHOOK' not set."));
+      logger.error(new Error(errorMessage));
+      throw new Error(errorMessage);
     }
 
     const resp = await fetch(`${process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK}`);
     if (!resp.ok) {
-      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
+      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      throw {
+        message: MAKE_ERROR_MESSAGE,
+      };
     }
     res.status(OK).json({
       message: "'Send Tuesday recruitment texts' Make automation started.",
@@ -156,7 +167,10 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
       }
     );
     if (!resp.ok) {
-      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
+      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      throw {
+        message: MAKE_ERROR_MESSAGE,
+      };
     }
     const data = await resp.json();
     res
@@ -177,25 +191,28 @@ router.route("/api/messaging/driver-info-to-coordinators-text").post(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     if (process.env.NODE_ENV !== "production") {
+      const errorMessage =
+        "'NODE_ENV' must be set to 'production' to start Make automations.";
       res.status(FORBIDDEN);
-      logger.error(
-        new Error(
-          "'NODE_ENV' must be set to 'production' to start Make automations."
-        )
-      );
+      logger.error(new Error(errorMessage));
+      throw new Error(errorMessage);
     }
     if (!process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK) {
+      const errorMessage =
+        "'SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK' not set.";
       res.status(INTERNAL_SERVER_ERROR);
-      logger.error(
-        new Error("'SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK' not set.")
-      );
+      logger.error(new Error(errorMessage));
+      throw new Error(errorMessage);
     }
 
     const resp = await fetch(
       `${process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK}`
     );
     if (!resp.ok) {
-      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
+      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      throw {
+        message: MAKE_ERROR_MESSAGE,
+      };
     }
     res.status(OK).json({
       message: "'Send Driver Info To Coordinators' Make automation started.",
@@ -222,7 +239,10 @@ router.route("/api/messaging/locations-to-drivers-text").get(
       }
     );
     if (!resp.ok) {
-      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
+      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      throw {
+        message: MAKE_ERROR_MESSAGE,
+      };
     }
     const data = await resp.json();
     res.status(OK).json(data.response.blueprint.flow[5].mapper.body);
@@ -255,7 +275,10 @@ router.route("/api/messaging/locations-to-drivers-text").post(
       `${process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK}`
     );
     if (!resp.ok) {
-      logger.error(new Error(`${resp.status} ${MAKE_ERROR_MESSAGE}`));
+      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      throw {
+        message: MAKE_ERROR_MESSAGE,
+      };
     }
     res.status(OK).json({
       message:

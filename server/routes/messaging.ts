@@ -258,18 +258,17 @@ router.route("/api/messaging/locations-to-drivers-text").post(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     if (process.env.NODE_ENV !== "production") {
+      const errorMessage =
+        "'NODE_ENV' must be set to 'production' to start Make automations.";
       res.status(FORBIDDEN);
-      logger.error(
-        new Error(
-          "'NODE_ENV' must be set to 'production' to start Make automations."
-        )
-      );
+      logger.error(new Error(errorMessage));
+      throw new Error(errorMessage);
     }
     if (!process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK) {
+      const errorMessage = "'SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK' not set.";
       res.status(INTERNAL_SERVER_ERROR);
-      logger.error(
-        new Error("'SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK' not set.")
-      );
+      logger.error(new Error(errorMessage));
+      throw new Error(errorMessage);
     }
     const resp = await fetch(
       `${process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK}`

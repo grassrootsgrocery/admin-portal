@@ -37,10 +37,12 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
       }
     );
     if (!resp.ok) {
-      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      logger.error(
+        new Error(resp.status + " " + MAKE_ERROR_MESSAGE + " cord-rec")
+      );
       throw {
         status: resp.status,
-        message: MAKE_ERROR_MESSAGE,
+        message: MAKE_ERROR_MESSAGE + " line 43",
       };
     }
     const data = await resp.json();
@@ -72,7 +74,9 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
 
     const resp = await fetch(process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK);
     if (!resp.ok) {
-      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      logger.error(
+        new Error(resp.status + " " + MAKE_ERROR_MESSAGE + " cord-rec-post")
+      );
       throw {
         message: MAKE_ERROR_MESSAGE,
       };
@@ -103,7 +107,9 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
       }
     );
     if (!resp.ok) {
-      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      logger.error(
+        new Error(resp.status + " " + MAKE_ERROR_MESSAGE + " vol-recru")
+      );
       throw {
         message: MAKE_ERROR_MESSAGE,
       };
@@ -135,9 +141,11 @@ router.route("/api/messaging/volunteer-recruitment-text").post(
       throw new Error(errorMessage);
     }
 
-    const resp = await fetch(`${process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK}`);
+    const resp = await fetch(process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK);
     if (!resp.ok) {
-      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      logger.error(
+        new Error(resp.status + " " + MAKE_ERROR_MESSAGE + " vol-recru-post")
+      );
       throw {
         message: MAKE_ERROR_MESSAGE,
       };
@@ -167,7 +175,9 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
       }
     );
     if (!resp.ok) {
-      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      logger.error(
+        new Error(resp.status + " " + MAKE_ERROR_MESSAGE + " driver-to-cords")
+      );
       throw {
         message: MAKE_ERROR_MESSAGE,
       };
@@ -206,10 +216,14 @@ router.route("/api/messaging/driver-info-to-coordinators-text").post(
     }
 
     const resp = await fetch(
-      `${process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK}`
+      process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK
     );
     if (!resp.ok) {
-      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      logger.error(
+        new Error(
+          resp.status + " " + MAKE_ERROR_MESSAGE + " driver-to-cords-post"
+        )
+      );
       throw {
         message: MAKE_ERROR_MESSAGE,
       };
@@ -239,7 +253,9 @@ router.route("/api/messaging/locations-to-drivers-text").get(
       }
     );
     if (!resp.ok) {
-      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      logger.error(
+        new Error(resp.status + " " + MAKE_ERROR_MESSAGE + " locs-to-drivers")
+      );
       throw {
         message: MAKE_ERROR_MESSAGE,
       };
@@ -271,10 +287,14 @@ router.route("/api/messaging/locations-to-drivers-text").post(
       throw new Error(errorMessage);
     }
     const resp = await fetch(
-      `${process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK}`
+      process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK
     );
     if (!resp.ok) {
-      logger.error(new Error(resp.status + " " + MAKE_ERROR_MESSAGE));
+      logger.error(
+        new Error(
+          resp.status + " " + MAKE_ERROR_MESSAGE + " locs-to-drivers-post"
+        )
+      );
       throw {
         message: MAKE_ERROR_MESSAGE,
       };

@@ -38,7 +38,7 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
     );
     if (!resp.ok) {
       logger.error(
-        new Error(resp.status + " " + MAKE_ERROR_MESSAGE + " cord-rec")
+        new Error(resp.status + " " + MAKE_ERROR_MESSAGE)
       );
       throw {
         status: resp.status,
@@ -75,7 +75,7 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
     const resp = await fetch(process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK);
     if (!resp.ok) {
       logger.error(
-        new Error(resp.status + " " + MAKE_ERROR_MESSAGE + " cord-rec-post")
+        new Error(resp.status + " " + MAKE_ERROR_MESSAGE)
       );
       throw {
         message: MAKE_ERROR_MESSAGE,
@@ -108,7 +108,7 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
     );
     if (!resp.ok) {
       logger.error(
-        new Error(resp.status + " " + MAKE_ERROR_MESSAGE + " vol-recru")
+        new Error(resp.status + " " + MAKE_ERROR_MESSAGE)
       );
       throw {
         message: MAKE_ERROR_MESSAGE,
@@ -144,7 +144,7 @@ router.route("/api/messaging/volunteer-recruitment-text").post(
     const resp = await fetch(process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK);
     if (!resp.ok) {
       logger.error(
-        new Error(resp.status + " " + MAKE_ERROR_MESSAGE + " vol-recru-post")
+        new Error(resp.status + " " + MAKE_ERROR_MESSAGE)
       );
       throw {
         message: MAKE_ERROR_MESSAGE,
@@ -176,7 +176,7 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
     );
     if (!resp.ok) {
       logger.error(
-        new Error(resp.status + " " + MAKE_ERROR_MESSAGE + " driver-to-cords")
+        new Error(resp.status + " " + MAKE_ERROR_MESSAGE)
       );
       throw {
         message: MAKE_ERROR_MESSAGE,
@@ -221,7 +221,7 @@ router.route("/api/messaging/driver-info-to-coordinators-text").post(
     if (!resp.ok) {
       logger.error(
         new Error(
-          resp.status + " " + MAKE_ERROR_MESSAGE + " driver-to-cords-post"
+          resp.status + " " + MAKE_ERROR_MESSAGE
         )
       );
       throw {
@@ -254,7 +254,7 @@ router.route("/api/messaging/locations-to-drivers-text").get(
     );
     if (!resp.ok) {
       logger.error(
-        new Error(resp.status + " " + MAKE_ERROR_MESSAGE + " locs-to-drivers")
+        new Error(resp.status + " " + MAKE_ERROR_MESSAGE
       );
       throw {
         message: MAKE_ERROR_MESSAGE,
@@ -292,7 +292,7 @@ router.route("/api/messaging/locations-to-drivers-text").post(
     if (!resp.ok) {
       logger.error(
         new Error(
-          resp.status + " " + MAKE_ERROR_MESSAGE + " locs-to-drivers-post"
+          resp.status + " " + MAKE_ERROR_MESSAGE
         )
       );
       throw {

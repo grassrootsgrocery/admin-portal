@@ -122,11 +122,7 @@ export function DriverLocationInfo() {
   }
   const { eventId } = useParams();
 
-  const {
-    data: locationsToDriversText,
-    status: locationsToDriversTextStatus,
-    error: locationsToDriversTextError,
-  } = useQuery(
+  const locationsToDriversTextQuery = useQuery(
     ["fetchLocationsToDriversText"],
     async () => {
       const resp = await fetch(
@@ -141,15 +137,12 @@ export function DriverLocationInfo() {
         const data = await resp.json();
         throw new Error(data.message);
       }
-      return resp.json();
+      return resp.json() as Promise<string>;
     },
     { staleTime: 20000 }
   );
-  const {
-    data: driverInfoToCoordinatorsText,
-    status: driverInfoToCoordinatorsTextStatus,
-    error: driverInfoToCoordinatorsTextError,
-  } = useQuery(
+
+  const driverInfoToCoordinatorsTextQuery = useQuery(
     ["fetchDriverInfoToCoordinatorsText"],
     async () => {
       const resp = await fetch(
@@ -164,52 +157,44 @@ export function DriverLocationInfo() {
         const data = await resp.json();
         throw new Error(data.message);
       }
-      return resp.json();
+      return resp.json() as Promise<string>;
     },
     { staleTime: 20000 }
   );
 
   const locationsToDriversTextLoading =
-    locationsToDriversTextStatus === "loading" ||
-    locationsToDriversTextStatus === "idle";
+    locationsToDriversTextQuery.status === "loading" ||
+    locationsToDriversTextQuery.status === "idle";
 
   const driverInfoToCoordinatorsLoading =
-    driverInfoToCoordinatorsTextStatus === "loading" ||
-    driverInfoToCoordinatorsTextStatus === "idle";
+    driverInfoToCoordinatorsTextQuery.status === "loading" ||
+    driverInfoToCoordinatorsTextQuery.status === "idle";
 
-  const { event, eventStatus, eventError } = useFutureEventById(eventId);
-  const {
-    driversInfo,
-    refetchDrivers,
-    driversInfoIsLoading,
-    driversInfoIsError,
-    driversInfoError,
-  } = useDriversInfo();
+  const eventQuery = useFutureEventById(eventId);
+  const driversInfoQuery = useDriversInfo();
 
-  const {
-    data: dropoffLocations,
-    refetch: refetchDropoffLocations,
-    status: dropoffLocationsStatus,
-    error: dropoffLocationsError,
-  } = useQuery(["fetchEventDropOffLocations"], async () => {
-    const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!resp.ok) {
-      const data = await resp.json();
-      throw new Error(data.messsage);
+  const dropoffLocationsQuery = useQuery(
+    ["fetchEventDropOffLocations"],
+    async () => {
+      const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!resp.ok) {
+        const data = await resp.json();
+        throw new Error(data.messsage);
+      }
+      return resp.json();
     }
-    return resp.json();
-  });
+  );
 
   if (
-    driversInfoIsLoading ||
-    eventStatus === "loading" ||
-    eventStatus === "idle" ||
-    dropoffLocationsStatus === "loading" ||
-    dropoffLocationsStatus === "idle"
+    driversInfoQuery.isLoading ||
+    eventQuery.status === "loading" ||
+    eventQuery.status === "idle" ||
+    dropoffLocationsQuery.status === "loading" ||
+    dropoffLocationsQuery.status === "idle"
   ) {
     return (
       <div className="relative h-full">
@@ -218,28 +203,26 @@ export function DriverLocationInfo() {
     );
   }
   if (
-    driversInfoIsError ||
-    dropoffLocationsStatus === "error" ||
-    eventStatus === "error"
+    driversInfoQuery.isError ||
+    dropoffLocationsQuery.status === "error" ||
+    eventQuery.status === "error"
   ) {
-    const error = driversInfoError || dropoffLocationsError || eventError;
+    const error =
+      driversInfoQuery.error || dropoffLocationsQuery.error || eventQuery.error;
     console.error(error);
     return <div>Error...</div>;
   }
-  //This shouldn't be necessary but TypeScript isn't smart enough to know that this can't be undefined
-  if (driversInfo === undefined) {
-    console.error("driversInfo is undefined");
-    return <div>Error...</div>;
-  }
 
+  const event = eventQuery.data;
   if (event === undefined) {
     console.error(
-      `Something went wrong. Event ${event} not found in futureEvents list.`
+      `Something went wrong. Event with id ${eventId} not found in futureEvents list.`
     );
     return <div>Error...</div>;
   }
-  const dropoffLocationsForEvent =
-    getDropoffLocationsForEvent(dropoffLocations);
+  const dropoffLocationsForEvent = getDropoffLocationsForEvent(
+    dropoffLocationsQuery.data
+  );
   return (
     <>
       <Navbar />
@@ -301,9 +284,9 @@ export function DriverLocationInfo() {
               "Contact",
             ]}
             dataRows={processDriversForTable(
-              driversInfo,
+              driversInfoQuery.data,
               dropoffLocationsForEvent,
-              refetchDrivers
+              driversInfoQuery.refetch
             )}
           />
         </div>
@@ -318,7 +301,7 @@ export function DriverLocationInfo() {
             <textarea
               className="w-full grow resize-none overflow-scroll rounded-md border-4 border-softGrayWhite py-2 px-4 text-base lg:text-xl"
               readOnly
-              defaultValue={locationsToDriversText}
+              defaultValue={locationsToDriversTextQuery.data}
             />
           )}
           <SendTextMessageButton
@@ -351,7 +334,7 @@ export function DriverLocationInfo() {
               "Matched Drivers",
             ]}
             dataRows={processDropoffLocationsForTable(
-              driversInfo,
+              driversInfoQuery.data,
               dropoffLocationsForEvent
             )}
           />
@@ -368,7 +351,7 @@ export function DriverLocationInfo() {
               <textarea
                 className="w-full grow resize-none overflow-scroll rounded-md border-4 border-softGrayWhite py-2 px-4 text-base lg:text-xl"
                 readOnly
-                defaultValue={driverInfoToCoordinatorsText}
+                defaultValue={driverInfoToCoordinatorsTextQuery.data}
               />
             )}
             <SendTextMessageButton
@@ -381,8 +364,8 @@ export function DriverLocationInfo() {
           </div>
           <DropoffOrganizerPopup
             date={event.date}
-            dropoffLocations={dropoffLocations}
-            refetchDropoffLocations={refetchDropoffLocations}
+            dropoffLocations={dropoffLocationsQuery.data}
+            refetchDropoffLocations={dropoffLocationsQuery.refetch}
           />
         </div>
         <div className="h-16" />

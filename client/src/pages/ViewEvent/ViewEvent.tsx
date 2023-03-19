@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import { useFutureEventById } from "../eventHooks";
 import React from "react";
 //Types
-import { ProcessedScheduledSlot, ProcessedSpecialEvent } from "../../types";
+import { ProcessedScheduledSlot } from "../../types";
 //Components
 import { Loading } from "../../components/Loading";
 import { VolunteersTable } from "./VolunteersTable";
@@ -40,21 +40,15 @@ export const ViewEvent = () => {
     return <Navigate to="/" />;
   }
   const { eventId } = useParams();
-  const { event, refetchEvent, eventStatus, eventError } =
-    useFutureEventById(eventId);
+  const eventQuery = useFutureEventById(eventId);
 
-  const {
-    data: scheduledSlots,
-    refetch: refetchScheduledSlots,
-    status: scheduledSlotsStatus,
-    error: scheduledSlotsError,
-  } = useQuery(
+  const scheduledSlotsQuery = useQuery(
     ["fetchVolunteersForEvent", eventId],
     async () => {
-      if (typeof event === "undefined") {
+      if (typeof eventQuery.data === "undefined") {
         return Promise.reject(new Error("Undefined event"));
       }
-      const scheduledSlotsIds = event.scheduledSlots.join(",");
+      const scheduledSlotsIds = eventQuery.data.scheduledSlots.join(",");
       const response = await fetch(
         `${API_BASE_URL}/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`,
         {
@@ -69,16 +63,19 @@ export const ViewEvent = () => {
       }
       return response.json() as Promise<ProcessedScheduledSlot[]>;
     },
-    { enabled: eventStatus === "success" }
+    { enabled: eventQuery.status === "success" }
   );
 
-  if (eventStatus === "error" || scheduledSlotsStatus === "error") {
-    const error = eventError || scheduledSlotsError;
+  if (eventQuery.status === "error" || scheduledSlotsQuery.status === "error") {
+    const error = eventQuery.error || scheduledSlotsQuery.error;
     console.error(error);
     return <div>Error...</div>;
   }
 
-  if (scheduledSlotsStatus === "loading" || scheduledSlotsStatus === "idle") {
+  if (
+    scheduledSlotsQuery.status === "loading" ||
+    scheduledSlotsQuery.status === "idle"
+  ) {
     return (
       <div className="relative h-full">
         <Loading size="large" thickness="extra-thicc" />
@@ -86,13 +83,15 @@ export const ViewEvent = () => {
     );
   }
 
-  if (event === undefined) {
+  if (eventQuery.data === undefined) {
     console.error(
-      `Something went wrong. Event ${event} not found in futureEvents list.`
+      `Something went wrong. Event with id ${eventId} not found in futureEvents list.`
     );
     return <div>Error...</div>;
   }
 
+  const event = eventQuery.data;
+  const scheduledSlots = scheduledSlotsQuery.data;
   scheduledSlots.sort((a, b) => (a.firstName < b.firstName ? -1 : 1));
 
   //Tailwind classes
@@ -164,7 +163,7 @@ export const ViewEvent = () => {
           </div>
 
           <div className="flex flex-col items-start justify-around gap-2 ">
-            <AddSpecialGroup event={event} refetchEvent={refetchEvent} />
+            <AddSpecialGroup event={event} refetchEvent={eventQuery.refetch} />
             <ViewSpecialGroups event={event} />
           </div>
         </div>
@@ -176,7 +175,7 @@ export const ViewEvent = () => {
         {/* Volunteer Table */}
         <VolunteersTable
           scheduledSlots={scheduledSlots}
-          refetchVolunteers={refetchScheduledSlots}
+          refetchVolunteers={scheduledSlotsQuery.refetch}
         />
         <div className="h-4" />
         <Link to={`/events/driver-location-info/${eventId}`}>

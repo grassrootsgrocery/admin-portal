@@ -13,11 +13,7 @@ const logLevels = {
   debug: 4,
   trace: 5,
 };
-// const serverLogFormat = printf(({ level, message, timestamp, stack }) => {
-//   return `[${timestamp}] ${level.toLocaleUpperCase()}: ${message} ${
-//     stack !== undefined ? "STACK: " + stack : ""
-//   }`;
-// });
+
 const serverLogFormat = printf(({ level, message, timestamp }) => {
   return `[${timestamp}] ${level.toLocaleUpperCase()}: ${message}`;
 });
@@ -41,26 +37,21 @@ export const logger = winston.createLogger({
 });
 
 /**
- * To include a stack trace when logging exceptions:
- *  logger.error(new Error("Leave a descriptive error message here"));
- *
- * How the output should appear in the console:
- *  {
- *    level: "string",
- *    message: "string",
- *    stack: "string", //Only when an exception is thrown
- *    timestamp: "string"
- *  }
- *
  * Description of log levels:
+ *
  * - TRACE: this level should be used when tracing the path of a program's execution.
+ *
  * - DEBUG: any messages that may be needed for troubleshooting or diagnosing issues should be logged at this level.
+ *
  * - INFO: this level should be used when capturing a typical or expected event that occurred during normal program
  *    execution, usually things that are notable from a business logic perspective.
+ *
  * - WARN: log at this level when an event is unexpected but recoverable. You can also use it to indicate potential
  *    problems in the system that need to be mitigated before they become actual errors.
+ *
  * - ERROR: any error that prevents normal program execution should be logged at this level. The application can
  *    usually continue to function, but the error must be addressed if it persists.
+ *
  * - FATAL: use this level to log events that prevent crucial business functions from working. In situations like
  *    this, the application cannot usually recover, so immediate attention is required to fix such issues.
  *

@@ -2,11 +2,42 @@ import express from "express";
 import asyncHandler from "express-async-handler";
 import { protect } from "../middleware/authMiddleware";
 import { fetch } from "../httpUtils/nodeFetch";
-//Status codes
-import { FORBIDDEN, INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
-
+//Types
 import { Request, Response } from "express";
-import { MAKE_ERROR_MESSAGE } from "../httpUtils/make";
+//Status codes
+import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
+
+//Utils
+async function makeRequest(
+  url: string | undefined,
+  res: Response,
+  onErrorMessage: string
+) {
+  if (!url) {
+    throw new Error("url is undefined");
+  }
+  const resp = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Token ${process.env.MAKE_API_KEY}`,
+    },
+  });
+  if (!resp.ok) {
+    res.status(resp.status);
+    throw new Error(onErrorMessage);
+  }
+  return await resp.json();
+}
+
+function checkNodeEnvIsProduction(res: Response) {
+  if (process.env.NODE_ENV !== "production") {
+    res.status(INTERNAL_SERVER_ERROR);
+    throw new Error(
+      "'NODE_ENV' must be set to 'production' to start Make automations."
+    );
+  }
+}
+
 const router = express.Router();
 
 /*
@@ -24,23 +55,14 @@ own problems if they were to ever change the Make automations to use different t
 router.route("/api/messaging/coordinator-recruitment-text").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    const coordinatorRecruitmentTextAutomationId = 278585;
-    const resp = await fetch(
-      `https://us1.make.com/api/v2/scenarios/${coordinatorRecruitmentTextAutomationId}/blueprint`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Token ${process.env.MAKE_API_KEY}`,
-        },
-      }
+    const coordinatorRecruitmentTextBlueprintId = 278585;
+    const url = `https://us1.make.com/api/v2/scenarios/${coordinatorRecruitmentTextBlueprintId}/blueprint`;
+    const data = await makeRequest(
+      url,
+      res,
+      "There was a problem fetching the 'Send Coordinator Recruitment Text (Wed afternoon)' text."
     );
-    if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const data = await resp.json();
+    //Grab the coordinator recruitment text from the response body
     res.status(OK).json(data.response.blueprint.flow[4].mapper.body);
   })
 );
@@ -53,24 +75,12 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
 router.route("/api/messaging/coordinator-recruitment-text").post(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    if (process.env.NODE_ENV !== "production") {
-      res.status(FORBIDDEN);
-      throw new Error(
-        "'NODE_ENV' must be set to 'production' to start Make automations."
-      );
-    }
-    if (!process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK) {
-      res.status(INTERNAL_SERVER_ERROR);
-      throw new Error("'COORDINATOR_RECRUITMENT_TEXT_WEBHOOK' not set.");
-    }
-
-    const resp = await fetch(process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK);
-    if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
+    checkNodeEnvIsProduction(res);
+    await makeRequest(
+      process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK,
+      res,
+      "Unable to start 'Send Coordinator Recruitment Text (Wed afternoon)' Make automation."
+    );
     res.status(OK).json({
       message:
         "'Send Coordinator Recruitment Text (Wed afternoon)' Make automation started.",
@@ -86,23 +96,13 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
 router.route("/api/messaging/volunteer-recruitment-text").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    const volunteerRecruitmentTextAutomationId = 299639;
-    const resp = await fetch(
-      `https://us1.make.com/api/v2/scenarios/${volunteerRecruitmentTextAutomationId}/blueprint`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Token ${process.env.MAKE_API_KEY}`,
-        },
-      }
+    const volunteerRecruitmentTextBlueprintId = 299639;
+    const url = `https://us1.make.com/api/v2/scenarios/${volunteerRecruitmentTextBlueprintId}/blueprint`;
+    const data = await makeRequest(
+      url,
+      res,
+      "There was a problem fetching the 'Send Tuesday recruitment texts' text."
     );
-    if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const data = await resp.json();
     res.status(OK).json(data.response.blueprint.flow[2].mapper.body);
   })
 );
@@ -115,24 +115,12 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
 router.route("/api/messaging/volunteer-recruitment-text").post(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    if (process.env.NODE_ENV !== "production") {
-      res.status(FORBIDDEN);
-      throw new Error(
-        "'NODE_ENV' must be set to 'production' to start Make automations."
-      );
-    }
-    if (!process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK) {
-      res.status(INTERNAL_SERVER_ERROR);
-      throw new Error("'TUESDAY_RECRUITMENT_TEXT_WEBHOOK' not set.");
-    }
-
-    const resp = await fetch(process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK);
-    if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
+    checkNodeEnvIsProduction(res);
+    await makeRequest(
+      process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK,
+      res,
+      "Unable to start 'Send Tuesday recruitment texts' Make automation."
+    );
     res.status(OK).json({
       message: "'Send Tuesday recruitment texts' Make automation started.",
     });
@@ -147,23 +135,14 @@ router.route("/api/messaging/volunteer-recruitment-text").post(
 router.route("/api/messaging/driver-info-to-coordinators-text").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    const driverInfoToCoordinatorsTextAutomationId = 321301;
-    const resp = await fetch(
-      `https://us1.make.com/api/v2/scenarios/${driverInfoToCoordinatorsTextAutomationId}/blueprint`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Token ${process.env.MAKE_API_KEY}`,
-        },
-      }
+    const driverInfoToCoordinatorsTextBlueprintId = 321301;
+    const url = `https://us1.make.com/api/v2/scenarios/${driverInfoToCoordinatorsTextBlueprintId}/blueprint`;
+    const data = await makeRequest(
+      url,
+      res,
+      "There was a problem fetching the 'Send Driver Info To Coordinators' text."
     );
-    if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const data = await resp.json();
+    //Grab message body
     res
       .status(OK)
       .json(
@@ -181,26 +160,12 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
 router.route("/api/messaging/driver-info-to-coordinators-text").post(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    if (process.env.NODE_ENV !== "production") {
-      res.status(FORBIDDEN);
-      throw new Error(
-        "'NODE_ENV' must be set to 'production' to start Make automations."
-      );
-    }
-    if (!process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK) {
-      res.status(INTERNAL_SERVER_ERROR);
-      throw new Error("'SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK' not set.");
-    }
-
-    const resp = await fetch(
-      process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK
+    checkNodeEnvIsProduction(res);
+    await makeRequest(
+      process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK,
+      res,
+      "Unable to start 'Send Driver Info To Coordinators' Make automation."
     );
-    if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
     res.status(OK).json({
       message: "'Send Driver Info To Coordinators' Make automation started.",
     });
@@ -215,23 +180,13 @@ router.route("/api/messaging/driver-info-to-coordinators-text").post(
 router.route("/api/messaging/locations-to-drivers-text").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    const driverLocationInfoTextAutomationId = 329564;
-    const resp = await fetch(
-      `https://us1.make.com/api/v2/scenarios/${driverLocationInfoTextAutomationId}/blueprint`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Token ${process.env.MAKE_API_KEY}`,
-        },
-      }
+    const driverLocationInfoTextBlueprintId = 329564;
+    const url = `https://us1.make.com/api/v2/scenarios/${driverLocationInfoTextBlueprintId}/blueprint`;
+    const data = await makeRequest(
+      url,
+      res,
+      "There was a problem fetching the '[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' text."
     );
-    if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const data = await resp.json();
     res.status(OK).json(data.response.blueprint.flow[5].mapper.body);
   })
 );
@@ -244,25 +199,12 @@ router.route("/api/messaging/locations-to-drivers-text").get(
 router.route("/api/messaging/locations-to-drivers-text").post(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    if (process.env.NODE_ENV !== "production") {
-      res.status(FORBIDDEN);
-      throw new Error(
-        "'NODE_ENV' must be set to 'production' to start Make automations."
-      );
-    }
-    if (!process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK) {
-      res.status(INTERNAL_SERVER_ERROR);
-      throw new Error("'SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK' not set.");
-    }
-    const resp = await fetch(
-      process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK
+    checkNodeEnvIsProduction(res);
+    await makeRequest(
+      process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK,
+      res,
+      "Unable to start '[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' Make automation."
     );
-    if (!resp.ok) {
-      throw {
-        message: MAKE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
     res.status(OK).json({
       message:
         "'[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' Make automation started.",

@@ -1,25 +1,29 @@
 # Grassroots Groceries Events Portal
+<img src="https://user-images.githubusercontent.com/15386131/236855253-45375899-57e4-4b8d-bb06-1f3728fb5b0f.png" width=500 align=right>
+<img src="https://user-images.githubusercontent.com/15386131/236855570-d6079578-947c-4145-bd67-102005ca550b.png" width=500 align=right>
 
 # Point of Contact
 
-For inquiries about the project, contact Jason Cavanaugh at jason.p.cavanaugh@gmail.com.
+For inquiries about the project or if you want to contribute as a developer, contact Dan Zauderer (dan@grassrootsgrocery.org) or Matt Sahn (matt@grassrootsgrocery.org). We are always looking for people that want to contribute their coding skills to this project!
 
 # Project Info
 
-[Grassroots Groceries](https://www.grassrootsgrocery.org/) (previously Mott Haven Fridge) is an organization founded by Dan Zauderer that delivers free produce to areas that need it in NYC. The organization hosts produce-packing events every Saturday, where volunteers come to a designated location and load produce into vehicles. Volunteers then drive the vehicles to various dropoff locations.
+[Grassroots Grocery](https://www.grassrootsgrocery.org/) is an organization founded by Dan Zauderer that delivers free produce to areas that need it in NYC. The organization hosts produce-packing events every Saturday, where volunteers come to a designated location and load produce into their personal vehicles. Volunteers then drive the vehicles to various community locations around NYC.
 
-Currently, Grassroot's technical infrastructure for managing all their volunteers' and coordinators' data is a hodgepodge
-of different services wired together (main ones are [Airtable](https://airtable.com/), [Twilio](https://www.twilio.com/), [Make](https://www.make.com/), [Front](https://front.com/), and [Jotform](https://www.jotform.com/)). Dan uses these technologies to keep track of people who register for events, schedule events, send text messages to people to remind them of events, and much more. Because the system is so [ad hoc](https://en.wikipedia.org/wiki/Ad_hoc), it is very difficult for anyone besides Dan to use it. Dan would like a web app that brings together all of these services together into an easy-to-use portal.
+Currently, Grassroot's technical infrastructure for managing all their volunteers' and coordinators' data is a collection
+of different services wired together (main ones are [Airtable](https://airtable.com/), [Twilio](https://www.twilio.com/), [Make](https://www.make.com/), [Front](https://front.com/), and [Jotform](https://www.jotform.com/)). Grassroots Grocery uses these technologies to keep track of people who register for events, schedule events, send text messages to people to remind them of events, and much more. Because the system is so [ad hoc](https://en.wikipedia.org/wiki/Ad_hoc), it is very difficult for anyone besides Dan to use it. This project is to build a web app that brings together all of these services together into an easy-to-use portal that will allow multiple people to organize and run events. Ultimately, it will allow for scaling out the operations of Grassroots Grocery to more sites around NYC and beyond.
+
+This application started as a semester-long project by students at University of Maryland as part of [Hack4Impact](https://hack4impact.org/).
 
 # The stack
 
 - Our frontend is currently TypeScript, React, and Tailwind CSS, with [Vite](https://vitejs.dev/guide/) as our build tool.
 - Our backend is currently TypeScript and Express.
 - Our database is Airtable because this is what Grassroots Groceries is using to store their data currently.
-- Make is a service used for triggering automations. Grassroots Groceries uses it to send automated text messages to volunteers and coordinators. The automations have been built out by Dan's team, and we only need to trigger them on our backend.
+- Make is a service used for triggering automations. Grassroots Groceries uses it to send automated text messages and emails to volunteers and coordinators. The automations have been built out by the GG Platform Engineering team, and we only need to trigger them on our backend.
 
 Here is a current diagram of what the infrastructure for the project currently looks like.
-![Infra Diagram](./infrastructure-diagram.png)
+<img src="https://github.com/grassrootsgrocery/admin-portal/raw/main/infrastructure-diagram.png" width=700>
 
 # .env files
 
@@ -35,36 +39,28 @@ There are two `.env` files in the project: `.env` in the root of the project and
 
 ### Airtable
 
-- Go to [https://airtable.com/account](https://airtable.com/account). Sign in with the Mott Haven Fridge credentials. Copy the API key from the field.
+- Contact Matt and Dan to have them provide you with an Airtable API key to a development database and the AIRTABLE_BASE_ID_DEV value for it.
 - Go to the root `.env` of the project and add the line `AIRTABLE_API_KEY=<Whatever the key is>`
+- Go to the root `.env` of the project and add the line `AIRTABLE_BASE_ID_DEV=<Whatever the key base ID is>`
 
 ### Make
 
-<!-- - Go to [https://](). Sign in with your whatever. -->
-
-<!-- - TODO: Figure out how to get you guys access to the Make API key -->
-<!-- - Go to the root `.env` of the project and add the line `MAKE_API_KEY=<Whatever the key is>` -->
-
-- You don't need the Make API key to do development, but just know that the production deploy of the app does have this API key
+- NOTE: You don't need the Make API key to do development, but just know that the production deploy of the app does have this API key
+- Contact Matt and Dan to have them provide you with a Make API key.
+- Go to the root `.env` of the project and add the line `MAKE_API_KEY=<Whatever the key is>`
 
 ## Using the API keys
 
 ### Backend
 
-Access your API keys on the backend like this:
+Access your API keys and env variables on the backend like this:
 
 ```TypeScript
-const airtableApiKey = process.env.AIRTABLE_API_KEY;
-const makeApiKey = process.env.AIRTABLE_API_KEY;
+process.env.MAKE_API_KEY
+process.env.AIRTABLE_API_KEY
+process.env.AIRTABLE_BASE_ID_PROD
+process.env.AIRTABLE_BASE_ID_DEV
 ```
-
-<!-- ### Frontend
-Inside of your TypeScript code, in order to access the key, do
-
-```TypeScript
-const apiKey = import.meta.env.VITE_AIRTABLE_API_KEY;
-````
--->
 
 # Running the dev server
 
@@ -76,6 +72,9 @@ const apiKey = import.meta.env.VITE_AIRTABLE_API_KEY;
 
         JWT_SECRET=96024
         TODAY=<YYYY-MM-DD>
+        NODE_ENV=dev
+        AIRTABLE_BASE_ID_DEV=<dev base ID>
+        AIRTABLE_API_KEY=<your airtable API key>
 
     _i.e. `TODAY=2023-02-01`_
 
@@ -86,7 +85,7 @@ const apiKey = import.meta.env.VITE_AIRTABLE_API_KEY;
 
 # Hosting
 
-We are currently using [Railway](https://railway.app/) as our hosting solution. You can see a dev deployment of the application at [https://mott-haven-production.up.railway.app/](https://mott-haven-production.up.railway.app/)
+We are currently using [Railway](https://railway.app/) as our hosting solution. You can see a dev deployment of the application at [https://portal.grassrootsgrocery.org/](https://portal.grassrootsgrocery.org/)
 
 # Tech Resources
 

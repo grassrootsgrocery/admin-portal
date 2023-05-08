@@ -85,7 +85,7 @@ process.env.AIRTABLE_BASE_ID_DEV
 
 # Hosting
 
-We are currently using [Railway](https://railway.app/) as our hosting solution. You can see a dev deployment of the application at [https://portal.grassrootsgrocery.org/](https://portal.grassrootsgrocery.org/)
+We are currently using [Railway](https://railway.app/) as our hosting solution. The application is hosted at [https://portal.grassrootsgrocery.org/](https://portal.grassrootsgrocery.org/), though it requires having a credential to log in.
 
 # Tech Resources
 

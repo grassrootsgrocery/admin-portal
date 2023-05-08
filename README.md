@@ -1,4 +1,4 @@
-# Grassroots Groceries Events Portal
+# Grassroots Grocery Events Portal
 <p float=left>
 <img src="https://user-images.githubusercontent.com/15386131/236855253-45375899-57e4-4b8d-bb06-1f3728fb5b0f.png" width=400/>
 <img src="https://user-images.githubusercontent.com/15386131/236855570-d6079578-947c-4145-bd67-102005ca550b.png" width=400/>

@@ -153,7 +153,7 @@ export const ViewEvent = () => {
               value={event.numOnlyDrivers}
             />
             <HeaderValueDisplay
-              header="Packer Only"
+              header="Packers Only"
               value={event.numOnlyPackers}
             />
             <HeaderValueDisplay

@@ -30,7 +30,7 @@ const router = express.Router();
 dotenv.config();
 
 let today = "TODAY()";
-if (process.env.NODE_ENV === "dev" && process.env.TODAY) {
+if (process.env.NODE_ENV === "development" && process.env.TODAY) {
   today = `"${process.env.TODAY}"`;
 }
 

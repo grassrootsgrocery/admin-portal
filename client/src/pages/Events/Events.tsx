@@ -13,21 +13,20 @@ export function Events() {
   if (!token) {
     return <Navigate to="/" />;
   }
-  const {
-    data: futureEvents,
-    status: futureEventsStatus,
-    error: futureEventsError,
-  } = useFutureEvents();
+  const futureEventsQuery = useFutureEvents();
 
-  if (futureEventsStatus === "loading" || futureEventsStatus === "idle") {
+  if (
+    futureEventsQuery.status === "loading" ||
+    futureEventsQuery.status === "idle"
+  ) {
     return (
       <div className="relative h-full">
         <Loading size="large" thickness="extra-thicc" />
       </div>
     );
   }
-  if (futureEventsStatus === "error") {
-    console.error(futureEventsError);
+  if (futureEventsQuery.status === "error") {
+    console.error(futureEventsQuery.error);
     return <div>Error...</div>;
   }
 
@@ -51,7 +50,7 @@ export function Events() {
         </div>
         <div className="h-5" />
         <ul className="flex h-0 grow flex-col gap-2 overflow-auto pr-2 sm:gap-7 md:pr-4">
-          {futureEvents.map((event) => {
+          {futureEventsQuery.data.map((event) => {
             return (
               <EventCard
                 key={event.id}

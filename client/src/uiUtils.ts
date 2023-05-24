@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 
 type toast = "success" | "failure" | "alert";
-export function toastNotify(message: string, toastType: toast) {
+export function toastNotify(message: string, toastType?: toast) {
   let icon = "";
   switch (toastType) {
     case "success":

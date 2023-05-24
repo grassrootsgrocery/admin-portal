@@ -5,7 +5,11 @@ import { Request, Response } from "express";
 import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
-import { BAD_REQUEST, OK } from "../httpUtils/statusCodes";
+import {
+  BAD_REQUEST,
+  INTERNAL_SERVER_ERROR,
+  OK,
+} from "../httpUtils/statusCodes";
 //Types
 import {
   AirtableResponse,
@@ -126,10 +130,8 @@ router.route("/api/dropoff-locations/").get(
       },
     });
     if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
+      res.status(INTERNAL_SERVER_ERROR);
+      throw new Error(AIRTABLE_ERROR_MESSAGE);
     }
     const dropoffLocations =
       (await resp.json()) as AirtableResponse<DropoffLocation>;
@@ -150,10 +152,8 @@ router.route("/api/dropoff-locations/").get(
       },
     });
     if (!neighborhoodResp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: neighborhoodResp.status,
-      };
+      res.status(INTERNAL_SERVER_ERROR);
+      throw new Error(AIRTABLE_ERROR_MESSAGE);
     }
     const neighborhoods =
       (await neighborhoodResp.json()) as AirtableResponse<Neighborhood>;
@@ -226,10 +226,8 @@ router.route("/api/dropoff-locations/").patch(
         }),
       });
       if (!resp.ok) {
-        throw {
-          message: AIRTABLE_ERROR_MESSAGE,
-          status: resp.status,
-        };
+        res.status(INTERNAL_SERVER_ERROR);
+        throw new Error(AIRTABLE_ERROR_MESSAGE);
       }
       start += 10;
     }

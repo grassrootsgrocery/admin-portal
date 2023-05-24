@@ -159,10 +159,8 @@ router.route("/api/events").get(
       },
     });
     if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
+      res.status(INTERNAL_SERVER_ERROR);
+      throw new Error(AIRTABLE_ERROR_MESSAGE);
     }
     const futureEventsAirtableResp =
       (await resp.json()) as AirtableResponse<Event>;
@@ -243,10 +241,8 @@ router.route("/api/events/view-event-special-groups/").get(
       },
     });
     if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
+      res.status(INTERNAL_SERVER_ERROR);
+      throw new Error(AIRTABLE_ERROR_MESSAGE);
     }
 
     const specialEvents = (await resp.json()) as AirtableResponse<SpecialEvent>;

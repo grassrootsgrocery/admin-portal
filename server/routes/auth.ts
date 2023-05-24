@@ -77,10 +77,11 @@ router.route("/api/auth/sign-up").post(
       }),
     });
     if (!createUserResp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: createUserResp.status,
-      };
+      const statusCode = createUserResp.status;
+      const message = (await createUserResp.json()).message;
+      logger.error(`${statusCode} ${message}`);
+      res.status(INTERNAL_SERVER_ERROR);
+      throw new Error(AIRTABLE_ERROR_MESSAGE);
     }
     const createUserData = await createUserResp.json();
     const user = createUserData.records[0];

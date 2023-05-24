@@ -26,6 +26,14 @@ export function Events() {
     );
   }
   if (futureEventsQuery.status === "error") {
+    if (
+      futureEventsQuery.error instanceof Error &&
+      futureEventsQuery.error.message === "Not authorized, token failed"
+    ) {
+      console.log("Here");
+      localStorage.removeItem("token");
+      return <Navigate to="/" />;
+    }
     console.error(futureEventsQuery.error);
     return <div>Error...</div>;
   }

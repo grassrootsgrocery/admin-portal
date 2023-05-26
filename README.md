@@ -15,7 +15,7 @@ For inquiries about the project or if you want to contribute as a developer, con
 Currently, Grassroot's technical infrastructure for managing all their volunteers' and coordinators' data is a collection
 of different services wired together (main ones are [Airtable](https://airtable.com/), [Twilio](https://www.twilio.com/), [Make](https://www.make.com/), [Front](https://front.com/), and [Jotform](https://www.jotform.com/)). Grassroots Grocery uses these technologies to keep track of people who register for events, schedule events, send text messages to people to remind them of events, and much more. Because the system is so [ad hoc](https://en.wikipedia.org/wiki/Ad_hoc), it is very difficult for anyone besides Dan to use it. This project is to build a web app that brings together all of these services together into an easy-to-use portal that will allow multiple people to organize and run events. Ultimately, it will allow for scaling out the operations of Grassroots Grocery to more sites around NYC and beyond.
 
-This application started as a semester-long project by students at University of Maryland as part of [Hack4Impact](https://hack4impact.org/).
+This application started as a semester-long project by students at University of Maryland as part of [Hack4Impact](https://umd.hack4impact.org/).
 
 # The stack
 

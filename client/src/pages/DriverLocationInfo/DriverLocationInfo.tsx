@@ -20,6 +20,7 @@ import { SendTextMessageButton } from "./SendTextMesssageButton";
 import { ContactPopup } from "../../components/ContactPopup";
 import { CoordinatorInfoPopup } from "./CoordinatorInfoPopup";
 import { LocationPopup } from "./LocationPopup";
+import { toastNotify } from "../../uiUtils";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -116,7 +117,7 @@ const sectionHeader =
 const sectionHeaderIcon = "w-6 lg:w-10";
 
 export function DriverLocationInfo() {
-  const { token } = useAuth();
+  const { token, setToken } = useAuth();
   if (!token) {
     return <Navigate to="/" />;
   }
@@ -209,6 +210,12 @@ export function DriverLocationInfo() {
   ) {
     const error =
       driversInfoQuery.error || dropoffLocationsQuery.error || eventQuery.error;
+    if (error instanceof Error && error.message.includes("token")) {
+      setToken(null);
+      localStorage.removeItem("token");
+      toastNotify("Sorry, please login again");
+      return <Navigate to="/" />;
+    }
     console.error(error);
     return <div>Error...</div>;
   }

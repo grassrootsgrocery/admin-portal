@@ -20,9 +20,18 @@ function processSpecialGroups(
   specialGroups: ProcessedSpecialGroup[]
 ) {
   return specialEvents.map((se) => {
-    const groupName = specialGroups.filter(
+    const specialGroupsFiltered = specialGroups.filter(
       (sg) => sg.id === se.specialGroupId
-    )[0].name;
+    );
+    if (specialGroupsFiltered.length === 0) {
+      console.log(`No special group found with matching id for special event with id ${se.specialGroupId}`);
+      return [se.id, "NO NAME", se.eventSignUpLink];
+    }
+    if (specialGroupsFiltered.length > 1) {
+      //This should not happen...
+      console.log(`Multiple special groups found with matching ids for special event with id ${se.specialGroupId}`, specialGroupsFiltered);
+    }
+    const groupName = specialGroupsFiltered[0].name;
     return [se.id, groupName, se.eventSignUpLink];
   });
 }

@@ -19,6 +19,7 @@ import { Navbar } from "../../components/Navbar";
 import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
 import { ViewSpecialGroups } from "./ViewSpecialGroups";
+import { toastNotify } from "../../uiUtils";
 
 const HeaderValueDisplay: React.FC<{
   header: string;
@@ -35,7 +36,7 @@ const HeaderValueDisplay: React.FC<{
 };
 
 export const ViewEvent = () => {
-  const { token } = useAuth();
+  const { token, setToken } = useAuth();
   if (!token) {
     return <Navigate to="/" />;
   }
@@ -68,6 +69,12 @@ export const ViewEvent = () => {
 
   if (eventQuery.status === "error" || scheduledSlotsQuery.status === "error") {
     const error = eventQuery.error || scheduledSlotsQuery.error;
+    if (error instanceof Error && error.message.includes("token")) {
+      setToken(null);
+      localStorage.removeItem("token");
+      toastNotify("Sorry, please login again");
+      return <Navigate to="/" />;
+    }
     console.error(error);
     return <div>Error...</div>;
   }

@@ -4,12 +4,13 @@ import { Navbar } from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { useFutureEvents } from "../eventHooks";
+import { toastNotify } from "../../uiUtils";
 
 const newEventLink =
   "https://airtable.com/shrETAYONKTJMVTnZ?prefill_Supplier=Rap+4+Bronx&prefill_Start+Time=01/01/2023+09:00am&prefill_End+Time=01/01/2023+01:00pm&prefill_First+Driving+Slot+Start+Time=01/01/2023+10:30am&prefill_How+long+should+each+Driver+Time+Slot+be?=0:15&prefill_Max+Count+of+Drivers+Per+Slot=30&prefill_How+long+should+the+Logistics+slot+be?=1:30&prefill_Maximum+number+of+drivers+needed+for+this+event+(usually+30)?=30&prefill_Max+Count+of+Distributors+Per+Slot=30";
 
 export function Events() {
-  const { token } = useAuth();
+  const { token, setToken } = useAuth();
   if (!token) {
     return <Navigate to="/" />;
   }
@@ -26,15 +27,14 @@ export function Events() {
     );
   }
   if (futureEventsQuery.status === "error") {
-    if (
-      futureEventsQuery.error instanceof Error &&
-      futureEventsQuery.error.message === "Not authorized, token failed"
-    ) {
-      console.log("Here");
+    const error = futureEventsQuery.error;
+    if (error instanceof Error && error.message.includes("token")) {
+      setToken(null);
       localStorage.removeItem("token");
+      toastNotify("Sorry, please login again");
       return <Navigate to="/" />;
     }
-    console.error(futureEventsQuery.error);
+    console.error(error);
     return <div>Error...</div>;
   }
 

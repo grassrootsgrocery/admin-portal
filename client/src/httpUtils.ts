@@ -19,3 +19,4 @@ export const applyPatch =
     }
     return resp.json();
   };
+

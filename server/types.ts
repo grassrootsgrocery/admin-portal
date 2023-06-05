@@ -1,10 +1,15 @@
-export interface AirtableResponse<FieldsType> {
-  records: Record<FieldsType>[];
+export interface AirtableResponse<T> {
+  records: Record<T>[];
 }
 export interface Record<T> {
   id: string;
   fields: T;
   createdTime: string;
+}
+
+export interface User {
+  Username: string;
+  Password: string;
 }
 
 export interface Event {

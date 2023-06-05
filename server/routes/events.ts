@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import { protect } from "../middleware/authMiddleware";
 import { Request, Response } from "express";
 import {
+  airtableGET,
   AIRTABLE_ERROR_MESSAGE,
   AIRTABLE_URL_BASE,
 } from "../httpUtils/airtable";
@@ -152,18 +153,7 @@ router.route("/api/events").get(
       `&fields=Supplier` +
       `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
 
-    const resp = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-    });
-    if (!resp.ok) {
-      res.status(INTERNAL_SERVER_ERROR);
-      throw new Error(AIRTABLE_ERROR_MESSAGE);
-    }
-    const futureEventsAirtableResp =
-      (await resp.json()) as AirtableResponse<Event>;
+    const futureEventsAirtableResp = await airtableGET<Event>({ url: url });
 
     //An event is invalid if it has no start time
     let futureEventsData = futureEventsAirtableResp.records.filter(
@@ -234,18 +224,8 @@ router.route("/api/events/view-event-special-groups/").get(
       `&fields=Volunteer Group` + // Special Group
       `&fields=Shortened Link to Special Event Signup Form`; // Special Event Link
 
-    const resp = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-    });
-    if (!resp.ok) {
-      res.status(INTERNAL_SERVER_ERROR);
-      throw new Error(AIRTABLE_ERROR_MESSAGE);
-    }
+    const specialEvents = await airtableGET<SpecialEvent>({ url: url });
 
-    const specialEvents = (await resp.json()) as AirtableResponse<SpecialEvent>;
     let processedSpecialEvents: ProcessedSpecialEvent[] =
       specialEvents.records.map((specialEvent) => {
         return {

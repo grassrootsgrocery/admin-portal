@@ -1,7 +1,11 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
-import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
+import {
+  airtableGET,
+  airtablePOST,
+  AIRTABLE_URL_BASE,
+} from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
 import {
@@ -11,13 +15,12 @@ import {
   OK_CREATED,
 } from "../httpUtils/statusCodes";
 //Types
-//Error messages
-import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
 //Logger
 import { logger } from "../loggerUtils/logger";
 
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { User } from "../types";
 
 const router = express.Router();
 
@@ -42,13 +45,9 @@ router.route("/api/auth/sign-up").post(
     }
     //Check if user already exists
     const checkUserExistenceUrl = `${AIRTABLE_URL_BASE}/Users?filterByFormula=SEARCH(Username, "${username}") != ""`;
-    const checkUserExistenceResp = await fetch(checkUserExistenceUrl, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
+    const checkUserExistenceData = await airtableGET({
+      url: checkUserExistenceUrl,
     });
-    const checkUserExistenceData = await checkUserExistenceResp.json();
     if (checkUserExistenceData.records.length > 0) {
       res.status(BAD_REQUEST);
       throw new Error("User already exists");
@@ -59,13 +58,9 @@ router.route("/api/auth/sign-up").post(
 
     //Create user by posting to Airtable Users table
     const createUserUrl = `${AIRTABLE_URL_BASE}/Users`;
-    const createUserResp = await fetch(createUserUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-      body: JSON.stringify({
+    const createUserData = await airtablePOST<User>({
+      url: createUserUrl,
+      body: {
         records: [
           {
             fields: {
@@ -74,16 +69,8 @@ router.route("/api/auth/sign-up").post(
             },
           },
         ],
-      }),
+      },
     });
-    if (!createUserResp.ok) {
-      const statusCode = createUserResp.status;
-      const message = (await createUserResp.json()).message;
-      logger.error(`${statusCode} ${message}`);
-      res.status(INTERNAL_SERVER_ERROR);
-      throw new Error(AIRTABLE_ERROR_MESSAGE);
-    }
-    const createUserData = await createUserResp.json();
     const user = createUserData.records[0];
     if (!user.id) {
       //Should never happen
@@ -114,13 +101,7 @@ router.route("/api/auth/login").post(
     }
     //Check if user exists
     const checkUserExistenceUrl = `${AIRTABLE_URL_BASE}/Users?filterByFormula=SEARCH(Username, "${username}") != ""`;
-    const checkUserExistenceResp = await fetch(checkUserExistenceUrl, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-    });
-    const data = await checkUserExistenceResp.json();
+    const data = await airtableGET<User>({ url: checkUserExistenceUrl });
     if (data.records.length === 0) {
       logger.info("User doesn't exist");
       res.status(BAD_REQUEST);

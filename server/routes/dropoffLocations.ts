@@ -2,10 +2,18 @@ import express, { response } from "express";
 import asyncHandler from "express-async-handler";
 import { protect } from "../middleware/authMiddleware";
 import { Request, Response } from "express";
-import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
+import {
+  airtableGET,
+  airtablePATCH,
+  AIRTABLE_URL_BASE,
+} from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
-import { BAD_REQUEST, OK } from "../httpUtils/statusCodes";
+import {
+  BAD_REQUEST,
+  INTERNAL_SERVER_ERROR,
+  OK,
+} from "../httpUtils/statusCodes";
 //Types
 import {
   AirtableResponse,
@@ -104,7 +112,7 @@ router.route("/api/dropoff-locations/").get(
   asyncHandler(async (req: Request, res: Response) => {
     logger.info(`GET /api/dropoff-locations/`);
 
-    const url =
+    const dropoffLocationsUrl =
       `${AIRTABLE_URL_BASE}/📍 Drop off locations?` +
       // Get locations who are regular saturday partners
       `&filterByFormula={Regular Saturday Partner?}` +
@@ -119,20 +127,9 @@ router.route("/api/dropoff-locations/").get(
       `&fields=Location Email` + // email
       `&fields%5B%5D=%23+of+Loads+Requested`; // deliveriesNeeded. This needs to be url encoded for reasons that I don't understand.
 
-    const resp = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
+    const dropoffLocations = await airtableGET<DropoffLocation>({
+      url: dropoffLocationsUrl,
     });
-    if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const dropoffLocations =
-      (await resp.json()) as AirtableResponse<DropoffLocation>;
     let processedDropOffLocations = dropoffLocations.records.map((location) =>
       processDropOffLocations(location)
     );
@@ -142,21 +139,9 @@ router.route("/api/dropoff-locations/").get(
       `${AIRTABLE_URL_BASE}/🏡 Neighborhoods?` +
       `filterByFormula=SEARCH(RECORD_ID(), "${neighborhoodIds}") != ""` +
       `&fields%5B%5D=Name`;
-
-    const neighborhoodResp = await fetch(neighborhoodsUrl, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
+    const neighborhoods = await airtableGET<Neighborhood>({
+      url: neighborhoodsUrl,
     });
-    if (!neighborhoodResp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: neighborhoodResp.status,
-      };
-    }
-    const neighborhoods =
-      (await neighborhoodResp.json()) as AirtableResponse<Neighborhood>;
     let neighborhoodNamesById: Map<string, string> = new Map();
     neighborhoods.records.forEach((neighborhood) =>
       neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)
@@ -213,25 +198,11 @@ router.route("/api/dropoff-locations/").patch(
     const url = `${AIRTABLE_URL_BASE}/📍 Drop off locations`;
 
     //Use this loop to make the requests because Airtable can only update the records 10 at a time.
-    let start = 0;
-    while (start + 10 <= records.length) {
-      const resp = await fetch(url, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        },
-        body: JSON.stringify({
-          records: records.slice(start, start + 10),
-        }),
+    for (let start = 0; start + 10 <= records.length; start += 10) {
+      await airtablePATCH({
+        url: url,
+        body: { records: records.slice(start, start + 10) },
       });
-      if (!resp.ok) {
-        throw {
-          message: AIRTABLE_ERROR_MESSAGE,
-          status: resp.status,
-        };
-      }
-      start += 10;
     }
     res.status(OK).json({ message: "Dropoff locations updated" });
   })

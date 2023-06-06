@@ -1,15 +1,13 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
-import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
-import { fetch } from "../httpUtils/nodeFetch";
+import { airtableGET, AIRTABLE_URL_BASE } from "../httpUtils/airtable";
 import { protect } from "../middleware/authMiddleware";
 //Status codes
 import { BAD_REQUEST, OK } from "../httpUtils/statusCodes";
 //Types
-import { AirtableResponse, Neighborhood } from "../types";
+import { Neighborhood } from "../types";
 //Error messages
-import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
 //Logger
 import { logger } from "../loggerUtils/logger";
 
@@ -40,20 +38,7 @@ router.route("/api/neighborhoods").get(
       `filterByFormula=SEARCH(RECORD_ID(), "${neighborhoodIds}") != ""` +
       `&fields%5B%5D=Name`;
 
-    const resp = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-    });
-    if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const neighborhoodsData =
-      (await resp.json()) as AirtableResponse<Neighborhood>;
+    const neighborhoodsData = await airtableGET<Neighborhood>({ url: url });
     const processedNeighborhoods: Neighborhood[] =
       neighborhoodsData.records.map((neighborhood) => {
         return {

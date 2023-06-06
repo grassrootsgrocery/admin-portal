@@ -1,8 +1,11 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
-import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
-import { fetch } from "../httpUtils/nodeFetch";
+import {
+  airtableGET,
+  airtablePATCH,
+  AIRTABLE_URL_BASE,
+} from "../httpUtils/airtable";
 import { protect } from "../middleware/authMiddleware";
 //Status codes
 import { BAD_REQUEST, OK } from "../httpUtils/statusCodes";
@@ -13,11 +16,9 @@ import {
   ProcessedDriver,
   Record,
   ScheduledSlot,
-  Neighborhood,
   ProcessedScheduledSlot,
 } from "../types";
 //Error messages
-import { AIRTABLE_ERROR_MESSAGE } from "../httpUtils/airtable";
 //Logger
 import { logger } from "../loggerUtils/logger";
 
@@ -120,20 +121,7 @@ router.route("/api/volunteers/").get(
       `&fields=Email` +
       `&fields=Volunteer Group (for MAKE)`;
 
-    const resp = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-    });
-    if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const scheduledSlots =
-      (await resp.json()) as AirtableResponse<ScheduledSlot>;
-
+    const scheduledSlots = await airtableGET<ScheduledSlot>({ url: url });
     const volunteers = processScheduledSlots(scheduledSlots);
 
     res.status(OK).json(volunteers);
@@ -165,7 +153,7 @@ router.route("/api/volunteers/confirm/:volunteerId").patch(
       );
     }
 
-    const data = {
+    const body = {
       records: [
         {
           id: volunteerId,
@@ -173,22 +161,10 @@ router.route("/api/volunteers/confirm/:volunteerId").patch(
         },
       ],
     };
-    const json = JSON.stringify(data);
-    const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slots`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-      body: json,
+    const result = await airtablePATCH({
+      url: `${AIRTABLE_URL_BASE}/📅 Scheduled Slots`,
+      body: body,
     });
-    const result = await resp.json();
-    if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
     res.status(OK).json(result);
   })
 );
@@ -217,7 +193,7 @@ router.route("/api/volunteers/going/:volunteerId").patch(
       );
     }
 
-    const data = {
+    const body = {
       records: [
         {
           id: volunteerId,
@@ -225,22 +201,10 @@ router.route("/api/volunteers/going/:volunteerId").patch(
         },
       ],
     };
-    const json = JSON.stringify(data);
-    const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slots`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-      body: json,
+    const result = await airtablePATCH({
+      url: `${AIRTABLE_URL_BASE}/📅 Scheduled Slots`,
+      body: body,
     });
-    if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const result = await resp.json();
     res.status(OK).json(result);
   })
 );
@@ -309,19 +273,7 @@ router.route("/api/volunteers/drivers").get(
       `&fields=Restricted Neighborhoods` + // Restricted Locations
       `&fields=📍 Drop off location`; // Restricted Locations
 
-    const resp = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-    });
-    if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const drivers = (await resp.json()) as AirtableResponse<Driver>;
+    const drivers = await airtableGET<Driver>({ url: url });
     let processedDrivers: ProcessedDriver[] = drivers.records.map((driver) =>
       processDriverData(driver)
     );
@@ -355,28 +307,18 @@ router.route("/api/volunteers/drivers/assign-location/:driverId").patch(
     }
     logger.info(`PATCH /api/volunteers/drivers/assign-location/${driverId}`);
 
-    const resp = await fetch(`${AIRTABLE_URL_BASE}/📅 Scheduled Slots`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-      body: JSON.stringify({
-        records: [
-          {
-            id: driverId,
-            fields: { "📍 Drop off location": locationIds },
-          },
-        ],
-      }),
+    const body = {
+      records: [
+        {
+          id: driverId,
+          fields: { "📍 Drop off location": locationIds },
+        },
+      ],
+    };
+    const result = await airtablePATCH({
+      url: `${AIRTABLE_URL_BASE}/📅 Scheduled Slots`,
+      body: body,
     });
-    if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
-    }
-    const result = await resp.json();
     res.status(OK).json(result);
   })
 );

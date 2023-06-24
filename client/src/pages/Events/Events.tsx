@@ -66,7 +66,7 @@ export function Events() {
                 date={event.dateDisplay}
                 time={event.time}
                 location={event.mainLocation}
-                participants={event.numtotalParticipants}
+                participants={event.numTotalParticipants}
                 drivers={event.numDrivers}
                 packers={event.numPackers}
               />

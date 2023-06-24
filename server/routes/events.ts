@@ -1,13 +1,13 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
-import { protect } from "../middleware/authMiddleware";
-import { Request, Response } from "express";
+import {protect} from "../middleware/authMiddleware";
+import {Request, Response} from "express";
 import {
   airtableGET,
   AIRTABLE_ERROR_MESSAGE,
   AIRTABLE_URL_BASE,
 } from "../httpUtils/airtable";
-import { fetch } from "../httpUtils/nodeFetch";
+import {fetch} from "../httpUtils/nodeFetch";
 //Status codes
 import {
   INTERNAL_SERVER_ERROR,
@@ -24,14 +24,14 @@ import {
   ProcessedSpecialEvent,
 } from "../types";
 //Logger
-import { logger } from "../loggerUtils/logger";
+import {logger} from "../loggerUtils/logger";
 import dotenv from "dotenv";
 
 const router = express.Router();
 dotenv.config();
 
 let today = "TODAY()";
-if (process.env.NODE_ENV === "development" && process.env.TODAY) {
+if (process.env.NODE_ENV === "dev" && process.env.TODAY) {
   today = `"${process.env.TODAY}"`;
 }
 
@@ -69,10 +69,18 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
 
   const eventDate = new Date(event.fields["Start Time"]);
 
-  const numDrivers = event.fields["Total Count of Drivers for Event"] || 0; // number of total drivers for event
-  const numPackers = event.fields["Total Count of Distributors for Event"] || 0; // number of total packers for event
-  const numtotalParticipants =
+  const numDrivers =
+    event.fields["Total Count of Drivers for Event"] || 0; // number of total drivers for event
+  const numPackers =
+    event.fields["Total Count of Distributors for Event"] || 0; // number of total packers for event
+  const numOnlyDrivers =
+    event.fields["Only Driver Count"] || 0; // number of only drivers for event
+  const numOnlyPackers =
+    event.fields["Only Distributor Count"] || 0; // number of only packers for event
+  const numTotalParticipants =
     event.fields["Total Count of Volunteers for Event"] || 0; // number of total participants for event
+  const numDrivingAndPacking =
+    event.fields["Driver and Distributor Count"] || 0; // number of total participants for event
 
   return {
     id: event.id,
@@ -87,11 +95,11 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
       : "No address", // event pickup location
     numDrivers: numDrivers,
     numPackers: numPackers,
-    numtotalParticipants: numtotalParticipants,
+    numtotalParticipants: numTotalParticipants,
     numSpecialGroups: 0, // number of associated special groups
-    numOnlyDrivers: numtotalParticipants - numPackers,
-    numOnlyPackers: numtotalParticipants - numDrivers,
-    numBothDriversAndPackers: numPackers + numDrivers - numtotalParticipants, // number of both drivers and packers
+    numOnlyDrivers: numOnlyDrivers,
+    numOnlyPackers: numOnlyPackers,
+    numBothDriversAndPackers: numDrivingAndPacking, // number of both drivers and packers
     scheduledSlots: event.fields["📅 Scheduled Slots"] || [],
     supplierId: event.fields.Supplier
       ? event.fields.Supplier[0]
@@ -148,12 +156,15 @@ router.route("/api/events").get(
       `&fields=Pickup Address` + // Main Location
       `&fields=Total Count of Distributors for Event` + // Packers
       `&fields=Total Count of Drivers for Event` + // Drivers
+      `&fields=Only Driver Count` + // People only driving
+      `&fields=Only Distributor Count` + // People only packing
+      `&fields=Driver and Distributor Count` + // People both driving and packing
       `&fields=Total Count of Volunteers for Event` + // Total Participants
       `&fields=Special Event` + // isSpecialEvent
       `&fields=Supplier` +
       `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
 
-    const futureEventsAirtableResp = await airtableGET<Event>({ url: url });
+    const futureEventsAirtableResp = await airtableGET<Event>({url: url});
 
     //An event is invalid if it has no start time
     let futureEventsData = futureEventsAirtableResp.records.filter(
@@ -175,12 +186,18 @@ router.route("/api/events").get(
       //Combine special events with general event
       for (const se of specialEventsForThisGeneralEvent) {
         processedGeneralEvent.numSpecialGroups += 1;
+        processedGeneralEvent.numOnlyPackers +=
+          se.fields["Only Distributor Count"] || 0;
+        processedGeneralEvent.numOnlyDrivers +=
+          se.fields["Only Driver Count"] || 0;
         processedGeneralEvent.numDrivers +=
           se.fields["Total Count of Drivers for Event"] || 0;
         processedGeneralEvent.numPackers +=
           se.fields["Total Count of Distributors for Event"] || 0;
         processedGeneralEvent.numtotalParticipants +=
           se.fields["Total Count of Volunteers for Event"] || 0;
+        processedGeneralEvent.numBothDriversAndPackers +=
+          se.fields["Driver and Distributor Count"] || 0;
         processedGeneralEvent.scheduledSlots =
           processedGeneralEvent.scheduledSlots.concat(
             se.fields["📅 Scheduled Slots"] || []
@@ -202,7 +219,7 @@ router.route("/api/events").get(
 router.route("/api/events/view-event-special-groups/").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
-    const { eventIds } = req.query;
+    const {eventIds} = req.query;
     logger.info(
       `GET /api/events/view-event-special-groups/?eventIds=${eventIds}`
     );
@@ -224,7 +241,7 @@ router.route("/api/events/view-event-special-groups/").get(
       `&fields=Volunteer Group` + // Special Group
       `&fields=Shortened Link to Special Event Signup Form`; // Special Event Link
 
-    const specialEvents = await airtableGET<SpecialEvent>({ url: url });
+    const specialEvents = await airtableGET<SpecialEvent>({url: url});
 
     let processedSpecialEvents: ProcessedSpecialEvent[] =
       specialEvents.records.map((specialEvent) => {

@@ -34,10 +34,24 @@ export const CoordinatorInfoPopup: React.FC<Props> = ({
             <p className={valueClasses}>{coordinatorPOCNames.join(", ")}</p>
             <h2 className={labelClasses}>Number(s):</h2>
             <p className={valueClasses}>
-              {coordinatorPOCPhoneNumbers.join(", ")}
+              {coordinatorPOCPhoneNumbers
+                .map((phoneNumber) => (
+                  <a
+                    key={phoneNumber}
+                    href={`tel:${phoneNumber}`}
+                    className="hover:underline"
+                  >
+                    {phoneNumber}
+                  </a>
+                ))
+                .join(", ")}
             </p>
             <h2 className={labelClasses}>Email:</h2>
-            <p className={valueClasses}>{locationEmail}</p>
+            <p className={valueClasses}>
+              <a href={`mailto:${locationEmail}`} className="hover:underline">
+                {locationEmail}
+              </a>
+            </p>
           </div>
           <div className="h-4" />
           <div className="flex justify-center">

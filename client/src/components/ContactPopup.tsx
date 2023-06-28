@@ -25,7 +25,9 @@ export const ContactPopup: React.FC<Props> = ({ phoneNumber, email }) => {
               Number:
             </h2>
             <p className="grow">
-              <a href={`tel:${phoneNumber}`}>{phoneNumber}</a>
+              <a href={`tel:${phoneNumber}`} className="hover:underline">
+                {phoneNumber}
+              </a>
             </p>
           </div>
           <div className="flex gap-1 lg:gap-4">
@@ -33,7 +35,9 @@ export const ContactPopup: React.FC<Props> = ({ phoneNumber, email }) => {
               Email:
             </h2>
             <p className="grow">
-              <a href={`mailto:${email}`}>{email}</a>
+              <a href={`mailto:${email}`} className="hover:underline">
+                {email}
+              </a>
             </p>
           </div>
           <div className="h-4" />

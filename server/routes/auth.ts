@@ -100,27 +100,21 @@ router.route("/api/auth/login").post(
       );
     }
     //Check if user exists
-    const checkUserExistenceUrl = `${AIRTABLE_URL_BASE}/Users?filterByFormula=SEARCH("${username}",Username)`;
-    let data = await airtableGET<User>({ url: checkUserExistenceUrl });
-
-    // only users that arent blank
-    const filteredData = data.records.filter((rec) => {
-      return rec.fields.Username.length != 0 && rec.fields.Password.length != 0;
-    });
-
-    if (filteredData.length === 0) {
+    const checkUserExistenceUrl = `${AIRTABLE_URL_BASE}/Users?filterByFormula=Username="${username}"`;
+    const data = await airtableGET<User>({ url: checkUserExistenceUrl });
+    if (data.records.length === 0) {
       logger.info("User doesn't exist");
       res.status(BAD_REQUEST);
       throw new Error("Incorrect credentials");
     }
-    if (filteredData.length !== 1) {
+    if (data.records.length !== 1) {
       //This should never happen. Emails should be unique for all users
       res.status(INTERNAL_SERVER_ERROR);
       throw new Error("Something went wrong fetching this user...");
     }
 
     //Check if password is correct
-    const user = filteredData[0];
+    const user = data.records[0];
     const isPasswordCorrect = await bcrypt.compare(
       password,
       user.fields.Password

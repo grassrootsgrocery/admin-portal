@@ -100,7 +100,7 @@ router.route("/api/auth/login").post(
       );
     }
     //Check if user exists
-    const checkUserExistenceUrl = `${AIRTABLE_URL_BASE}/Users?filterByFormula=SEARCH(Username, "${username}") != ""`;
+    const checkUserExistenceUrl = `${AIRTABLE_URL_BASE}/Users?filterByFormula=Username="${username}"`;
     const data = await airtableGET<User>({ url: checkUserExistenceUrl });
     if (data.records.length === 0) {
       logger.info("User doesn't exist");

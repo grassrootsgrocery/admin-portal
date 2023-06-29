@@ -38,7 +38,7 @@ export const CoordinatorInfoPopup: React.FC<Props> = ({
                 <a
                   key={phoneNumber}
                   href={`tel:${phoneNumber}`}
-                  className="hover:underline"
+                  className="text-blue-500 underline"
                 >
                   {phoneNumber}
                   {index !== coordinatorPOCPhoneNumbers.length - 1 ? ", " : ""}
@@ -47,9 +47,16 @@ export const CoordinatorInfoPopup: React.FC<Props> = ({
             </p>
             <h2 className={labelClasses}>Email:</h2>
             <p className={valueClasses}>
-              <a href={`mailto:${locationEmail}`} className="hover:underline">
-                {locationEmail}
-              </a>
+              {locationEmail != "None" ? (
+                <a
+                  href={`mailto:${locationEmail}`}
+                  className="text-blue-500 underline"
+                >
+                  {locationEmail}
+                </a>
+              ) : (
+                "None"
+              )}
             </p>
           </div>
           <div className="h-4" />

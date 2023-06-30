@@ -73,7 +73,6 @@ function processDropoffLocationsForTable(
               : "border-red-600 focus:outline-red-600"
           } text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-50`}
           type="text"
-          placeholder="00:00 AM"
           value={startTime || ""}
           onChange={(e) => {
             const isTimeValid =
@@ -164,6 +163,10 @@ function toISO(time: string, date: Date): string {
 
   // Convert to UTC
   newDate.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+
+  // move time 5 hours back
+  newDate.setHours(newDate.getHours() - 5);
+
   return newDate.toISOString();
 }
 

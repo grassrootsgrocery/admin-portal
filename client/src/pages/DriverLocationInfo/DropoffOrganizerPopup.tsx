@@ -73,6 +73,7 @@ function processDropoffLocationsForTable(
               : "border-red-600 focus:outline-red-600"
           } text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-50`}
           type="text"
+          placeholder="00:00 AM"
           value={startTime || ""}
           onChange={(e) => {
             const isTimeValid =

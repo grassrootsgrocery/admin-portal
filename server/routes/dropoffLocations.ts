@@ -36,7 +36,7 @@ function processDropOffLocations(
     hour: "numeric",
     minute: "numeric",
     hour12: true,
-    timeZone: "UTC",
+    timeZone: "America/New_York",
   } as const;
 
   const startTime = location.fields["Starts accepting at"]

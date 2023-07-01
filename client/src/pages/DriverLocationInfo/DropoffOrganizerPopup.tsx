@@ -13,11 +13,13 @@ import { Loading } from "../../components/Loading";
 interface DropoffLocationsStore {
   [id: string]: DropoffLocationForm;
 }
+
 interface DropoffLocationForm {
   startTime: [value: string, isValidStartTime: boolean];
   endTime: [value: string, isValidEndTime: boolean];
   deliveriesNeeded: number | null;
 }
+
 //Regex for validating time
 const validTime = /^(0?[1-9]|1[012]):([0-5]\d)\s?([AaPp][Mm])$/;
 
@@ -73,7 +75,6 @@ function processDropoffLocationsForTable(
               : "border-red-600 focus:outline-red-600"
           } text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-50`}
           type="text"
-          placeholder="00:00 AM"
           value={startTime || ""}
           onChange={(e) => {
             const isTimeValid =
@@ -140,16 +141,15 @@ function populateStoreWithFetchedData(
   });
   return dropoffStore;
 }
+
 // Convert 12 hour to ISO 8601
 function toISO(time: string, date: Date): string {
-  let newDate = new Date(date);
   if (time === "") {
     return "";
   }
 
   let results = time.match(validTime);
   if (!results) {
-    //Should never happen
     throw new Error("'time' string does not match 'validTime' regex.");
   }
   let [hours, minutes, amOrPm] = results.slice(1);
@@ -162,11 +162,16 @@ function toISO(time: string, date: Date): string {
     hours = (parseInt(hours, 10) + 12).toString();
   }
 
-  // Convert to UTC
+  let newDate = new Date(date);
   newDate.setHours(parseInt(hours, 10), parseInt(minutes, 10));
 
-  // move time 5 hours back
-  newDate.setHours(newDate.getHours() - 5);
+  // see airtable docs:https://airtable.com/appzrHPKHoq93uirT/api/docs#javascript/table:📍%20drop%20off%20locations:update
+  /*
+   * When updating date time values in Starts accepting at, Stops accepting at and Interview Date, ambiguous string
+   * inputs like "2020-09-05T07:00:00" and "2020-09-08" will be interpreted according to the time zone of the field
+   * if specified, and nonambiguous string inputs with zone offset like "2020-09-05T07:00:00.000Z" and
+   * "2020-09-08T00:00:00-07:00" will be interpreted as the underlying timestamp.
+   */
 
   return newDate.toISOString();
 }

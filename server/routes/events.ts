@@ -71,8 +71,10 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
 
   const numDrivers = event.fields["Total Count of Drivers for Event"] || 0; // number of total drivers for event
   const numPackers = event.fields["Total Count of Distributors for Event"] || 0; // number of total packers for event
-  const numOnlyDrivers = event.fields["Only Driver Count"] || 0; // number of only drivers for event
-  const numOnlyPackers = event.fields["Only Distributor Count"] || 0; // number of only packers for event
+  const numOnlyDrivers =
+    event.fields["Only Driver Count Including Unconfirmed"] || 0; // number of only drivers for event
+  const numOnlyPackers =
+    event.fields["Only Distributor Count Including Unconfirmed"] || 0; // number of only packers for event
   const numTotalParticipants =
     event.fields["Total Count of Volunteers for Event"] || 0; // number of total participants for event
   const numDrivingAndPacking =

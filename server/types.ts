@@ -22,6 +22,8 @@ export interface Event {
   "Driver and Distributor Count": number | undefined;
   "Only Driver Count": number | undefined;
   "Only Distributor Count": number | undefined;
+  "Only Driver Count Including Unconfirmed": number | undefined;
+  "Only Distributor Count Including Unconfirmed": number | undefined;
   "Special Event": boolean | undefined;
   Supplier: string[] | undefined;
   "📅 Scheduled Slots": string[] | undefined;

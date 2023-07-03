@@ -73,6 +73,8 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
   const numPackers = event.fields["Total Count of Distributors for Event"] || 0; // number of total packers for event
   const numOnlyDrivers =
     event.fields["Only Driver Count Including Unconfirmed"] || 0; // number of only drivers for event
+
+  console.log(event.fields);
   const numOnlyPackers =
     event.fields["Only Distributor Count Including Unconfirmed"] || 0; // number of only packers for event
   const numTotalParticipants =
@@ -155,6 +157,8 @@ router.route("/api/events").get(
       `&fields=Total Count of Distributors for Event` + // Packers
       `&fields=Total Count of Drivers for Event` + // Drivers
       `&fields=Only Driver Count` + // People only driving
+      `&fields=Only Distributor Count Including Unconfirmed` + // People only packing including unconfirmed
+      `&fields=Only Driver Count Including Unconfirmed` + // People only driving including unconfirmed
       `&fields=Only Distributor Count` + // People only packing
       `&fields=Driver and Distributor Count` + // People both driving and packing
       `&fields=Total Count of Volunteers for Event` + // Total Participants

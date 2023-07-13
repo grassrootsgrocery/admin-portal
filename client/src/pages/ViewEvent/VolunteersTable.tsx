@@ -16,6 +16,7 @@ import check_icon from "../../assets/checkbox-icon.svg";
 import { ProcessedScheduledSlot } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { ContactPopup } from "../../components/ContactPopup";
+import { EditVolunteerPopup } from "../../components/EditVolunteerPopup";
 
 /*
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
@@ -28,6 +29,7 @@ interface HttpCheckboxProps {
   onSuccess: () => void;
   onError: () => void;
 }
+
 export const HttpCheckbox: React.FC<HttpCheckboxProps> = ({
   checked,
   mutationFn,
@@ -72,6 +74,7 @@ interface FilterItemProps {
   filterLabel: string;
   selected: boolean;
 }
+
 const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
   const { filterLabel, selected, onSelect } = props;
   return (
@@ -106,6 +109,7 @@ interface FilterButtonProps {
   onSelect: () => void;
   filterLabel: string;
 }
+
 const FilterButton: React.FC<FilterButtonProps> = ({
   filterLabel,
   onSelect,
@@ -126,6 +130,7 @@ interface DropdownFilterOption {
   isSelected: boolean;
   filter: (e: ProcessedScheduledSlot) => boolean;
 }
+
 function createDropdownFilters(scheduledSlots: ProcessedScheduledSlot[]) {
   let dropdownFilters = [
     {
@@ -196,6 +201,7 @@ interface Props {
   scheduledSlots: ProcessedScheduledSlot[];
   refetchVolunteers: () => void;
 }
+
 const applySelectedFilters = (
   selectedFilters: DropdownFilterOption[],
   scheduledSlots: ProcessedScheduledSlot[]
@@ -292,6 +298,14 @@ export const VolunteersTable: React.FC<Props> = ({
         typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
         /* Contact Modal */
         <ContactPopup phoneNumber={ss.phoneNumber} email={ss.email} />,
+        <EditVolunteerPopup
+          id={ss.id}
+          email={ss.email}
+          phoneNumber={ss.phoneNumber}
+          firstName={ss.firstName}
+          lastName={ss.lastName}
+          participantType={ss.participantType}
+        />,
       ];
     });
 
@@ -400,6 +414,7 @@ export const VolunteersTable: React.FC<Props> = ({
           "Special Group",
           "Delivery Count",
           "Contact",
+          "Edit",
         ]}
         dataRows={processScheduledSlotsForTable(filtered)}
       />

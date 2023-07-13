@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Popup } from "./Popup";
 import alert from "../assets/alert.svg";
-import * as Modal from "@radix-ui/react-dialog";
 
 enum VolunteerTypes {
   DRIVER = "Driver",
@@ -15,10 +14,90 @@ interface Props {
   lastName: string;
   email: string;
   phoneNumber: string;
-  participantType: VolunteerTypes;
+
+  [key: string]: string | VolunteerTypes;
 }
 
-export const EditVolunteerPopup: React.FC<Props> = (info: Props) => {
+interface EditFieldProps {
+  label: string;
+  fieldType: string;
+  fieldName: string;
+  handleChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement>;
+  placeHolder: string;
+  formState: Props;
+}
+
+const EditFieldSelect = ({
+  label,
+  handleChange,
+  formState,
+}: Pick<EditFieldProps, "label" | "handleChange" | "formState">) => {
+  return (
+    <>
+      <div className="flex flex-col gap-2 md:flex-row md:gap-8">
+        <p className="shrink-0 font-bold text-newLeafGreen lg:text-xl">
+          {label}
+        </p>
+        <div className="relative w-64 grow md:w-80">
+          <div className="flex h-8 w-full rounded-lg border-2 border-softGrayWhite px-2">
+            <form className={"flex flex-col space-y-3"}>
+              <div className="flex flex-col space-y-1">
+                <select
+                  className="border-0 outline-none"
+                  name="participantType"
+                  value={formState.participantType}
+                  onChange={handleChange}
+                >
+                  {Object.values(VolunteerTypes).map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const EditFieldInput = ({
+  label,
+  fieldType,
+  fieldName,
+  handleChange,
+  placeHolder,
+  formState,
+}: EditFieldProps) => {
+  return (
+    <>
+      <div className="flex flex-col gap-2 md:flex-row md:gap-8">
+        <p className="shrink-0 font-bold text-newLeafGreen lg:text-xl">
+          {label}
+        </p>
+        <div className="relative w-64 grow md:w-80">
+          <div className="flex h-8 w-full rounded-lg border-2 border-softGrayWhite px-2">
+            <form className={"flex flex-col space-y-3"}>
+              <div className="flex flex-col space-y-1">
+                <input
+                  type={fieldType}
+                  name={fieldName}
+                  value={formState[fieldName]}
+                  onChange={handleChange}
+                  placeholder={placeHolder}
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export const EditVolunteerPopup = (info: Props) => {
   const [formState, setFormState] = useState(info);
 
   const handleChange = (
@@ -26,76 +105,56 @@ export const EditVolunteerPopup: React.FC<Props> = (info: Props) => {
   ) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
-
   return (
-    <Popup
-      trigger={
-        <div className="flex justify-center hover:cursor-pointer">
-          <img className="w-8" src={alert} alt="" />
-        </div>
-      }
-      content={
-        <div>
-          <Modal.Title className="m-0 flex justify-center text-xl font-bold text-newLeafGreen lg:px-16 lg:text-3xl">
-            Edit Volunteer
-          </Modal.Title>
-          <form className={"flex flex-col"}>
-            <input
-              className="grow border-green-500 text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:border-green-500 focus:outline-none md:text-lg md:placeholder:text-lg"
-              type="text"
-              name="firstName"
-              value={formState.firstName}
-              onChange={handleChange}
-              placeholder="First Name"
-            />
-            <input
-              className="grow border-green-500 text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:border-green-500 focus:outline-none md:text-lg md:placeholder:text-lg"
-              type="text"
-              name="lastName"
-              value={formState.lastName}
-              onChange={handleChange}
-              placeholder="Last Name"
-            />
-            <input
-              className="grow border-green-500 text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:border-green-500 focus:outline-none md:text-lg md:placeholder:text-lg"
-              type="email"
-              name="email"
-              value={formState.email}
-              onChange={handleChange}
-              placeholder="Email"
-            />
-            <input
-              className="grow border-green-500 text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:border-green-500 focus:outline-none md:text-lg md:placeholder:text-lg"
-              type="tel"
-              name="phoneNumber"
-              value={formState.phoneNumber}
-              onChange={handleChange}
-              placeholder="Phone Number"
-            />
-            <select
-              className="grow border-green-500 text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:border-green-500 focus:outline-none md:text-lg md:placeholder:text-lg"
-              name="participantType"
-              value={formState.participantType}
-              onChange={handleChange}
-            >
-              {Object.values(VolunteerTypes).map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </form>
-
-          <div className="flex justify-center">
-            <Modal.Close className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">
-              Cancel
-            </Modal.Close>
-            <Modal.Close className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">
-              Done
-            </Modal.Close>
+    <>
+      <Popup
+        trigger={
+          <div className="flex justify-center hover:cursor-pointer">
+            <img className="w-8" src={alert} alt="" />
           </div>
-        </div>
-      }
-    />
+        }
+        content={
+          <div className={"flex flex-col space-y-2"}>
+            <EditFieldInput
+              fieldType={"text"}
+              fieldName={"firstName"}
+              label={"First Name:"}
+              formState={formState}
+              handleChange={handleChange}
+              placeHolder={info.firstName}
+            />
+            <EditFieldInput
+              fieldType={"text"}
+              fieldName={"lastName"}
+              label={"Last Name:"}
+              formState={formState}
+              handleChange={handleChange}
+              placeHolder={info.lastName}
+            />
+            <EditFieldInput
+              fieldType={"email"}
+              fieldName={"email"}
+              label={"Email:"}
+              formState={formState}
+              handleChange={handleChange}
+              placeHolder={info.email}
+            />
+            <EditFieldInput
+              fieldType={"tel"}
+              fieldName={"phoneNumber"}
+              label={"Phone Number:"}
+              formState={formState}
+              handleChange={handleChange}
+              placeHolder={info.phoneNumber}
+            />
+            <EditFieldSelect
+              label={"Volunteer Type:"}
+              formState={formState}
+              handleChange={handleChange}
+            />
+          </div>
+        }
+      />
+    </>
   );
 };

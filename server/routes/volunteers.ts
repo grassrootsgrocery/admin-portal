@@ -53,6 +53,7 @@ function processScheduledSlots(
     } as const;
     return new Date(timeslot).toLocaleString("en-US", optionsTime);
   }
+
   const volunteerList: ProcessedScheduledSlot[] = [];
   for (const ss of scheduledSlots.records) {
     const participantType = getParticipantType(ss.fields["Type"]);
@@ -86,6 +87,7 @@ function processScheduledSlots(
 
   return volunteerList;
 }
+
 /**
  * @description Get all volunteers who match the ids in the query param
  * @route  GET /api/volunteers/
@@ -125,6 +127,102 @@ router.route("/api/volunteers/").get(
     const volunteers = processScheduledSlots(scheduledSlots);
 
     res.status(OK).json(volunteers);
+  })
+);
+
+/**
+ * @description Update a volunteers info
+ * @route  PATCH /api/volunteers/update/:volunteerId
+ * @access
+ */
+router.route("/api/volunteers/update/:volunteerId").patch(
+  protect,
+  asyncHandler(async (req: Request, res: Response) => {
+    const { volunteerId } = req.params;
+    logger.info(`PATCH /api/volunteers/update/${volunteerId}`);
+    logger.info("Request body: ", req.body);
+
+    const { firstName, lastName, email, phoneNumber, participantType } =
+      req.body;
+
+    const stringFields = [firstName, lastName, email, phoneNumber];
+
+    const isValidRequest = stringFields.every((field) => {
+      return typeof field === "string" && field.trim().length > 0;
+    });
+
+    // also verify that the participantType is valid
+    const validParticipantTypes = ["Driver", "Packer", "Driver & Packer"];
+
+    const isParticipantTypeValid =
+      validParticipantTypes.includes(participantType);
+
+    if (!isParticipantTypeValid) {
+      res.status(BAD_REQUEST);
+      throw new Error(
+        "Please provide a valid 'participantType' on the body. Valid participant types are 'Driver', 'Packer', and 'Driver & Packer'. Was supplied with: " +
+          participantType
+      );
+    }
+
+    if (!isValidRequest) {
+      res.status(BAD_REQUEST);
+      throw new Error(
+        "Please provide a 'firstName', 'lastName', 'email', 'phoneNumber', and 'participantType' on the body."
+      );
+    }
+
+    // two different requests, one to update persons info and other to update volunteer type
+
+    // first get their recordId from the volunteers CRM table by comparing phone numbers
+    const getVolunteerRecordIdUrl =
+      `${AIRTABLE_URL_BASE}/🙋🏽Volunteers CRM?` +
+      `filterByFormula=SEARCH("${phoneNumber}", {Phone Number}) != ""`;
+
+    const volunteerRecordIdFetch = await airtableGET({
+      url: getVolunteerRecordIdUrl,
+    });
+
+    const volunteerRecordId = volunteerRecordIdFetch.records[0].id;
+
+    if (!volunteerRecordId) {
+      res.status(BAD_REQUEST);
+      throw new Error(
+        `Could not find a volunteer with the phone number ${phoneNumber}`
+      );
+    }
+
+    // to update persons info issue patch to the Volunteers CRM table
+    const updatePersonInfoBody = {
+      records: [
+        {
+          id: volunteerRecordId,
+          fields: {
+            "First Name": firstName,
+            "Last Name": lastName,
+            "Email Address": email,
+            "Phone Number": phoneNumber,
+          },
+        },
+      ],
+    };
+
+    const contactInfoUpdateResult = await airtablePATCH({
+      url: `${AIRTABLE_URL_BASE}/🙋🏽Volunteers CRM`,
+      body: updatePersonInfoBody,
+    });
+
+    // to update volunteer type issue patch to the Scheduled Slots table
+    const updateVolunteerTypeBody = {
+      records: [
+        {
+          id: volunteerId,
+          fields: {
+            Type: [participantType],
+          },
+        },
+      ],
+    };
   })
 );
 

@@ -15,8 +15,7 @@ interface Props {
   email: string;
   phoneNumber: string;
   participantType: string;
-
-  [key: string]: string;
+  refetch: () => void;
 }
 
 interface EditFieldProps {
@@ -34,7 +33,6 @@ const EditFieldInput = ({
   fieldName,
   handleChange,
   placeHolder,
-  formState,
 }: EditFieldProps) => {
   return (
     <>
@@ -50,7 +48,7 @@ const EditFieldInput = ({
                   className="w-full border-0 outline-none" // Add "w-full" class for full width
                   type={fieldType}
                   name={fieldName}
-                  value={formState[fieldName]}
+                  value={placeHolder}
                   onChange={handleChange}
                   placeholder={placeHolder}
                 />
@@ -143,6 +141,9 @@ export const EditVolunteerPopup = (info: Props) => {
     },
     onSuccess(data, variables, context) {
       toastNotify("Volunteer updated successfully", "success");
+
+      // refetch table
+      info.refetch();
     },
     onError(error, variables, context) {
       console.error(error);

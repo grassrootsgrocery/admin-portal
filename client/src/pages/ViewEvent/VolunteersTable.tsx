@@ -305,6 +305,7 @@ export const VolunteersTable: React.FC<Props> = ({
           firstName={ss.firstName}
           lastName={ss.lastName}
           participantType={ss.participantType}
+          refetch={refetchVolunteers}
         />,
       ];
     });

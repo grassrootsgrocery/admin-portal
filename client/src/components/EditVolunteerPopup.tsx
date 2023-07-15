@@ -122,7 +122,7 @@ export const EditVolunteerPopup = (info: Props) => {
       lastName: string;
       email: string;
       phoneNumber: string;
-      participantType: string;
+      participantType: string[];
     }) => {
       const resp = await fetch(
         `${API_BASE_URL}/api/volunteers/update/${payload.id}`,
@@ -218,7 +218,10 @@ export const EditVolunteerPopup = (info: Props) => {
                     lastName: formState.lastName,
                     email: formState.email,
                     phoneNumber: formState.phoneNumber,
-                    participantType: formState.participantType,
+                    participantType:
+                      formState.participantType == "Driver & Packer"
+                        ? ["Driver", "Packer"]
+                        : [formState.participantType],
                   });
                 }}
               >

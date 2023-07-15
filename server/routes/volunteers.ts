@@ -142,8 +142,19 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     logger.info(`PATCH /api/volunteers/update/${volunteerId}`);
     logger.info("Request body: ", req.body);
 
-    const { firstName, lastName, email, phoneNumber, participantType } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      participantType,
+    }: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phoneNumber: string;
+      participantType: string[];
+    } = req.body;
 
     const stringFields = [firstName, lastName, email, phoneNumber];
 
@@ -152,10 +163,17 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     });
 
     // also verify that the participantType is valid
-    const validParticipantTypes = ["Driver", "Packer", "Driver & Packer"];
+    const validParticipantTypes = ["Driver", "Packer"];
 
     const isParticipantTypeValid =
-      validParticipantTypes.includes(participantType);
+      participantType.length > 0 &&
+      participantType.every((type) => validParticipantTypes.includes(type));
+
+    // replace all Packer with Distributor
+
+    for (let i = 0; i < participantType.length; i++) {
+      participantType[i] = participantType[i].replace("Packer", "Distributor");
+    }
 
     if (!isParticipantTypeValid) {
       res.status(BAD_REQUEST);
@@ -218,11 +236,21 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         {
           id: volunteerId,
           fields: {
-            Type: [participantType],
+            Type: participantType,
           },
         },
       ],
     };
+
+    const volunteerTypeUpdateResult = await airtablePATCH({
+      url: `${AIRTABLE_URL_BASE}/📅 Scheduled Slots`,
+      body: updateVolunteerTypeBody,
+    });
+
+    res.status(OK).json({
+      contactInfoUpdateResult,
+      volunteerTypeUpdateResult,
+    });
   })
 );
 

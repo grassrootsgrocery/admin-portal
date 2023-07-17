@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Popup } from "./Popup";
-import alert from "../assets/alert.svg";
+import pencil from "../assets/pencil.svg";
 import * as Modal from "@radix-ui/react-dialog";
 import { useMutation } from "react-query";
 import { API_BASE_URL, applyPatch } from "../httpUtils";
@@ -22,9 +22,8 @@ interface EditFieldProps {
   label: string;
   fieldType: string;
   fieldName: string;
+  value: string;
   handleChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement>;
-  placeHolder: string;
-  formState: Props;
 }
 
 const EditFieldInput = ({
@@ -32,7 +31,7 @@ const EditFieldInput = ({
   fieldType,
   fieldName,
   handleChange,
-  placeHolder,
+  value,
 }: EditFieldProps) => {
   return (
     <>
@@ -48,9 +47,8 @@ const EditFieldInput = ({
                   className="w-full border-0 outline-none" // Add "w-full" class for full width
                   type={fieldType}
                   name={fieldName}
-                  value={placeHolder}
+                  value={value}
                   onChange={handleChange}
-                  placeholder={placeHolder}
                 />
               </div>
             </form>
@@ -66,8 +64,8 @@ const participantTypes: string[] = ["Driver", "Packer", "Driver & Packer"];
 const EditFieldSelect = ({
   label,
   handleChange,
-  formState,
-}: Pick<EditFieldProps, "label" | "handleChange" | "formState">) => {
+  value,
+}: Pick<EditFieldProps, "label" | "handleChange" | "value">) => {
   return (
     <>
       <div className="flex flex-col gap-2 md:flex-row md:gap-8">
@@ -81,7 +79,7 @@ const EditFieldSelect = ({
                 <select
                   className="w-full border-0 outline-none"
                   name="participantType"
-                  value={formState.participantType}
+                  value={value}
                   onChange={handleChange}
                 >
                   {participantTypes.map((type) => (
@@ -110,7 +108,10 @@ export const EditVolunteerPopup = (info: Props) => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setFormState({ ...formState, [e.target.name]: e.target.value });
+    setFormState((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const saveUpdatedVolunteer = useMutation({
@@ -156,7 +157,7 @@ export const EditVolunteerPopup = (info: Props) => {
       <Popup
         trigger={
           <div className="flex justify-center hover:cursor-pointer">
-            <img className="w-8" src={alert} alt="" />
+            <img className="w-8" src={pencil} alt="" />
           </div>
         }
         content={
@@ -172,37 +173,33 @@ export const EditVolunteerPopup = (info: Props) => {
               fieldType={"text"}
               fieldName={"firstName"}
               label={"First Name:"}
-              formState={formState}
+              value={formState.firstName}
               handleChange={handleChange}
-              placeHolder={info.firstName}
             />
             <EditFieldInput
               fieldType={"text"}
               fieldName={"lastName"}
               label={"Last Name:"}
-              formState={formState}
+              value={formState.lastName}
               handleChange={handleChange}
-              placeHolder={info.lastName}
             />
             <EditFieldInput
               fieldType={"email"}
               fieldName={"email"}
               label={"Email:"}
-              formState={formState}
+              value={formState.email}
               handleChange={handleChange}
-              placeHolder={info.email}
             />
             <EditFieldInput
               fieldType={"tel"}
               fieldName={"phoneNumber"}
               label={"Phone Number:"}
-              formState={formState}
+              value={formState.phoneNumber}
               handleChange={handleChange}
-              placeHolder={info.phoneNumber}
             />
             <EditFieldSelect
               label={"Volunteer Type:"}
-              formState={formState}
+              value={formState.participantType}
               handleChange={handleChange}
             />
 

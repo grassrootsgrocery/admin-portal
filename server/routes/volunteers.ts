@@ -159,7 +159,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     const stringFields = [firstName, lastName, email, phoneNumber];
 
     const isValidRequest = stringFields.every((field) => {
-      return typeof field === "string" && field.trim().length > 0;
+      return field.trim().length > 0;
     });
 
     // also verify that the participantType is valid
@@ -190,25 +190,71 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       );
     }
 
-    // two different requests, one to update persons info and other to update volunteer type
+    // 3 different requests, 2 to update persons info and other to update volunteer type
 
-    // first get their recordId from the volunteers CRM table by comparing phone numbers
-    const getVolunteerRecordIdUrl =
-      `${AIRTABLE_URL_BASE}/🙋🏽Volunteers CRM?` +
-      `filterByFormula=SEARCH("${phoneNumber}", {Phone Number}) != ""`;
+    // get their volunteerCRM recordId by extracting the phone-number recordId from the scheduled slots and looking
+    // that up in the real table
 
-    const volunteerRecordIdFetch = await airtableGET({
-      url: getVolunteerRecordIdUrl,
+    const originalRecord =
+      `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
+      `filterByFormula=SEARCH(RECORD_ID(), "${volunteerId}") != ""`;
+
+    // get original info from scheduled slots
+    const originalInfo = await airtableGET<{
+      "Phone Formula": string;
+      "Phone Number": string;
+    }>({
+      url: originalRecord,
     });
 
-    const volunteerRecordId = volunteerRecordIdFetch.records[0].id;
+    // check if the volunteerId is valid, that means original info exists
+    if (originalInfo.records.length == 0) {
+      res.status(BAD_REQUEST);
+      throw new Error(`Could not find a volunteer with the id ${volunteerId}`);
+    }
 
-    if (!volunteerRecordId) {
+    // if the phone number changed make sure we don't have a conflict
+    const phoneNumberChanged =
+      originalInfo.records[0].fields["Phone Formula"] !== phoneNumber;
+
+    if (phoneNumberChanged) {
+      // lookup new number and check for conflict
+      const lookupNewNumber =
+        `${AIRTABLE_URL_BASE}/🙋🏽Volunteers CRM?` +
+        `filterByFormula=SEARCH("${phoneNumber}", "Phone Number") != ""`;
+
+      const newNumberFetch = await airtableGET({
+        url: lookupNewNumber,
+      });
+
+      if (newNumberFetch.records.length > 0) {
+        res.status(BAD_REQUEST);
+        throw new Error(
+          `The phone number ${phoneNumber} is already in use by another volunteer.`
+        );
+      }
+    }
+
+    // get actual Volunteer CRM recordId
+    const phoneNumberRef = originalInfo.records[0].fields["Phone Number"];
+
+    const lookupVolunteerCRMRecordId =
+      `${AIRTABLE_URL_BASE}/🙋🏽Volunteers CRM?` +
+      `filterByFormula=SEARCH(RECORD_ID(), "${phoneNumberRef}") != ""`;
+
+    // lookup the volunteer in the crm table
+    const volunteerRecordIdFetch = await airtableGET({
+      url: lookupVolunteerCRMRecordId,
+    });
+
+    if (volunteerRecordIdFetch.records.length == 0) {
       res.status(BAD_REQUEST);
       throw new Error(
         `Could not find a volunteer with the phone number ${phoneNumber}`
       );
     }
+
+    const volunteerRecordId = volunteerRecordIdFetch.records[0].id;
 
     // to update persons info issue patch to the Volunteers CRM table
     const updatePersonInfoBody = {

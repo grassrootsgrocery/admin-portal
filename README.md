@@ -21,8 +21,8 @@ This application started as a semester-long project by students at University of
 
 - Our frontend is currently TypeScript, React, and Tailwind CSS, with [Vite](https://vitejs.dev/guide/) as our build tool.
 - Our backend is currently TypeScript and Express.
-- Our database is Airtable because this is what Grassroots Groceries is using to store their data currently.
-- Make is a service used for triggering automations. Grassroots Groceries uses it to send automated text messages and emails to volunteers and coordinators. The automations have been built out by the GG Platform Engineering team, and we only need to trigger them on our backend.
+- Our database is Airtable because this is what Grassroots Grocery is using to store their data currently.
+- Make is a service used for triggering automations. Grassroots Grocery uses it to send automated text messages and emails to volunteers and coordinators. The automations have been built out by the GG Platform Engineering team, and we only need to trigger them on our backend.
 
 Here is a current diagram of what the infrastructure for the project currently looks like.
 <img src="https://github.com/grassrootsgrocery/admin-portal/raw/main/infrastructure-diagram.png" width=700>
@@ -67,14 +67,14 @@ process.env.AIRTABLE_BASE_ID_DEV
 # Running the dev server
 
 1.  Clone the repo and `cd` into it
-2.  Run `npm install` in the root directory
-3.  Run `npm install` in the `client/` directory
+2.  Run `npm ci` in the root directory
+3.  Run `npm ci` in the `client/` directory
 4.  Follow the steps in the section above to set up your API keys (**API Key Access & Management**)
 5.  Add to the root `.env` file:
 
         JWT_SECRET=96024
         TODAY=<YYYY-MM-DD>
-        NODE_ENV=dev
+        NODE_ENV=development
         AIRTABLE_BASE_ID_DEV=<dev base ID>
         AIRTABLE_API_KEY=<your airtable API key>
 
@@ -83,7 +83,7 @@ process.env.AIRTABLE_BASE_ID_DEV
 6.  Add `VITE_SERVER_URL='http://localhost:5000'`to your `client/.env` file
 7.  Run `npm run dev` in the root directory
 8.  Navigate to `localhost:5173` in your browser
-9.  Log in with username **grassroots** and password **mypassword**
+9.  Log in with the username and password that was provided to you in your onboarding email (or ask Dan or Matt)
 
 # Hosting
 

@@ -24,13 +24,24 @@ export const ContactPopup: React.FC<Props> = ({ phoneNumber, email }) => {
             <h2 className="shrink-0 font-semibold text-newLeafGreen lg:text-xl">
               Number:
             </h2>
-            <p className="grow">{phoneNumber}</p>
+            <p className="grow">
+              <a
+                href={`tel:${phoneNumber}`}
+                className="text-blue-500 underline"
+              >
+                {phoneNumber}
+              </a>
+            </p>
           </div>
           <div className="flex gap-1 lg:gap-4">
             <h2 className="shrink-0 font-semibold text-newLeafGreen lg:text-xl">
               Email:
             </h2>
-            <p className="grow">{email}</p>
+            <p className="grow">
+              <a href={`mailto:${email}`} className="text-blue-500 underline">
+                {email}
+              </a>
+            </p>
           </div>
           <div className="h-4" />
           <div className="flex justify-center">

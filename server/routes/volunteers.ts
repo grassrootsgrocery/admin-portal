@@ -178,8 +178,9 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     if (!isParticipantTypeValid) {
       res.status(BAD_REQUEST);
       throw new Error(
-        "Please provide a valid 'participantType' on the body. Valid participant types are 'Driver', 'Packer', and 'Driver & Packer'. Was supplied with: " +
-          participantType
+        `Please provide a valid 'participantType' on the body. 
+        Valid participant types are ['Driver'], ['Packer'], and ['Driver', 'Packer']. 
+        Was supplied with: ${participantType}`
       );
     }
 

@@ -71,8 +71,18 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
 
   const numDrivers = event.fields["Total Count of Drivers for Event"] || 0; // number of total drivers for event
   const numPackers = event.fields["Total Count of Distributors for Event"] || 0; // number of total packers for event
-  const numtotalParticipants =
+
+  const numOnlyDrivers =
+    event.fields["Only Driver Count Including Unconfirmed"] || 0; // number of only drivers for event
+
+  const numOnlyPackers =
+    event.fields["Only Distributor Count Including Unconfirmed"] || 0; // number of only packers for event
+
+  const numTotalParticipants =
     event.fields["Total Count of Volunteers for Event"] || 0; // number of total participants for event
+
+  const numDriversAndPackers =
+    event.fields["Driver and Distributor Count Including Unconfirmed"] || 0; // all driver and distr participants for event
 
   return {
     id: event.id,
@@ -87,11 +97,11 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
       : "No address", // event pickup location
     numDrivers: numDrivers,
     numPackers: numPackers,
-    numtotalParticipants: numtotalParticipants,
+    numTotalParticipants: numTotalParticipants,
     numSpecialGroups: 0, // number of associated special groups
-    numOnlyDrivers: numtotalParticipants - numPackers,
-    numOnlyPackers: numtotalParticipants - numDrivers,
-    numBothDriversAndPackers: numPackers + numDrivers - numtotalParticipants, // number of both drivers and packers
+    numOnlyDrivers: numOnlyDrivers,
+    numOnlyPackers: numOnlyPackers,
+    numBothDriversAndPackers: numDriversAndPackers, // number of both drivers and packers
     scheduledSlots: event.fields["📅 Scheduled Slots"] || [],
     supplierId: event.fields.Supplier
       ? event.fields.Supplier[0]
@@ -148,6 +158,12 @@ router.route("/api/events").get(
       `&fields=Pickup Address` + // Main Location
       `&fields=Total Count of Distributors for Event` + // Packers
       `&fields=Total Count of Drivers for Event` + // Drivers
+      `&fields=Only Driver Count` + // People only driving
+      `&fields=Only Distributor Count Including Unconfirmed` + // People only packing including unconfirmed
+      `&fields=Only Driver Count Including Unconfirmed` + // People only driving including unconfirmed
+      `&fields=Driver and Distributor Count Including Unconfirmed` + // People both driving and packing including unconfirmed
+      `&fields=Only Distributor Count` + // People only packing
+      `&fields=Driver and Distributor Count` + // People both driving and packing
       `&fields=Total Count of Volunteers for Event` + // Total Participants
       `&fields=Special Event` + // isSpecialEvent
       `&fields=Supplier` +
@@ -175,12 +191,18 @@ router.route("/api/events").get(
       //Combine special events with general event
       for (const se of specialEventsForThisGeneralEvent) {
         processedGeneralEvent.numSpecialGroups += 1;
+        processedGeneralEvent.numOnlyPackers +=
+          se.fields["Only Distributor Count"] || 0;
+        processedGeneralEvent.numOnlyDrivers +=
+          se.fields["Only Driver Count"] || 0;
         processedGeneralEvent.numDrivers +=
           se.fields["Total Count of Drivers for Event"] || 0;
         processedGeneralEvent.numPackers +=
           se.fields["Total Count of Distributors for Event"] || 0;
-        processedGeneralEvent.numtotalParticipants +=
+        processedGeneralEvent.numTotalParticipants +=
           se.fields["Total Count of Volunteers for Event"] || 0;
+        processedGeneralEvent.numBothDriversAndPackers +=
+          se.fields["Driver and Distributor Count"] || 0;
         processedGeneralEvent.scheduledSlots =
           processedGeneralEvent.scheduledSlots.concat(
             se.fields["📅 Scheduled Slots"] || []

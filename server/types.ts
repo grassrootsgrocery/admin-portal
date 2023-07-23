@@ -1,6 +1,7 @@
 export interface AirtableResponse<T> {
   records: Record<T>[];
 }
+
 export interface Record<T> {
   id: string;
   fields: T;
@@ -18,6 +19,12 @@ export interface Event {
   "Total Count of Drivers for Event": number | undefined;
   "Total Count of Distributors for Event": number | undefined;
   "Total Count of Volunteers for Event": number | undefined;
+  "Driver and Distributor Count": number | undefined;
+  "Only Driver Count": number | undefined;
+  "Only Distributor Count": number | undefined;
+  "Only Driver Count Including Unconfirmed": number | undefined;
+  "Only Distributor Count Including Unconfirmed": number | undefined;
+  "Driver and Distributor Count Including Unconfirmed": number | undefined;
   "Special Event": boolean | undefined;
   Supplier: string[] | undefined;
   "📅 Scheduled Slots": string[] | undefined;
@@ -31,7 +38,7 @@ export interface ProcessedEvent {
   mainLocation: string;
   numDrivers: number;
   numPackers: number;
-  numtotalParticipants: number;
+  numTotalParticipants: number;
   numOnlyDrivers: number;
   numOnlyPackers: number;
   numBothDriversAndPackers: number;

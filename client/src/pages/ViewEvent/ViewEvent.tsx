@@ -124,7 +124,7 @@ export const ViewEvent = () => {
           />
           <HeaderValueDisplay
             header="Total Participants"
-            value={event.numtotalParticipants}
+            value={event.numTotalParticipants}
           />
         </div>
         <div className="h-12" />

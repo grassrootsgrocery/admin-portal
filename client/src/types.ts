@@ -6,7 +6,7 @@ export interface ProcessedEvent {
   mainLocation: string;
   numDrivers: number;
   numPackers: number;
-  numtotalParticipants: number;
+  numTotalParticipants: number;
   numOnlyDrivers: number;
   numOnlyPackers: number;
   numBothDriversAndPackers: number;

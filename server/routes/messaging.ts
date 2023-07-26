@@ -6,6 +6,8 @@ import { fetch } from "../httpUtils/nodeFetch";
 import { Request, Response } from "express";
 //Status codes
 import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
+import { AIRTABLE_URL_BASE, airtableGET } from "../httpUtils/airtable";
+import { TextAutomation } from "../types";
 
 //Utils
 async function makeRequest(
@@ -209,6 +211,24 @@ router.route("/api/messaging/locations-to-drivers-text").post(
       message:
         "'[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' Make automation started.",
     });
+  })
+);
+
+/**
+ * @description Start the "[NEW] Send Locations and POC details to volunteer drivers (only text, no email)" Make automation
+ * @route  GET /api/messaging/last-texts-sent
+ * @access
+ */
+router.route("/api/messaging/last-texts-sent").get(
+  asyncHandler(async (req: Request, res: Response) => {
+    // get messages sent in last 7 days
+    const url =
+      `${AIRTABLE_URL_BASE}/Text Automation History` +
+      `?filterByFormula=DATETIME_DIFF(NOW(), {Date}, 'days') <= 7`;
+
+    const data = await airtableGET<TextAutomation>({ url });
+
+    res.status(OK).json(data.records);
   })
 );
 

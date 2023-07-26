@@ -30,6 +30,15 @@ export interface Event {
   "📅 Scheduled Slots": string[] | undefined;
 }
 
+export interface TextAutomation {
+  "Text Type": string;
+  "Sent by": string;
+  "Triggered by": string;
+  "Successful Executions": number;
+  "Failed Executions": number;
+  Date: Date;
+}
+
 export interface ProcessedEvent {
   id: string;
   dateDisplay: string;

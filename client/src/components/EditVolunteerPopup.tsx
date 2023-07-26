@@ -197,11 +197,11 @@ export const EditVolunteerPopup = (info: Props) => {
               value={formState.phoneNumber}
               handleChange={handleChange}
             />
-            <EditFieldSelect
+            {/*            <EditFieldSelect
               label={"Volunteer Type:"}
               value={formState.participantType}
               handleChange={handleChange}
-            />
+            />*/}
 
             <div className="row-auto flex justify-center space-x-2">
               <Modal.Close className="rounded-full bg-red-700 px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">

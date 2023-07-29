@@ -49,7 +49,6 @@ function PreMessagePopupButton(props: PreMessagePopupButtonProps) {
       }
 
       const text = resp.json();
-      console.log(text);
       return text;
     }
   );
@@ -76,7 +75,9 @@ function PreMessagePopupButton(props: PreMessagePopupButtonProps) {
                 {message["Text Type"]}
               </p>
               <p className="text-sm text-gray-500">
-                {`Sent by ${message["Sent by"]} on ${message["Date"]}`}
+                {`Sent by ${message["Triggered by"]} from the number ${
+                  message["Sent by"]
+                } on ${new Date(message["Date"]).toLocaleDateString()}`}
               </p>
             </div>
           ))}

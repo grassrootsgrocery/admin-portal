@@ -230,7 +230,6 @@ router.route("/api/messaging/last-texts-sent").get(
     const data = await airtableGET<TextAutomation>({ url });
 
     const fields = data.records.map((record) => record.fields);
-    fields.forEach(console.log);
     // only sends fields of each one
     res.status(200).json(fields);
   })

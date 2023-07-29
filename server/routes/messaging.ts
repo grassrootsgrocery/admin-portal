@@ -220,6 +220,7 @@ router.route("/api/messaging/locations-to-drivers-text").post(
  * @access
  */
 router.route("/api/messaging/last-texts-sent").get(
+  protect,
   asyncHandler(async (req: Request, res: Response) => {
     // get messages sent in last 7 days
     const url =
@@ -228,7 +229,10 @@ router.route("/api/messaging/last-texts-sent").get(
 
     const data = await airtableGET<TextAutomation>({ url });
 
-    res.status(OK).json(data.records);
+    const fields = data.records.map((record) => record.fields);
+    fields.forEach(console.log);
+    // only sends fields of each one
+    res.status(200).json(fields);
   })
 );
 

@@ -119,11 +119,11 @@ router.route("/api/auth/login").post(
       password,
       user.fields.Password
     );
-    /*    if (!isPasswordCorrect) {
+    if (!isPasswordCorrect) {
       logger.info("Incorrect password");
       res.status(BAD_REQUEST);
       throw new Error("Incorrect credentials");
-    }*/
+    }
     if (!user.id) {
       //Should never happen
       res.status(INTERNAL_SERVER_ERROR);

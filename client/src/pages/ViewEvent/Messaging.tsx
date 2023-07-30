@@ -68,23 +68,23 @@ function PreMessagePopupButton(props: PreMessagePopupButtonProps) {
               ? "Last messages sent:"
               : "Are you sure you want to send this message?"}
           </p>
-          {lastMessagesSent.data?.map(
-            (message: ProcessedTextAutomation, index: number) => (
-              <div
-                key={index}
-                className="flex flex-col items-start gap-2 text-base lg:text-xl"
-              >
-                <p className="font-semibold text-newLeafGreen">
-                  {message["Text Type"]}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {`Sent by ${message["Triggered by"]} from the number ${
-                    message["Sent by"]
-                  } on ${new Date(message["Date"]).toLocaleDateString()}`}
-                </p>
-              </div>
-            )
-          )}
+          {lastMessagesSent.data?.length
+            ? lastMessagesSent.data?.map((message, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col items-start gap-2 text-base lg:text-xl"
+                >
+                  <p className="font-semibold text-newLeafGreen">
+                    {message["Text Type"]}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {`Sent by ${message["Triggered by"]} from the number ${
+                      message["Sent by"]
+                    } on ${new Date(message["Date"]).toLocaleDateString()}`}
+                  </p>
+                </div>
+              ))
+            : null}
 
           <div className="row-auto flex justify-center space-x-2">
             <Modal.Close className="rounded-full bg-red-700 px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">

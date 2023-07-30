@@ -1,6 +1,6 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
-import { protect } from "../middleware/authMiddleware";
+import { adminProtect, protect } from "../middleware/authMiddleware";
 import { fetch } from "../httpUtils/nodeFetch";
 //Types
 import { Request, Response } from "express";
@@ -75,7 +75,7 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
  * @access
  */
 router.route("/api/messaging/coordinator-recruitment-text").post(
-  protect,
+  adminProtect,
   asyncHandler(async (req: Request, res: Response) => {
     checkNodeEnvIsProduction(res);
     await makeRequest(
@@ -115,7 +115,7 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
  * @access
  */
 router.route("/api/messaging/volunteer-recruitment-text").post(
-  protect,
+  adminProtect,
   asyncHandler(async (req: Request, res: Response) => {
     checkNodeEnvIsProduction(res);
     await makeRequest(
@@ -199,7 +199,7 @@ router.route("/api/messaging/locations-to-drivers-text").get(
  * @access
  */
 router.route("/api/messaging/locations-to-drivers-text").post(
-  protect,
+  adminProtect,
   asyncHandler(async (req: Request, res: Response) => {
     checkNodeEnvIsProduction(res);
     await makeRequest(

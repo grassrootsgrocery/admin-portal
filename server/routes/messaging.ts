@@ -215,7 +215,7 @@ router.route("/api/messaging/locations-to-drivers-text").post(
 );
 
 /**
- * @description Start the "[NEW] Send Locations and POC details to volunteer drivers (only text, no email)" Make automation
+ * @description Get the last 7 days of messages sent
  * @route  GET /api/messaging/last-texts-sent
  * @access
  */
@@ -230,6 +230,7 @@ router.route("/api/messaging/last-texts-sent").get(
     const data = await airtableGET<TextAutomation>({ url });
 
     const fields = data.records.map((record) => record.fields);
+
     // only sends fields of each one
     res.status(200).json(fields);
   })

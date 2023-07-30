@@ -4,12 +4,12 @@ import { API_BASE_URL } from "../../httpUtils";
 //Assets
 import recruitment from "../../assets/recruitment.svg";
 import { useAuth } from "../../contexts/AuthContext";
-import * as Dialog from "@radix-ui/react-dialog";
 import { Navigate } from "react-router-dom";
 import { toastNotify } from "../../uiUtils";
 import { ProcessedTextAutomation } from "../../types";
 import { Popup } from "../../components/Popup";
 import { MouseEventHandler } from "react";
+import * as Modal from "@radix-ui/react-dialog";
 
 // Tailwind classes
 const sectionHeader =
@@ -48,8 +48,7 @@ function PreMessagePopupButton(props: PreMessagePopupButtonProps) {
         throw new Error(data.message);
       }
 
-      const text = resp.json();
-      return text;
+      return resp.json();
     }
   );
 
@@ -81,6 +80,20 @@ function PreMessagePopupButton(props: PreMessagePopupButtonProps) {
               </p>
             </div>
           ))}
+
+          <div className="row-auto flex justify-center space-x-2">
+            <Modal.Close className="rounded-full bg-red-700 px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">
+              Cancel Send
+            </Modal.Close>
+            <Modal.Close
+              className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base"
+              onClick={() => {
+                console.log("sending");
+              }}
+            >
+              Confirm Send
+            </Modal.Close>
+          </div>
         </div>
       }
     />

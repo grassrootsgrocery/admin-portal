@@ -87,9 +87,7 @@ function PreMessagePopupButton(props: PreMessagePopupButtonProps) {
             </Modal.Close>
             <Modal.Close
               className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base"
-              onClick={() => {
-                console.log("sending");
-              }}
+              onClick={props.onClick}
             >
               Confirm Send
             </Modal.Close>
@@ -232,9 +230,14 @@ export function Messaging() {
               readOnly
             />
           )}
-          <button className={btn} onClick={() => recruitCoordinators.mutate()}>
-            Recruit Coordinators
-          </button>
+          <PreMessagePopupButton
+            buttonText={"Recruit Coordinators"}
+            token={token}
+            onClick={() => {
+              console.log("sending to coordinators");
+              //recruitCoordinators.mutate()
+            }}
+          />
         </div>
         {/* Participants RecruitmentCard */}
         <div className={recruitCard}>
@@ -250,13 +253,11 @@ export function Messaging() {
               readOnly
             />
           )}
-
           <PreMessagePopupButton
             buttonText={"Recruit Volunteers"}
             token={token}
             onClick={() => {
-              console.log("hi");
-
+              console.log("ending to volunteers");
               //recruitVolunteers.mutate()
             }}
           />

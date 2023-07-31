@@ -69,8 +69,8 @@ function PreMessagePopupButton(props: PreMessagePopupButtonProps) {
               : "Are you sure you want to send this message?"}
           </p>
           {lastMessagesSent.data?.length
-            ? lastMessagesSent.data
-                ?.sort((a, b) => {
+            ? [...lastMessagesSent.data]
+                .sort((a, b) => {
                   return (
                     new Date(b["Date"]).getTime() -
                     new Date(a["Date"]).getTime()

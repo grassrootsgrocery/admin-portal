@@ -72,8 +72,8 @@ function PreMessagePopupButton(props: PreMessagePopupButtonProps) {
             ? [...lastMessagesSent.data]
                 .sort((a, b) => {
                   return (
-                    new Date(b["Date"]).getTime() -
-                    new Date(a["Date"]).getTime()
+                    new Date(a["Date"]).getTime() -
+                    new Date(b["Date"]).getTime()
                   );
                 })
                 .map((message, index) => (

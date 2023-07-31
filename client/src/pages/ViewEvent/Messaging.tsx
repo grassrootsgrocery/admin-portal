@@ -69,21 +69,28 @@ function PreMessagePopupButton(props: PreMessagePopupButtonProps) {
               : "Are you sure you want to send this message?"}
           </p>
           {lastMessagesSent.data?.length
-            ? lastMessagesSent.data?.map((message, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-start gap-2 text-base lg:text-xl"
-                >
-                  <p className="font-semibold text-newLeafGreen">
-                    {message["Text Type"]}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {`Sent by ${message["Triggered by"]} from the number ${
-                      message["Sent by"]
-                    } on ${new Date(message["Date"]).toLocaleDateString()}`}
-                  </p>
-                </div>
-              ))
+            ? lastMessagesSent.data
+                ?.sort((a, b) => {
+                  return (
+                    new Date(b["Date"]).getTime() -
+                    new Date(a["Date"]).getTime()
+                  );
+                })
+                .map((message, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col items-start gap-2 text-base lg:text-xl"
+                  >
+                    <p className="font-semibold text-newLeafGreen">
+                      {message["Text Type"]}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {`Sent by ${message["Triggered by"]} from the number ${
+                        message["Sent by"]
+                      } on ${new Date(message["Date"]).toLocaleDateString()}`}
+                    </p>
+                  </div>
+                ))
             : null}
 
           <div className="row-auto flex justify-center space-x-2">

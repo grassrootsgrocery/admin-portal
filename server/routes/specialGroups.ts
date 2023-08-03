@@ -2,7 +2,7 @@ import express from "express";
 import asyncHandler from "express-async-handler";
 import { protect } from "../middleware/authMiddleware";
 import { Request, Response } from "express";
-import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
+import { AIRTABLE_URL_BASE, airtableGET } from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
 //Status codes
 import {
@@ -14,7 +14,7 @@ import {
 //Types
 import {
   AirtableResponse,
-  Record,
+  AirtableRecord,
   SpecialGroup,
   ProcessedSpecialGroup,
 } from "../types";
@@ -26,7 +26,7 @@ import { logger } from "../loggerUtils/logger";
 const router = express.Router();
 
 function processSpecialGroups(
-  specialGroup: Record<SpecialGroup>
+  specialGroup: AirtableRecord<SpecialGroup>
 ): ProcessedSpecialGroup {
   return {
     id: specialGroup.id,
@@ -49,19 +49,15 @@ router.route("/api/special-groups").get(
       `&fields=Name` + // Special Group Name
       `&fields=🚛 Supplier Pickup Events`; // Supplier Pickup Events -> list of events group is registered for
 
-    const resp = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      },
-    });
-    if (!resp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: resp.status,
-      };
+    const specialGroups = await airtableGET<SpecialGroup>({ url });
+
+    if (specialGroups.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: specialGroups.error,
+      });
+      return;
     }
-    const specialGroups = (await resp.json()) as AirtableResponse<SpecialGroup>;
+
     let processedSpecialGroups: ProcessedSpecialGroup[] =
       specialGroups.records.map((specialGroup) => {
         return {
@@ -164,17 +160,18 @@ router.route("/api/special-groups/add-special-group-to-event").post(
       `&fields=First Driving Slot Start Time` +
       `&fields=Supplier`;
 
-    const eventResp = await fetch(fetchEventUrl, {
-      headers: { Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}` },
+    const eventData = await airtableGET<EventForSpecialGroup>({
+      url: fetchEventUrl,
     });
-    if (!eventResp.ok) {
-      throw {
-        message: AIRTABLE_ERROR_MESSAGE,
-        status: eventResp.status,
-      };
+
+    if (eventData.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: eventData.error,
+      });
+
+      return;
     }
-    const eventData =
-      (await eventResp.json()) as AirtableResponse<EventForSpecialGroup>;
+
     //Validation
     if (eventData.records.length === 0) {
       throw {

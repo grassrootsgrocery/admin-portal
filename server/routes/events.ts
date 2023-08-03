@@ -17,7 +17,7 @@ import {
 //Types
 import {
   AirtableResponse,
-  Record,
+  AirtableRecord,
   Event,
   ProcessedEvent,
   SpecialEvent,
@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === "development" && process.env.TODAY) {
   today = `"${process.env.TODAY}"`;
 }
 
-function processGeneralEventData(event: Record<Event>): ProcessedEvent {
+function processGeneralEventData(event: AirtableRecord<Event>): ProcessedEvent {
   const optionsDay = {
     weekday: "long",
     month: "long",
@@ -111,12 +111,12 @@ function processGeneralEventData(event: Record<Event>): ProcessedEvent {
 }
 
 function getSpecialEventsForGeneralEvent(
-  specialEvents: Record<Event>[],
-  generalEvent: Record<Event>
+  specialEvents: AirtableRecord<Event>[],
+  generalEvent: AirtableRecord<Event>
 ) {
   const areEventsSame = (
-    specialEvent: Record<Event>,
-    generalEvent: Record<Event>
+    specialEvent: AirtableRecord<Event>,
+    generalEvent: AirtableRecord<Event>
   ) => {
     if (
       !specialEvent.fields["Start Time"] ||
@@ -170,6 +170,14 @@ router.route("/api/events").get(
       `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
 
     const futureEventsAirtableResp = await airtableGET<Event>({ url: url });
+
+    if (futureEventsAirtableResp.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: futureEventsAirtableResp.error,
+      });
+
+      return;
+    }
 
     //An event is invalid if it has no start time
     let futureEventsData = futureEventsAirtableResp.records.filter(
@@ -248,6 +256,14 @@ router.route("/api/events/view-event-special-groups/").get(
 
     const specialEvents = await airtableGET<SpecialEvent>({ url: url });
 
+    if (specialEvents.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: specialEvents.error,
+      });
+
+      return;
+    }
+
     let processedSpecialEvents: ProcessedSpecialEvent[] =
       specialEvents.records.map((specialEvent) => {
         return {
@@ -261,9 +277,7 @@ router.route("/api/events/view-event-special-groups/").get(
         };
       });
 
-    res.status(OK).json(processedSpecialEvents) as Response<
-      ProcessedSpecialEvent[]
-    >;
+    res.status(OK).json(processedSpecialEvents);
   })
 );
 

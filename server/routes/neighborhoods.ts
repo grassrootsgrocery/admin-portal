@@ -39,6 +39,14 @@ router.route("/api/neighborhoods").get(
       `&fields%5B%5D=Name`;
 
     const neighborhoodsData = await airtableGET<Neighborhood>({ url: url });
+
+    if (neighborhoodsData.kind === "error") {
+      res.status(BAD_REQUEST).json({
+        message: neighborhoodsData.error,
+      });
+      return;
+    }
+
     const processedNeighborhoods: Neighborhood[] =
       neighborhoodsData.records.map((neighborhood) => {
         return {
@@ -46,7 +54,7 @@ router.route("/api/neighborhoods").get(
           Name: neighborhood.fields.Name,
         };
       });
-    res.status(OK).json(processedNeighborhoods) as Response<Neighborhood>;
+    res.status(OK).json(processedNeighborhoods);
   })
 );
 

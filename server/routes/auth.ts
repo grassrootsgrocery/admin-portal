@@ -48,6 +48,14 @@ router.route("/api/auth/sign-up").post(
     const checkUserExistenceData = await airtableGET({
       url: checkUserExistenceUrl,
     });
+
+    if (checkUserExistenceData.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: checkUserExistenceData.error,
+      });
+      return;
+    }
+
     if (checkUserExistenceData.records.length > 0) {
       res.status(BAD_REQUEST);
       throw new Error("User already exists");
@@ -71,6 +79,14 @@ router.route("/api/auth/sign-up").post(
         ],
       },
     });
+
+    if (createUserData.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: createUserData.error,
+      });
+      return;
+    }
+
     const user = createUserData.records[0];
     if (!user.id) {
       //Should never happen
@@ -102,6 +118,14 @@ router.route("/api/auth/login").post(
     //Check if user exists
     const checkUserExistenceUrl = `${AIRTABLE_URL_BASE}/Users?filterByFormula=Username="${username}"`;
     const data = await airtableGET<User>({ url: checkUserExistenceUrl });
+
+    if (data.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: data.error,
+      });
+      return;
+    }
+
     if (data.records.length === 0) {
       logger.info("User doesn't exist");
       res.status(BAD_REQUEST);

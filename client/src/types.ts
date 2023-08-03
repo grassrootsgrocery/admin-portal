@@ -60,6 +60,15 @@ export interface ProcessedDropoffLocation {
   matchedDrivers: string[];
 }
 
+export interface ProcessedTextAutomation {
+  "Text Type": string;
+  "Sent by": string;
+  "Triggered by": string;
+  "Successful Executions": number;
+  "Failed Executions": number;
+  Date: Date;
+}
+
 export interface ProcessedSpecialGroup {
   id: string;
   name: string;

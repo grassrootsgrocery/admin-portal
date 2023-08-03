@@ -1,11 +1,17 @@
 import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "../httpUtils/statusCodes";
-import { AIRTABLE_URL_BASE } from "../httpUtils/airtable";
+import { AIRTABLE_URL_BASE, airtableGET } from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
 import { logger } from "../loggerUtils/logger";
+import { IncomingHttpHeaders } from "http";
+import { Record as AirtableRecord } from "../types";
 
-export const protect = asyncHandler(async (req, res, next) => {
+// using any here because types are huge
+const checkTokenAndExtractUser = async (
+  req: any,
+  res: any
+): Promise<AirtableRecord<{ Admin: boolean }>> => {
   if (
     !req.headers.authorization ||
     !req.headers.authorization.startsWith("Bearer") ||
@@ -39,17 +45,30 @@ export const protect = asyncHandler(async (req, res, next) => {
 
   //Get user from token
   const getUserUrl = `${AIRTABLE_URL_BASE}/Users?filterByFormula=SEARCH(RECORD_ID(), "${decoded.id}") != ""`;
-  const getUserResp = await fetch(getUserUrl, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-    },
+  const getUserResp = await airtableGET<{ Admin: boolean }>({
+    url: getUserUrl,
   });
-  const getUserData = await getUserResp.json();
-  if (getUserData.records.length === 0) {
+
+  if (getUserResp.records.length === 0) {
     res.status(UNAUTHORIZED);
     throw new Error("Not authorized, token failed");
   }
+
+  return getUserResp.records[0];
+};
+
+export const protect = asyncHandler(async (req, res, next) => {
+  await checkTokenAndExtractUser(req, res);
+  next();
+});
+
+export const adminProtect = asyncHandler(async (req, res, next) => {
+  const user = await checkTokenAndExtractUser(req, res);
+
+  if (!user.fields["Admin"]) {
+    res.status(UNAUTHORIZED);
+    throw new Error("Not authorized, not an admin");
+  }
+
   next();
 });

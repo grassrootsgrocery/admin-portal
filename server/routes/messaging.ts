@@ -1,11 +1,13 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
-import { protect } from "../middleware/authMiddleware";
+import { adminProtect, protect } from "../middleware/authMiddleware";
 import { fetch } from "../httpUtils/nodeFetch";
 //Types
 import { Request, Response } from "express";
 //Status codes
 import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
+import { AIRTABLE_URL_BASE, airtableGET } from "../httpUtils/airtable";
+import { TextAutomation } from "../types";
 
 //Utils
 async function makeRequest(
@@ -73,7 +75,7 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
  * @access
  */
 router.route("/api/messaging/coordinator-recruitment-text").post(
-  protect,
+  adminProtect,
   asyncHandler(async (req: Request, res: Response) => {
     checkNodeEnvIsProduction(res);
     await makeRequest(
@@ -113,7 +115,7 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
  * @access
  */
 router.route("/api/messaging/volunteer-recruitment-text").post(
-  protect,
+  adminProtect,
   asyncHandler(async (req: Request, res: Response) => {
     checkNodeEnvIsProduction(res);
     await makeRequest(
@@ -197,7 +199,7 @@ router.route("/api/messaging/locations-to-drivers-text").get(
  * @access
  */
 router.route("/api/messaging/locations-to-drivers-text").post(
-  protect,
+  adminProtect,
   asyncHandler(async (req: Request, res: Response) => {
     checkNodeEnvIsProduction(res);
     await makeRequest(
@@ -209,6 +211,28 @@ router.route("/api/messaging/locations-to-drivers-text").post(
       message:
         "'[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' Make automation started.",
     });
+  })
+);
+
+/**
+ * @description Get the last 7 days of messages sent
+ * @route  GET /api/messaging/last-texts-sent
+ * @access
+ */
+router.route("/api/messaging/last-texts-sent").get(
+  protect,
+  asyncHandler(async (req: Request, res: Response) => {
+    // get messages sent in last 7 days
+    const url =
+      `${AIRTABLE_URL_BASE}/Text Automation History` +
+      `?filterByFormula=DATETIME_DIFF(NOW(), {Date}, 'days') <= 7`;
+
+    const data = await airtableGET<TextAutomation>({ url });
+
+    const fields = data.records.map((record) => record.fields);
+
+    // only sends fields of each one
+    res.status(200).json(fields);
   })
 );
 

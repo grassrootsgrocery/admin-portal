@@ -6,7 +6,7 @@ import {
   airtablePATCH,
   AIRTABLE_URL_BASE,
 } from "../httpUtils/airtable";
-import { protect } from "../middleware/authMiddleware";
+import { adminProtect, protect } from "../middleware/authMiddleware";
 //Status codes
 import { BAD_REQUEST, OK } from "../httpUtils/statusCodes";
 //Types
@@ -136,7 +136,7 @@ router.route("/api/volunteers/").get(
  * @access
  */
 router.route("/api/volunteers/update/:volunteerId").patch(
-  protect,
+  adminProtect,
   asyncHandler(async (req: Request, res: Response) => {
     const { volunteerId } = req.params;
     logger.info(`PATCH /api/volunteers/update/${volunteerId}`);

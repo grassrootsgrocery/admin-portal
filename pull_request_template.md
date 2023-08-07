@@ -1,9 +1,10 @@
 ## Description of this change
 \<put a description of what this change does here>
-## Screenshot before this PR
-\<screenshot>
-## Screenshot after this PR
-\<screenshot>
+## Screenshots (for UI changes - otherwise delete this section)
+### Before this PR:
+\<screenshot(s)>
+### After this PR:
+\<screenshot(s)>
 ## Checklist
 - [ ] Added link to existing Issue (created issue if there wasn't one already)
 - [ ] Added screenshots before/after for UI changes

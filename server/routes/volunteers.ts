@@ -176,28 +176,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       return field.trim().length > 0;
     });
 
-    // also verify that the participantType is valid
-    const validParticipantTypes = ["Driver", "Packer"];
-
-    const isParticipantTypeValid =
-      participantType.length > 0 &&
-      participantType.every((type) => validParticipantTypes.includes(type));
-
-    // replace all Packer with Distributor
-
-    for (let i = 0; i < participantType.length; i++) {
-      participantType[i] = participantType[i].replace("Packer", "Distributor");
-    }
-
-    if (!isParticipantTypeValid) {
-      res.status(BAD_REQUEST);
-      throw new Error(
-        `Please provide a valid 'participantType' on the body. 
-        Valid participant types are ['Driver'], ['Packer'], and ['Driver', 'Packer']. 
-        Was supplied with: ${participantType}`
-      );
-    }
-
     if (!isValidRequest) {
       res.status(BAD_REQUEST);
       throw new Error(
@@ -205,7 +183,31 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       );
     }
 
-    // 3 different requests, 2 to update persons info and other to update volunteer type
+    // also verify that the participantType is valid
+    const validParticipantTypes = ["Driver", "Packer"];
+
+    const isParticipantTypeValid =
+      participantType.length > 0 &&
+      participantType.every((type) => validParticipantTypes.includes(type));
+
+    if (!isParticipantTypeValid) {
+      res.status(BAD_REQUEST).json({
+        message: `Please provide a valid 'participantType' on the body, valid types are ${validParticipantTypes}. 
+        Was provided ${participantType}.`,
+      });
+    }
+
+    // replace all Packer with Distributor in a copy of the array
+    let airtableParticipantType = [...participantType];
+
+    for (let i = 0; i < airtableParticipantType.length; i++) {
+      airtableParticipantType[i] = airtableParticipantType[i].replace(
+        "Packer",
+        "Distributor"
+      );
+    }
+
+    // 3 different requests, 2 to update persons info and other to update volunteer type and time slot
 
     // get their volunteerCRM recordId by extracting the phone-number recordId from the scheduled slots and looking
     // that up in the real table
@@ -218,14 +220,26 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     const originalInfo = await airtableGET<{
       "Phone Formula": string;
       "Phone Number": string;
+      Type: string[];
     }>({
       url: originalRecord,
     });
 
+    if (originalInfo.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: originalInfo.error,
+      });
+
+      return;
+    }
+
     // check if the volunteerId is valid, that means original info exists
     if (originalInfo.records.length == 0) {
-      res.status(BAD_REQUEST);
-      throw new Error(`Could not find a volunteer with the id ${volunteerId}`);
+      res.status(BAD_REQUEST).json({
+        message: `Could not find a volunteer with the id ${volunteerId}`,
+      });
+
+      return;
     }
 
     // if the phone number changed make sure we don't have a conflict
@@ -242,11 +256,20 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         url: lookupNewNumber,
       });
 
+      if (newNumberFetch.kind === "error") {
+        res.status(INTERNAL_SERVER_ERROR).json({
+          message: newNumberFetch.error,
+        });
+
+        return;
+      }
+
       if (newNumberFetch.records.length > 0) {
-        res.status(BAD_REQUEST);
-        throw new Error(
-          `The phone number ${phoneNumber} is already in use by another volunteer.`
-        );
+        res.status(BAD_REQUEST).json({
+          message: `The phone number ${phoneNumber} is already in use by another volunteer.`,
+        });
+
+        return;
       }
     }
 
@@ -262,11 +285,20 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       url: lookupVolunteerCRMRecordId,
     });
 
+    if (volunteerRecordIdFetch.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: volunteerRecordIdFetch.error,
+      });
+
+      return;
+    }
+
     if (volunteerRecordIdFetch.records.length == 0) {
-      res.status(BAD_REQUEST);
-      throw new Error(
-        `Could not find a volunteer with the phone number ${phoneNumber}`
-      );
+      res.status(BAD_REQUEST).json({
+        message: `Could not find a volunteer with the phone number ${phoneNumber}`,
+      });
+
+      return;
     }
 
     const volunteerRecordId = volunteerRecordIdFetch.records[0].id;
@@ -291,13 +323,27 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       body: updatePersonInfoBody,
     });
 
+    // find out if we need to update volunteer type, sort both arrays so they are in same order and equality check elements
+    const originalVolunteerType = [
+      ...originalInfo.records[0].fields.Type,
+    ].sort();
+    const sortedAirtableParticipantType = [...participantType].sort();
+
+    const hasChanged =
+      originalVolunteerType.length == sortedAirtableParticipantType.length &&
+      originalVolunteerType.every(
+        (value, index) => value === sortedAirtableParticipantType[index]
+      );
+
+    if (!hasChanged) return;
+
     // to update volunteer type issue patch to the Scheduled Slots table
     const updateVolunteerTypeBody = {
       records: [
         {
           id: volunteerId,
           fields: {
-            Type: participantType,
+            Type: airtableParticipantType,
           },
         },
       ],

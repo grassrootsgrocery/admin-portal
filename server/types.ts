@@ -129,6 +129,7 @@ export interface DropoffLocation {
   "POC Phone Number List": string | undefined;
   "Location Email": string | undefined;
   "# of Loads Requested": number | undefined;
+  "Not Available": boolean | undefined;
 }
 
 export interface ProcessedDropoffLocation {
@@ -144,6 +145,7 @@ export interface ProcessedDropoffLocation {
   locationEmail: string;
   deliveriesAssigned: number;
   matchedDrivers: string[];
+  notavailable: boolean;
 }
 
 export interface SpecialGroup {

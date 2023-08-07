@@ -17,7 +17,7 @@ import {
 //Types
 import {
   AirtableResponse,
-  Record,
+  AirtableRecord,
   DropoffLocation,
   ProcessedDropoffLocation,
   Neighborhood,
@@ -30,7 +30,7 @@ import { logger } from "../loggerUtils/logger";
 const router = express.Router();
 
 function processDropOffLocations(
-  location: Record<DropoffLocation>
+  location: AirtableRecord<DropoffLocation>
 ): ProcessedDropoffLocation {
   const optionsTime = {
     hour: "numeric",
@@ -130,6 +130,15 @@ router.route("/api/dropoff-locations/").get(
     const dropoffLocations = await airtableGET<DropoffLocation>({
       url: dropoffLocationsUrl,
     });
+
+    if (dropoffLocations.kind == "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: dropoffLocations.error,
+      });
+
+      return;
+    }
+
     let processedDropOffLocations = dropoffLocations.records.map((location) =>
       processDropOffLocations(location)
     );
@@ -142,6 +151,15 @@ router.route("/api/dropoff-locations/").get(
     const neighborhoods = await airtableGET<Neighborhood>({
       url: neighborhoodsUrl,
     });
+
+    if (neighborhoods.kind == "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: neighborhoods.error,
+      });
+
+      return;
+    }
+
     let neighborhoodNamesById: Map<string, string> = new Map();
     neighborhoods.records.forEach((neighborhood) =>
       neighborhoodNamesById.set(neighborhood.id, neighborhood.fields.Name)

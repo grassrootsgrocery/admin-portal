@@ -229,6 +229,14 @@ router.route("/api/messaging/last-texts-sent").get(
 
     const data = await airtableGET<TextAutomation>({ url });
 
+    if (data.kind === "error") {
+      res.status(500).json({
+        message: data.error,
+      });
+
+      return;
+    }
+
     const fields = data.records.map((record) => record.fields);
 
     // only sends fields of each one

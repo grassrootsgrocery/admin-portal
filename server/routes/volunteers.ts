@@ -8,13 +8,17 @@ import {
 } from "../httpUtils/airtable";
 import { adminProtect, protect } from "../middleware/authMiddleware";
 //Status codes
-import { BAD_REQUEST, OK } from "../httpUtils/statusCodes";
+import {
+  BAD_REQUEST,
+  INTERNAL_SERVER_ERROR,
+  OK,
+} from "../httpUtils/statusCodes";
 //Types
 import {
   AirtableResponse,
   Driver,
   ProcessedDriver,
-  Record,
+  AirtableRecord,
   ScheduledSlot,
   ProcessedScheduledSlot,
 } from "../types";
@@ -25,7 +29,7 @@ import { logger } from "../loggerUtils/logger";
 const router = express.Router();
 
 function processScheduledSlots(
-  scheduledSlots: AirtableResponse<ScheduledSlot>
+  scheduledSlots: AirtableRecord<ScheduledSlot>[]
 ): ProcessedScheduledSlot[] {
   function getParticipantType(type: string[] | undefined) {
     if (!type) {
@@ -55,7 +59,8 @@ function processScheduledSlots(
   }
 
   const volunteerList: ProcessedScheduledSlot[] = [];
-  for (const ss of scheduledSlots.records) {
+
+  for (const ss of scheduledSlots) {
     const participantType = getParticipantType(ss.fields["Type"]);
     const timeSlot =
       ss.fields["Correct slot time"] && !ss.fields["Correct slot time"]["error"]
@@ -124,7 +129,16 @@ router.route("/api/volunteers/").get(
       `&fields=Volunteer Group (for MAKE)`;
 
     const scheduledSlots = await airtableGET<ScheduledSlot>({ url: url });
-    const volunteers = processScheduledSlots(scheduledSlots);
+
+    if (scheduledSlots.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: scheduledSlots.error,
+      });
+
+      return;
+    }
+
+    const volunteers = processScheduledSlots(scheduledSlots.records);
 
     res.status(OK).json(volunteers);
   })
@@ -382,7 +396,7 @@ router.route("/api/volunteers/going/:volunteerId").patch(
   })
 );
 
-function processDriverData(driver: Record<Driver>): ProcessedDriver {
+function processDriverData(driver: AirtableRecord<Driver>): ProcessedDriver {
   // TODO: process restricted locations
   const optionsTime = {
     hour: "numeric",
@@ -446,7 +460,16 @@ router.route("/api/volunteers/drivers").get(
       `&fields=Restricted Neighborhoods` + // Restricted Locations
       `&fields=📍 Drop off location`; // Restricted Locations
 
-    const drivers = await airtableGET<Driver>({ url: url });
+    const drivers = await airtableGET<Driver>({ url });
+
+    if (drivers.kind === "error") {
+      res.status(BAD_REQUEST).json({
+        message: drivers.error,
+      });
+
+      return;
+    }
+
     let processedDrivers: ProcessedDriver[] = drivers.records.map((driver) =>
       processDriverData(driver)
     );

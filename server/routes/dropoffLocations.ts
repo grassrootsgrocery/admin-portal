@@ -248,27 +248,7 @@ router.route("/api/dropoff-locations/notavailable/:dropofflocationId").patch(
       });
       res.status(OK).json(result);
 
-   /* const records = Object.keys(req.body).map((locationId) => {
-      return {
-        id: locationId,
-        fields: {
-          "Starts accepting at": req.body[locationId].startTime || null,
-          "Stops accepting at": req.body[locationId].endTime || null,
-          "# of Loads Requested": req.body[locationId].deliveriesNeeded,
-        },
-      };
-    });
-
-    const url = `${AIRTABLE_URL_BASE}/📍 Drop off locations`;
-
-    //Use this loop to make the requests because Airtable can only update the records 10 at a time.
-    for (let start = 0; start + 10 <= records.length; start += 10) {
-      await airtablePATCH({
-        url: url,
-        body: { records: records.slice(start, start + 10) },
-      });
-    }
-    res.status(OK).json({ message: "Dropoff locations updated" });*/
+   
   })
 );
 

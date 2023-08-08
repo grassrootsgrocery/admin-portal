@@ -76,10 +76,7 @@ export const DropoffOrganizerPopup: React.FC<{
 //Regex for validating time
 const validTime = /^(0?[1-9]|1[012]):([0-5]\d)\s?([AaPp][Mm])$/;
 
-/*interface Props {
-  dropoffLocations: ProcessedDropoffLocation[];
-  refetchDropoffLocation: () => void;
-}*/
+
 
 function processDropoffLocationsForTable(
   dropoffLocations: ProcessedDropoffLocation[] | undefined,
@@ -311,57 +308,7 @@ function isValidInput(dropoffStore: DropoffLocationsStore) {
   return true;
 }
 
-/*export const DropoffOrganizerPopup: React.FC<{
-  date: Date;
-  dropoffLocations: ProcessedDropoffLocation[];
-  refetchDropoffLocations: () => void;
-}> = ({ date, dropoffLocations, refetchDropoffLocations }) => {
-  const { token } = useAuth();
-  if (!token) {
-    return <Navigate to="/" />;
-  }
 
-  const saveDropoffLocations = useMutation({
-    mutationFn: async () => {
-      const payload: {
-        [id: string]: {
-          startTime: string;
-          endTime: string;
-          deliveriesNeeded: number;
-        };
-      } = {};
-
-      for (const id in dropoffStore) {
-        payload[id] = {
-          startTime: toISO(dropoffStore[id].startTime[0], date),
-          endTime: toISO(dropoffStore[id].endTime[0], date),
-          deliveriesNeeded: dropoffStore[id].deliveriesNeeded || 0,
-        };
-      }
-
-      const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations/`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-      if (!resp.ok) {
-        const data = await resp.json();
-        throw new Error(data.messsage);
-      }
-      return resp.json();
-    },
-    onSuccess(data, variables, context) {
-      toastNotify("Drop-off locations saved successfully", "success");
-      refetchDropoffLocations();
-    },
-    onError(error, variables, context) {
-      console.error(error);
-      toastNotify("There was a problem saving dropoff-locations", "failure");
-    },
-  });*/
 
   const [dropoffStore, setDropoffStore] = useState<DropoffLocationsStore>({});
   useEffect(() => {

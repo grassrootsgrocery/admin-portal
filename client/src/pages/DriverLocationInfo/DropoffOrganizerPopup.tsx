@@ -9,9 +9,8 @@ import * as Modal from "@radix-ui/react-dialog";
 import { ProcessedDropoffLocation } from "../../types";
 import { toastNotify } from "../../uiUtils";
 import { Loading } from "../../components/Loading";
-import { HttpCheckbox } from "../ViewEvent/VolunteersTable";
-import * as RadixCheckbox from "@radix-ui/react-checkbox";
-import check_icon from "../../assets/checkbox-icon.svg";
+import { HttpCheckbox } from "../../components/HttpCheckbox";
+
 
 interface DropoffLocationsStore {
   [id: string]: DropoffLocationForm;
@@ -104,52 +103,8 @@ function processDropoffLocationsForTable(
     });
   };
 
-  interface HttpCheckboxProps {
-    checked: boolean;
-    mutationFn: any; //This needs to be generic enough
-    onSuccess: () => void;
-    onError: () => void;
-  }
-  const HttpCheckbox: React.FC<HttpCheckboxProps> = ({
-    checked,
-    mutationFn,
-    onSuccess,
-    onError,
-  }: HttpCheckboxProps) => {
-    const [isChecked, setIsChecked] = useState(checked);
-    const httpRequest = useMutation({
-      mutationFn: mutationFn,
-      onSuccess(data, variables, context) {
-        setIsChecked((prevVal) => !prevVal);
-        onSuccess();
-      },
-      onError(error, variables, context) {
-        console.error(error);
-        onError();
-      },
-    });
+ 
   
-    //UI
-    return (
-      <div className="relative flex h-full items-center justify-center">
-        {httpRequest.status === "loading" ? (
-          <Loading size="xsmall" thickness="thin" />
-        ) : (
-          <RadixCheckbox.Root
-            className="flex h-5 w-5 items-center justify-center rounded border-2 border-newLeafGreen bg-softGrayWhite shadow-md hover:brightness-110"
-            checked={isChecked}
-            onClick={() => httpRequest.mutate()}
-          >
-            <RadixCheckbox.Indicator className="CheckboxIndicator">
-              <img src={check_icon} alt="" />
-            </RadixCheckbox.Indicator>
-          </RadixCheckbox.Root>
-        )}
-      </div>
-    );
-  };
-  
-
   return dropoffLocations
     .sort((a, b) => (a.siteName < b.siteName ? -1 : 1))
     .map((curLocation) => {

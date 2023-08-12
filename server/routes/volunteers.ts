@@ -367,14 +367,38 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     const originalLogisticsSlot =
       originalInfo.records[0].fields["Logistics Slot"];
     const originalDrivingSlot = originalInfo.records[0].fields["Driving Slot"];
+    const supplierPickupEvent =
+      originalInfo.records[0].fields["🚛 Supplier Pickup Event"];
+
+    console.log(originalInfo.records[0].fields["🚛 Supplier Pickup Event"]);
 
     // if theyre becoming a driver now, the array contains driver
-    if (airtableParticipantType.includes("Driver") && !originalDrivingSlot) {
-      // get the slot for 10:30 linked to the event
+    if (airtableParticipantType.includes("Driver")) {
+      // get the slot for 10:30 linked to the event, supplier pickup event should equal the original one
+      const lookupSlot = `${AIRTABLE_URL_BASE}/⏳ Available Slots`;
+
+      const slotFetch = await airtableGET({
+        url: lookupSlot,
+      });
+
+      if (slotFetch.kind === "error") {
+        console.log("hi");
+        console.log(slotFetch.error);
+        return;
+      }
+
+      console.log(
+        slotFetch.records.map(
+          // @ts-ignore
+          (record) => record.fields["🚛 Supplier Pickup Event"]
+        )
+      );
     }
 
-    if (airtableParticipantType.includes("Driver") && originalDrivingSlot) {
-      // get the slot for 10:30 linked to the event
+    if (
+      airtableParticipantType.includes("Distributor") &&
+      !originalLogisticsSlot
+    ) {
     }
 
     // else we gotta add them to both slots

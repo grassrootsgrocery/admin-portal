@@ -220,6 +220,9 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     const originalInfo = await airtableGET<{
       "Phone Formula": string;
       "Phone Number": string;
+      "🚛 Supplier Pickup Event": string;
+      "Logistics Slot": string;
+      "Driving Slot": string;
       Type: string[];
     }>({
       url: originalRecord,
@@ -323,21 +326,60 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       body: updatePersonInfoBody,
     });
 
-    // find out if we need to update volunteer type, sort both arrays so they are in same order and equality check elements
-    const originalVolunteerType = [
-      ...originalInfo.records[0].fields.Type,
-    ].sort();
-    const sortedAirtableParticipantType = [...participantType].sort();
+    if (contactInfoUpdateResult.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: contactInfoUpdateResult.error,
+      });
 
-    const hasChanged =
-      originalVolunteerType.length == sortedAirtableParticipantType.length &&
-      originalVolunteerType.every(
-        (value, index) => value === sortedAirtableParticipantType[index]
-      );
+      return;
+    }
+
+    const originalVolunteerType = [...originalInfo.records[0].fields.Type];
+
+    // need to check if the volunteer type has changed, only 3 possible conditions
+    // 1. volunteer was a single type and is now 2, in this case they have def changed
+    // 2. volunteer was a double type and is now a single type, in this case they have def changed
+    // 3. volunteer was a single and is now another single, could have gone from packer to driver or vice versa
+    let hasChanged = false;
+
+    if (
+      (originalVolunteerType.length == 1 &&
+        airtableParticipantType.length == 2) ||
+      (originalVolunteerType.length == 2 && airtableParticipantType.length == 1)
+    ) {
+      hasChanged = true;
+    }
+
+    if (
+      originalVolunteerType.length == 1 &&
+      airtableParticipantType.length == 1
+    ) {
+      hasChanged = originalVolunteerType[0] !== airtableParticipantType[0];
+    }
 
     if (!hasChanged) return;
 
-    // to update volunteer type issue patch to the Scheduled Slots table
+    // essentially if they are becoming a driver they get the 10:30 slot, and if becoming a packer they get the 9:30 slot
+    // if they want to do both they get both
+
+    // get their original time slot
+    //search by linked recordid
+    const originalLogisticsSlot =
+      originalInfo.records[0].fields["Logistics Slot"];
+    const originalDrivingSlot = originalInfo.records[0].fields["Driving Slot"];
+
+    // if theyre becoming a driver now, the array contains driver
+    if (airtableParticipantType.includes("Driver") && !originalDrivingSlot) {
+      // get the slot for 10:30 linked to the event
+    }
+
+    if (airtableParticipantType.includes("Driver") && originalDrivingSlot) {
+      // get the slot for 10:30 linked to the event
+    }
+
+    // else we gotta add them to both slots
+
+    /*    // to update volunteer type issue patch to the Scheduled Slots table
     const updateVolunteerTypeBody = {
       records: [
         {
@@ -357,7 +399,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     res.status(OK).json({
       contactInfoUpdateResult,
       volunteerTypeUpdateResult,
-    });
+    });*/
   })
 );
 

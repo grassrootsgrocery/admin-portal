@@ -237,6 +237,11 @@ router.route("/api/messaging/last-texts-sent").get(
       return;
     }
 
+    if (data.records.length === 0) {
+      res.status(200).json([]);
+      return;
+    }
+
     const fields = data.records.map((record) => record.fields);
 
     // only sends fields of each one

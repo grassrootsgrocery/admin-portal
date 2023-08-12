@@ -5,7 +5,7 @@ import { AIRTABLE_URL_BASE, airtableGET } from "../httpUtils/airtable";
 import { fetch } from "../httpUtils/nodeFetch";
 import { logger } from "../loggerUtils/logger";
 import { IncomingHttpHeaders } from "http";
-import { Record as AirtableRecord } from "../types";
+import { AirtableRecord } from "../types";
 
 // using any here because types are huge
 const checkTokenAndExtractUser = async (
@@ -48,6 +48,14 @@ const checkTokenAndExtractUser = async (
   const getUserResp = await airtableGET<{ Admin: boolean }>({
     url: getUserUrl,
   });
+
+  if (getUserResp.kind === "error") {
+    res.status(INTERNAL_SERVER_ERROR).json({
+      message: getUserResp.error,
+    });
+
+    throw new Error("Something went wrong finding the user");
+  }
 
   if (getUserResp.records.length === 0) {
     res.status(UNAUTHORIZED);

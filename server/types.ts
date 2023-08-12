@@ -1,8 +1,12 @@
-export interface AirtableResponse<T> {
+/*export interface AirtableResponse<T> {
   records: Record<T>[];
-}
+}*/
 
-export interface Record<T> {
+export type AirtableResponse<T> =
+  | { kind: "success"; records: AirtableRecord<T>[]; error?: never }
+  | { kind: "error"; error: string; records?: never };
+
+export interface AirtableRecord<T> {
   id: string;
   fields: T;
   createdTime: string;

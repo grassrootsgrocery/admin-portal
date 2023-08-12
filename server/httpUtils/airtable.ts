@@ -1,5 +1,5 @@
 import { logger } from "../loggerUtils/logger";
-import { AirtableResponse } from "../types";
+import { AirtableRecord, AirtableResponse } from "../types";
 import { fetch } from "./nodeFetch";
 /*
 "Base" is Airtable lingo for database. 
@@ -23,6 +23,7 @@ export const AIRTABLE_ERROR_MESSAGE =
 export async function airtableGET<T>({ url }: { url: string }) {
   return airtableFetch<T>({ url: url, method: "GET", body: {} });
 }
+
 export async function airtablePOST<T>({
   url,
   body,
@@ -32,6 +33,7 @@ export async function airtablePOST<T>({
 }) {
   return airtableFetch<T>({ url: url, method: "POST", body: body });
 }
+
 export async function airtablePATCH<T>({
   url,
   body,
@@ -41,6 +43,7 @@ export async function airtablePATCH<T>({
 }) {
   return airtableFetch<T>({ url: url, method: "PATCH", body: body });
 }
+
 export async function airtablePUT<T>({
   url,
   body,
@@ -60,7 +63,7 @@ async function airtableFetch<T>({
   url: string;
   method: HttpVerb;
   body: object;
-}) {
+}): Promise<AirtableResponse<T>> {
   let resp = null;
   if (method === "GET") {
     resp = await fetch(url, {
@@ -80,7 +83,11 @@ async function airtableFetch<T>({
   if (!resp.ok) {
     const data = await resp.json();
     logger.error("Airtable response: ", data);
-    throw new Error(AIRTABLE_ERROR_MESSAGE);
+    return { kind: "error", error: data };
   }
-  return resp.json() as Promise<AirtableResponse<T>>;
+
+  return {
+    kind: "success",
+    records: (await resp.json()).records as AirtableRecord<T>[],
+  };
 }

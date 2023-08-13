@@ -91,12 +91,19 @@ export const SendTextMessageButton: React.FC<Props> = ({
               ? [...lastMessagesSent.data]
                   .sort((a, b) => {
                     return (
-                      new Date(a["Date"]).getTime() -
-                      new Date(b["Date"]).getTime()
+                      new Date(b["Date"]).getTime() -
+                      new Date(a["Date"]).getTime()
                     );
                   })
                   .map((message, index) => {
                     const date = new Date(message["Date"]);
+                    const localTimeNoSeconds = date.toLocaleTimeString(
+                      "en-US",
+                      {
+                        hour: "numeric",
+                        minute: "numeric",
+                      }
+                    );
                     return (
                       <div
                         key={index}
@@ -110,7 +117,7 @@ export const SendTextMessageButton: React.FC<Props> = ({
                             message["Triggered by"]
                           } from the number ${
                             message["Sent by"]
-                          } on ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`}
+                          } on ${date.toLocaleDateString()} at ${localTimeNoSeconds}`}
                         </p>
                       </div>
                     );

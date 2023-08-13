@@ -64,30 +64,45 @@ async function airtableFetch<T>({
   method: HttpVerb;
   body: object;
 }): Promise<AirtableResponse<T>> {
-  let resp = null;
-  if (method === "GET") {
-    resp = await fetch(url, {
-      method: method,
-      headers: { Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}` },
-    });
-  } else {
-    resp = await fetch(url, {
-      method: method,
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-  }
-  if (!resp.ok) {
-    const data = await resp.json();
-    logger.error("Airtable response: ", data);
-    return { kind: "error", error: data };
-  }
+  const headers = {
+    Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+    "Content-Type": "application/json",
+  };
+
+  let allRecords: AirtableRecord<T>[] = [];
+  let currentOffset: string | undefined;
+
+  do {
+    const responseUrl = currentOffset ? `${url}&offset=${currentOffset}` : url;
+
+    let resp;
+    if (method === "GET") {
+      resp = await fetch(responseUrl, {
+        method,
+        headers: headers,
+      });
+    } else {
+      resp = await fetch(responseUrl, {
+        method,
+        headers,
+        body: JSON.stringify(body),
+      });
+    }
+
+    if (!resp.ok) {
+      const data = await resp.json();
+      logger.error("Airtable response: ", data);
+      return { kind: "error", error: data };
+    }
+
+    const responseData = await resp.json();
+    allRecords = [...allRecords, ...responseData.records];
+
+    currentOffset = responseData.offset;
+  } while (currentOffset);
 
   return {
     kind: "success",
-    records: (await resp.json()).records as AirtableRecord<T>[],
+    records: allRecords,
   };
 }

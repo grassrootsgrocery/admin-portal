@@ -234,6 +234,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     });
 
     if (originalInfo.kind === "error") {
+      logger.info(originalInfo.error);
       res.status(INTERNAL_SERVER_ERROR).json({
         message: originalInfo.error,
       });
@@ -265,6 +266,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       });
 
       if (newNumberFetch.kind === "error") {
+        logger.error(newNumberFetch.error);
         res.status(INTERNAL_SERVER_ERROR).json({
           message: newNumberFetch.error,
         });
@@ -294,6 +296,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     });
 
     if (volunteerRecordIdFetch.kind === "error") {
+      logger.error(volunteerRecordIdFetch.error);
       res.status(INTERNAL_SERVER_ERROR).json({
         message: volunteerRecordIdFetch.error,
       });
@@ -332,6 +335,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     });
 
     if (contactInfoUpdateResult.kind === "error") {
+      logger.error(contactInfoUpdateResult.error);
       res.status(INTERNAL_SERVER_ERROR).json({
         message: contactInfoUpdateResult.error,
       });
@@ -345,9 +349,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         originalInfo.records[0].fields.Type
       )
     ) {
-      console.log("old", originalInfo.records[0].fields.Type);
-      console.log("new", airtableParticipantType);
-
       res.status(OK).json({
         message: `Volunteer ${volunteerId} has not changed their volunteer type.`,
       });
@@ -360,9 +361,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
 
     const originalRolesSet = new Set([...originalInfo.records[0].fields.Type]);
     const newRolesSet = new Set(airtableParticipantType);
-
-    console.log(originalRolesSet);
-    console.log(newRolesSet);
 
     const wasBoth =
       originalRolesSet.has("Driver") && originalRolesSet.has("Distributor");
@@ -437,6 +435,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         });
 
         if (slotFetch.kind === "error") {
+          logger.error(slotFetch.error);
           res.status(INTERNAL_SERVER_ERROR).json({
             message: slotFetch.error,
           });
@@ -445,6 +444,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         }
 
         if (slotFetch.records.length == 0) {
+          logger.error(slotFetch.error);
           res.status(BAD_REQUEST).json({
             message: `Could not find a slot for ${supplierPickupEvent} for ${roleToAdd}`,
           });
@@ -470,6 +470,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         });
 
         if (slotFetch.kind === "error") {
+          logger.error(slotFetch.error);
           res.status(INTERNAL_SERVER_ERROR).json({
             message: slotFetch.error,
           });
@@ -500,6 +501,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         });
 
         if (slotFetch.kind === "error") {
+          logger.error(slotFetch.error);
           res.status(INTERNAL_SERVER_ERROR).json({
             message: slotFetch.error,
           });
@@ -530,8 +532,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       }
     }
 
-    console.log(slotPayload);
-
     // to update volunteer type issue patch to the Scheduled Slots table
     const updateVolunteerTypeBody = {
       records: [
@@ -551,8 +551,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     });
 
     if (volunteerTypeUpdateResult.kind === "error") {
-      console.log(volunteerTypeUpdateResult.error);
-
+      logger.error(volunteerTypeUpdateResult.error);
       res.status(INTERNAL_SERVER_ERROR).json({
         message: volunteerTypeUpdateResult.error,
       });

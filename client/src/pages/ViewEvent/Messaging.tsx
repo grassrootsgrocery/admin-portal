@@ -28,28 +28,6 @@ export function Messaging() {
     return <Navigate to="/" />;
   }
 
-  // Last messages sent
-  const lastMessagesSent = useQuery(
-    ["fetchLastMessagesSent"],
-    async (): Promise<ProcessedTextAutomation[]> => {
-      const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/last-texts-sent`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (!resp.ok) {
-        const data = await resp.json();
-        throw new Error(data.message);
-      }
-
-      return resp.json();
-    }
-  );
-
   //Coordinators
   const coordinatorRecruitmentTextQuery = useQuery(
     ["fetchCoordinatorRecruitmentTextBlueprint"],

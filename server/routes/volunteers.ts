@@ -422,7 +422,10 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         // Scenario 1: They had only one role and are now choosing both roles.
 
         // figure out which role they are adding
-        let roleToAdd = newRolesSet.has("Driver") ? "Driver" : "Distributor";
+        let roleToAdd =
+          newRolesSet.has("Driver") && !originalRolesSet.has("Driver")
+            ? "Driver"
+            : "Distributor";
 
         // get matching slot, if they are becoming a driver we need to get them into the 10:30 slot,
         // packer only has one slot
@@ -529,8 +532,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
 
     console.log(slotPayload);
 
-    return;
-
     // to update volunteer type issue patch to the Scheduled Slots table
     const updateVolunteerTypeBody = {
       records: [
@@ -538,7 +539,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
           id: volunteerId,
           fields: {
             Type: airtableParticipantType,
-            slotPayload,
+            ...slotPayload,
           },
         },
       ],
@@ -550,6 +551,8 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     });
 
     if (volunteerTypeUpdateResult.kind === "error") {
+      console.log(volunteerTypeUpdateResult.error);
+
       res.status(INTERNAL_SERVER_ERROR).json({
         message: volunteerTypeUpdateResult.error,
       });

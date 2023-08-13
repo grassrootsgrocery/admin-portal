@@ -10,7 +10,7 @@ import { ProcessedTextAutomation } from "../../types";
 import { Popup } from "../../components/Popup";
 import { MouseEventHandler } from "react";
 import * as Modal from "@radix-ui/react-dialog";
-import { SendTextMessageButton } from "../DriverLocationInfo/SendTextMesssageButton";
+import { SendTextMessageButton } from "../../components/SendTextMesssageButton";
 
 // Tailwind classes
 const sectionHeader =

@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from "react-query";
-import { useAuth } from "../../contexts/AuthContext";
-import { toastNotify } from "../../uiUtils";
-import { ProcessedTextAutomation } from "../../types";
-import { API_BASE_URL } from "../../httpUtils";
+import { useAuth } from "../contexts/AuthContext";
+import { toastNotify } from "../uiUtils";
+import { ProcessedTextAutomation } from "../types";
+import { API_BASE_URL } from "../httpUtils";
 import * as Modal from "@radix-ui/react-dialog";
-import { Popup } from "../../components/Popup";
+import { Popup } from "./Popup";
 
 // TODO: This component can probably also be used on the "ViewEvent.tsx" page
 interface Props {

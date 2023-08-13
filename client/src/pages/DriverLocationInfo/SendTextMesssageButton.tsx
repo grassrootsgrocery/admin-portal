@@ -83,7 +83,7 @@ export const SendTextMessageButton: React.FC<Props> = ({
         <>
           <p className="ma text-xl font-semibold text-newLeafGreen">
             {lastMessagesSent.data?.length
-              ? "Last messages sent:"
+              ? "Last Messages Sent:"
               : "Are you sure you want to send this message?"}
           </p>
           <div className="flex max-h-64 flex-col gap-4 overflow-y-scroll ">
@@ -95,21 +95,26 @@ export const SendTextMessageButton: React.FC<Props> = ({
                       new Date(b["Date"]).getTime()
                     );
                   })
-                  .map((message, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col items-start gap-2 text-base lg:text-xl"
-                    >
-                      <p className="font-semibold text-newLeafGreen">
-                        {message["Text Type"]}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {`Sent by ${message["Triggered by"]} from the number ${
-                          message["Sent by"]
-                        } on ${new Date(message["Date"]).toLocaleDateString()}`}
-                      </p>
-                    </div>
-                  ))
+                  .map((message, index) => {
+                    const date = new Date(message["Date"]);
+                    return (
+                      <div
+                        key={index}
+                        className="flex flex-col items-start gap-2 text-base lg:text-lg"
+                      >
+                        <p className="font-semibold text-newLeafGreen">
+                          {message["Text Type"]}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {`Sent by ${
+                            message["Triggered by"]
+                          } from the number ${
+                            message["Sent by"]
+                          } on ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`}
+                        </p>
+                      </div>
+                    );
+                  })
               : null}
           </div>
           <div className="row-auto flex justify-center space-x-2">

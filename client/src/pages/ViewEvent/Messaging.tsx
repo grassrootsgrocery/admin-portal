@@ -62,36 +62,44 @@ function PreMessagePopupButton(props: PreMessagePopupButtonProps) {
         // and when it was sent, otherwise just ask are you sure you want to send
         // this message
 
-        <div className="flex flex-col gap-4">
-          <p className="text-xl font-semibold text-newLeafGreen">
+        // mkae this have a max height so the buttons are visible and it becomes scrollable
+        <>
+          <div className="flex max-h-52 flex-col gap-4 overflow-y-scroll ">
+            <p className="max-h-96 text-xl font-semibold text-newLeafGreen ">
+              {lastMessagesSent.data?.length
+                ? "Last messages sent:"
+                : "Are you sure you want to send this message?"}
+            </p>
             {lastMessagesSent.data?.length
-              ? "Last messages sent:"
-              : "Are you sure you want to send this message?"}
-          </p>
-          {lastMessagesSent.data?.length
-            ? [...lastMessagesSent.data]
-                .sort((a, b) => {
-                  return (
-                    new Date(a["Date"]).getTime() -
-                    new Date(b["Date"]).getTime()
-                  );
-                })
-                .map((message, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col items-start gap-2 text-base lg:text-xl"
-                  >
-                    <p className="font-semibold text-newLeafGreen">
-                      {message["Text Type"]}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {`Sent by ${message["Triggered by"]} from the number ${
-                        message["Sent by"]
-                      } on ${new Date(message["Date"]).toLocaleDateString()}`}
-                    </p>
-                  </div>
-                ))
-            : null}
+              ? [...lastMessagesSent.data]
+                  .sort((a, b) => {
+                    return (
+                      new Date(a["Date"]).getTime() -
+                      new Date(b["Date"]).getTime()
+                    );
+                  })
+                  .map((message, index) => {
+                    const date = new Date(message["Date"]);
+                    return (
+                      <div
+                        key={index}
+                        className="flex flex-col items-start gap-2 text-base lg:text-xl"
+                      >
+                        <p className="font-semibold text-newLeafGreen">
+                          {message["Text Type"]}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {`Sent by ${
+                            message["Triggered by"]
+                          } from the number ${
+                            message["Sent by"]
+                          } on ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`}
+                        </p>
+                      </div>
+                    );
+                  })
+              : null}
+          </div>
 
           <div className="row-auto flex justify-center space-x-2">
             <Modal.Close className="rounded-full bg-red-700 px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">
@@ -104,7 +112,7 @@ function PreMessagePopupButton(props: PreMessagePopupButtonProps) {
               Confirm Send
             </Modal.Close>
           </div>
-        </div>
+        </>
       }
     />
   );

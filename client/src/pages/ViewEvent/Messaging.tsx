@@ -10,6 +10,7 @@ import { ProcessedTextAutomation } from "../../types";
 import { Popup } from "../../components/Popup";
 import { MouseEventHandler } from "react";
 import * as Modal from "@radix-ui/react-dialog";
+import { SendTextMessageButton } from "../../components/SendTextMesssageButton";
 
 // Tailwind classes
 const sectionHeader =
@@ -20,95 +21,6 @@ const recruitCard =
 const cardHeader = "text-xl lg:text-2xl font-semibold text-newLeafGreen";
 const textArea =
   "grow overflow-scroll w-full resize-none rounded-md border-4 border-softGrayWhite py-2 px-4 text-base lg:text-xl";
-const btn =
-  "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen";
-
-interface PreMessagePopupButtonProps {
-  buttonText: string;
-  onClick: MouseEventHandler<HTMLButtonElement>;
-  token: string;
-}
-
-function PreMessagePopupButton(props: PreMessagePopupButtonProps) {
-  // Last messages sent
-  const lastMessagesSent = useQuery(
-    ["fetchLastMessagesSent"],
-    async (): Promise<ProcessedTextAutomation[]> => {
-      const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/last-texts-sent`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${props.token}`,
-          },
-        }
-      );
-      if (!resp.ok) {
-        const data = await resp.json();
-        throw new Error(data.message);
-      }
-
-      return resp.json();
-    }
-  );
-
-  return lastMessagesSent.isLoading ? (
-    <Loading size={"medium"} thickness={"thicc"} />
-  ) : (
-    <Popup
-      trigger={<button className={btn}>{props.buttonText}</button>}
-      content={
-        // if there was a message sent in the last 7 days show the name of it, who sent it
-        // and when it was sent, otherwise just ask are you sure you want to send
-        // this message
-
-        <div className="flex flex-col gap-4">
-          <p className="text-xl font-semibold text-newLeafGreen">
-            {lastMessagesSent.data?.length
-              ? "Last messages sent:"
-              : "Are you sure you want to send this message?"}
-          </p>
-          {lastMessagesSent.data?.length
-            ? [...lastMessagesSent.data]
-                .sort((a, b) => {
-                  return (
-                    new Date(a["Date"]).getTime() -
-                    new Date(b["Date"]).getTime()
-                  );
-                })
-                .map((message, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col items-start gap-2 text-base lg:text-xl"
-                  >
-                    <p className="font-semibold text-newLeafGreen">
-                      {message["Text Type"]}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {`Sent by ${message["Triggered by"]} from the number ${
-                        message["Sent by"]
-                      } on ${new Date(message["Date"]).toLocaleDateString()}`}
-                    </p>
-                  </div>
-                ))
-            : null}
-
-          <div className="row-auto flex justify-center space-x-2">
-            <Modal.Close className="rounded-full bg-red-700 px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">
-              Cancel Send
-            </Modal.Close>
-            <Modal.Close
-              className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base"
-              onClick={props.onClick}
-            >
-              Confirm Send
-            </Modal.Close>
-          </div>
-        </div>
-      }
-    />
-  );
-}
 
 export function Messaging() {
   const { token } = useAuth();
@@ -137,33 +49,6 @@ export function Messaging() {
     }
   );
 
-  const recruitCoordinators = useMutation({
-    mutationFn: async () => {
-      const response = await fetch(
-        `${API_BASE_URL}/api/messaging/coordinator-recruitment-text/`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message);
-      }
-
-      return response.json();
-    },
-    onSuccess(data, variables, context) {
-      toastNotify("Coordinator recruitment text automation started", "success");
-    },
-    onError(error, variables, context) {
-      console.error(error);
-      toastNotify("Unable to start text automation", "failure");
-    },
-  });
-
   //Volunteers
   const volunteerRecruitmentTextQuery = useQuery(
     ["fetchVolunteerRecruitmentTextBlueprint"],
@@ -184,33 +69,6 @@ export function Messaging() {
       return resp.json() as Promise<string>;
     }
   );
-
-  const recruitVolunteers = useMutation({
-    mutationFn: async () => {
-      const response = await fetch(
-        `${API_BASE_URL}/api/messaging/volunteer-recruitment-text`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message);
-      }
-
-      return response.json();
-    },
-    onSuccess(data, variables, context) {
-      toastNotify("Volunteer recruitment text automation started", "success");
-    },
-    onError(error, variables, context) {
-      console.error(error);
-      toastNotify("Unable to start text automation", "failure");
-    },
-  });
 
   const volunteerTextLoading =
     volunteerRecruitmentTextQuery.status === "loading" ||
@@ -242,10 +100,12 @@ export function Messaging() {
               readOnly
             />
           )}
-          <PreMessagePopupButton
-            buttonText={"Recruit Coordinators"}
-            token={token}
-            onClick={() => recruitCoordinators.mutate()}
+          <SendTextMessageButton
+            label={"Recruit Coordinators"}
+            successMessage={"Coordinator recruitment text sent"}
+            errorMessage={"Unable to send coordinator recruitment text"}
+            url={`${API_BASE_URL}/api/messaging/coordinator-recruitment-text`}
+            loading={coordinatorTextLoading}
           />
         </div>
         {/* Participants RecruitmentCard */}
@@ -262,10 +122,12 @@ export function Messaging() {
               readOnly
             />
           )}
-          <PreMessagePopupButton
-            buttonText={"Recruit Volunteers"}
-            token={token}
-            onClick={() => recruitVolunteers.mutate()}
+          <SendTextMessageButton
+            label={"Recruit Volunteers"}
+            successMessage={"Volunteer recruitment text sent"}
+            errorMessage={"Unable to send volunteer recruitment text"}
+            url={`${API_BASE_URL}/api/messaging/volunteer-recruitment-text`}
+            loading={volunteerTextLoading}
           />
         </div>
       </div>

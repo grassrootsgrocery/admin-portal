@@ -207,7 +207,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       });
     }
 
-    // replace all Packer with Distributor in a copy of the array
+    // replace all Packer with Distributor the array for airtable
     const airtableParticipantType = participantType.map((type) =>
       type.replace("Packer", "Distributor")
     );
@@ -216,7 +216,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
 
     // get their volunteerCRM recordId by extracting the phone-number recordId from the scheduled slots and looking
     // that up in the real table
-
     const originalRecord =
       `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
       `filterByFormula=SEARCH(RECORD_ID(), "${volunteerId}") != ""`;
@@ -234,7 +233,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     });
 
     if (originalInfo.kind === "error") {
-      logger.info(originalInfo.error);
       res.status(INTERNAL_SERVER_ERROR).json({
         message: originalInfo.error,
       });
@@ -296,7 +294,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     });
 
     if (volunteerRecordIdFetch.kind === "error") {
-      logger.error(volunteerRecordIdFetch.error);
       res.status(INTERNAL_SERVER_ERROR).json({
         message: volunteerRecordIdFetch.error,
       });
@@ -335,7 +332,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     });
 
     if (contactInfoUpdateResult.kind === "error") {
-      logger.error(contactInfoUpdateResult.error);
       res.status(INTERNAL_SERVER_ERROR).json({
         message: contactInfoUpdateResult.error,
       });
@@ -401,6 +397,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         let roleToNullify = newRolesSet.has("Driver")
           ? "Driver"
           : "Distributor";
+
         slotPayload =
           roleToNullify === "Distributor"
             ? { "Driving Slot": null }
@@ -435,7 +432,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         });
 
         if (slotFetch.kind === "error") {
-          logger.error(slotFetch.error);
           res.status(INTERNAL_SERVER_ERROR).json({
             message: slotFetch.error,
           });
@@ -444,7 +440,9 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         }
 
         if (slotFetch.records.length == 0) {
-          logger.error(slotFetch.error);
+          logger.error(
+            `Could not find a slot for ${supplierPickupEvent} for ${roleToAdd}`
+          );
           res.status(BAD_REQUEST).json({
             message: `Could not find a slot for ${supplierPickupEvent} for ${roleToAdd}`,
           });
@@ -470,7 +468,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         });
 
         if (slotFetch.kind === "error") {
-          logger.error(slotFetch.error);
           res.status(INTERNAL_SERVER_ERROR).json({
             message: slotFetch.error,
           });
@@ -479,6 +476,9 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         }
 
         if (slotFetch.records.length == 0) {
+          logger.error(
+            `Could not find a driving slot for ${supplierPickupEvent}`
+          );
           res.status(BAD_REQUEST).json({
             message: `Could not find a driving slot for ${supplierPickupEvent}`,
           });
@@ -501,7 +501,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         });
 
         if (slotFetch.kind === "error") {
-          logger.error(slotFetch.error);
           res.status(INTERNAL_SERVER_ERROR).json({
             message: slotFetch.error,
           });
@@ -510,6 +509,9 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         }
 
         if (slotFetch.records.length == 0) {
+          logger.error(
+            `Could not find a logistics slot for ${supplierPickupEvent}`
+          );
           res.status(BAD_REQUEST).json({
             message: `Could not find a logistics slot for ${supplierPickupEvent}`,
           });
@@ -551,7 +553,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     });
 
     if (volunteerTypeUpdateResult.kind === "error") {
-      logger.error(volunteerTypeUpdateResult.error);
       res.status(INTERNAL_SERVER_ERROR).json({
         message: volunteerTypeUpdateResult.error,
       });
@@ -560,8 +561,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     }
 
     res.status(OK).json({
-      contactInfoUpdateResult,
-      volunteerTypeUpdateResult,
+      message: "updated volunteer type",
     });
   })
 );

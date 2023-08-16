@@ -189,7 +189,7 @@ router.route("/api/messaging/locations-to-drivers-text").get(
       res,
       "There was a problem fetching the '[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' text."
     );
-    res.status(OK).json(data.response.blueprint.flow[5].mapper.body);
+    res.status(OK).json(data.response.blueprint.flow[3].routes[0].flow[6].mapper.body);
   })
 );
 
@@ -234,6 +234,11 @@ router.route("/api/messaging/last-texts-sent").get(
         message: data.error,
       });
 
+      return;
+    }
+
+    if (data.records.length === 0) {
+      res.status(200).json([]);
       return;
     }
 

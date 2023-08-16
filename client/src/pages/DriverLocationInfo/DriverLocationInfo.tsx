@@ -16,7 +16,7 @@ import { DropoffOrganizerPopup } from "./DropoffOrganizerPopup";
 import car from "../../assets/car.svg";
 import driving from "../../assets/driving.svg";
 import back from "../../assets/back-white.svg";
-import { SendTextMessageButton } from "./SendTextMesssageButton";
+import { SendTextMessageButton } from "../../components/SendTextMesssageButton";
 import { ContactPopup } from "../../components/ContactPopup";
 import { CoordinatorInfoPopup } from "./CoordinatorInfoPopup";
 import { LocationPopup } from "./LocationPopup";

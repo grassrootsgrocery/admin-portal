@@ -158,7 +158,7 @@ router.route("/api/messaging/volunteer-recruitment-text").post(
     logger.info("[POST] /api/messaging/volunteer-recruitment-text");
 
     const resp = await sendTextWebhook(
-      process.env.VOLUNTEER_RECRUITMENT_TEXT_WEBHOOK!, // missing
+      process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK!,
       res.locals["user"]!["Twilio Number"]
     );
 

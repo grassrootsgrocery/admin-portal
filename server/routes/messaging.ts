@@ -109,7 +109,7 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
 
     const resp = await sendTextWebhook(
       process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK!,
-      res.locals.user!["Twilio Number"]
+      res.locals.user["Twilio Number"]
     );
 
     const respText = await resp.text();
@@ -217,7 +217,7 @@ router.route("/api/messaging/driver-info-to-coordinators-text").post(
 
     const resp = await sendTextWebhook(
       process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK!,
-      res.locals.user!["Twilio Number"]
+      res.locals.user["Twilio Number"]
     );
 
     const respText = await resp.text();
@@ -271,7 +271,7 @@ router.route("/api/messaging/locations-to-drivers-text").post(
 
     const resp = await sendTextWebhook(
       process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK!,
-      res.locals.user!["Twilio Number"]
+      res.locals.user["Twilio Number"]
     );
 
     const respText = await resp.text();

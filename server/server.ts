@@ -13,17 +13,6 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false })); //x-www-form-urlencoded
 
-// type safety in Locals which middleware can inject into
-export interface Locals {
-  user?: User;
-}
-
-declare module "express" {
-  export interface Response {
-    locals: Locals;
-  }
-}
-
 //---- API Start----
 
 import authRouter from "./routes/auth";

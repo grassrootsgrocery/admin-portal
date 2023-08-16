@@ -8,8 +8,32 @@ import { Request, Response } from "express";
 import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
 import { AIRTABLE_URL_BASE, airtableGET } from "../httpUtils/airtable";
 import { TextAutomation } from "../types";
+import { logger } from "../loggerUtils/logger";
 
 //Utils
+const sendTextWebhook = async (url: string, phoneNumber: string) => {
+  const body = JSON.stringify({
+    target: {
+      data: {
+        text: "Override",
+      },
+    },
+    conversation: {
+      recipient: {
+        handle: phoneNumber,
+      },
+    },
+  });
+
+  return await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body,
+  });
+};
+
 async function makeRequest(
   url: string | undefined,
   res: Response,
@@ -57,6 +81,8 @@ own problems if they were to ever change the Make automations to use different t
 router.route("/api/messaging/coordinator-recruitment-text").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
+    logger.info("GET /api/messaging/coordinator-recruitment-text");
+
     const coordinatorRecruitmentTextBlueprintId = 278585;
     const url = `https://us1.make.com/api/v2/scenarios/${coordinatorRecruitmentTextBlueprintId}/blueprint`;
     const data = await makeRequest(
@@ -78,14 +104,22 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
   adminProtect,
   asyncHandler(async (req: Request, res: Response) => {
     checkNodeEnvIsProduction(res);
-    await makeRequest(
-      process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK,
-      res,
-      "Unable to start 'Send Coordinator Recruitment Text (Wed afternoon)' Make automation."
+
+    logger.info("[POST] /api/messaging/coordinator-recruitment-text");
+
+    const resp = await sendTextWebhook(
+      process.env.COORDINATOR_RECRUITMENT_TEXT_WEBHOOK!,
+      res.locals.user!["Twilio Number"]
     );
-    res.status(OK).json({
-      message:
-        "'Send Coordinator Recruitment Text (Wed afternoon)' Make automation started.",
+
+    const respText = await resp.text();
+
+    const message = resp.ok
+      ? "'Send Coordinator Recruitment Text (Wed afternoon)' Make automation started."
+      : respText;
+
+    res.status(resp.ok ? OK : INTERNAL_SERVER_ERROR).json({
+      message,
     });
   })
 );
@@ -98,6 +132,8 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
 router.route("/api/messaging/volunteer-recruitment-text").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
+    logger.info("GET /api/messaging/volunteer-recruitment-text");
+
     const volunteerRecruitmentTextBlueprintId = 299639;
     const url = `https://us1.make.com/api/v2/scenarios/${volunteerRecruitmentTextBlueprintId}/blueprint`;
     const data = await makeRequest(
@@ -118,13 +154,24 @@ router.route("/api/messaging/volunteer-recruitment-text").post(
   adminProtect,
   asyncHandler(async (req: Request, res: Response) => {
     checkNodeEnvIsProduction(res);
-    await makeRequest(
-      process.env.TUESDAY_RECRUITMENT_TEXT_WEBHOOK,
-      res,
-      "Unable to start 'Send Tuesday recruitment texts' Make automation."
+
+    logger.info("[POST] /api/messaging/volunteer-recruitment-text");
+
+    const resp = await sendTextWebhook(
+      process.env.VOLUNTEER_RECRUITMENT_TEXT_WEBHOOK!, // missing
+      res.locals["user"]!["Twilio Number"]
     );
-    res.status(OK).json({
-      message: "'Send Tuesday recruitment texts' Make automation started.",
+
+    const respText = await resp.text();
+
+    const message = resp.ok
+      ? "'Send Tuesday recruitment texts' Make automation started."
+      : respText;
+
+    resp.ok ? logger.info(message) : logger.error(respText);
+
+    res.status(resp.ok ? OK : INTERNAL_SERVER_ERROR).json({
+      message,
     });
   })
 );
@@ -137,6 +184,8 @@ router.route("/api/messaging/volunteer-recruitment-text").post(
 router.route("/api/messaging/driver-info-to-coordinators-text").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
+    logger.info("GET /api/messaging/driver-info-to-coordinators-text");
+
     const driverInfoToCoordinatorsTextBlueprintId = 321301;
     const url = `https://us1.make.com/api/v2/scenarios/${driverInfoToCoordinatorsTextBlueprintId}/blueprint`;
     const data = await makeRequest(
@@ -163,13 +212,24 @@ router.route("/api/messaging/driver-info-to-coordinators-text").post(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     checkNodeEnvIsProduction(res);
-    await makeRequest(
-      process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK,
-      res,
-      "Unable to start 'Send Driver Info To Coordinators' Make automation."
+
+    logger.info("POST /api/messaging/driver-info-to-coordinators-text");
+
+    const resp = await sendTextWebhook(
+      process.env.SEND_DRIVER_INFO_TO_COORDINATORS_WEBHOOK!,
+      res.locals.user!["Twilio Number"]
     );
-    res.status(OK).json({
-      message: "'Send Driver Info To Coordinators' Make automation started.",
+
+    const respText = await resp.text();
+
+    const message = resp.ok
+      ? "'Send Driver Info To Coordinators' Make automation started."
+      : respText;
+
+    resp.ok ? logger.info(message) : logger.error(respText);
+
+    res.status(resp.ok ? OK : INTERNAL_SERVER_ERROR).json({
+      message: message,
     });
   })
 );
@@ -182,6 +242,8 @@ router.route("/api/messaging/driver-info-to-coordinators-text").post(
 router.route("/api/messaging/locations-to-drivers-text").get(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
+    logger.info("GET /api/messaging/locations-to-drivers-text");
+
     const driverLocationInfoTextBlueprintId = 329564;
     const url = `https://us1.make.com/api/v2/scenarios/${driverLocationInfoTextBlueprintId}/blueprint`;
     const data = await makeRequest(
@@ -189,7 +251,9 @@ router.route("/api/messaging/locations-to-drivers-text").get(
       res,
       "There was a problem fetching the '[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' text."
     );
-    res.status(OK).json(data.response.blueprint.flow[3].routes[0].flow[6].mapper.body);
+    res
+      .status(OK)
+      .json(data.response.blueprint.flow[3].routes[0].flow[6].mapper.body);
   })
 );
 
@@ -202,14 +266,24 @@ router.route("/api/messaging/locations-to-drivers-text").post(
   adminProtect,
   asyncHandler(async (req: Request, res: Response) => {
     checkNodeEnvIsProduction(res);
-    await makeRequest(
-      process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK,
-      res,
-      "Unable to start '[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' Make automation."
+
+    logger.info("POST /api/messaging/locations-to-drivers-text");
+
+    const resp = await sendTextWebhook(
+      process.env.SEND_LOCATIONS_AND_POC_DETAILS_WEBHOOK!,
+      res.locals.user!["Twilio Number"]
     );
-    res.status(OK).json({
-      message:
-        "'[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' Make automation started.",
+
+    const respText = await resp.text();
+
+    const message = resp.ok
+      ? "'[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' Make automation started."
+      : respText;
+
+    resp.ok ? logger.info(message) : logger.error(respText);
+
+    res.status(resp.ok ? OK : INTERNAL_SERVER_ERROR).json({
+      message,
     });
   })
 );

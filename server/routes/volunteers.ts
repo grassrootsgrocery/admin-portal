@@ -187,10 +187,11 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     });
 
     if (!isValidRequest) {
-      res.status(BAD_REQUEST);
-      throw new Error(
-        "Please provide a 'firstName', 'lastName', 'email', 'phoneNumber', and 'participantType' on the body."
-      );
+      logger.error(`Invalid request body: ${JSON.stringify(req.body)}`);
+
+      res.status(BAD_REQUEST).json({
+        message: `Please provide a valid 'firstName', 'lastName', 'email', and 'phoneNumber' on the body.`,
+      });
     }
 
     // also verify that the participantType is valid
@@ -212,10 +213,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       type.replace("Packer", "Distributor")
     );
 
-    // 3 different requests, 2 to update persons info and other to update volunteer type and time slot
-
-    // get their volunteerCRM recordId by extracting the phone-number recordId from the scheduled slots and looking
-    // that up in the real table
+    // get all their original info from scheduled slots
     const originalRecord =
       `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
       `filterByFormula=SEARCH(RECORD_ID(), "${volunteerId}") != ""`;
@@ -242,6 +240,8 @@ router.route("/api/volunteers/update/:volunteerId").patch(
 
     // check if the volunteerId is valid, that means original info exists
     if (originalInfo.records.length == 0) {
+      logger.error(`Could not find a volunteer with the id ${volunteerId}`);
+
       res.status(BAD_REQUEST).json({
         message: `Could not find a volunteer with the id ${volunteerId}`,
       });
@@ -264,7 +264,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       });
 
       if (newNumberFetch.kind === "error") {
-        logger.error(newNumberFetch.error);
         res.status(INTERNAL_SERVER_ERROR).json({
           message: newNumberFetch.error,
         });
@@ -273,6 +272,10 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       }
 
       if (newNumberFetch.records.length > 0) {
+        logger.error(
+          `The phone number ${phoneNumber} is already in use by another volunteer.`
+        );
+
         res.status(BAD_REQUEST).json({
           message: `The phone number ${phoneNumber} is already in use by another volunteer.`,
         });
@@ -302,6 +305,10 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     }
 
     if (volunteerRecordIdFetch.records.length == 0) {
+      logger.error(
+        `Could not find a volunteer with the phone number ${phoneNumber}`
+      );
+
       res.status(BAD_REQUEST).json({
         message: `Could not find a volunteer with the phone number ${phoneNumber}`,
       });
@@ -345,6 +352,9 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         originalInfo.records[0].fields.Type
       )
     ) {
+      logger.info(
+        `Volunteer ${volunteerId} has not changed their volunteer type.`
+      );
       res.status(OK).json({
         message: `Volunteer ${volunteerId} has not changed their volunteer type.`,
       });
@@ -406,6 +416,9 @@ router.route("/api/volunteers/update/:volunteerId").patch(
         // Scenario 3: They were both roles and are still keeping both roles.
         // no need to do anything
 
+        logger.info(
+          `Volunteer ${volunteerId} has not changed their volunteer type.`
+        );
         res.status(OK).json({
           message: `Volunteer ${volunteerId} has not changed their volunteer type.`,
         });

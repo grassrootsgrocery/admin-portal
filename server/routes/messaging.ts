@@ -118,6 +118,8 @@ router.route("/api/messaging/coordinator-recruitment-text").post(
       ? "'Send Coordinator Recruitment Text (Wed afternoon)' Make automation started."
       : respText;
 
+    resp.ok ? logger.info(message) : logger.error(respText);
+
     res.status(resp.ok ? OK : INTERNAL_SERVER_ERROR).json({
       message,
     });

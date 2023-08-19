@@ -18,55 +18,55 @@ export const CoordinatorInfoPopup: React.FC<Props> = ({
 }) => {
   return (
     <Popup
+      className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 py-3 px-5 drop-shadow-lg lg:px-8 lg:py-6"
       trigger={
         <div className="flex justify-center hover:cursor-pointer">
           <img className="w-8" src={coordinator_icon} alt="" />
         </div>
       }
-      content={
-        <div className="w-80 lg:w-96">
-          <Modal.Title className="m-0 flex justify-center whitespace-nowrap text-xl font-bold text-newLeafGreen lg:px-16 lg:text-2xl">
-            Coordinator Information
-          </Modal.Title>
-          <div className="h-4" />
-          <div className="flex flex-col gap-1">
-            <h2 className={labelClasses}>Name(s):</h2>
-            <p className={valueClasses}>{coordinatorPOCNames.join(", ")}</p>
-            <h2 className={labelClasses}>Number(s):</h2>
-            <p className={valueClasses}>
-              {coordinatorPOCPhoneNumbers.map((phoneNumber, index) => (
-                <a
-                  key={phoneNumber}
-                  href={`tel:${phoneNumber}`}
-                  className="text-blue-500 underline"
-                >
-                  {phoneNumber}
-                  {index !== coordinatorPOCPhoneNumbers.length - 1 ? ", " : ""}
-                </a>
-              ))}
-            </p>
-            <h2 className={labelClasses}>Email:</h2>
-            <p className={valueClasses}>
-              {locationEmail != "None" ? (
-                <a
-                  href={`mailto:${locationEmail}`}
-                  className="text-blue-500 underline"
-                >
-                  {locationEmail}
-                </a>
-              ) : (
-                "None"
-              )}
-            </p>
-          </div>
-          <div className="h-4" />
-          <div className="flex justify-center">
-            <Modal.Close className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">
-              Done
-            </Modal.Close>
-          </div>
+    >
+      <div className="w-80 lg:w-96">
+        <Modal.Title className="m-0 flex justify-center whitespace-nowrap text-xl font-bold text-newLeafGreen lg:px-16 lg:text-2xl">
+          Coordinator Information
+        </Modal.Title>
+        <div className="h-4" />
+        <div className="flex flex-col gap-1">
+          <h2 className={labelClasses}>Name(s):</h2>
+          <p className={valueClasses}>{coordinatorPOCNames.join(", ")}</p>
+          <h2 className={labelClasses}>Number(s):</h2>
+          <p className={valueClasses}>
+            {coordinatorPOCPhoneNumbers.map((phoneNumber, index) => (
+              <a
+                key={phoneNumber}
+                href={`tel:${phoneNumber}`}
+                className="text-blue-500 underline"
+              >
+                {phoneNumber}
+                {index !== coordinatorPOCPhoneNumbers.length - 1 ? ", " : ""}
+              </a>
+            ))}
+          </p>
+          <h2 className={labelClasses}>Email:</h2>
+          <p className={valueClasses}>
+            {locationEmail != "None" ? (
+              <a
+                href={`mailto:${locationEmail}`}
+                className="text-blue-500 underline"
+              >
+                {locationEmail}
+              </a>
+            ) : (
+              "None"
+            )}
+          </p>
         </div>
-      }
-    />
+        <div className="h-4" />
+        <div className="flex justify-center">
+          <Modal.Close className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">
+            Done
+          </Modal.Close>
+        </div>
+      </div>
+    </Popup>
   );
 };

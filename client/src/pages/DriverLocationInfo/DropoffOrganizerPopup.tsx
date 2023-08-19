@@ -248,6 +248,7 @@ export const DropoffOrganizerPopup: React.FC<{
 
   return (
     <Popup
+      className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 py-3 px-5 drop-shadow-lg lg:px-8 lg:py-6"
       trigger={
         <button
           className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen"
@@ -256,61 +257,60 @@ export const DropoffOrganizerPopup: React.FC<{
           + Add Dropoff Location
         </button>
       }
-      content={
-        <div>
-          <Modal.Title className="m-0 flex justify-center text-xl font-bold text-newLeafGreen lg:px-16 lg:text-3xl">
-            Drop-off Location Organizer
-          </Modal.Title>
-          <div className="h-6" />
-          <div className="h-96">
-            <DataTable
-              borderColor="newLeafGreen"
-              columnHeaders={[
-                "Site Location",
-                "Address",
-                "Neighborhood",
-                "Start Time",
-                "End Time",
-                "Deliveries Needed",
-              ]}
-              dataRows={processDropoffLocationsForTable(
-                dropoffLocations,
-                dropoffStore,
-                setDropoffStore
-              )}
-            />
-          </div>
-          <div className="h-4" />
-          <div className="flex justify-evenly">
-            <Modal.Close className="rounded-full bg-pumpkinOrange px-2 py-1 text-xs font-semibold text-white outline-none md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen">
-              Close
-            </Modal.Close>
-            <button
-              disabled={
-                !isValidInput(dropoffStore) ||
-                saveDropoffLocations.status === "loading"
-              }
-              className={
-                "rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white outline-none md:px-4 md:py-2  lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:hover:shadow-newLeafGreen " +
-                (isValidInput(dropoffStore) &&
-                saveDropoffLocations.status !== "loading"
-                  ? "lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg"
-                  : "opacity-50")
-              }
-              type="button"
-              onClick={() => saveDropoffLocations.mutate()}
-            >
-              {saveDropoffLocations.status === "loading" ? (
-                <div className="relative min-h-full w-24 lg:w-40">
-                  <Loading size="xsmall" thickness="thin" />
-                </div>
-              ) : (
-                "Save Changes"
-              )}
-            </button>
-          </div>
+    >
+      <div>
+        <Modal.Title className="m-0 flex justify-center text-xl font-bold text-newLeafGreen lg:px-16 lg:text-3xl">
+          Drop-off Location Organizer
+        </Modal.Title>
+        <div className="h-6" />
+        <div className="h-96">
+          <DataTable
+            borderColor="newLeafGreen"
+            columnHeaders={[
+              "Site Location",
+              "Address",
+              "Neighborhood",
+              "Start Time",
+              "End Time",
+              "Deliveries Needed",
+            ]}
+            dataRows={processDropoffLocationsForTable(
+              dropoffLocations,
+              dropoffStore,
+              setDropoffStore
+            )}
+          />
         </div>
-      }
-    />
+        <div className="h-4" />
+        <div className="flex justify-evenly">
+          <Modal.Close className="rounded-full bg-pumpkinOrange px-2 py-1 text-xs font-semibold text-white outline-none md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen">
+            Close
+          </Modal.Close>
+          <button
+            disabled={
+              !isValidInput(dropoffStore) ||
+              saveDropoffLocations.status === "loading"
+            }
+            className={
+              "rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white outline-none md:px-4 md:py-2  lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:hover:shadow-newLeafGreen " +
+              (isValidInput(dropoffStore) &&
+              saveDropoffLocations.status !== "loading"
+                ? "lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg"
+                : "opacity-50")
+            }
+            type="button"
+            onClick={() => saveDropoffLocations.mutate()}
+          >
+            {saveDropoffLocations.status === "loading" ? (
+              <div className="relative min-h-full w-24 lg:w-40">
+                <Loading size="xsmall" thickness="thin" />
+              </div>
+            ) : (
+              "Save Changes"
+            )}
+          </button>
+        </div>
+      </div>
+    </Popup>
   );
 };

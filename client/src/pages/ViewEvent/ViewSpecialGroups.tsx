@@ -24,12 +24,17 @@ function processSpecialGroups(
       (sg) => sg.id === se.specialGroupId
     );
     if (specialGroupsFiltered.length === 0) {
-      console.log(`No special group found with matching id for special event with id ${se.specialGroupId}`);
+      console.log(
+        `No special group found with matching id for special event with id ${se.specialGroupId}`
+      );
       return [se.id, "NO NAME", se.eventSignUpLink];
     }
     if (specialGroupsFiltered.length > 1) {
       //This should not happen...
-      console.log(`Multiple special groups found with matching ids for special event with id ${se.specialGroupId}`, specialGroupsFiltered);
+      console.log(
+        `Multiple special groups found with matching ids for special event with id ${se.specialGroupId}`,
+        specialGroupsFiltered
+      );
     }
     const groupName = specialGroupsFiltered[0].name;
     return [se.id, groupName, se.eventSignUpLink];
@@ -77,6 +82,7 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
 
   return (
     <Popup
+      className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 py-3 px-5 drop-shadow-lg lg:px-8 lg:py-6"
       onOpenChange={() => refetchSpecialEvents()}
       trigger={
         <button
@@ -91,29 +97,28 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
           View Special Groups
         </button>
       }
-      content={
-        <div>
-          <Modal.Title className="m-0 flex justify-center px-16 text-3xl font-bold text-newLeafGreen">
-            View Event Special Groups
-          </Modal.Title>
-          <div className="h-6" />
-          {!disabled && specialEvents && specialGroups && (
-            <div className="h-96">
-              <DataTable
-                borderColor="newLeafGreen"
-                columnHeaders={["Name", "Sign-up Link"]}
-                dataRows={processSpecialGroups(specialEvents, specialGroups)} // dataRows={[
-              />
-            </div>
-          )}
-          <div className="h-4" />
-          <div className="flex justify-center">
-            <Modal.Close className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white outline-none md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen">
-              Done
-            </Modal.Close>
+    >
+      <div>
+        <Modal.Title className="m-0 flex justify-center px-16 text-3xl font-bold text-newLeafGreen">
+          View Event Special Groups
+        </Modal.Title>
+        <div className="h-6" />
+        {!disabled && specialEvents && specialGroups && (
+          <div className="h-96">
+            <DataTable
+              borderColor="newLeafGreen"
+              columnHeaders={["Name", "Sign-up Link"]}
+              dataRows={processSpecialGroups(specialEvents, specialGroups)} // dataRows={[
+            />
           </div>
+        )}
+        <div className="h-4" />
+        <div className="flex justify-center">
+          <Modal.Close className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white outline-none md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen">
+            Done
+          </Modal.Close>
         </div>
-      }
-    />
+      </div>
+    </Popup>
   );
 };

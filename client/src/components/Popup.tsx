@@ -3,36 +3,27 @@ import "./Popup.css";
 
 interface Props {
   trigger: JSX.Element;
+  open?: boolean;
   onOpenChange?: () => void;
-  shouldDodgeKeyboard?: boolean;
-  content: JSX.Element;
+  className?: string;
+  children?: React.ReactNode;
 }
-export const Popup = ({
+export const Popup: React.FC<Props> = ({
   trigger,
-  content,
+  open,
   onOpenChange,
-  shouldDodgeKeyboard,
-}: Props) => {
+  className = "",
+  children,
+}) => {
   return (
-    <Modal.Root onOpenChange={onOpenChange}>
+    <Modal.Root onOpenChange={onOpenChange} open={open}>
       <Modal.Trigger asChild>{trigger}</Modal.Trigger>
       <Modal.Portal>
         <Modal.Overlay className="modal-overlay z-20 bg-gray-500" />
         <Modal.Content
-          className="
-          modal-open-animation 
-          fixed 
-          top-1/2
-          left-1/2 
-          z-20 
-          flex max-w-full 
-          -translate-x-1/2 -translate-y-1/2 flex-col 
-          rounded-lg bg-softBeige 
-          py-3 px-5 drop-shadow-lg 
-          lg:px-8 lg:py-6
-          "
+          className={`modal-open-animation fixed z-20 flex max-w-full rounded-lg bg-softBeige drop-shadow-lg ${className}`}
         >
-          {content}
+          {children}
         </Modal.Content>
       </Modal.Portal>
     </Modal.Root>

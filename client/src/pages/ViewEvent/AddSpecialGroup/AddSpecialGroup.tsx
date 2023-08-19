@@ -224,7 +224,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
 
   return (
     <Popup
-      shouldDodgeKeyboard
+      className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 py-3 px-5 drop-shadow-lg lg:px-8 lg:py-6"
       trigger={
         <button
           className={
@@ -243,7 +243,8 @@ export const AddSpecialGroup: React.FC<Props> = ({
         setNewlyAddedGroupSignUpLink("");
         setSelectedGroup(null);
       }}
-      content={getSpecialGroupPopupContent()}
-    />
+    >
+      {getSpecialGroupPopupContent()}
+    </Popup>
   );
 };

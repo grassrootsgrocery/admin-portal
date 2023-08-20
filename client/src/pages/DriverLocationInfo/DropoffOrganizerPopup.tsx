@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from "react-query";
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../../utils/http";
 import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
@@ -217,7 +216,7 @@ export const DropoffOrganizerPopup: React.FC<{
         };
       }
 
-      const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations/`, {
+      const resp = await fetch(`/api/dropoff-locations/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

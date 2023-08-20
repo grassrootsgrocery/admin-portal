@@ -7,7 +7,6 @@ import {
   ProcessedSpecialGroup,
 } from "../../types";
 import { useQuery } from "react-query";
-import { API_BASE_URL } from "../../utils/http";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSpecialGroups } from "./specialGroupsHooks";
 
@@ -51,7 +50,7 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
   } = useQuery(["fetchViewEventSpecialEvents", event.id], async () => {
     const eventIds = event.allEventIds.join(",");
     const response = await fetch(
-      `${API_BASE_URL}/api/events/view-event-special-groups?eventIds=${eventIds}`,
+      `/api/events/view-event-special-groups?eventIds=${eventIds}`,
       {
         method: "GET",
         headers: {

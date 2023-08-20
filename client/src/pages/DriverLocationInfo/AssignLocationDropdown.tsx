@@ -10,7 +10,6 @@ import chevron_up from "../../assets/chevron-up.svg";
 import chevron_down from "../../assets/chevron-down.svg";
 import check_icon from "../../assets/checkbox-icon.svg";
 //Utils
-import { API_BASE_URL } from "../../utils/http";
 import { toastNotify } from "../../utils/ui";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -113,7 +112,7 @@ export const AssignLocationDropdown: React.FC<Props> = ({
         locationIds.push(locations[i].id);
       }
     }
-    const url = `${API_BASE_URL}/api/volunteers/drivers/assign-location/${driver.id}`;
+    const url = `/api/volunteers/drivers/assign-location/${driver.id}`;
     const resp = await fetch(url, {
       method: "PATCH",
       headers: {

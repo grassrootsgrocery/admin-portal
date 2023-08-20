@@ -2,7 +2,6 @@ import { Link, Navigate, useParams } from "react-router-dom";
 import { useDriversInfo } from "./driverInfoHooks";
 import { AssignLocationDropdown } from "./AssignLocationDropdown";
 import { useQuery } from "react-query";
-import { API_BASE_URL } from "../../utils/http";
 import { useFutureEventById } from "../eventHooks";
 import { useAuth } from "../../contexts/AuthContext";
 //Types
@@ -127,7 +126,7 @@ export function DriverLocationInfo() {
     ["fetchLocationsToDriversText"],
     async () => {
       const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/locations-to-drivers-text`,
+        `/api/messaging/locations-to-drivers-text`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -147,7 +146,7 @@ export function DriverLocationInfo() {
     ["fetchDriverInfoToCoordinatorsText"],
     async () => {
       const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/driver-info-to-coordinators-text`,
+        `/api/messaging/driver-info-to-coordinators-text`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -177,7 +176,7 @@ export function DriverLocationInfo() {
   const dropoffLocationsQuery = useQuery(
     ["fetchEventDropOffLocations"],
     async () => {
-      const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations`, {
+      const resp = await fetch(`/api/dropoff-locations`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -314,7 +313,7 @@ export function DriverLocationInfo() {
           <SendTextMessageButton
             label="Send Locations to Drivers"
             loading={locationsToDriversTextLoading}
-            url={`${API_BASE_URL}/api/messaging/locations-to-drivers-text`}
+            url={`/api/messaging/locations-to-drivers-text`}
             successMessage="Location information to drivers Make automation started"
             errorMessage="Unable to start Make automation"
           />
@@ -364,7 +363,7 @@ export function DriverLocationInfo() {
             <SendTextMessageButton
               label="Send Driver Info to Coordinators"
               loading={driverInfoToCoordinatorsLoading}
-              url={`${API_BASE_URL}/api/messaging/driver-info-to-coordinators-text`}
+              url={`/api/messaging/driver-info-to-coordinators-text`}
               successMessage="Driver information to coordinators Make automation started"
               errorMessage="Unable to start Make automation"
             />

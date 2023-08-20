@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import { API_BASE_URL } from "../../../utils/http";
 import { useAuth } from "../../../contexts/AuthContext";
 import * as Modal from "@radix-ui/react-dialog";
 import { Popup } from "../../../components/Popup";
@@ -30,7 +29,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
 
   const createSpecialGroupAndAddToEvent = useMutation({
     mutationFn: async ({ specialGroupName }: { specialGroupName: string }) => {
-      const response = await fetch(`${API_BASE_URL}/api/special-groups/`, {
+      const response = await fetch(`/api/special-groups/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -59,7 +58,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
   const addSpecialGroupToEvent = useMutation({
     mutationFn: async ({ specialGroupId }: { specialGroupId: string }) => {
       const response = await fetch(
-        `${API_BASE_URL}/api/special-groups/add-special-group-to-event`,
+        `/api/special-groups/add-special-group-to-event`,
         {
           method: "POST",
           headers: {

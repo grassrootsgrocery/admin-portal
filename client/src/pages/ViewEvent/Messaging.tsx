@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from "react-query";
 import { Loading } from "../../components/Loading";
-import { API_BASE_URL } from "../../utils/http";
 //Assets
 import recruitment from "../../assets/recruitment.svg";
 import { useAuth } from "../../contexts/AuthContext";
@@ -33,7 +32,7 @@ export function Messaging() {
     ["fetchCoordinatorRecruitmentTextBlueprint"],
     async () => {
       const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/coordinator-recruitment-text`,
+        `/api/messaging/coordinator-recruitment-text`,
         {
           method: "GET",
           headers: {
@@ -54,7 +53,7 @@ export function Messaging() {
     ["fetchVolunteerRecruitmentTextBlueprint"],
     async () => {
       const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/volunteer-recruitment-text`,
+        `/api/messaging/volunteer-recruitment-text`,
         {
           method: "GET",
           headers: {
@@ -104,7 +103,7 @@ export function Messaging() {
             label={"Recruit Coordinators"}
             successMessage={"Coordinator recruitment text sent"}
             errorMessage={"Unable to send coordinator recruitment text"}
-            url={`${API_BASE_URL}/api/messaging/coordinator-recruitment-text`}
+            url={`/api/messaging/coordinator-recruitment-text`}
             loading={coordinatorTextLoading}
           />
         </div>
@@ -126,7 +125,7 @@ export function Messaging() {
             label={"Recruit Volunteers"}
             successMessage={"Volunteer recruitment text sent"}
             errorMessage={"Unable to send volunteer recruitment text"}
-            url={`${API_BASE_URL}/api/messaging/volunteer-recruitment-text`}
+            url={`/api/messaging/volunteer-recruitment-text`}
             loading={volunteerTextLoading}
           />
         </div>

@@ -3,7 +3,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
 import { useMutation } from "react-query";
 import { toastNotify } from "../../utils/ui";
-import { API_BASE_URL, applyPatch } from "../../utils/http";
+import { applyPatch } from "../../utils/http";
 //Components
 import { Loading } from "../../components/Loading";
 import { DataTable } from "../../components/DataTable";
@@ -256,7 +256,7 @@ export const VolunteersTable: React.FC<Props> = ({
         <HttpCheckbox
           checked={ss.confirmed}
           mutationFn={applyPatch(
-            `${API_BASE_URL}/api/volunteers/confirm/${ss.id}`,
+            `/api/volunteers/confirm/${ss.id}`,
             { newConfirmationStatus: !ss.confirmed },
             token as string
           )}
@@ -273,7 +273,7 @@ export const VolunteersTable: React.FC<Props> = ({
         <HttpCheckbox
           checked={ss.cantCome}
           mutationFn={applyPatch(
-            `${API_BASE_URL}/api/volunteers/going/${ss.id}`,
+            `/api/volunteers/going/${ss.id}`,
             { newGoingStatus: !ss.cantCome },
             token as string
           )}

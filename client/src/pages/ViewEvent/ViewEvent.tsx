@@ -14,7 +14,6 @@ import calendar from "../../assets/calendar.svg";
 import people from "../../assets/people.svg";
 import roster from "../../assets/roster.svg";
 import { Messaging } from "./Messaging";
-import { API_BASE_URL } from "../../utils/http";
 import { Navbar } from "../../components/Navbar";
 import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
@@ -51,7 +50,7 @@ export const ViewEvent = () => {
       }
       const scheduledSlotsIds = eventQuery.data.scheduledSlots.join(",");
       const response = await fetch(
-        `${API_BASE_URL}/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`,
+        `/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

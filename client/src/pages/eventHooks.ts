@@ -1,6 +1,5 @@
 import { useQuery } from "react-query";
 import { useAuth } from "../contexts/AuthContext";
-import { API_BASE_URL } from "../utils/http";
 //Types
 import { ProcessedEvent, ProcessedSpecialEvent } from "../types";
 
@@ -13,7 +12,7 @@ export function useFutureEvents() {
   }
 
   return useQuery(["fetchFutureEvents"], async () => {
-    const response = await fetch(`${API_BASE_URL}/api/events`, {
+    const response = await fetch(`/api/events`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!response.ok) {

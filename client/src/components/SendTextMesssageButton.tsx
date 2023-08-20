@@ -2,7 +2,6 @@ import { useMutation, useQuery } from "react-query";
 import { useAuth } from "../contexts/AuthContext";
 import { toastNotify } from "../utils/ui";
 import { ProcessedTextAutomation } from "../types";
-import { API_BASE_URL } from "../utils/http";
 import * as Modal from "@radix-ui/react-dialog";
 import { Popup } from "./Popup";
 
@@ -31,7 +30,7 @@ export const SendTextMessageButton: React.FC<Props> = ({
     ["fetchLastMessagesSent"],
     async (): Promise<ProcessedTextAutomation[]> => {
       const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/last-texts-sent`,
+        `/api/messaging/last-texts-sent`,
         {
           method: "GET",
           headers: {

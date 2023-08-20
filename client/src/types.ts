@@ -58,6 +58,7 @@ export interface ProcessedDropoffLocation {
   locationEmail: string;
   deliveriesAssigned: number;
   matchedDrivers: string[];
+  notavailable: boolean;
 }
 
 export interface ProcessedTextAutomation {

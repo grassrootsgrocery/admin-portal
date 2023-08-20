@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "react-query";
 import { useAuth } from "../contexts/AuthContext";
-import { toastNotify } from "../uiUtils";
+import { toastNotify } from "../utils/ui";
 import { ProcessedTextAutomation } from "../types";
-import { API_BASE_URL } from "../httpUtils";
+import { API_BASE_URL } from "../utils/http";
 import * as Modal from "@radix-ui/react-dialog";
 import { Popup } from "./Popup";
 

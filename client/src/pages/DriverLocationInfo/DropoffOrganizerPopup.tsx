@@ -1,13 +1,13 @@
 import { useMutation, useQuery } from "react-query";
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../../httpUtils";
+import { API_BASE_URL } from "../../utils/http";
 import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
 import { Popup } from "../../components/Popup";
 import * as Modal from "@radix-ui/react-dialog";
 import { ProcessedDropoffLocation } from "../../types";
-import { toastNotify } from "../../uiUtils";
+import { toastNotify } from "../../utils/ui";
 import { Loading } from "../../components/Loading";
 
 interface DropoffLocationsStore {

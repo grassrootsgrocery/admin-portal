@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import { API_BASE_URL } from "../../../httpUtils";
+import { API_BASE_URL } from "../../../utils/http";
 import { useAuth } from "../../../contexts/AuthContext";
 import * as Modal from "@radix-ui/react-dialog";
 import { Popup } from "../../../components/Popup";
 import { SpecialGroupDropdown } from "./SpecialGroupDropdown";
-import { toastNotify } from "../../../uiUtils";
+import { toastNotify } from "../../../utils/ui";
 import { ProcessedEvent, ProcessedSpecialGroup } from "../../../types";
 import check from "../../../assets/check.svg";
 import { useSpecialGroups } from "../specialGroupsHooks";
@@ -91,7 +91,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
       refetchEvent();
     },
     onError: (error, variables, context) => {
-      toastNotify("Unable to add special group to event", "failure");
+      toastNotify("Unable to add special to event group", "failure");
     },
   });
 
@@ -160,24 +160,67 @@ export const AddSpecialGroup: React.FC<Props> = ({
       addSpecialGroupToEvent.status === "loading" ||
       !selectedGroup;
 
+    const specialGroupsList = specialGroups;
     return (
-      <div className="w-full">
+      <>
         <Modal.Title asChild>
-          <div className="m-0 flex justify-center text-lg font-bold text-newLeafGreen lg:text-3xl">
+          <div className="flex justify-center text-lg font-bold text-newLeafGreen lg:text-3xl">
             Add Special Group to Event
           </div>
         </Modal.Title>
-        <div className="h-1 lg:h-4" />
-
-        <div className="h-64 w-full lg:h-96">
-          <SpecialGroupDropdown
+        <form className="flex w-full grow flex-col overflow-hidden">
+          <input
+            className="m-[1px] grow rounded border border-softGrayWhite px-2 py-1 text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:m-0 focus:border-2 focus:outline-none md:text-lg md:placeholder:text-lg"
+            type="text"
+            id="specialGroupInput"
+            autoComplete="off"
+            autoFocus={false}
+            placeholder="Search through groups..."
+            // value={searchQuery}
+            onChange={(e) => {
+              // setSearchQuery(e.target.value);
+              // setGroup(null);
+            }}
+          />
+          <div className="h-1 lg:h-24" />
+          <div className="text-sm text-[#0E7575]">
+            Select existing group or create new one
+          </div>
+          <ul className="flex grow flex-col overflow-scroll">
+            {specialGroupsList &&
+              specialGroupsList
+                // .filter((specialGroup) => {
+                //   //Filter based on search query
+                //   return (
+                //     specialGroup.name
+                //       .toLowerCase()
+                //       .includes(searchQuery.toLowerCase()) ||
+                //     searchQuery
+                //       .toLowerCase()
+                //       .includes(specialGroup.name.toLowerCase())
+                //   );
+                // })
+                .map((specialGroup, idx) => {
+                  return (
+                    <li
+                      className={`my-1 flex flex-row rounded-lg py-1`}
+                      key={idx + specialGroup.name}
+                      onClick={() => {}}
+                    >
+                      {/* <img className="mr-2 w-4" src={plus} alt="plus-icon" /> */}
+                      {specialGroup.name}
+                    </li>
+                  );
+                })}
+          </ul>
+          {/* <SpecialGroupDropdown
             specialGroupsList={specialGroups}
             isGroupAlreadyRegisteredForEvent={(specialGroup) =>
               isGroupRegisteredForEvent(specialGroup, event.allEventIds)
             }
             isGroupSelected={!!selectedGroup}
             setGroup={setSelectedGroup}
-          />
+          /> */}
           <div className="h-8" />
           {selectedGroup && (
             <div className="flex items-center">
@@ -191,11 +234,10 @@ export const AddSpecialGroup: React.FC<Props> = ({
               </p>
             </div>
           )}
-        </div>
-
+        </form>
         <div className="flex justify-center gap-5">
           <Modal.Close
-            className="rounded-full bg-pumpkinOrange px-3 py-2 text-xs font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
+            className="rounded-full bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:brightness-110 focus:brightness-110 lg:px-5 lg:py-3 lg:text-base lg:font-bold"
             type="button"
           >
             Cancel
@@ -213,7 +255,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
             Add Group and Generate Link
           </button>
         </div>
-      </div>
+      </>
     );
   };
 
@@ -224,7 +266,8 @@ export const AddSpecialGroup: React.FC<Props> = ({
 
   return (
     <Popup
-      className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 py-3 px-5 drop-shadow-lg lg:px-8 lg:py-6"
+      className="flex h-[25rem] flex-col bg-softBeige"
+      // className="left-1/2 top-0 flex h-[25rem] w-[30rem] -translate-x-1/2 -translate-y-1 flex-col px-5 py-3 lg:top-1/2 lg:h-[40rem] lg:w-[50rem] lg:-translate-y-1/2 lg:px-8 lg:py-6"
       trigger={
         <button
           className={

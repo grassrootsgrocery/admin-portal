@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import { useAuth } from "../contexts/AuthContext";
-import { API_BASE_URL } from "../httpUtils";
+import { API_BASE_URL } from "../utils/http";
 //Types
 import { ProcessedEvent, ProcessedSpecialEvent } from "../types";
 

@@ -2,7 +2,7 @@ import { Link, Navigate, useParams } from "react-router-dom";
 import { useDriversInfo } from "./driverInfoHooks";
 import { AssignLocationDropdown } from "./AssignLocationDropdown";
 import { useQuery } from "react-query";
-import { API_BASE_URL } from "../../httpUtils";
+import { API_BASE_URL } from "../../utils/http";
 import { useFutureEventById } from "../eventHooks";
 import { useAuth } from "../../contexts/AuthContext";
 //Types
@@ -20,7 +20,7 @@ import { SendTextMessageButton } from "../../components/SendTextMesssageButton";
 import { ContactPopup } from "../../components/ContactPopup";
 import { CoordinatorInfoPopup } from "./CoordinatorInfoPopup";
 import { LocationPopup } from "./LocationPopup";
-import { toastNotify } from "../../uiUtils";
+import { toastNotify } from "../../utils/ui";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used

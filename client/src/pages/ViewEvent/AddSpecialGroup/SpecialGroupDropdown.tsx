@@ -24,11 +24,8 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   return (
-    <div className="flex flex-col gap-2 md:flex-row md:gap-8">
-      <p className="shrink-0 font-bold text-newLeafGreen lg:text-xl">
-        Group Name:
-      </p>
-      <div className="relative w-64 grow md:w-80">
+    <div className="flex flex-col gap-2 border md:flex-row md:gap-8">
+      <div className="relative w-64 grow border md:w-80">
         <div className="flex h-8 w-full rounded-lg border-2 border-softGrayWhite px-2">
           <input
             className="grow text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:outline-none md:text-lg md:placeholder:text-lg"
@@ -61,7 +58,7 @@ export const SpecialGroupDropdown: React.FC<Props> = ({
 
         {/* Special Group Listing Dropdown */}
         {!isGroupSelected && (
-          <ul className="absolute max-h-56 w-full overflow-y-scroll rounded-lg border-2 border-t-0 border-softGrayWhite bg-softBeige p-1  text-newLeafGreen">
+          <ul className="absolute w-full overflow-y-scroll rounded-lg border-2 border-t-0 border-softGrayWhite bg-softBeige p-1  text-newLeafGreen">
             <div className="px-2 text-sm text-[#0E7575]">
               Select existing group or create new one
             </div>

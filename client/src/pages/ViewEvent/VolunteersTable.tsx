@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
 import { useMutation } from "react-query";
-import { toastNotify } from "../../uiUtils";
-import { API_BASE_URL, applyPatch } from "../../httpUtils";
+import { toastNotify } from "../../utils/ui";
+import { API_BASE_URL, applyPatch } from "../../utils/http";
 //Components
 import { Loading } from "../../components/Loading";
 import { DataTable } from "../../components/DataTable";

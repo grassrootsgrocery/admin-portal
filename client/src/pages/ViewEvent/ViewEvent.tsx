@@ -14,12 +14,12 @@ import calendar from "../../assets/calendar.svg";
 import people from "../../assets/people.svg";
 import roster from "../../assets/roster.svg";
 import { Messaging } from "./Messaging";
-import { API_BASE_URL } from "../../httpUtils";
+import { API_BASE_URL } from "../../utils/http";
 import { Navbar } from "../../components/Navbar";
 import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
 import { ViewSpecialGroups } from "./ViewSpecialGroups";
-import { toastNotify } from "../../uiUtils";
+import { toastNotify } from "../../utils/ui";
 
 const HeaderValueDisplay: React.FC<{
   header: string;

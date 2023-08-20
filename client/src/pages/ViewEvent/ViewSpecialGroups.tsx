@@ -7,7 +7,7 @@ import {
   ProcessedSpecialGroup,
 } from "../../types";
 import { useQuery } from "react-query";
-import { API_BASE_URL } from "../../httpUtils";
+import { API_BASE_URL } from "../../utils/http";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSpecialGroups } from "./specialGroupsHooks";
 

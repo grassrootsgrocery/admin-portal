@@ -10,8 +10,8 @@ import chevron_up from "../../assets/chevron-up.svg";
 import chevron_down from "../../assets/chevron-down.svg";
 import check_icon from "../../assets/checkbox-icon.svg";
 //Utils
-import { API_BASE_URL } from "../../httpUtils";
-import { toastNotify } from "../../uiUtils";
+import { API_BASE_URL } from "../../utils/http";
+import { toastNotify } from "../../utils/ui";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 interface DropdownItemProps {

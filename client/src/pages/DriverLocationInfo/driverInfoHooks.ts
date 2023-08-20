@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import { Neighborhood, ProcessedDriver } from "../../types";
-import { API_BASE_URL } from "../../httpUtils";
+import { API_BASE_URL } from "../../utils/http";
 import { useAuth } from "../../contexts/AuthContext";
 
 export function useDriversInfo() {

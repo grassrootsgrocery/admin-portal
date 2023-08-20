@@ -1,11 +1,11 @@
 import { useMutation, useQuery } from "react-query";
 import { Loading } from "../../components/Loading";
-import { API_BASE_URL } from "../../httpUtils";
+import { API_BASE_URL } from "../../utils/http";
 //Assets
 import recruitment from "../../assets/recruitment.svg";
 import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
-import { toastNotify } from "../../uiUtils";
+import { toastNotify } from "../../utils/ui";
 import { ProcessedTextAutomation } from "../../types";
 import { Popup } from "../../components/Popup";
 import { MouseEventHandler } from "react";

@@ -9,6 +9,7 @@ import {
 import { useQuery } from "react-query";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSpecialGroups } from "./specialGroupsHooks";
+import { cn } from "../../utils/ui";
 
 interface Props {
   event: ProcessedEvent;
@@ -81,43 +82,50 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
 
   return (
     <Popup
-      className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 py-3 px-5 drop-shadow-lg lg:px-8 lg:py-6"
+      className={cn(
+        "bg-softBeige fixed left-[50%] top-[50%] w-full w-full -translate-x-1/2 -translate-y-1/2 rounded-lg px-3 py-4",
+        "md:w-[40rem] md:py-6 md:px-8"
+      )}
       onOpenChange={() => refetchSpecialEvents()}
       trigger={
         <button
           className={
-            "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all " +
+            "bg-pumpkinOrange lg:shadow-newLeafGreen rounded-full px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:transition-all " +
             (disabled
               ? "opacity-50"
-              : "lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen")
+              : "lg:hover:shadow-newLeafGreen lg:hover:-translate-y-1 lg:hover:shadow-lg")
           }
+          disabled={disabled}
           type="button"
         >
           View Special Groups
         </button>
       }
     >
-      <div>
-        <Modal.Title className="m-0 flex justify-center px-16 text-3xl font-bold text-newLeafGreen">
+      <>
+        <Modal.Title className="text-newLeafGreen m-0 flex justify-center text-xl font-bold lg:px-16 lg:text-3xl">
           View Event Special Groups
         </Modal.Title>
-        <div className="h-6" />
+        <div className="h-3 md:h-6" />
         {!disabled && specialEvents && specialGroups && (
           <div className="h-96">
             <DataTable
               borderColor="newLeafGreen"
               columnHeaders={["Name", "Sign-up Link"]}
-              dataRows={processSpecialGroups(specialEvents, specialGroups)} // dataRows={[
+              dataRows={processSpecialGroups(specialEvents, specialGroups)} 
             />
           </div>
         )}
         <div className="h-4" />
         <div className="flex justify-center">
-          <Modal.Close className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white outline-none md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen">
+          <Modal.Close className={cn(
+            "bg-newLeafGreen rounded-full px-3 py-2 text-xs font-semibold text-white hover:brightness-150 focus:brightness-150", 
+            "lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+          )}>
             Done
           </Modal.Close>
         </div>
-      </div>
+      </>
     </Popup>
   );
 };

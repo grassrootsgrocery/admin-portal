@@ -2,16 +2,14 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from "../httpUtils/statusCodes";
 import { AIRTABLE_URL_BASE, airtableGET } from "../httpUtils/airtable";
-import { fetch } from "../httpUtils/nodeFetch";
 import { logger } from "../loggerUtils/logger";
-import { IncomingHttpHeaders } from "http";
-import { AirtableRecord } from "../types";
+import { AirtableRecord, User } from "../types";
 
 // using any here because types are huge
 const checkTokenAndExtractUser = async (
   req: any,
   res: any
-): Promise<AirtableRecord<{ Admin: boolean }>> => {
+): Promise<AirtableRecord<User>> => {
   if (
     !req.headers.authorization ||
     !req.headers.authorization.startsWith("Bearer") ||
@@ -45,7 +43,7 @@ const checkTokenAndExtractUser = async (
 
   //Get user from token
   const getUserUrl = `${AIRTABLE_URL_BASE}/Users?filterByFormula=SEARCH(RECORD_ID(), "${decoded.id}") != ""`;
-  const getUserResp = await airtableGET<{ Admin: boolean }>({
+  const getUserResp = await airtableGET<User>({
     url: getUserUrl,
   });
 
@@ -66,7 +64,7 @@ const checkTokenAndExtractUser = async (
 };
 
 export const protect = asyncHandler(async (req, res, next) => {
-  await checkTokenAndExtractUser(req, res);
+  res.locals.user = await checkTokenAndExtractUser(req, res);
   next();
 });
 
@@ -77,6 +75,8 @@ export const adminProtect = asyncHandler(async (req, res, next) => {
     res.status(UNAUTHORIZED);
     throw new Error("Not authorized, not an admin");
   }
+
+  res.locals.user = user;
 
   next();
 });

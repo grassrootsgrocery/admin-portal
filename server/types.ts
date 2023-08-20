@@ -15,6 +15,8 @@ export interface AirtableRecord<T> {
 export interface User {
   Username: string;
   Password: string;
+  Admin: boolean;
+  "Twilio Number": string;
 }
 
 export interface Event {

@@ -187,7 +187,7 @@ router.route("/api/dropoff-locations/").patch(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     logger.info(`PATCH /api/dropoff-locations/`);
-    logger.info("Request body: ", req.body);
+    logger.info(`Request body: ${JSON.stringify(req.body)}`);
 
     const isValidRequest =
       Object.keys(req.body).filter(
@@ -218,7 +218,7 @@ router.route("/api/dropoff-locations/").patch(
     const url = `${AIRTABLE_URL_BASE}/📍 Drop off locations`;
 
     //Use this loop to make the requests because Airtable can only update the records 10 at a time.
-    for (let start = 0; start + 10 <= records.length; start += 10) {
+    for (let start = 0; start < records.length; start += 10) {
       await airtablePATCH({
         url: url,
         body: { records: records.slice(start, start + 10) },

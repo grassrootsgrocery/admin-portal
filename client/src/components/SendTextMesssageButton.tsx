@@ -72,72 +72,68 @@ export const SendTextMessageButton: React.FC<Props> = ({
     },
   });
 
+  // if there was a message sent in the last 7 days show the name of it, who sent it
+  // and when it was sent, otherwise just ask are you sure you want to send
+  // this message
   return (
     <Popup
       trigger={<button className={btn}>{label}</button>}
-      content={
-        // if there was a message sent in the last 7 days show the name of it, who sent it
-        // and when it was sent, otherwise just ask are you sure you want to send
-        // this message
-
-        <>
-          <p className="ma text-xl font-semibold text-newLeafGreen">
-            {lastMessagesSent.data?.length
-              ? "Last Messages Sent:"
-              : "Are you sure you want to send this message?"}
-          </p>
-          <div className="flex max-h-64 flex-col gap-4 overflow-y-scroll ">
-            {lastMessagesSent.data?.length
-              ? [...lastMessagesSent.data]
-                  .sort((a, b) => {
-                    return (
-                      new Date(b["Date"]).getTime() -
-                      new Date(a["Date"]).getTime()
-                    );
-                  })
-                  .map((message, index) => {
-                    const date = new Date(message["Date"]);
-                    const localTimeNoSeconds = date.toLocaleTimeString(
-                      "en-US",
-                      {
-                        hour: "numeric",
-                        minute: "numeric",
-                      }
-                    );
-                    return (
-                      <div
-                        key={index}
-                        className="flex flex-col items-start gap-2 text-base lg:text-lg"
-                      >
-                        <p className="font-semibold text-newLeafGreen">
-                          {message["Text Type"]}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {`Sent by ${
-                            message["Triggered by"]
-                          } from the number ${
-                            message["Sent by"]
-                          } on ${date.toLocaleDateString()} at ${localTimeNoSeconds}`}
-                        </p>
-                      </div>
-                    );
-                  })
-              : null}
-          </div>
-          <div className="row-auto flex justify-center space-x-2">
-            <Modal.Close className="rounded-full bg-red-700 px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">
-              Cancel Send
-            </Modal.Close>
-            <Modal.Close
-              className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base"
-              disabled={loading || sendTextMessage.status === "loading"}
-              onClick={() => sendTextMessage.mutate()}
-            >
-              Confirm Send
-            </Modal.Close>
-          </div>
-        </>
-      }
-    />
+    >
+      <>
+        <p className="ma text-xl font-semibold text-newLeafGreen">
+          {lastMessagesSent.data?.length
+            ? "Last Messages Sent:"
+            : "Are you sure you want to send this message?"}
+        </p>
+        <div className="flex max-h-64 flex-col gap-4 overflow-y-scroll ">
+          {lastMessagesSent.data?.length
+            ? [...lastMessagesSent.data]
+              .sort((a, b) => {
+                return (
+                  new Date(b["Date"]).getTime() -
+                  new Date(a["Date"]).getTime()
+                );
+              })
+              .map((message, index) => {
+                const date = new Date(message["Date"]);
+                const localTimeNoSeconds = date.toLocaleTimeString(
+                  "en-US",
+                  {
+                    hour: "numeric",
+                    minute: "numeric",
+                  }
+                );
+                return (
+                  <div
+                    key={index}
+                    className="flex flex-col items-start gap-2 text-base lg:text-lg"
+                  >
+                    <p className="font-semibold text-newLeafGreen">
+                      {message["Text Type"]}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {`Sent by ${message["Triggered by"]
+                        } from the number ${message["Sent by"]
+                        } on ${date.toLocaleDateString()} at ${localTimeNoSeconds}`}
+                    </p>
+                  </div>
+                );
+              })
+            : null}
+        </div>
+        <div className="row-auto flex justify-center space-x-2">
+          <Modal.Close className="rounded-full bg-red-700 px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">
+            Cancel Send
+          </Modal.Close>
+          <Modal.Close
+            className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base"
+            disabled={loading || sendTextMessage.status === "loading"}
+            onClick={() => sendTextMessage.mutate()}
+          >
+            Confirm Send
+          </Modal.Close>
+        </div>
+      </>
+    </Popup>
   );
 };

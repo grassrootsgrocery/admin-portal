@@ -6,7 +6,7 @@ import { DataTable } from "../../components/DataTable";
 import { Popup } from "../../components/Popup";
 import * as Modal from "@radix-ui/react-dialog";
 import { ProcessedDropoffLocation } from "../../types";
-import { toastNotify } from "../../utils/ui";
+import { cn, toastNotify } from "../../utils/ui";
 import { Loading } from "../../components/Loading";
 
 interface DropoffLocationsStore {
@@ -108,7 +108,7 @@ function processDropoffLocationsForTable(
 
         // Deliveries Needed Input
         <input
-          className="h-10 w-20 rounded border border-softGrayWhite bg-softBeige p-1 text-center text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-50 focus:outline-softGrayWhite"
+          className="border-softGrayWhite bg-softBeige text-newLeafGreen placeholder:text-newLeafGreen focus:outline-softGrayWhite h-10 w-20 rounded border p-1 text-center placeholder:text-opacity-50"
           type="number"
           min="0"
           placeholder="0"
@@ -247,22 +247,27 @@ export const DropoffOrganizerPopup: React.FC<{
 
   return (
     <Popup
-      className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 py-3 px-5 drop-shadow-lg lg:px-8 lg:py-6"
+      className={cn(
+        "bg-softBeige fixed left-[50%] top-0 h-[27rem] w-full -translate-x-1/2 p-4",
+        "md:top-[50%] md:w-[40rem] md:-translate-y-1/2 md:rounded-lg md:py-2 md:px-8",
+        "lg:h-[40rem] lg:w-[80rem]"
+      )}
       trigger={
         <button
-          className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen"
+          className="bg-pumpkinOrange lg:shadow-newLeafGreen lg:hover:shadow-newLeafGreen rounded-full px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg"
           type="button"
         >
           + Add Dropoff Location
         </button>
       }
     >
-      <div>
-        <Modal.Title className="m-0 flex justify-center text-xl font-bold text-newLeafGreen lg:px-16 lg:text-3xl">
+      <>
+
+        <Modal.Title className="text-newLeafGreen flex h-[10%] items-center justify-center text-lg font-bold lg:text-3xl">
+        {/* <Modal.Title className="m-0 border flex justify-center text-xl font-bold text-newLeafGreen lg:px-16 lg:text-2xl"> */}
           Drop-off Location Organizer
         </Modal.Title>
-        <div className="h-6" />
-        <div className="h-96">
+        <div className="h-[80%]">
           <DataTable
             borderColor="newLeafGreen"
             columnHeaders={[
@@ -280,9 +285,11 @@ export const DropoffOrganizerPopup: React.FC<{
             )}
           />
         </div>
-        <div className="h-4" />
-        <div className="flex justify-evenly">
-          <Modal.Close className="rounded-full bg-pumpkinOrange px-2 py-1 text-xs font-semibold text-white outline-none md:px-4 md:py-2 lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen">
+        <div className="flex h-[10%] items-center justify-center gap-10">
+          <Modal.Close
+            className="rounded-full bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:brightness-110 focus:brightness-110 lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+            type="button"
+          >
             Close
           </Modal.Close>
           <button
@@ -291,10 +298,10 @@ export const DropoffOrganizerPopup: React.FC<{
               saveDropoffLocations.status === "loading"
             }
             className={
-              "rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white outline-none md:px-4 md:py-2  lg:px-8 lg:py-4 lg:text-xl lg:shadow-md lg:shadow-newLeafGreen lg:hover:shadow-newLeafGreen " +
+              "bg-newLeafGreen rounded-full px-3 py-2 text-xs font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold " +
               (isValidInput(dropoffStore) &&
               saveDropoffLocations.status !== "loading"
-                ? "lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg"
+                ? "hover:cursor-pointer hover:brightness-150 focus:brightness-200"
                 : "opacity-50")
             }
             type="button"
@@ -309,7 +316,7 @@ export const DropoffOrganizerPopup: React.FC<{
             )}
           </button>
         </div>
-      </div>
+      </>
     </Popup>
   );
 };

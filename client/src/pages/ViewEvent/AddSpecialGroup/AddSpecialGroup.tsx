@@ -158,10 +158,8 @@ export const AddSpecialGroup: React.FC<Props> = ({
     const specialGroupsList = specialGroupsQuery.data;
     return (
       <>
-        <Modal.Title asChild>
-          <div className="flex h-[10%] items-center justify-center text-lg font-bold text-newLeafGreen lg:text-3xl">
+        <Modal.Title className="flex h-[10%] items-center justify-center text-lg font-bold text-newLeafGreen lg:text-3xl">
             Add Special Group to Event
-          </div>
         </Modal.Title>
         <div className="flex h-[80%] w-full grow flex-col overflow-hidden">
           <input

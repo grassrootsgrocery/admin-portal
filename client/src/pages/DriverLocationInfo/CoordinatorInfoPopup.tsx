@@ -1,6 +1,7 @@
 import * as Modal from "@radix-ui/react-dialog";
 import { Popup } from "../../components/Popup";
 import coordinator_icon from "../../assets/coordinator.svg";
+import { cn } from "../../utils/ui";
 
 interface Props {
   coordinatorPOCNames: string[];
@@ -18,14 +19,16 @@ export const CoordinatorInfoPopup: React.FC<Props> = ({
 }) => {
   return (
     <Popup
-      className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 py-3 px-5 drop-shadow-lg lg:px-8 lg:py-6"
+      className={cn(
+        "bg-softBeige fixed left-[50%] top-[50%] w-full -translate-x-1/2 -translate-y-1/2 rounded-lg p-8 md:w-[40rem]"
+      )}
       trigger={
         <div className="flex justify-center hover:cursor-pointer">
           <img className="w-8" src={coordinator_icon} alt="" />
         </div>
       }
     >
-      <div className="w-80 lg:w-96">
+      <>
         <Modal.Title className="m-0 flex justify-center whitespace-nowrap text-xl font-bold text-newLeafGreen lg:px-16 lg:text-2xl">
           Coordinator Information
         </Modal.Title>
@@ -62,11 +65,14 @@ export const CoordinatorInfoPopup: React.FC<Props> = ({
         </div>
         <div className="h-4" />
         <div className="flex justify-center">
-          <Modal.Close className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">
+          <Modal.Close className={cn(
+            "bg-newLeafGreen rounded-full px-3 py-2 text-xs font-semibold text-white hover:brightness-150 focus:brightness-150", 
+            "lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+          )}>
             Done
           </Modal.Close>
         </div>
-      </div>
+      </>
     </Popup>
   );
 };

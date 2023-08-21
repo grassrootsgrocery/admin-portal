@@ -19,7 +19,7 @@ export const ContactPopup: React.FC<Props> = ({ phoneNumber, email }) => {
         "bg-softBeige fixed left-[50%] top-[50%] w-full -translate-x-1/2 -translate-y-1/2 rounded-lg p-8 md:w-[40rem]"
       )}
     >
-      <div>
+      <>
         <Modal.Title className="text-newLeafGreen m-0 flex justify-center text-xl font-bold lg:px-16 lg:text-3xl">
           Contact Information
         </Modal.Title>
@@ -53,7 +53,7 @@ export const ContactPopup: React.FC<Props> = ({ phoneNumber, email }) => {
             Done
           </Modal.Close>
         </div>
-      </div>
+      </>
     </Popup>
   );
 };

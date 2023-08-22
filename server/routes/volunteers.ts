@@ -21,6 +21,10 @@ import {
   AirtableRecord,
   ScheduledSlot,
   ProcessedScheduledSlot,
+  AIRTABLE_PARTICIPANT_TYPES,
+  PARTICIPANT_TYPES,
+  ParticipantType,
+  AirtableParticipantType,
 } from "../types";
 //Error messages
 //Logger
@@ -177,13 +181,13 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       lastName: string;
       email: string;
       phoneNumber: string;
-      participantType: string[];
+      participantType: ParticipantType[];
     } = req.body;
 
     const stringFields = [firstName, lastName, email, phoneNumber];
 
     const isValidRequest = stringFields.every((field) => {
-      return field.trim().length > 0;
+      return field.trim().length > 0 && typeof field === "string";
     });
 
     if (!isValidRequest) {
@@ -194,24 +198,25 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       });
     }
 
-    // also verify that the participantType is valid
-    const validParticipantTypes = ["Driver", "Packer"];
-
     const isParticipantTypeValid =
       participantType.length > 0 &&
-      participantType.every((type) => validParticipantTypes.includes(type));
+      participantType.every(
+        (type) => PARTICIPANT_TYPES.includes(type) && typeof type == "string"
+      );
 
     if (!isParticipantTypeValid) {
       res.status(BAD_REQUEST).json({
-        message: `Please provide a valid 'participantType' on the body, valid types are ${validParticipantTypes}. 
-        Was provided ${participantType}.`,
+        message: `Please provide a valid 'participantType' on the body, valid types are ${PARTICIPANT_TYPES}. 
+        Was provided ${participantType}. They must all be strings.`,
       });
     }
 
     // replace all Packer with Distributor the array for airtable
-    const airtableParticipantType = participantType.map((type) =>
-      type.replace("Packer", "Distributor")
-    );
+    const airtableParticipantType: AirtableParticipantType[] =
+      participantType.map(
+        (type) =>
+          type.replace("Packer", "Distributor") as AirtableParticipantType
+      );
 
     // get all their original info from scheduled slots
     const originalRecord =
@@ -225,7 +230,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       "🚛 Supplier Pickup Event": string;
       "Logistics Slot": string;
       "Driving Slot": string;
-      Type: string[];
+      Type: AirtableParticipantType[];
     }>({
       url: originalRecord,
     });
@@ -355,7 +360,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       logger.info(
         `Volunteer ${volunteerId} has not changed their volunteer type.`
       );
-      res.status(OK).json({
+      res.status(BAD_REQUEST).json({
         message: `Volunteer ${volunteerId} has not changed their volunteer type.`,
       });
 
@@ -365,27 +370,11 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     const supplierPickupEvent =
       originalInfo.records[0].fields["🚛 Supplier Pickup Event"];
 
-    const originalRolesSet = new Set([...originalInfo.records[0].fields.Type]);
-    const newRolesSet = new Set(airtableParticipantType);
-
-    const wasBoth =
-      originalRolesSet.has("Driver") && originalRolesSet.has("Distributor");
-    const isNowBoth =
-      newRolesSet.has("Driver") && newRolesSet.has("Distributor");
-    const isNewlySingleRole =
-      newRolesSet.size === 1 &&
-      (newRolesSet.has("Driver") || newRolesSet.has("Distributor"));
-
-    let slotPayload;
-
     // cases
     // 1. Volunteer had only one role and is now choosing both roles.
     // 2. Volunteer had only one role and is switching to the other single role.
-    // 3. Volunteer had both roles and is still keeping both roles.
-    // 4. Volunteer had one role and is keeping that same role.
-    // 5. Volunteer had both roles and is now choosing only one role.
+    // 3. Volunteer had both roles and is now choosing only one role.
 
-    // need to do a time check here also
     const driverLookupSlot =
       `${AIRTABLE_URL_BASE}/⏳ Available Slots?` +
       `filterByFormula=AND(` +
@@ -401,150 +390,90 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       `Type="Distributor"
       )`;
 
-    if (wasBoth) {
-      if (isNewlySingleRole) {
-        // Scenario 5: They were originally both and now only one.
-        let roleToNullify = newRolesSet.has("Driver")
-          ? "Driver"
-          : "Distributor";
+    const originalType = originalInfo.records[0].fields.Type;
+    const newType = airtableParticipantType;
+    let slotPayload;
 
-        slotPayload =
-          roleToNullify === "Distributor"
-            ? { "Driving Slot": null }
-            : { "Logistics Slot": null };
-      } else if (isNowBoth) {
-        // Scenario 3: They were both roles and are still keeping both roles.
-        // no need to do anything
+    if (originalType.length === 2 && newType.length === 1) {
+      // case 3
+      const roleToNullify: AirtableParticipantType =
+        newType[0] === "Driver" ? "Distributor" : "Driver";
 
-        logger.info(
-          `Volunteer ${volunteerId} has not changed their volunteer type.`
+      slotPayload =
+        roleToNullify === "Driver"
+          ? { "Driving Slot": null }
+          : { "Logistics Slot": null };
+    } else if (originalType.length === 1 && newType.length === 2) {
+      // case 1
+      const roleToAdd: AirtableParticipantType =
+        originalType[0] === "Driver" ? "Distributor" : "Driver";
+      const lookupSlot =
+        roleToAdd === "Driver" ? driverLookupSlot : logisticsLookupSlot;
+
+      const slotFetch = await airtableGET({
+        url: lookupSlot,
+      });
+
+      if (slotFetch.kind === "error") {
+        res.status(INTERNAL_SERVER_ERROR).json({
+          message: slotFetch.error,
+        });
+
+        return;
+      }
+
+      if (slotFetch.records.length == 0) {
+        logger.error(
+          `Could not find a slot for ${supplierPickupEvent} for ${roleToAdd}`
         );
-        res.status(OK).json({
-          message: `Volunteer ${volunteerId} has not changed their volunteer type.`,
+        res.status(BAD_REQUEST).json({
+          message: `Could not find a slot for ${supplierPickupEvent} for ${roleToAdd}`,
         });
 
         return;
       }
-    } else {
-      if (isNowBoth) {
-        // Scenario 1: They had only one role and are now choosing both roles.
 
-        // figure out which role they are adding
-        let roleToAdd =
-          newRolesSet.has("Driver") && !originalRolesSet.has("Driver")
-            ? "Driver"
-            : "Distributor";
+      const slotId = slotFetch.records[0].id;
 
-        // get matching slot, if they are becoming a driver we need to get them into the 10:30 slot,
-        // packer only has one slot
-        const lookupSlot =
-          roleToAdd === "Driver" ? driverLookupSlot : logisticsLookupSlot;
+      slotPayload =
+        roleToAdd === "Driver"
+          ? { "Driving Slot": [slotId] }
+          : { "Logistics Slot": [slotId] };
+    } else if (originalType.length == 1 && newType.length == 1) {
+      // case 2
+      const newRole = newType[0];
+      const lookupSlot =
+        newRole === "Driver" ? driverLookupSlot : logisticsLookupSlot;
 
-        const slotFetch = await airtableGET({
-          url: lookupSlot,
-        });
+      const slotFetch = await airtableGET({
+        url: lookupSlot,
+      });
 
-        if (slotFetch.kind === "error") {
-          res.status(INTERNAL_SERVER_ERROR).json({
-            message: slotFetch.error,
-          });
-
-          return;
-        }
-
-        if (slotFetch.records.length == 0) {
-          logger.error(
-            `Could not find a slot for ${supplierPickupEvent} for ${roleToAdd}`
-          );
-          res.status(BAD_REQUEST).json({
-            message: `Could not find a slot for ${supplierPickupEvent} for ${roleToAdd}`,
-          });
-
-          return;
-        }
-
-        const slotId = slotFetch.records[0].id;
-
-        slotPayload =
-          roleToAdd === "Driver"
-            ? { "Driving Slot": [slotId] }
-            : { "Logistics Slot": [slotId] };
-      } else if (
-        newRolesSet.has("Driver") &&
-        originalRolesSet.has("Distributor")
-      ) {
-        // Scenario 2: They switched from "Distributor" to "Driver".
-
-        // get the driver slot
-        const slotFetch = await airtableGET({
-          url: driverLookupSlot,
-        });
-
-        if (slotFetch.kind === "error") {
-          res.status(INTERNAL_SERVER_ERROR).json({
-            message: slotFetch.error,
-          });
-
-          return;
-        }
-
-        if (slotFetch.records.length == 0) {
-          logger.error(
-            `Could not find a driving slot for ${supplierPickupEvent}`
-          );
-          res.status(BAD_REQUEST).json({
-            message: `Could not find a driving slot for ${supplierPickupEvent}`,
-          });
-
-          return;
-        }
-
-        const slotId = slotFetch.records[0].id;
-
-        slotPayload = { "Driving Slot": [slotId], "Logistics Slot": null };
-      } else if (
-        newRolesSet.has("Distributor") &&
-        originalRolesSet.has("Driver")
-      ) {
-        // Scenario 2: They switched from "Driver" to "Distributor".
-
-        // get the logistics slot
-        const slotFetch = await airtableGET({
-          url: logisticsLookupSlot,
-        });
-
-        if (slotFetch.kind === "error") {
-          res.status(INTERNAL_SERVER_ERROR).json({
-            message: slotFetch.error,
-          });
-
-          return;
-        }
-
-        if (slotFetch.records.length == 0) {
-          logger.error(
-            `Could not find a logistics slot for ${supplierPickupEvent}`
-          );
-          res.status(BAD_REQUEST).json({
-            message: `Could not find a logistics slot for ${supplierPickupEvent}`,
-          });
-
-          return;
-        }
-
-        const slotId = slotFetch.records[0].id;
-
-        slotPayload = { "Driving Slot": null, "Logistics Slot": [slotId] };
-      } else {
-        // Scenario 4: They had one role and are keeping that same role.
-        // nothing needs to be done
-
-        res.status(OK).json({
-          message: `Volunteer ${volunteerId} has not changed their volunteer type.`,
+      if (slotFetch.kind === "error") {
+        res.status(INTERNAL_SERVER_ERROR).json({
+          message: slotFetch.error,
         });
 
         return;
       }
+
+      if (slotFetch.records.length == 0) {
+        logger.error(
+          `Could not find a slot for ${supplierPickupEvent} for ${newRole}`
+        );
+        res.status(BAD_REQUEST).json({
+          message: `Could not find a slot for ${supplierPickupEvent} for ${newRole}`,
+        });
+
+        return;
+      }
+
+      const slotId = slotFetch.records[0].id;
+
+      slotPayload =
+        newRole === "Driver"
+          ? { "Driving Slot": [slotId], "Logistics Slot": null }
+          : { "Driving Slot": null, "Logistics Slot": [slotId] };
     }
 
     // to update volunteer type issue patch to the Scheduled Slots table

@@ -41,17 +41,15 @@ const EditFieldInput = ({
         </p>
         <div className="relative w-64 grow md:w-80">
           <div className="flex h-8 w-full rounded-lg border-2 border-softGrayWhite px-2">
-            <form className={"flex w-full flex-col space-y-3"}>
-              <div className="flex flex-col space-y-1">
-                <input
-                  className="w-full border-0 outline-none" // Add "w-full" class for full width
-                  type={fieldType}
-                  name={fieldName}
-                  value={value}
-                  onChange={handleChange}
-                />
-              </div>
-            </form>
+            <div className="flex w-full flex-col space-y-1">
+              <input
+                className="w-full border-0 outline-none"
+                type={fieldType}
+                name={fieldName}
+                value={value}
+                onChange={handleChange}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -74,22 +72,20 @@ const EditFieldSelect = ({
         </p>
         <div className="relative w-64 grow md:w-80">
           <div className="flex h-8 w-full rounded-lg border-2 border-softGrayWhite px-2">
-            <form className={"flex w-full flex-col space-y-3"}>
-              <div className="flex flex-col space-y-1">
-                <select
-                  className="w-full border-0 outline-none"
-                  name="participantType"
-                  value={value}
-                  onChange={handleChange}
-                >
-                  {participantTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </form>
+            <div className="flex w-full flex-col space-y-1">
+              <select
+                className="w-full border-0 outline-none"
+                name="participantType"
+                value={value}
+                onChange={handleChange}
+              >
+                {participantTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -136,7 +132,7 @@ export const EditVolunteerPopup = (info: Props) => {
       );
       if (!resp.ok) {
         const data = await resp.json();
-        throw new Error(data.messsage);
+        throw new Error(data.message);
       }
       return resp.json();
     },
@@ -147,8 +143,8 @@ export const EditVolunteerPopup = (info: Props) => {
       info.refetch();
     },
     onError(error, variables, context) {
-      console.error(error);
-      toastNotify("There was a problem updating the volunteer", "failure");
+      // @ts-ignore
+      toastNotify(error.message, "failure");
     },
   });
 
@@ -168,41 +164,41 @@ export const EditVolunteerPopup = (info: Props) => {
                 Edit Volunteer
               </h1>
             </div>
-
-            <EditFieldInput
-              fieldType={"text"}
-              fieldName={"firstName"}
-              label={"First Name:"}
-              value={formState.firstName}
-              handleChange={handleChange}
-            />
-            <EditFieldInput
-              fieldType={"text"}
-              fieldName={"lastName"}
-              label={"Last Name:"}
-              value={formState.lastName}
-              handleChange={handleChange}
-            />
-            <EditFieldInput
-              fieldType={"email"}
-              fieldName={"email"}
-              label={"Email:"}
-              value={formState.email}
-              handleChange={handleChange}
-            />
-            <EditFieldInput
-              fieldType={"tel"}
-              fieldName={"phoneNumber"}
-              label={"Phone Number:"}
-              value={formState.phoneNumber}
-              handleChange={handleChange}
-            />
-            <EditFieldSelect
-              label={"Volunteer Type:"}
-              value={formState.participantType}
-              handleChange={handleChange}
-            />
-
+            <form className={"flex w-full flex-col space-y-3"}>
+              <EditFieldInput
+                fieldType={"text"}
+                fieldName={"firstName"}
+                label={"First Name:"}
+                value={formState.firstName}
+                handleChange={handleChange}
+              />
+              <EditFieldInput
+                fieldType={"text"}
+                fieldName={"lastName"}
+                label={"Last Name:"}
+                value={formState.lastName}
+                handleChange={handleChange}
+              />
+              <EditFieldInput
+                fieldType={"email"}
+                fieldName={"email"}
+                label={"Email:"}
+                value={formState.email}
+                handleChange={handleChange}
+              />
+              <EditFieldInput
+                fieldType={"tel"}
+                fieldName={"phoneNumber"}
+                label={"Phone Number:"}
+                value={formState.phoneNumber}
+                handleChange={handleChange}
+              />
+              <EditFieldSelect
+                label={"Volunteer Type:"}
+                value={formState.participantType}
+                handleChange={handleChange}
+              />
+            </form>
             <div className="row-auto flex justify-center space-x-2">
               <Modal.Close className="rounded-full bg-red-700 px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">
                 Cancel

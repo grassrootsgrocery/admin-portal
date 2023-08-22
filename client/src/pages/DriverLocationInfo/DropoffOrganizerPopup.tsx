@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "react-query";
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../../httpUtils";
+import { API_BASE_URL, applyPatch } from "../../httpUtils";
 import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
@@ -9,6 +9,8 @@ import * as Modal from "@radix-ui/react-dialog";
 import { ProcessedDropoffLocation } from "../../types";
 import { toastNotify } from "../../uiUtils";
 import { Loading } from "../../components/Loading";
+import { HttpCheckbox } from "../../components/HttpCheckbox";
+
 
 interface DropoffLocationsStore {
   [id: string]: DropoffLocationForm;
@@ -19,9 +21,61 @@ interface DropoffLocationForm {
   endTime: [value: string, isValidEndTime: boolean];
   deliveriesNeeded: number | null;
 }
+export const DropoffOrganizerPopup: React.FC<{
+  date: Date;
+  dropoffLocations: ProcessedDropoffLocation[];
+  refetchDropoffLocations: () => void;
+}> = ({ date, dropoffLocations, refetchDropoffLocations }) => {
+  const { token } = useAuth();
+  if (!token) {
+    return <Navigate to="/" />;
+  }
 
+  const saveDropoffLocations = useMutation({
+    mutationFn: async () => {
+      const payload: {
+        [id: string]: {
+          startTime: string;
+          endTime: string;
+          deliveriesNeeded: number;
+        };
+      } = {};
+
+      for (const id in dropoffStore) {
+        payload[id] = {
+          startTime: toISO(dropoffStore[id].startTime[0], date),
+          endTime: toISO(dropoffStore[id].endTime[0], date),
+          deliveriesNeeded: dropoffStore[id].deliveriesNeeded || 0,
+        };
+      }
+
+      const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!resp.ok) {
+        const data = await resp.json();
+        throw new Error(data.messsage);
+      }
+      return resp.json();
+    },
+    onSuccess(data, variables, context) {
+      toastNotify("Drop-off locations saved successfully", "success");
+      refetchDropoffLocations();
+    },
+    onError(error, variables, context) {
+      console.error(error);
+      toastNotify("There was a problem saving dropoff-locations", "failure");
+    },
+  });
 //Regex for validating time
 const validTime = /^(0?[1-9]|1[012]):([0-5]\d)\s?([AaPp][Mm])$/;
+
+
 
 function processDropoffLocationsForTable(
   dropoffLocations: ProcessedDropoffLocation[] | undefined,
@@ -49,9 +103,12 @@ function processDropoffLocationsForTable(
     });
   };
 
+ 
+  
   return dropoffLocations
     .sort((a, b) => (a.siteName < b.siteName ? -1 : 1))
     .map((curLocation) => {
+      //console.log(curLocation)
       const [startTime, isStartTimeValid] = dropoffStore[curLocation.id]
         ? dropoffStore[curLocation.id].startTime
         : [null, true];
@@ -61,6 +118,7 @@ function processDropoffLocationsForTable(
       const deliveriesNeeded = dropoffStore[curLocation.id]
         ? dropoffStore[curLocation.id].deliveriesNeeded
         : null;
+      const { token } = useAuth();
 
       return [
         curLocation.id,
@@ -122,6 +180,22 @@ function processDropoffLocationsForTable(
             );
           }}
         ></input>,
+        <HttpCheckbox 
+          checked={curLocation.notavailable}
+          mutationFn={applyPatch(
+            `${API_BASE_URL}/api/dropoff-locations/notavailable/${curLocation.id}`,
+            { newNotAvailable: !curLocation.notavailable },
+            token as string
+          )}
+          onSuccess={() => {
+            const toastMessage = `${curLocation.siteName} is now ${
+              curLocation.notavailable ? "Available" : "Not Available"
+            }`;
+            refetchDropoffLocations();
+            toastNotify(toastMessage, "success");
+          }}
+          onError={() => toastNotify("Unable to change availability", "failure")}
+        />,
       ];
     });
 }
@@ -189,63 +263,15 @@ function isValidInput(dropoffStore: DropoffLocationsStore) {
   return true;
 }
 
-export const DropoffOrganizerPopup: React.FC<{
-  date: Date;
-  dropoffLocations: ProcessedDropoffLocation[];
-  refetchDropoffLocations: () => void;
-}> = ({ date, dropoffLocations, refetchDropoffLocations }) => {
-  const { token } = useAuth();
-  if (!token) {
-    return <Navigate to="/" />;
-  }
 
-  const saveDropoffLocations = useMutation({
-    mutationFn: async () => {
-      const payload: {
-        [id: string]: {
-          startTime: string;
-          endTime: string;
-          deliveriesNeeded: number;
-        };
-      } = {};
-
-      for (const id in dropoffStore) {
-        payload[id] = {
-          startTime: toISO(dropoffStore[id].startTime[0], date),
-          endTime: toISO(dropoffStore[id].endTime[0], date),
-          deliveriesNeeded: dropoffStore[id].deliveriesNeeded || 0,
-        };
-      }
-
-      const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations/`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-      if (!resp.ok) {
-        const data = await resp.json();
-        throw new Error(data.messsage);
-      }
-      return resp.json();
-    },
-    onSuccess(data, variables, context) {
-      toastNotify("Drop-off locations saved successfully", "success");
-      refetchDropoffLocations();
-    },
-    onError(error, variables, context) {
-      console.error(error);
-      toastNotify("There was a problem saving dropoff-locations", "failure");
-    },
-  });
 
   const [dropoffStore, setDropoffStore] = useState<DropoffLocationsStore>({});
   useEffect(() => {
     setDropoffStore(populateStoreWithFetchedData(dropoffLocations));
   }, [dropoffLocations]);
 
+  
+  
   return (
     <Popup
       trigger={
@@ -272,6 +298,7 @@ export const DropoffOrganizerPopup: React.FC<{
                 "Start Time",
                 "End Time",
                 "Deliveries Needed",
+                "Not Available"
               ]}
               dataRows={processDropoffLocationsForTable(
                 dropoffLocations,

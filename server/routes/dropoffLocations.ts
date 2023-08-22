@@ -51,7 +51,7 @@ function processDropOffLocations(
         optionsTime
       )
     : "";
-
+    //console.log(location.fields)
   return {
     id: location.id,
     siteName: location.fields["Drop off location"] || "No name",
@@ -69,6 +69,7 @@ function processDropOffLocations(
       ? location.fields["POC Phone Number List"].split(";")
       : [],
     locationEmail: location.fields["Location Email"] || "None",
+    notavailable: location.fields["Not Available"] || false
   };
 }
 
@@ -125,6 +126,7 @@ router.route("/api/dropoff-locations/").get(
       `&fields=POC Name List` + // Points of contact
       `&fields=POC Phone Number List` + // Points of contact phone numbers
       `&fields=Location Email` + // email
+      `&fields=Not Available` + // email
       `&fields%5B%5D=%23+of+Loads+Requested`; // deliveriesNeeded. This needs to be url encoded for reasons that I don't understand.
 
     const dropoffLocations = await airtableGET<DropoffLocation>({
@@ -185,7 +187,7 @@ router.route("/api/dropoff-locations/").patch(
   protect,
   asyncHandler(async (req: Request, res: Response) => {
     logger.info(`PATCH /api/dropoff-locations/`);
-    logger.info("Request body: ", req.body);
+    logger.info(`Request body: ${JSON.stringify(req.body)}`);
 
     const isValidRequest =
       Object.keys(req.body).filter(
@@ -216,7 +218,7 @@ router.route("/api/dropoff-locations/").patch(
     const url = `${AIRTABLE_URL_BASE}/📍 Drop off locations`;
 
     //Use this loop to make the requests because Airtable can only update the records 10 at a time.
-    for (let start = 0; start + 10 <= records.length; start += 10) {
+    for (let start = 0; start < records.length; start += 10) {
       await airtablePATCH({
         url: url,
         body: { records: records.slice(start, start + 10) },
@@ -225,5 +227,48 @@ router.route("/api/dropoff-locations/").patch(
     res.status(OK).json({ message: "Dropoff locations updated" });
   })
 );
+
+/**
+ * @description Update 'Not Available' property for drop off location
+ * @route  PATCH /api/dropoff-locations/notavailable/:dropofflocationId
+ * @access
+ */
+router.route("/api/dropoff-locations/notavailable/:dropofflocationId").patch(
+  protect,
+  asyncHandler(async (req: Request, res: Response) => {
+    const { dropofflocationId } = req.params;
+    logger.info(`PATCH /api/dropoff-locations/notavailable/${dropofflocationId}`);
+    logger.info("Request body: ", req.body);
+    const { newNotAvailable } = req.body;
+    const isValidRequest =
+      dropofflocationId &&
+      typeof dropofflocationId === "string" &&
+      typeof newNotAvailable === "boolean";
+
+      if (!isValidRequest) {
+        res.status(BAD_REQUEST);
+        throw new Error(
+          "Please provide a 'volunteerId' as a query param and a 'newConfirmationStatus' on the body."
+        );
+      }
+
+      const body = {
+        records: [
+          {
+            id: dropofflocationId,
+            fields: { "Not Available": newNotAvailable },
+          },
+        ],
+      };
+      const result = await airtablePATCH({
+        url: `${AIRTABLE_URL_BASE}/📍 Drop off locations`,
+        body: body,
+      });
+      res.status(OK).json(result);
+
+   
+  })
+);
+
 
 export default router;

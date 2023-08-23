@@ -6,6 +6,16 @@ export type AirtableResponse<T> =
   | { kind: "success"; records: AirtableRecord<T>[]; error?: never }
   | { kind: "error"; error: string; records?: never };
 
+type Enumerate<T extends readonly any[]> = T[number];
+
+export const AIRTABLE_PARTICIPANT_TYPES = ["Driver", "Distributor"] as const;
+export type AirtableParticipantType = Enumerate<
+  typeof AIRTABLE_PARTICIPANT_TYPES
+>;
+
+export const PARTICIPANT_TYPES = ["Driver", "Packer"] as const;
+export type ParticipantType = Enumerate<typeof PARTICIPANT_TYPES>;
+
 export interface AirtableRecord<T> {
   id: string;
   fields: T;

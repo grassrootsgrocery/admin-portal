@@ -202,7 +202,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       participantType.length > 0 &&
       participantType.length <= 2 &&
       participantType.every(
-        (type) => PARTICIPANT_TYPES.includes(type) && typeof type == "string"
+        (type) => typeof type == "string" && PARTICIPANT_TYPES.includes(type)
       );
 
     if (!isParticipantTypeValid) {

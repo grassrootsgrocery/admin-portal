@@ -187,7 +187,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     const stringFields = [firstName, lastName, email, phoneNumber];
 
     const isValidRequest = stringFields.every((field) => {
-      return field.trim().length > 0 && typeof field === "string";
+      return typeof field === "string" && field.trim().length > 0;
     });
 
     if (!isValidRequest) {
@@ -199,10 +199,11 @@ router.route("/api/volunteers/update/:volunteerId").patch(
     }
 
     const isParticipantTypeValid =
-      participantType.length > 0 && participantType.length <= 2;
-    participantType.every(
-      (type) => PARTICIPANT_TYPES.includes(type) && typeof type == "string"
-    );
+      participantType.length > 0 &&
+      participantType.length <= 2 &&
+      participantType.every(
+        (type) => PARTICIPANT_TYPES.includes(type) && typeof type == "string"
+      );
 
     if (!isParticipantTypeValid) {
       res.status(BAD_REQUEST).json({

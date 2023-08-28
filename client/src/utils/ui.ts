@@ -30,8 +30,6 @@ export function toastNotify(message: string, toastType?: toast) {
 }
 
 export function cn(...inputs: string[]) {
-  const a = inputs.join(" ");
-  console.log("a", a);
   return inputs.join(" ");
 }
 

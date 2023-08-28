@@ -6,6 +6,16 @@ export type AirtableResponse<T> =
   | { kind: "success"; records: AirtableRecord<T>[]; error?: never }
   | { kind: "error"; error: string; records?: never };
 
+type Enumerate<T extends readonly any[]> = T[number];
+
+export const AIRTABLE_PARTICIPANT_TYPES = ["Driver", "Distributor"] as const;
+export type AirtableParticipantType = Enumerate<
+  typeof AIRTABLE_PARTICIPANT_TYPES
+>;
+
+export const PARTICIPANT_TYPES = ["Driver", "Packer"] as const;
+export type ParticipantType = Enumerate<typeof PARTICIPANT_TYPES>;
+
 export interface AirtableRecord<T> {
   id: string;
   fields: T;
@@ -135,6 +145,7 @@ export interface DropoffLocation {
   "POC Phone Number List": string | undefined;
   "Location Email": string | undefined;
   "# of Loads Requested": number | undefined;
+  "Not Available": boolean | undefined;
 }
 
 export interface ProcessedDropoffLocation {
@@ -150,6 +161,7 @@ export interface ProcessedDropoffLocation {
   locationEmail: string;
   deliveriesAssigned: number;
   matchedDrivers: string[];
+  notavailable: boolean;
 }
 
 export interface SpecialGroup {

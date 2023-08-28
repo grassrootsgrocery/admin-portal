@@ -16,62 +16,19 @@ import check_icon from "../../assets/checkbox-icon.svg";
 import { ProcessedScheduledSlot } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 import { ContactPopup } from "../../components/ContactPopup";
+import { EditVolunteerPopup } from "../../components/EditVolunteerPopup";
+import { HttpCheckbox } from "../../components/HttpCheckbox";
 
 /*
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
 */
-
-//Used for "Confirmed" and "Not going" checkboxes
-interface HttpCheckboxProps {
-  checked: boolean;
-  mutationFn: any; //This needs to be generic enough
-  onSuccess: () => void;
-  onError: () => void;
-}
-export const HttpCheckbox: React.FC<HttpCheckboxProps> = ({
-  checked,
-  mutationFn,
-  onSuccess,
-  onError,
-}: HttpCheckboxProps) => {
-  const [isChecked, setIsChecked] = useState(checked);
-  const httpRequest = useMutation({
-    mutationFn: mutationFn,
-    onSuccess(data, variables, context) {
-      setIsChecked((prevVal) => !prevVal);
-      onSuccess();
-    },
-    onError(error, variables, context) {
-      console.error(error);
-      onError();
-    },
-  });
-
-  //UI
-  return (
-    <div className="relative flex h-full items-center justify-center">
-      {httpRequest.status === "loading" ? (
-        <Loading size="xsmall" thickness="thin" />
-      ) : (
-        <RadixCheckbox.Root
-          className="flex h-5 w-5 items-center justify-center rounded border-2 border-newLeafGreen bg-softGrayWhite shadow-md hover:brightness-110"
-          checked={isChecked}
-          onClick={() => httpRequest.mutate()}
-        >
-          <RadixCheckbox.Indicator className="CheckboxIndicator">
-            <img src={check_icon} alt="" />
-          </RadixCheckbox.Indicator>
-        </RadixCheckbox.Root>
-      )}
-    </div>
-  );
-};
 
 interface FilterItemProps {
   onSelect: () => void;
   filterLabel: string;
   selected: boolean;
 }
+
 const FilterItem: React.FC<FilterItemProps> = (props: FilterItemProps) => {
   const { filterLabel, selected, onSelect } = props;
   return (
@@ -106,6 +63,7 @@ interface FilterButtonProps {
   onSelect: () => void;
   filterLabel: string;
 }
+
 const FilterButton: React.FC<FilterButtonProps> = ({
   filterLabel,
   onSelect,
@@ -126,6 +84,7 @@ interface DropdownFilterOption {
   isSelected: boolean;
   filter: (e: ProcessedScheduledSlot) => boolean;
 }
+
 function createDropdownFilters(scheduledSlots: ProcessedScheduledSlot[]) {
   let dropdownFilters = [
     {
@@ -196,6 +155,7 @@ interface Props {
   scheduledSlots: ProcessedScheduledSlot[];
   refetchVolunteers: () => void;
 }
+
 const applySelectedFilters = (
   selectedFilters: DropdownFilterOption[],
   scheduledSlots: ProcessedScheduledSlot[]
@@ -292,6 +252,15 @@ export const VolunteersTable: React.FC<Props> = ({
         typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
         /* Contact Modal */
         <ContactPopup phoneNumber={ss.phoneNumber} email={ss.email} />,
+        <EditVolunteerPopup
+          id={ss.id}
+          email={ss.email}
+          phoneNumber={ss.phoneNumber}
+          firstName={ss.firstName}
+          lastName={ss.lastName}
+          participantType={ss.participantType}
+          refetch={refetchVolunteers}
+        />,
       ];
     });
 
@@ -400,6 +369,7 @@ export const VolunteersTable: React.FC<Props> = ({
           "Special Group",
           "Delivery Count",
           "Contact",
+          "Edit",
         ]}
         dataRows={processScheduledSlotsForTable(filtered)}
       />

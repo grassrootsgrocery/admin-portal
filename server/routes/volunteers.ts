@@ -6,7 +6,7 @@ import {
   airtablePATCH,
   AIRTABLE_URL_BASE,
 } from "../httpUtils/airtable";
-import { protect } from "../middleware/authMiddleware";
+import { adminProtect, protect } from "../middleware/authMiddleware";
 //Status codes
 import {
   BAD_REQUEST,
@@ -21,6 +21,10 @@ import {
   AirtableRecord,
   ScheduledSlot,
   ProcessedScheduledSlot,
+  AIRTABLE_PARTICIPANT_TYPES,
+  PARTICIPANT_TYPES,
+  ParticipantType,
+  AirtableParticipantType,
 } from "../types";
 //Error messages
 //Logger
@@ -141,6 +145,367 @@ router.route("/api/volunteers/").get(
     const volunteers = processScheduledSlots(scheduledSlots.records);
 
     res.status(OK).json(volunteers);
+  })
+);
+
+// Utility function to check if the volunteer type has changed
+function hasVolunteerTypeChanged(
+  originalType: string[],
+  newType: string[]
+): boolean {
+  if (originalType.length !== newType.length) return true;
+
+  return originalType.length === 1 && newType[0] !== originalType[0];
+}
+
+/**
+ * @description Update a volunteers info
+ * @route  PATCH /api/volunteers/update/:volunteerId
+ * @access
+ */
+router.route("/api/volunteers/update/:volunteerId").patch(
+  adminProtect,
+  asyncHandler(async (req: Request, res: Response) => {
+    const { volunteerId } = req.params;
+    logger.info(`PATCH /api/volunteers/update/${volunteerId}`);
+    logger.info("Request body: ", req.body);
+
+    const {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      participantType,
+    }: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phoneNumber: string;
+      participantType: ParticipantType[];
+    } = req.body;
+
+    const stringFields = [firstName, lastName, email, phoneNumber];
+
+    const isValidRequest = stringFields.every((field) => {
+      return typeof field === "string" && field.trim().length > 0;
+    });
+
+    if (!isValidRequest) {
+      logger.error(`Invalid request body: ${JSON.stringify(req.body)}`);
+
+      res.status(BAD_REQUEST).json({
+        message: `Please provide a valid 'firstName', 'lastName', 'email', and 'phoneNumber' on the body.`,
+      });
+    }
+
+    const isParticipantTypeValid =
+      participantType.length > 0 &&
+      participantType.length <= 2 &&
+      participantType.every(
+        (type) => typeof type == "string" && PARTICIPANT_TYPES.includes(type)
+      );
+
+    if (!isParticipantTypeValid) {
+      res.status(BAD_REQUEST).json({
+        message: `Please provide a valid 'participantType' on the body, valid types are ${PARTICIPANT_TYPES}. 
+        Was provided ${participantType}. They must all be strings.`,
+      });
+    }
+
+    // replace all Packer with Distributor the array for airtable
+    const airtableParticipantType: AirtableParticipantType[] =
+      participantType.map(
+        (type) =>
+          type.replace("Packer", "Distributor") as AirtableParticipantType
+      );
+
+    // get all their original info from scheduled slots
+    const originalRecord =
+      `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
+      `filterByFormula=SEARCH(RECORD_ID(), "${volunteerId}") != ""`;
+
+    // get original info from scheduled slots
+    const originalInfo = await airtableGET<{
+      "Phone Formula": string;
+      "Phone Number": string;
+      "🚛 Supplier Pickup Event": string;
+      "Logistics Slot": string;
+      "Driving Slot": string;
+      Type: AirtableParticipantType[];
+    }>({
+      url: originalRecord,
+    });
+
+    if (originalInfo.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: originalInfo.error,
+      });
+
+      return;
+    }
+
+    // check if the volunteerId is valid, that means original info exists
+    if (originalInfo.records.length == 0) {
+      logger.error(`Could not find a volunteer with the id ${volunteerId}`);
+
+      res.status(BAD_REQUEST).json({
+        message: `Could not find a volunteer with the id ${volunteerId}`,
+      });
+
+      return;
+    }
+
+    // if the phone number changed make sure we don't have a conflict
+    const phoneNumberChanged =
+      originalInfo.records[0].fields["Phone Formula"] !== phoneNumber;
+
+    if (phoneNumberChanged) {
+      // lookup new number and check for conflict
+      const lookupNewNumber =
+        `${AIRTABLE_URL_BASE}/🙋🏽Volunteers CRM?` +
+        `filterByFormula=SEARCH("${phoneNumber}", "Phone Number") != ""`;
+
+      const newNumberFetch = await airtableGET({
+        url: lookupNewNumber,
+      });
+
+      if (newNumberFetch.kind === "error") {
+        res.status(INTERNAL_SERVER_ERROR).json({
+          message: newNumberFetch.error,
+        });
+
+        return;
+      }
+
+      if (newNumberFetch.records.length > 0) {
+        logger.error(
+          `The phone number ${phoneNumber} is already in use by another volunteer.`
+        );
+
+        res.status(BAD_REQUEST).json({
+          message: `The phone number ${phoneNumber} is already in use by another volunteer.`,
+        });
+
+        return;
+      }
+    }
+
+    // get actual Volunteer CRM recordId
+    const phoneNumberRef = originalInfo.records[0].fields["Phone Number"];
+
+    const lookupVolunteerCRMRecordId =
+      `${AIRTABLE_URL_BASE}/🙋🏽Volunteers CRM?` +
+      `filterByFormula=SEARCH(RECORD_ID(), "${phoneNumberRef}") != ""`;
+
+    // lookup the volunteer in the crm table
+    const volunteerRecordIdFetch = await airtableGET({
+      url: lookupVolunteerCRMRecordId,
+    });
+
+    if (volunteerRecordIdFetch.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: volunteerRecordIdFetch.error,
+      });
+
+      return;
+    }
+
+    if (volunteerRecordIdFetch.records.length == 0) {
+      logger.error(
+        `Could not find a volunteer with the phone number ${phoneNumber}`
+      );
+
+      res.status(BAD_REQUEST).json({
+        message: `Could not find a volunteer with the phone number ${phoneNumber}`,
+      });
+
+      return;
+    }
+
+    const volunteerRecordId = volunteerRecordIdFetch.records[0].id;
+
+    // to update persons info issue patch to the Volunteers CRM table
+    const updatePersonInfoBody = {
+      records: [
+        {
+          id: volunteerRecordId,
+          fields: {
+            "First Name": firstName,
+            "Last Name": lastName,
+            "Email Address": email,
+            "Phone Number": phoneNumber,
+          },
+        },
+      ],
+    };
+
+    const contactInfoUpdateResult = await airtablePATCH({
+      url: `${AIRTABLE_URL_BASE}/🙋🏽Volunteers CRM`,
+      body: updatePersonInfoBody,
+    });
+
+    if (contactInfoUpdateResult.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: contactInfoUpdateResult.error,
+      });
+
+      return;
+    }
+
+    if (
+      !hasVolunteerTypeChanged(
+        airtableParticipantType,
+        originalInfo.records[0].fields.Type
+      )
+    ) {
+      logger.info(
+        `Volunteer ${volunteerId} has not changed their volunteer type.`
+      );
+      res.status(BAD_REQUEST).json({
+        message: `Volunteer ${volunteerId} has not changed their volunteer type.`,
+      });
+
+      return;
+    }
+
+    const supplierPickupEvent =
+      originalInfo.records[0].fields["🚛 Supplier Pickup Event"];
+
+    // cases
+    // 1. Volunteer had only one role and is now choosing both roles.
+    // 2. Volunteer had only one role and is switching to the other single role.
+    // 3. Volunteer had both roles and is now choosing only one role.
+
+    const driverLookupSlot =
+      `${AIRTABLE_URL_BASE}/⏳ Available Slots?` +
+      `filterByFormula=AND(` +
+      `{Time Slot (readable)}="10:30am",` +
+      `{🚛 Supplier Pickup Event Record ID}="${supplierPickupEvent}",` +
+      `Type="Driver"
+      )`;
+
+    const logisticsLookupSlot =
+      `${AIRTABLE_URL_BASE}/⏳ Available Slots?` +
+      `filterByFormula=AND(` +
+      `{🚛 Supplier Pickup Event Record ID}="${supplierPickupEvent}",` +
+      `Type="Distributor"
+      )`;
+
+    const originalType = originalInfo.records[0].fields.Type;
+    const newType = airtableParticipantType;
+    let slotPayload;
+
+    if (originalType.length === 2 && newType.length === 1) {
+      // case 3
+      const roleToNullify: AirtableParticipantType =
+        newType[0] === "Driver" ? "Distributor" : "Driver";
+
+      slotPayload =
+        roleToNullify === "Driver"
+          ? { "Driving Slot": null }
+          : { "Logistics Slot": null };
+    } else if (originalType.length === 1 && newType.length === 2) {
+      // case 1
+      const roleToAdd: AirtableParticipantType =
+        originalType[0] === "Driver" ? "Distributor" : "Driver";
+      const lookupSlot =
+        roleToAdd === "Driver" ? driverLookupSlot : logisticsLookupSlot;
+
+      const slotFetch = await airtableGET({
+        url: lookupSlot,
+      });
+
+      if (slotFetch.kind === "error") {
+        res.status(INTERNAL_SERVER_ERROR).json({
+          message: slotFetch.error,
+        });
+
+        return;
+      }
+
+      if (slotFetch.records.length == 0) {
+        logger.error(
+          `Could not find a slot for ${supplierPickupEvent} for ${roleToAdd}`
+        );
+        res.status(BAD_REQUEST).json({
+          message: `Could not find a slot for ${supplierPickupEvent} for ${roleToAdd}`,
+        });
+
+        return;
+      }
+
+      const slotId = slotFetch.records[0].id;
+
+      slotPayload =
+        roleToAdd === "Driver"
+          ? { "Driving Slot": [slotId] }
+          : { "Logistics Slot": [slotId] };
+    } else if (originalType.length == 1 && newType.length == 1) {
+      // case 2
+      const newRole = newType[0];
+      const lookupSlot =
+        newRole === "Driver" ? driverLookupSlot : logisticsLookupSlot;
+
+      const slotFetch = await airtableGET({
+        url: lookupSlot,
+      });
+
+      if (slotFetch.kind === "error") {
+        res.status(INTERNAL_SERVER_ERROR).json({
+          message: slotFetch.error,
+        });
+
+        return;
+      }
+
+      if (slotFetch.records.length == 0) {
+        logger.error(
+          `Could not find a slot for ${supplierPickupEvent} for ${newRole}`
+        );
+        res.status(BAD_REQUEST).json({
+          message: `Could not find a slot for ${supplierPickupEvent} for ${newRole}`,
+        });
+
+        return;
+      }
+
+      const slotId = slotFetch.records[0].id;
+
+      slotPayload =
+        newRole === "Driver"
+          ? { "Driving Slot": [slotId], "Logistics Slot": null }
+          : { "Driving Slot": null, "Logistics Slot": [slotId] };
+    }
+
+    // to update volunteer type issue patch to the Scheduled Slots table
+    const updateVolunteerTypeBody = {
+      records: [
+        {
+          id: volunteerId,
+          fields: {
+            Type: airtableParticipantType,
+            ...slotPayload,
+          },
+        },
+      ],
+    };
+
+    const volunteerTypeUpdateResult = await airtablePATCH({
+      url: `${AIRTABLE_URL_BASE}/📅 Scheduled Slots`,
+      body: updateVolunteerTypeBody,
+    });
+
+    if (volunteerTypeUpdateResult.kind === "error") {
+      res.status(INTERNAL_SERVER_ERROR).json({
+        message: volunteerTypeUpdateResult.error,
+      });
+
+      return;
+    }
+
+    res.status(OK).json({
+      message: "updated volunteer type",
+    });
   })
 );
 

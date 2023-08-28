@@ -41,8 +41,6 @@ export const Popup: React.FC<Props> = ({
             "data-[state=closed]:slide-out-to-top-[48%]",
             "data-[state=open]:slide-in-from-left-1/2",
             "data-[state=open]:slide-in-from-top-[48%]",
-            "sm:rounded-lg",
-            "md:w-full",
             className,
           )}
         >

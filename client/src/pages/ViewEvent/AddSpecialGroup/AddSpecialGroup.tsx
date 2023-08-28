@@ -163,11 +163,11 @@ export const AddSpecialGroup: React.FC<Props> = ({
         </Modal.Title>
         <div className="flex h-[80%] w-full grow flex-col overflow-hidden">
           <input
+            autoFocus={true}
             className="m-[1px] grow-0 rounded border border-softGrayWhite px-2 py-1 text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:m-0 focus:border-2 focus:outline-none md:text-lg md:placeholder:text-lg"
             type="text"
             id="specialGroupInput"
             autoComplete="off"
-            autoFocus={false}
             placeholder="Search through groups..."
             value={searchQuery}
             onChange={(e) => {
@@ -230,7 +230,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
               Create:
               <p className="pl-2 text-[#0E7575]">{searchQuery}</p>
             </li>}
-            {selectedGroup && <p className="px-2 py-1" >Ready to {selectedGroup.isNewSpecialGroup ? ` create special group ${selectedGroup.name} and generate link` : `generate link for ${selectedGroup.name}`}</p>}
+            {selectedGroup && <p className="px-2 py-1" >Ready to {selectedGroup.isNewSpecialGroup ? ` create special group \"${selectedGroup.name}\" and generate link` : `generate link for ${selectedGroup.name}`}</p>}
           </ul>
         </div>
         <div className="flex h-[10%] items-center justify-center gap-5">
@@ -266,7 +266,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
       className={cn(
         "fixed left-[50%] top-0 h-[27rem] w-full -translate-x-1/2",
         "bg-softBeige p-4 md:top-[50%] md:w-[40rem] md:-translate-y-1/2 md:rounded-lg",
-        "lg:h-[40rem]  "
+        "lg:h-[40rem]"
       )}
       trigger={
         <button

@@ -1,6 +1,4 @@
 import toast from "react-hot-toast";
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
 
 type toast = "success" | "failure" | "alert";
 export function toastNotify(message: string, toastType?: toast) {
@@ -31,7 +29,9 @@ export function toastNotify(message: string, toastType?: toast) {
   });
 }
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+export function cn(...inputs: string[]) {
+  const a = inputs.join(" ");
+  console.log("a", a);
+  return inputs.join(" ");
 }
 

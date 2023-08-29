@@ -158,6 +158,13 @@ function hasVolunteerTypeChanged(
   return originalType.length === 1 && newType[0] !== originalType[0];
 }
 
+function hasVolunteerContactInfoChanged(
+  originalInfo: string[],
+  newInfo: string[]
+): boolean {
+  return originalInfo.every((info, index) => info !== newInfo[index]);
+}
+
 /**
  * @description Update a volunteers info
  * @route  PATCH /api/volunteers/update/:volunteerId
@@ -359,10 +366,10 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       )
     ) {
       logger.info(
-        `Volunteer ${volunteerId} has not changed their volunteer type.`
+        `Volunteer ${volunteerId} has not changed their volunteer type, update their info`
       );
-      res.status(BAD_REQUEST).json({
-        message: `Volunteer ${volunteerId} has not changed their volunteer type.`,
+      res.status(OK).json({
+        message: `Successfully updated volunteer info for ${volunteerId}, volunteer type did not change.`,
       });
 
       return;

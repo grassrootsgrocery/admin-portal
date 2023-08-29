@@ -359,7 +359,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       )
     ) {
       logger.info(
-        `Volunteer ${volunteerId} has not changed their volunteer type, update their info`
+        `Successfully updated volunteer info for ${volunteerId}, volunteer type did not change.`
       );
       res.status(OK).json({
         message: `Successfully updated volunteer info for ${volunteerId}, volunteer type did not change.`,

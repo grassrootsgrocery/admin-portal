@@ -179,6 +179,7 @@ export interface ProcessedSpecialGroup {
 export interface SpecialEvent {
   "Volunteer Group": string | undefined;
   "Link to Special Event Signup Form": string | undefined;
+  "Shortened Link to Special Event Signup Form": string | undefined;
 }
 
 export interface ProcessedSpecialEvent {

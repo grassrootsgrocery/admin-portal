@@ -158,13 +158,6 @@ function hasVolunteerTypeChanged(
   return originalType.length === 1 && newType[0] !== originalType[0];
 }
 
-function hasVolunteerContactInfoChanged(
-  originalInfo: string[],
-  newInfo: string[]
-): boolean {
-  return originalInfo.every((info, index) => info !== newInfo[index]);
-}
-
 /**
  * @description Update a volunteers info
  * @route  PATCH /api/volunteers/update/:volunteerId

@@ -32,4 +32,3 @@ export function toastNotify(message: string, toastType?: toast) {
 export function cn(...inputs: string[]) {
   return inputs.join(" ");
 }
-

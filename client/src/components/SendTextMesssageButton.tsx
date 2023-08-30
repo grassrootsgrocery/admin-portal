@@ -29,15 +29,12 @@ export const SendTextMessageButton: React.FC<Props> = ({
   const lastMessagesSent = useQuery(
     ["fetchLastMessagesSent"],
     async (): Promise<ProcessedTextAutomation[]> => {
-      const resp = await fetch(
-        `/api/messaging/last-texts-sent`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const resp = await fetch(`/api/messaging/last-texts-sent`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!resp.ok) {
         const data = await resp.json();
         throw new Error(data.message);
@@ -91,50 +88,47 @@ export const SendTextMessageButton: React.FC<Props> = ({
         <div className="flex max-h-64 flex-col gap-4 overflow-y-scroll ">
           {lastMessagesSent.data?.length
             ? [...lastMessagesSent.data]
-              .sort((a, b) => {
-                return (
-                  new Date(b["Date"]).getTime() -
-                  new Date(a["Date"]).getTime()
-                );
-              })
-              .map((message, index) => {
-                const date = new Date(message["Date"]);
-                const localTimeNoSeconds = date.toLocaleTimeString(
-                  "en-US",
-                  {
+                .sort((a, b) => {
+                  return (
+                    new Date(b["Date"]).getTime() -
+                    new Date(a["Date"]).getTime()
+                  );
+                })
+                .map((message, index) => {
+                  const date = new Date(message["Date"]);
+                  const localTimeNoSeconds = date.toLocaleTimeString("en-US", {
                     hour: "numeric",
                     minute: "numeric",
-                  }
-                );
-                return (
-                  <div
-                    key={index}
-                    className="flex flex-col items-start gap-2 text-base lg:text-lg"
-                  >
-                    <p className="text-newLeafGreen font-semibold">
-                      {message["Text Type"]}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {`Sent by ${message["Triggered by"]
-                        } from the number ${message["Sent by"]
+                  });
+                  return (
+                    <div
+                      key={index}
+                      className="flex flex-col items-start gap-2 text-base lg:text-lg"
+                    >
+                      <p className="text-newLeafGreen font-semibold">
+                        {message["Text Type"]}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {`Sent by ${message["Triggered by"]} from the number ${
+                          message["Sent by"]
                         } on ${date.toLocaleDateString()} at ${localTimeNoSeconds}`}
-                    </p>
-                  </div>
-                );
-              })
+                      </p>
+                    </div>
+                  );
+                })
             : null}
         </div>
         <div className="row-auto flex justify-center space-x-2">
-          <Modal.Close
-            className="rounded-full bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:brightness-110 focus:brightness-110 lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-          >
+          <Modal.Close className="rounded-full bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:brightness-110 focus:brightness-110 lg:px-5 lg:py-3 lg:text-base lg:font-bold">
             Cancel Send
           </Modal.Close>
           <Modal.Close
-            className={cn("bg-newLeafGreen rounded-full px-3 py-2 text-xs font-semibold text-white",
+            className={cn(
+              "bg-newLeafGreen rounded-full px-3 py-2 text-xs font-semibold text-white",
               "lg:px-5 lg:py-3 lg:text-base lg:font-bold",
               "hover:cursor-pointer hover:brightness-150",
-              "focus:brightness-200")}
+              "focus:brightness-200"
+            )}
             disabled={loading || sendTextMessage.status === "loading"}
             onClick={() => sendTextMessage.mutate()}
           >

@@ -11,7 +11,6 @@ import { Loading } from "../../components/Loading";
 import { HttpCheckbox } from "../../components/HttpCheckbox";
 import { applyPatch } from "../../utils/http";
 
-
 interface DropoffLocationsStore {
   [id: string]: DropoffLocationForm;
 }
@@ -82,10 +81,11 @@ export const DropoffOrganizerPopup: React.FC<{
           curLocation.neighborhoods.join(", "),
           // Start time input
           <input
-            className={`h-10 w-20 rounded border bg-softBeige p-1 ${isStartTimeValid
-              ? "border-softGrayWhite focus:outline-softGrayWhite"
-              : "border-red-600 focus:outline-red-600"
-              } text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-50`}
+            className={`h-10 w-20 rounded border bg-softBeige p-1 ${
+              isStartTimeValid
+                ? "border-softGrayWhite focus:outline-softGrayWhite"
+                : "border-red-600 focus:outline-red-600"
+            } text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-50`}
             type="text"
             autoFocus={idx === 0}
             value={startTime || ""}
@@ -102,10 +102,11 @@ export const DropoffOrganizerPopup: React.FC<{
 
           // End time input,
           <input
-            className={`h-10 w-20 rounded border bg-softBeige p-1 ${isEndTimeValid
-              ? "border-softGrayWhite focus:outline-softGrayWhite"
-              : "border-red-600 focus:outline-red-600"
-              }  text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-50`}
+            className={`h-10 w-20 rounded border bg-softBeige p-1 ${
+              isEndTimeValid
+                ? "border-softGrayWhite focus:outline-softGrayWhite"
+                : "border-red-600 focus:outline-red-600"
+            }  text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-50`}
             type="text"
             placeholder="00:00 AM"
             value={endTime || ""}
@@ -142,12 +143,15 @@ export const DropoffOrganizerPopup: React.FC<{
               token as string
             )}
             onSuccess={() => {
-              const toastMessage = `${curLocation.siteName} is now ${curLocation.notavailable ? "Available" : "Not Available"
-                }`;
+              const toastMessage = `${curLocation.siteName} is now ${
+                curLocation.notavailable ? "Available" : "Not Available"
+              }`;
               refetchDropoffLocations();
               toastNotify(toastMessage, "success");
             }}
-            onError={() => toastNotify("Unable to change availability", "failure")}
+            onError={() =>
+              toastNotify("Unable to change availability", "failure")
+            }
           />,
         ];
       });
@@ -216,7 +220,6 @@ export const DropoffOrganizerPopup: React.FC<{
     return true;
   }
 
-
   const saveDropoffLocations = useMutation({
     mutationFn: async () => {
       const payload: {
@@ -264,8 +267,6 @@ export const DropoffOrganizerPopup: React.FC<{
     setDropoffStore(populateStoreWithFetchedData(dropoffLocations));
   }, [dropoffLocations]);
 
-
-
   return (
     <Popup
       className={cn(
@@ -296,7 +297,7 @@ export const DropoffOrganizerPopup: React.FC<{
               "Start Time",
               "End Time",
               "Deliveries Needed",
-              "Not Available"
+              "Not Available",
             ]}
             dataRows={processDropoffLocationsForTable(
               dropoffLocations,
@@ -325,7 +326,9 @@ export const DropoffOrganizerPopup: React.FC<{
               "bg-newLeafGreen rounded-full px-3 py-2 text-xs font-semibold text-white",
               "lg:px-5 lg:py-3 lg:text-base lg:font-bold",
               isValidInput(dropoffStore) &&
-                saveDropoffLocations.status !== "loading" ? "hover:cursor-pointer hover:brightness-150 focus:brightness-200" : "opacity-50"
+                saveDropoffLocations.status !== "loading"
+                ? "hover:cursor-pointer hover:brightness-150 focus:brightness-200"
+                : "opacity-50"
             )}
             type="button"
             onClick={() => saveDropoffLocations.mutate()}

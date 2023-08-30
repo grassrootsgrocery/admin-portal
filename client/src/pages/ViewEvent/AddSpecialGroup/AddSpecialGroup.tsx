@@ -61,7 +61,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ eventId: event.id, specialGroupId }),
-        },
+        }
       );
       if (!response.ok) {
         const data = await response.json();
@@ -73,13 +73,13 @@ export const AddSpecialGroup: React.FC<Props> = ({
     onSuccess: (data, variables, context) => {
       console.log(
         "Data returned from POST /api/special-groups/add-special-group-to-event",
-        data,
+        data
       );
       //TODO: We should maybe type the response?
       setNewlyAddedGroupSignUpLink(
         data.records[0].fields["Shortened Link to Special Event Signup Form"] ||
-        data.records[0].fields["Link to Special Event Signup Form"] ||
-        "Uh oh, where is the link?",
+          data.records[0].fields["Link to Special Event Signup Form"] ||
+          "Uh oh, where is the link?"
       );
       specialGroupsQuery.refetch();
       refetchEvent();
@@ -98,7 +98,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
 
   const isGroupRegisteredForEvent = (
     specialGroup: ProcessedSpecialGroup | null,
-    allEventIds: string[],
+    allEventIds: string[]
   ) => {
     if (specialGroup === null) {
       return false;
@@ -159,7 +159,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
     return (
       <>
         <Modal.Title className="flex h-[10%] items-center justify-center text-lg font-bold text-newLeafGreen lg:text-3xl">
-            Add Special Group to Event
+          Add Special Group to Event
         </Modal.Title>
         <div className="flex h-[80%] w-full grow flex-col overflow-hidden">
           <input
@@ -180,7 +180,8 @@ export const AddSpecialGroup: React.FC<Props> = ({
             Select existing group or create new one
           </div>
           <ul className="flex-start flex grow flex-col overflow-scroll pr-1">
-            {!selectedGroup && specialGroupsList &&
+            {!selectedGroup &&
+              specialGroupsList &&
               specialGroupsList
                 .filter((specialGroup) => {
                   //Filter based on search query
@@ -196,41 +197,61 @@ export const AddSpecialGroup: React.FC<Props> = ({
                 .map((specialGroup, idx) => {
                   return (
                     <li
-                      className={`my-1 flex flex-row rounded px-2 py-1 ${isGroupRegisteredForEvent(specialGroup, event.allEventIds)
-                        ? "bg-softGrayWhite"
-                        : "hover:cursor-pointer hover:bg-softGrayWhite hover:brightness-110"
-                        }`}
+                      className={`my-1 flex flex-row rounded px-2 py-1 ${
+                        isGroupRegisteredForEvent(
+                          specialGroup,
+                          event.allEventIds
+                        )
+                          ? "bg-softGrayWhite"
+                          : "hover:cursor-pointer hover:bg-softGrayWhite hover:brightness-110"
+                      }`}
                       key={idx + specialGroup.name}
                       onClick={() => {
-                        if (isGroupRegisteredForEvent(specialGroup, event.allEventIds)) {
+                        if (
+                          isGroupRegisteredForEvent(
+                            specialGroup,
+                            event.allEventIds
+                          )
+                        ) {
                           return;
                         }
                         setSearchQuery(specialGroup.name);
-                        setSelectedGroup({ ...specialGroup, isNewSpecialGroup: false });
+                        setSelectedGroup({
+                          ...specialGroup,
+                          isNewSpecialGroup: false,
+                        });
                       }}
-
                     >
                       {/* <img className="mr-2 w-4" src={plus} alt="plus-icon" /> */}
                       {specialGroup.name}
                     </li>
                   );
                 })}
-            {!selectedGroup && <li
-              className="flex flex-row rounded py-1 px-2 hover:cursor-pointer hover:bg-softGrayWhite hover:brightness-110"
-              onClick={() => {
-                if (searchQuery.length === 0) return;
-                setSelectedGroup({
-                  id: "NEW GROUP, PLACEHOLDER ID",
-                  name: searchQuery,
-                  events: [],
-                  isNewSpecialGroup: true,
-                });
-              }}
-            >
-              Create:
-              <p className="pl-2 text-[#0E7575]">{searchQuery}</p>
-            </li>}
-            {selectedGroup && <p className="px-2 py-1" >Ready to {selectedGroup.isNewSpecialGroup ? ` create special group \"${selectedGroup.name}\" and generate link` : `generate link for ${selectedGroup.name}`}</p>}
+            {!selectedGroup && (
+              <li
+                className="flex flex-row rounded py-1 px-2 hover:cursor-pointer hover:bg-softGrayWhite hover:brightness-110"
+                onClick={() => {
+                  if (searchQuery.length === 0) return;
+                  setSelectedGroup({
+                    id: "NEW GROUP, PLACEHOLDER ID",
+                    name: searchQuery,
+                    events: [],
+                    isNewSpecialGroup: true,
+                  });
+                }}
+              >
+                Create:
+                <p className="pl-2 text-[#0E7575]">{searchQuery}</p>
+              </li>
+            )}
+            {selectedGroup && (
+              <p className="px-2 py-1">
+                Ready to{" "}
+                {selectedGroup.isNewSpecialGroup
+                  ? ` create special group \"${selectedGroup.name}\" and generate link`
+                  : `generate link for ${selectedGroup.name}`}
+              </p>
+            )}
           </ul>
         </div>
         <div className="flex h-[10%] items-center justify-center gap-5">
@@ -241,12 +262,16 @@ export const AddSpecialGroup: React.FC<Props> = ({
             Cancel
           </Modal.Close>
           <button
-            onClick={(e) => { e.preventDefault(); addSpecialGroup(); }}
+            onClick={(e) => {
+              e.preventDefault();
+              addSpecialGroup();
+            }}
             disabled={addGroupAndGenerateLinkDisabled}
-            className={`rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold ${addGroupAndGenerateLinkDisabled
-              ? "opacity-50"
-              : "hover:cursor-pointer hover:brightness-150 focus:brightness-200"
-              }`}
+            className={`rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold ${
+              addGroupAndGenerateLinkDisabled
+                ? "opacity-50"
+                : "hover:cursor-pointer hover:brightness-150 focus:brightness-200"
+            }`}
             type="button"
           >
             Add Group and Generate Link

@@ -46,10 +46,12 @@ export const ContactPopup: React.FC<Props> = ({ phoneNumber, email }) => {
         </div>
         <div className="h-4" />
         <div className="flex justify-center">
-          <Modal.Close className={cn(
-            "bg-newLeafGreen rounded-full px-3 py-2 text-xs font-semibold text-white hover:brightness-150 focus:brightness-150", 
-            "lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-          )}>
+          <Modal.Close
+            className={cn(
+              "bg-newLeafGreen rounded-full px-3 py-2 text-xs font-semibold text-white hover:brightness-150 focus:brightness-150",
+              "lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+            )}
+          >
             Done
           </Modal.Close>
         </div>

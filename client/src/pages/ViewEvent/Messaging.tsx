@@ -31,15 +31,12 @@ export function Messaging() {
   const coordinatorRecruitmentTextQuery = useQuery(
     ["fetchCoordinatorRecruitmentTextBlueprint"],
     async () => {
-      const resp = await fetch(
-        `/api/messaging/coordinator-recruitment-text`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const resp = await fetch(`/api/messaging/coordinator-recruitment-text`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!resp.ok) {
         const data = await resp.json();
         throw new Error(data.message);
@@ -52,15 +49,12 @@ export function Messaging() {
   const volunteerRecruitmentTextQuery = useQuery(
     ["fetchVolunteerRecruitmentTextBlueprint"],
     async () => {
-      const resp = await fetch(
-        `/api/messaging/volunteer-recruitment-text`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const resp = await fetch(`/api/messaging/volunteer-recruitment-text`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!resp.ok) {
         const data = await resp.json();
         throw new Error(data.message);

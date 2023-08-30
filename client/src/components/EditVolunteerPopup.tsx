@@ -7,7 +7,6 @@ import { cn, toastNotify } from "../utils/ui";
 import { useAuth } from "../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 
-
 interface EditFieldProps {
   label: string;
   fieldType: string;
@@ -23,13 +22,11 @@ const EditFieldInput = ({
   fieldName,
   handleChange,
   value,
-  autoFocus = false
+  autoFocus = false,
 }: EditFieldProps) => {
   return (
     <div className="flex flex-col gap-2 md:flex-row md:gap-8">
-      <p className="text-newLeafGreen shrink-0 font-bold lg:text-xl">
-        {label}
-      </p>
+      <p className="text-newLeafGreen shrink-0 font-bold lg:text-xl">{label}</p>
       <div className="relative grow">
         <div className="border-softGrayWhite flex h-8 w-full rounded-lg border-2 px-2">
           <div className="flex w-full flex-col space-y-1">
@@ -119,17 +116,14 @@ export const EditVolunteerPopup = (info: Props) => {
       phoneNumber: string;
       participantType: string[];
     }) => {
-      const resp = await fetch(
-        `/api/volunteers/update/${payload.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const resp = await fetch(`/api/volunteers/update/${payload.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
       if (!resp.ok) {
         const data = await resp.json();
         throw new Error(data.message);
@@ -163,12 +157,14 @@ export const EditVolunteerPopup = (info: Props) => {
     >
       {/* title */}
       <Modal.Title className="flex h-[10%] justify-center">
-        <h1 className="text-newLeafGreen text-2xl font-bold">
-          Edit Volunteer
-        </h1>
+        <h1 className="text-newLeafGreen text-2xl font-bold">Edit Volunteer</h1>
       </Modal.Title>
-      <div className="h-0 lg:h-[5%]"/>
-      <form className={"flex h-[80%] w-full flex-col space-y-3 overflow-scroll lg:h-[75%]"}>
+      <div className="h-0 lg:h-[5%]" />
+      <form
+        className={
+          "flex h-[80%] w-full flex-col space-y-3 overflow-scroll lg:h-[75%]"
+        }
+      >
         <EditFieldInput
           fieldType={"text"}
           autoFocus={true}
@@ -204,11 +200,9 @@ export const EditVolunteerPopup = (info: Props) => {
           handleChange={handleChange}
         />
       </form>
-      <div className="h-[5%] lg:h-0"/>
+      <div className="h-[5%] lg:h-0" />
       <div className="flex h-[5%] items-center justify-center gap-5 lg:h-[10%]">
-        <Modal.Close
-          className="rounded-full bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:brightness-110 focus:brightness-110 lg:px-5 lg:py-3 lg:text-base lg:font-bold"
-        >
+        <Modal.Close className="rounded-full bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:brightness-110 focus:brightness-110 lg:px-5 lg:py-3 lg:text-base lg:font-bold">
           Cancel
         </Modal.Close>
         <Modal.Close
@@ -234,7 +228,6 @@ export const EditVolunteerPopup = (info: Props) => {
           Save
         </Modal.Close>
       </div>
-
     </Popup>
   );
 };

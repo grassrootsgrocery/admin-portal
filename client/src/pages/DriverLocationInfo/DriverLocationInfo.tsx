@@ -125,14 +125,11 @@ export function DriverLocationInfo() {
   const locationsToDriversTextQuery = useQuery(
     ["fetchLocationsToDriversText"],
     async () => {
-      const resp = await fetch(
-        `/api/messaging/locations-to-drivers-text`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const resp = await fetch(`/api/messaging/locations-to-drivers-text`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!resp.ok) {
         const data = await resp.json();
         throw new Error(data.message);

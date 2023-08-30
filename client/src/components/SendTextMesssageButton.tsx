@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "react-query";
 import { useAuth } from "../contexts/AuthContext";
-import { toastNotify } from "../utils/ui";
+import { cn, toastNotify } from "../utils/ui";
 import { ProcessedTextAutomation } from "../types";
 import * as Modal from "@radix-ui/react-dialog";
 import { Popup } from "./Popup";
@@ -15,7 +15,7 @@ interface Props {
 }
 
 const btn =
-  "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen";
+  "bg-pumpkinOrange lg:shadow-newLeafGreen lg:hover:shadow-newLeafGreen rounded-full px-3 py-2 text-sm font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg";
 
 export const SendTextMessageButton: React.FC<Props> = ({
   label,
@@ -77,9 +77,13 @@ export const SendTextMessageButton: React.FC<Props> = ({
   return (
     <Popup
       trigger={<button className={btn}>{label}</button>}
+      className={cn(
+        "bg-softBeige fixed left-[50%] top-[50%] w-full w-full -translate-x-1/2 -translate-y-1/2 rounded-lg px-3 py-4",
+        "md:w-[40rem] md:py-6 md:px-8"
+      )}
     >
       <>
-        <p className="ma text-xl font-semibold text-newLeafGreen">
+        <p className="ma text-newLeafGreen text-xl font-semibold">
           {lastMessagesSent.data?.length
             ? "Last Messages Sent:"
             : "Are you sure you want to send this message?"}
@@ -107,7 +111,7 @@ export const SendTextMessageButton: React.FC<Props> = ({
                     key={index}
                     className="flex flex-col items-start gap-2 text-base lg:text-lg"
                   >
-                    <p className="font-semibold text-newLeafGreen">
+                    <p className="text-newLeafGreen font-semibold">
                       {message["Text Type"]}
                     </p>
                     <p className="text-sm text-gray-500">
@@ -121,11 +125,16 @@ export const SendTextMessageButton: React.FC<Props> = ({
             : null}
         </div>
         <div className="row-auto flex justify-center space-x-2">
-          <Modal.Close className="rounded-full bg-red-700 px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base">
+          <Modal.Close
+            className="rounded-full bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:brightness-110 focus:brightness-110 lg:px-5 lg:py-3 lg:text-base lg:font-bold"
+          >
             Cancel Send
           </Modal.Close>
           <Modal.Close
-            className="rounded-full bg-newLeafGreen px-2 py-1 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen outline-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-newLeafGreen md:px-4 md:py-2 lg:text-base"
+            className={cn("bg-newLeafGreen rounded-full px-3 py-2 text-xs font-semibold text-white",
+              "lg:px-5 lg:py-3 lg:text-base lg:font-bold",
+              "hover:cursor-pointer hover:brightness-150",
+              "focus:brightness-200")}
             disabled={loading || sendTextMessage.status === "loading"}
             onClick={() => sendTextMessage.mutate()}
           >

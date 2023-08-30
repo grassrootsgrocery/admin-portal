@@ -75,7 +75,7 @@ export const SendTextMessageButton: React.FC<Props> = ({
     <Popup
       trigger={<button className={btn}>{label}</button>}
       className={cn(
-        "bg-softBeige fixed left-[50%] top-[50%] w-full w-full -translate-x-1/2 -translate-y-1/2 rounded-lg px-3 py-4",
+        "bg-softBeige fixed left-[50%] top-[50%] w-full -translate-x-1/2 -translate-y-1/2 rounded-lg px-3 py-4",
         "md:w-[40rem] md:py-6 md:px-8"
       )}
     >

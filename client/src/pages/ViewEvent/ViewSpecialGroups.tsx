@@ -24,12 +24,17 @@ function processSpecialGroups(
       (sg) => sg.id === se.specialGroupId
     );
     if (specialGroupsFiltered.length === 0) {
-      console.log(`No special group found with matching id for special event with id ${se.specialGroupId}`);
+      console.log(
+        `No special group found with matching id for special event with id ${se.specialGroupId}`
+      );
       return [se.id, "NO NAME", se.eventSignUpLink];
     }
     if (specialGroupsFiltered.length > 1) {
       //This should not happen...
-      console.log(`Multiple special groups found with matching ids for special event with id ${se.specialGroupId}`, specialGroupsFiltered);
+      console.log(
+        `Multiple special groups found with matching ids for special event with id ${se.specialGroupId}`,
+        specialGroupsFiltered
+      );
     }
     const groupName = specialGroupsFiltered[0].name;
     return [se.id, groupName, se.eventSignUpLink];
@@ -102,7 +107,28 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
               <DataTable
                 borderColor="newLeafGreen"
                 columnHeaders={["Name", "Sign-up Link"]}
-                dataRows={processSpecialGroups(specialEvents, specialGroups)} // dataRows={[
+                dataRows={processSpecialGroups(
+                  specialEvents,
+                  specialGroups
+                ).map((row) => {
+                  /* example of array
+                    0 "recmIJYvF6wK71RnJ"
+                    1 "St. Augustine's"
+                    2 "https://bit.ly/3HohS3x"
+                  */
+
+                  return [
+                    row[0],
+                    row[1],
+                    <a
+                      href={row[2]}
+                      target={"_blank"}
+                      className={"text-blue-500 underline"}
+                    >
+                      {row[2]}
+                    </a>,
+                  ];
+                })} // dataRows={[
               />
             </div>
           )}

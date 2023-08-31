@@ -34,11 +34,13 @@ const sendTextWebhook = async (url: string, phoneNumber: string) => {
   });
 };
 
+type JsonObject = { [key: string]: any };
+
 async function makeRequest(
   url: string | undefined,
   res: Response,
   onErrorMessage: string
-) {
+): Promise<JsonObject> {
   if (!url) {
     throw new Error("url is undefined");
   }
@@ -53,6 +55,51 @@ async function makeRequest(
     throw new Error(onErrorMessage);
   }
   return await resp.json();
+}
+
+// twillio mapper looks like this
+/*
+ * interface TwilioMapper {
+ *   to: string;
+ *   body: string;
+ *   from: string;
+ *   fromType: string;
+ * }
+ */
+
+function getTextBodyHelper(obj: JsonObject): JsonObject | null {
+  if (
+    obj.hasOwnProperty("mapper") &&
+    obj.mapper && // mapper can exist but be null
+    obj.mapper.hasOwnProperty("to") &&
+    obj.mapper.hasOwnProperty("body") &&
+    obj.mapper.body.startsWith("(Grassroots Grocery)") && // only want the text messages
+    obj.mapper.hasOwnProperty("from") &&
+    obj.mapper.hasOwnProperty("fromType")
+  ) {
+    return obj.mapper;
+  }
+
+  // recursively search in child objects
+  for (let key in obj) {
+    if (obj[key] && typeof obj[key] === "object") {
+      const result = getTextBodyHelper(obj[key]);
+      if (result) return result;
+    }
+  }
+
+  return null;
+}
+
+function getTextBody(obj: JsonObject): string {
+  const textBody = getTextBodyHelper(obj);
+
+  if (!textBody) {
+    logger.error("Could not find text body in Make blueprint.");
+    return "Could not find text body in Make blueprint.";
+  }
+
+  return textBody["body"];
 }
 
 function checkNodeEnvIsProduction(res: Response) {
@@ -90,8 +137,8 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
       res,
       "There was a problem fetching the 'Send Coordinator Recruitment Text (Wed afternoon)' text."
     );
-    //Grab the coordinator recruitment text from the response body
-    res.status(OK).json(data.response.blueprint.flow[4].mapper.body);
+
+    res.status(OK).json(getTextBody(data));
   })
 );
 
@@ -143,7 +190,7 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
       res,
       "There was a problem fetching the 'Send Tuesday recruitment texts' text."
     );
-    res.status(OK).json(data.response.blueprint.flow[2].mapper.body);
+    res.status(OK).json(getTextBody(data));
   })
 );
 
@@ -196,12 +243,7 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
       "There was a problem fetching the 'Send Driver Info To Coordinators' text."
     );
     //Grab message body
-    res
-      .status(OK)
-      .json(
-        data.response.blueprint.flow[3].routes[0].flow[1].routes[1].flow[0]
-          .mapper.body
-      );
+    res.status(OK).json(getTextBody(data));
   })
 );
 
@@ -253,9 +295,7 @@ router.route("/api/messaging/locations-to-drivers-text").get(
       res,
       "There was a problem fetching the '[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' text."
     );
-    res
-      .status(OK)
-      .json(data.response.blueprint.flow[3].routes[0].flow[6].mapper.body);
+    res.status(OK).json(getTextBody(data));
   })
 );
 

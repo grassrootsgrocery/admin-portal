@@ -104,7 +104,7 @@ export function Navbar() {
                 />
                 <FormsDropdownItem
                   label="Produce Rescue and Inspection Form"
-                  formURL="https://www.jotform.com/build/231725250361044"
+                  formURL="https://form.jotform.com/231725250361044"
                 />
               </DropdownMenu.Content>
             </DropdownMenu.Portal>

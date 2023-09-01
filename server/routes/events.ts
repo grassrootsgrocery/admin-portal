@@ -252,7 +252,7 @@ router.route("/api/events/view-event-special-groups/").get(
       `filterByFormula=AND(SEARCH(RECORD_ID(), "${eventIds}") != "",` +
       `{Special Event})` + //  get events that are special events
       `&fields=Volunteer Group` + // Special Group
-      `&fields=Shortened Link to Special Event Signup Form`; // Special Event Link
+      `&fields=Jotform Special Event Sign-Up`; // Special Event Link
 
     const specialEvents = await airtableGET<SpecialEvent>({ url: url });
 
@@ -272,7 +272,7 @@ router.route("/api/events/view-event-special-groups/").get(
             ? specialEvent.fields["Volunteer Group"][0]
             : "NO ID",
           eventSignUpLink:
-            specialEvent.fields["Link to Special Event Signup Form"] ||
+            specialEvent.fields["Jotform Special Event Sign-Up"] ||
             "No sign up link",
         };
       });

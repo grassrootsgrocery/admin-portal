@@ -37,7 +37,13 @@ function processSpecialGroups(
       );
     }
     const groupName = specialGroupsFiltered[0].name;
-    return [se.id, groupName, se.eventSignUpLink];
+
+    /* example of array
+      0 "recmIJYvF6wK71RnJ"
+      1 "St. Augustine's"
+      2 "https://bit.ly/3HohS3x"
+    */
+    return [se.id, groupName, <a href={se.eventSignUpLink} target="_blank" className="text-blue-500 underline">se.eventSignUpLink</a>];
   });
 }
 

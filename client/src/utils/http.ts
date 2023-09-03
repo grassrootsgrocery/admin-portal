@@ -1,7 +1,4 @@
-import { useAuth } from "./contexts/AuthContext";
-
-//Because I couldn't figure out why the 'proxy' in the package.json wasn't working.
-export const API_BASE_URL = import.meta.env.VITE_SERVER_URL || "";
+import { useAuth } from "../contexts/AuthContext";
 
 export const applyPatch =
   (url: string, body: any, token: string) => async () => {
@@ -19,4 +16,3 @@ export const applyPatch =
     }
     return resp.json();
   };
-

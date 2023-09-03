@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import { API_BASE_URL } from "../../../httpUtils";
 import { useAuth } from "../../../contexts/AuthContext";
 import * as Modal from "@radix-ui/react-dialog";
 import { Popup } from "../../../components/Popup";
-import { SpecialGroupDropdown } from "./SpecialGroupDropdown";
-import { toastNotify } from "../../../uiUtils";
+import { cn, toastNotify } from "../../../utils/ui";
 import { ProcessedEvent, ProcessedSpecialGroup } from "../../../types";
 import check from "../../../assets/check.svg";
+import plus from "../../../assets/plus.svg";
 import { useSpecialGroups } from "../specialGroupsHooks";
 
 interface Props {
@@ -21,16 +20,11 @@ export const AddSpecialGroup: React.FC<Props> = ({
 }: Props) => {
   const { token } = useAuth();
 
-  const {
-    data: specialGroups,
-    refetch: refetchGroups,
-    status: specialGroupsStatus,
-    error: specialGroupsError,
-  } = useSpecialGroups();
+  const specialGroupsQuery = useSpecialGroups();
 
   const createSpecialGroupAndAddToEvent = useMutation({
     mutationFn: async ({ specialGroupName }: { specialGroupName: string }) => {
-      const response = await fetch(`${API_BASE_URL}/api/special-groups/`, {
+      const response = await fetch(`/api/special-groups/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -59,7 +53,7 @@ export const AddSpecialGroup: React.FC<Props> = ({
   const addSpecialGroupToEvent = useMutation({
     mutationFn: async ({ specialGroupId }: { specialGroupId: string }) => {
       const response = await fetch(
-        `${API_BASE_URL}/api/special-groups/add-special-group-to-event`,
+        `/api/special-groups/add-special-group-to-event`,
         {
           method: "POST",
           headers: {
@@ -87,17 +81,18 @@ export const AddSpecialGroup: React.FC<Props> = ({
           data.records[0].fields["Link to Special Event Signup Form"] ||
           "Uh oh, where is the link?"
       );
-      refetchGroups();
+      specialGroupsQuery.refetch();
       refetchEvent();
     },
     onError: (error, variables, context) => {
-      toastNotify("Unable to add special group to event", "failure");
+      toastNotify("Unable to add special to event group", "failure");
     },
   });
 
   const [selectedGroup, setSelectedGroup] = useState<
     (ProcessedSpecialGroup & { isNewSpecialGroup: boolean }) | null
   >(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [newlyAddedGroupSignUpLink, setNewlyAddedGroupSignUpLink] =
     useState("");
 
@@ -160,71 +155,144 @@ export const AddSpecialGroup: React.FC<Props> = ({
       addSpecialGroupToEvent.status === "loading" ||
       !selectedGroup;
 
+    const specialGroupsList = specialGroupsQuery.data;
     return (
-      <div className="w-full">
-        <Modal.Title asChild>
-          <div className="m-0 flex justify-center text-lg font-bold text-newLeafGreen lg:text-3xl">
-            Add Special Group to Event
-          </div>
+      <>
+        <Modal.Title className="flex h-[10%] items-center justify-center text-lg font-bold text-newLeafGreen lg:text-3xl">
+          Add Special Group to Event
         </Modal.Title>
-        <div className="h-1 lg:h-4" />
-
-        <div className="h-64 w-full lg:h-96">
-          <SpecialGroupDropdown
-            specialGroupsList={specialGroups}
-            isGroupAlreadyRegisteredForEvent={(specialGroup) =>
-              isGroupRegisteredForEvent(specialGroup, event.allEventIds)
-            }
-            isGroupSelected={!!selectedGroup}
-            setGroup={setSelectedGroup}
+        <div className="flex h-[80%] w-full grow flex-col overflow-hidden">
+          <input
+            autoFocus={true}
+            className="m-[1px] grow-0 rounded border border-softGrayWhite px-2 py-1 text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-40 focus:m-0 focus:border-2 focus:outline-none md:text-lg md:placeholder:text-lg"
+            type="text"
+            id="specialGroupInput"
+            autoComplete="off"
+            placeholder="Search through groups..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setSelectedGroup(null);
+            }}
           />
-          <div className="h-8" />
-          {selectedGroup && (
-            <div className="flex items-center">
-              <img
-                className="mt-1 w-4 md:w-6 lg:w-7"
-                src={check}
-                alt="check-icon"
-              />
-              <p className="px-4 text-lg font-semibold leading-5 text-newLeafGreen">
-                Ready to generate link!
+          <div className="h-2 shrink-0 grow-0" />
+          <div className="px-2 text-sm text-[#0E7575]">
+            Select existing group or create new one
+          </div>
+          <ul className="flex-start flex grow flex-col overflow-scroll pr-1">
+            {!selectedGroup &&
+              specialGroupsList &&
+              specialGroupsList
+                .filter((specialGroup) => {
+                  //Filter based on search query
+                  return (
+                    specialGroup.name
+                      .toLowerCase()
+                      .includes(searchQuery.toLowerCase()) ||
+                    searchQuery
+                      .toLowerCase()
+                      .includes(specialGroup.name.toLowerCase())
+                  );
+                })
+                .map((specialGroup, idx) => {
+                  return (
+                    <li
+                      className={`my-1 flex flex-row rounded px-2 py-1 ${
+                        isGroupRegisteredForEvent(
+                          specialGroup,
+                          event.allEventIds
+                        )
+                          ? "bg-softGrayWhite"
+                          : "hover:cursor-pointer hover:bg-softGrayWhite hover:brightness-110"
+                      }`}
+                      key={idx + specialGroup.name}
+                      onClick={() => {
+                        if (
+                          isGroupRegisteredForEvent(
+                            specialGroup,
+                            event.allEventIds
+                          )
+                        ) {
+                          return;
+                        }
+                        setSearchQuery(specialGroup.name);
+                        setSelectedGroup({
+                          ...specialGroup,
+                          isNewSpecialGroup: false,
+                        });
+                      }}
+                    >
+                      {/* <img className="mr-2 w-4" src={plus} alt="plus-icon" /> */}
+                      {specialGroup.name}
+                    </li>
+                  );
+                })}
+            {!selectedGroup && (
+              <li
+                className="flex flex-row rounded py-1 px-2 hover:cursor-pointer hover:bg-softGrayWhite hover:brightness-110"
+                onClick={() => {
+                  if (searchQuery.length === 0) return;
+                  setSelectedGroup({
+                    id: "NEW GROUP, PLACEHOLDER ID",
+                    name: searchQuery,
+                    events: [],
+                    isNewSpecialGroup: true,
+                  });
+                }}
+              >
+                Create:
+                <p className="pl-2 text-[#0E7575]">{searchQuery}</p>
+              </li>
+            )}
+            {selectedGroup && (
+              <p className="px-2 py-1">
+                Ready to{" "}
+                {selectedGroup.isNewSpecialGroup
+                  ? ` create special group \"${selectedGroup.name}\" and generate link`
+                  : `generate link for ${selectedGroup.name}`}
               </p>
-            </div>
-          )}
+            )}
+          </ul>
         </div>
-
-        <div className="flex justify-center gap-5">
+        <div className="flex h-[10%] items-center justify-center gap-5">
           <Modal.Close
-            className="rounded-full bg-pumpkinOrange px-3 py-2 text-xs font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
+            className="rounded-full bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:brightness-110 focus:brightness-110 lg:px-5 lg:py-3 lg:text-base lg:font-bold"
             type="button"
           >
             Cancel
           </Modal.Close>
           <button
-            onClick={addSpecialGroup}
+            onClick={(e) => {
+              e.preventDefault();
+              addSpecialGroup();
+            }}
             disabled={addGroupAndGenerateLinkDisabled}
-            className={`rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-sm lg:shadow-newLeafGreen ${
+            className={`rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-white lg:px-5 lg:py-3 lg:text-base lg:font-bold ${
               addGroupAndGenerateLinkDisabled
                 ? "opacity-50"
-                : "hover:cursor-pointer lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
+                : "hover:cursor-pointer hover:brightness-150 focus:brightness-200"
             }`}
             type="button"
           >
             Add Group and Generate Link
           </button>
         </div>
-      </div>
+      </>
     );
   };
 
   const addSpecialGroupButtonDisabled =
-    specialGroupsStatus === "error" ||
-    specialGroupsStatus === "loading" ||
-    specialGroupsStatus === "idle";
+    specialGroupsQuery.status === "error" ||
+    specialGroupsQuery.status === "loading" ||
+    specialGroupsQuery.status === "idle";
 
   return (
     <Popup
-      shouldDodgeKeyboard
+      className={cn(
+        "fixed left-[50%] top-0 h-[27rem] w-full -translate-x-1/2",
+        "bg-softBeige p-4 md:top-[50%] md:w-[40rem] md:-translate-y-1/2 md:rounded-lg",
+        "lg:h-[40rem]"
+      )}
       trigger={
         <button
           className={
@@ -242,8 +310,10 @@ export const AddSpecialGroup: React.FC<Props> = ({
       onOpenChange={() => {
         setNewlyAddedGroupSignUpLink("");
         setSelectedGroup(null);
+        setSearchQuery("");
       }}
-      content={getSpecialGroupPopupContent()}
-    />
+    >
+      {getSpecialGroupPopupContent()}
+    </Popup>
   );
 };

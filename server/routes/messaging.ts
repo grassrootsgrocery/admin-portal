@@ -1,9 +1,8 @@
-import express from "express";
+//Types
+import express, { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { adminProtect, protect } from "../middleware/authMiddleware";
 import { fetch } from "../httpUtils/nodeFetch";
-//Types
-import { Request, Response } from "express";
 //Status codes
 import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
 import { AIRTABLE_URL_BASE, airtableGET } from "../httpUtils/airtable";
@@ -57,49 +56,19 @@ async function makeRequest(
   return await resp.json();
 }
 
-// twillio mapper looks like this
-/*
- * interface TwilioMapper {
- *   to: string;
- *   body: string;
- *   from: string;
- *   fromType: string;
- * }
- */
-
-function getTextBodyHelper(obj: JsonObject): JsonObject | null {
-  if (
-    obj.hasOwnProperty("mapper") &&
-    obj.mapper && // mapper can exist but be null
-    obj.mapper.hasOwnProperty("to") &&
-    obj.mapper.hasOwnProperty("body") &&
-    obj.mapper.body.startsWith("(Grassroots Grocery)") && // only want the text messages
-    obj.mapper.hasOwnProperty("from") &&
-    obj.mapper.hasOwnProperty("fromType")
-  ) {
-    return obj.mapper;
-  }
-
-  // recursively search in child objects
-  for (let key in obj) {
-    if (obj[key] && typeof obj[key] === "object") {
-      const result = getTextBodyHelper(obj[key]);
-      if (result) return result;
-    }
-  }
-
-  return null;
-}
-
 function getTextBody(obj: JsonObject): string {
-  const textBody = getTextBodyHelper(obj);
+  const blueprint = obj.response.blueprint;
 
-  if (!textBody) {
-    logger.error("Could not find text body in Make blueprint.");
-    return "Could not find text body in Make blueprint.";
+  const name = blueprint.name;
+  const notes = blueprint.metadata.designer.notes;
+
+  if (!notes) {
+    return name;
   }
 
-  return textBody["body"];
+  return notes.find((note: { text: string }) =>
+    note.text.startsWith("(Grassroots Grocery)")
+  )?.text;
 }
 
 function checkNodeEnvIsProduction(res: Response) {

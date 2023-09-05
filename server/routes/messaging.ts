@@ -33,13 +33,11 @@ const sendTextWebhook = async (url: string, phoneNumber: string) => {
   });
 };
 
-type JsonObject = { [key: string]: any };
-
 async function makeRequest(
   url: string | undefined,
   res: Response,
   onErrorMessage: string
-): Promise<JsonObject> {
+): Promise<any> {
   if (!url) {
     throw new Error("url is undefined");
   }
@@ -56,7 +54,7 @@ async function makeRequest(
   return await resp.json();
 }
 
-function getTextBody(obj: JsonObject): string {
+function getTextBody(obj: any): string {
   const blueprint = obj.response.blueprint;
 
   const name = blueprint.name;

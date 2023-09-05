@@ -1,38 +1,50 @@
 import * as Modal from "@radix-ui/react-dialog";
-import "./Popup.css";
+import { cn } from "../utils/ui";
 
 interface Props {
   trigger: JSX.Element;
+  open?: boolean;
   onOpenChange?: () => void;
-  shouldDodgeKeyboard?: boolean;
-  content: JSX.Element;
+  className?: string;
+  children?: React.ReactNode;
 }
-export const Popup = ({
+export const Popup: React.FC<Props> = ({
   trigger,
-  content,
+  open,
   onOpenChange,
-  shouldDodgeKeyboard,
-}: Props) => {
+  className = "",
+  children,
+}) => {
   return (
-    <Modal.Root onOpenChange={onOpenChange}>
+    <Modal.Root onOpenChange={onOpenChange} open={open}>
       <Modal.Trigger asChild>{trigger}</Modal.Trigger>
       <Modal.Portal>
-        <Modal.Overlay className="modal-overlay z-20 bg-gray-500" />
+        <Modal.Overlay
+          className={cn(
+            "fixed inset-0 z-20 bg-background/80 bg-gray-500 opacity-30",
+            "data-[state=open]:animate-in",
+            "data-[state=closed]:animate-out",
+            "data-[state=closed]:fade-out-0",
+            "data-[state=open]:fade-in-0"
+          )}
+        />
         <Modal.Content
-          className="
-          modal-open-animation 
-          fixed 
-          top-1/2
-          left-1/2 
-          z-20 
-          flex max-w-full 
-          -translate-x-1/2 -translate-y-1/2 flex-col 
-          rounded-lg bg-softBeige 
-          py-3 px-5 drop-shadow-lg 
-          lg:px-8 lg:py-6
-          "
+          className={cn(
+            "z-20 shadow-lg duration-200",
+            "data-[state=open]:animate-in",
+            "data-[state=closed]:animate-out",
+            "data-[state=closed]:fade-out-0",
+            "data-[state=open]:fade-in-0",
+            "data-[state=closed]:zoom-out-95",
+            "data-[state=open]:zoom-in-95",
+            "data-[state=closed]:slide-out-to-left-1/2",
+            "data-[state=closed]:slide-out-to-top-[48%]",
+            "data-[state=open]:slide-in-from-left-1/2",
+            "data-[state=open]:slide-in-from-top-[48%]",
+            className
+          )}
         >
-          {content}
+          {children}
         </Modal.Content>
       </Modal.Portal>
     </Modal.Root>

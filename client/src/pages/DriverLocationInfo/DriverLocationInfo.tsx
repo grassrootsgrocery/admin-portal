@@ -2,7 +2,6 @@ import { Link, Navigate, useParams } from "react-router-dom";
 import { useDriversInfo } from "./driverInfoHooks";
 import { AssignLocationDropdown } from "./AssignLocationDropdown";
 import { useQuery } from "react-query";
-import { API_BASE_URL } from "../../httpUtils";
 import { useFutureEventById } from "../eventHooks";
 import { useAuth } from "../../contexts/AuthContext";
 //Types
@@ -20,7 +19,7 @@ import { SendTextMessageButton } from "../../components/SendTextMesssageButton";
 import { ContactPopup } from "../../components/ContactPopup";
 import { CoordinatorInfoPopup } from "./CoordinatorInfoPopup";
 import { LocationPopup } from "./LocationPopup";
-import { toastNotify } from "../../uiUtils";
+import { toastNotify } from "../../utils/ui";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -126,14 +125,11 @@ export function DriverLocationInfo() {
   const locationsToDriversTextQuery = useQuery(
     ["fetchLocationsToDriversText"],
     async () => {
-      const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/locations-to-drivers-text`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const resp = await fetch(`/api/messaging/locations-to-drivers-text`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!resp.ok) {
         const data = await resp.json();
         throw new Error(data.message);
@@ -147,7 +143,7 @@ export function DriverLocationInfo() {
     ["fetchDriverInfoToCoordinatorsText"],
     async () => {
       const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/driver-info-to-coordinators-text`,
+        `/api/messaging/driver-info-to-coordinators-text`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -177,7 +173,7 @@ export function DriverLocationInfo() {
   const dropoffLocationsQuery = useQuery(
     ["fetchEventDropOffLocations"],
     async () => {
-      const resp = await fetch(`${API_BASE_URL}/api/dropoff-locations`, {
+      const resp = await fetch(`/api/dropoff-locations`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -314,7 +310,7 @@ export function DriverLocationInfo() {
           <SendTextMessageButton
             label="Send Locations to Drivers"
             loading={locationsToDriversTextLoading}
-            url={`${API_BASE_URL}/api/messaging/locations-to-drivers-text`}
+            url={`/api/messaging/locations-to-drivers-text`}
             successMessage="Location information to drivers Make automation started"
             errorMessage="Unable to start Make automation"
           />
@@ -364,7 +360,7 @@ export function DriverLocationInfo() {
             <SendTextMessageButton
               label="Send Driver Info to Coordinators"
               loading={driverInfoToCoordinatorsLoading}
-              url={`${API_BASE_URL}/api/messaging/driver-info-to-coordinators-text`}
+              url={`/api/messaging/driver-info-to-coordinators-text`}
               successMessage="Driver information to coordinators Make automation started"
               errorMessage="Unable to start Make automation"
             />

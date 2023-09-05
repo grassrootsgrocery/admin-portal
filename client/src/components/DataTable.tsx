@@ -35,7 +35,7 @@ export const DataTable: React.FC<Props> = ({
               return (
                 <th
                   key={i}
-                  className="border-b-2 border-newLeafGreen bg-softBeige p-4 text-newLeafGreen"
+                  className="border-b-2 border-newLeafGreen bg-softBeige p-4 text-newLeafGreen text-sm md:text-base"
                 >
                   {h}
                 </th>
@@ -58,7 +58,7 @@ export const DataTable: React.FC<Props> = ({
                   return (
                     <td
                       key={idx}
-                      className="border border-newLeafGreen bg-softBeige px-2 py-2 text-center align-middle text-newLeafGreen"
+                      className="border border-newLeafGreen bg-softBeige px-2 py-2 text-center align-middle text-newLeafGreen text-sm md:text-base"
                     >
                       {datum}
                     </td>

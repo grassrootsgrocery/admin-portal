@@ -5,8 +5,7 @@ import React from "react";
 import event_coordinator from "../assets/event-coordinator.svg";
 import logo from "../assets/grassroots-logo.svg";
 import { useMutation } from "react-query";
-import { API_BASE_URL } from "../httpUtils";
-import { toastNotify } from "../uiUtils";
+import { toastNotify } from "../utils/ui";
 import { Loading } from "../components/Loading";
 
 export function Login() {
@@ -22,7 +21,7 @@ export function Login() {
       username: string;
       password: string;
     }) => {
-      const resp = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      const resp = await fetch(`/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

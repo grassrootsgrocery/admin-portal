@@ -101,7 +101,7 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
   asyncHandler(async (req: Request, res: Response) => {
     logger.info("GET /api/messaging/coordinator-recruitment-text");
 
-    const coordinatorRecruitmentTextBlueprintId = 278585;
+    const coordinatorRecruitmentTextBlueprintId = 1138389;
     const url = `https://us1.make.com/api/v2/scenarios/${coordinatorRecruitmentTextBlueprintId}/blueprint`;
     const data = await makeRequest(
       url,
@@ -154,7 +154,7 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
   asyncHandler(async (req: Request, res: Response) => {
     logger.info("GET /api/messaging/volunteer-recruitment-text");
 
-    const volunteerRecruitmentTextBlueprintId = 299639;
+    const volunteerRecruitmentTextBlueprintId = 1134857;
     const url = `https://us1.make.com/api/v2/scenarios/${volunteerRecruitmentTextBlueprintId}/blueprint`;
     const data = await makeRequest(
       url,
@@ -206,7 +206,7 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
   asyncHandler(async (req: Request, res: Response) => {
     logger.info("GET /api/messaging/driver-info-to-coordinators-text");
 
-    const driverInfoToCoordinatorsTextBlueprintId = 321301;
+    const driverInfoToCoordinatorsTextBlueprintId = 1140162;
     const url = `https://us1.make.com/api/v2/scenarios/${driverInfoToCoordinatorsTextBlueprintId}/blueprint`;
     const data = await makeRequest(
       url,

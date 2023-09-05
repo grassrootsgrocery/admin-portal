@@ -1,11 +1,10 @@
 import { useMutation, useQuery } from "react-query";
 import { Loading } from "../../components/Loading";
-import { API_BASE_URL } from "../../httpUtils";
 //Assets
 import recruitment from "../../assets/recruitment.svg";
 import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
-import { toastNotify } from "../../uiUtils";
+import { toastNotify } from "../../utils/ui";
 import { ProcessedTextAutomation } from "../../types";
 import { Popup } from "../../components/Popup";
 import { MouseEventHandler } from "react";
@@ -32,15 +31,12 @@ export function Messaging() {
   const coordinatorRecruitmentTextQuery = useQuery(
     ["fetchCoordinatorRecruitmentTextBlueprint"],
     async () => {
-      const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/coordinator-recruitment-text`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const resp = await fetch(`/api/messaging/coordinator-recruitment-text`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!resp.ok) {
         const data = await resp.json();
         throw new Error(data.message);
@@ -53,15 +49,12 @@ export function Messaging() {
   const volunteerRecruitmentTextQuery = useQuery(
     ["fetchVolunteerRecruitmentTextBlueprint"],
     async () => {
-      const resp = await fetch(
-        `${API_BASE_URL}/api/messaging/volunteer-recruitment-text`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const resp = await fetch(`/api/messaging/volunteer-recruitment-text`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!resp.ok) {
         const data = await resp.json();
         throw new Error(data.message);
@@ -104,7 +97,7 @@ export function Messaging() {
             label={"Recruit Coordinators"}
             successMessage={"Coordinator recruitment text sent"}
             errorMessage={"Unable to send coordinator recruitment text"}
-            url={`${API_BASE_URL}/api/messaging/coordinator-recruitment-text`}
+            url={`/api/messaging/coordinator-recruitment-text`}
             loading={coordinatorTextLoading}
           />
         </div>
@@ -126,7 +119,7 @@ export function Messaging() {
             label={"Recruit Volunteers"}
             successMessage={"Volunteer recruitment text sent"}
             errorMessage={"Unable to send volunteer recruitment text"}
-            url={`${API_BASE_URL}/api/messaging/volunteer-recruitment-text`}
+            url={`/api/messaging/volunteer-recruitment-text`}
             loading={volunteerTextLoading}
           />
         </div>

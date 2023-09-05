@@ -1,6 +1,5 @@
 import { useQuery } from "react-query";
 import { Neighborhood, ProcessedDriver } from "../../types";
-import { API_BASE_URL } from "../../httpUtils";
 import { useAuth } from "../../contexts/AuthContext";
 
 export function useDriversInfo() {
@@ -10,7 +9,7 @@ export function useDriversInfo() {
   }
 
   const driversQuery = useQuery(["fetchDriverInfo"], async () => {
-    const response = await fetch(`${API_BASE_URL}/api/volunteers/drivers`, {
+    const response = await fetch(`/api/volunteers/drivers`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -33,7 +32,7 @@ export function useDriversInfo() {
       const neighborhoodIds = getNeighborhoodIdsForUrl(driversQuery.data);
 
       const response = await fetch(
-        `${API_BASE_URL}/api/neighborhoods?neighborhoodIds=${neighborhoodIds}`,
+        `/api/neighborhoods?neighborhoodIds=${neighborhoodIds}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

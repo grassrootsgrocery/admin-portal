@@ -66,9 +66,11 @@ function getTextBody(obj: JsonObject): string {
     return name;
   }
 
-  return notes.find((note: { text: string }) =>
-    note.text.startsWith("(Grassroots Grocery)")
-  )?.text;
+  return (
+    notes.find((note: { text: string }) =>
+      note.text.startsWith("(Grassroots Grocery)")
+    )?.text || name
+  );
 }
 
 function checkNodeEnvIsProduction(res: Response) {

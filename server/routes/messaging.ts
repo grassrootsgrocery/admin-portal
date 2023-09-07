@@ -1,9 +1,8 @@
-import express from "express";
+//Types
+import express, { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { adminProtect, protect } from "../middleware/authMiddleware";
 import { fetch } from "../httpUtils/nodeFetch";
-//Types
-import { Request, Response } from "express";
 //Status codes
 import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
 import { AIRTABLE_URL_BASE, airtableGET } from "../httpUtils/airtable";
@@ -38,7 +37,7 @@ async function makeRequest(
   url: string | undefined,
   res: Response,
   onErrorMessage: string
-) {
+): Promise<any> {
   if (!url) {
     throw new Error("url is undefined");
   }
@@ -53,6 +52,23 @@ async function makeRequest(
     throw new Error(onErrorMessage);
   }
   return await resp.json();
+}
+
+function getTextBody(obj: any): string {
+  const blueprint = obj.response.blueprint;
+
+  const name = blueprint.name;
+  const notes = blueprint.metadata.designer.notes;
+
+  if (!notes) {
+    return name;
+  }
+
+  return (
+    notes.find((note: { text: string }) =>
+      note.text.startsWith("(Grassroots Grocery)")
+    )?.text || name
+  );
 }
 
 function checkNodeEnvIsProduction(res: Response) {
@@ -83,15 +99,15 @@ router.route("/api/messaging/coordinator-recruitment-text").get(
   asyncHandler(async (req: Request, res: Response) => {
     logger.info("GET /api/messaging/coordinator-recruitment-text");
 
-    const coordinatorRecruitmentTextBlueprintId = 278585;
+    const coordinatorRecruitmentTextBlueprintId = 1138389;
     const url = `https://us1.make.com/api/v2/scenarios/${coordinatorRecruitmentTextBlueprintId}/blueprint`;
     const data = await makeRequest(
       url,
       res,
       "There was a problem fetching the 'Send Coordinator Recruitment Text (Wed afternoon)' text."
     );
-    //Grab the coordinator recruitment text from the response body
-    res.status(OK).json(data.response.blueprint.flow[4].mapper.body);
+
+    res.status(OK).json(getTextBody(data));
   })
 );
 
@@ -136,14 +152,14 @@ router.route("/api/messaging/volunteer-recruitment-text").get(
   asyncHandler(async (req: Request, res: Response) => {
     logger.info("GET /api/messaging/volunteer-recruitment-text");
 
-    const volunteerRecruitmentTextBlueprintId = 299639;
+    const volunteerRecruitmentTextBlueprintId = 1134857;
     const url = `https://us1.make.com/api/v2/scenarios/${volunteerRecruitmentTextBlueprintId}/blueprint`;
     const data = await makeRequest(
       url,
       res,
       "There was a problem fetching the 'Send Tuesday recruitment texts' text."
     );
-    res.status(OK).json(data.response.blueprint.flow[2].mapper.body);
+    res.status(OK).json(getTextBody(data));
   })
 );
 
@@ -188,7 +204,7 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
   asyncHandler(async (req: Request, res: Response) => {
     logger.info("GET /api/messaging/driver-info-to-coordinators-text");
 
-    const driverInfoToCoordinatorsTextBlueprintId = 321301;
+    const driverInfoToCoordinatorsTextBlueprintId = 1140162;
     const url = `https://us1.make.com/api/v2/scenarios/${driverInfoToCoordinatorsTextBlueprintId}/blueprint`;
     const data = await makeRequest(
       url,
@@ -196,12 +212,7 @@ router.route("/api/messaging/driver-info-to-coordinators-text").get(
       "There was a problem fetching the 'Send Driver Info To Coordinators' text."
     );
     //Grab message body
-    res
-      .status(OK)
-      .json(
-        data.response.blueprint.flow[3].routes[0].flow[1].routes[1].flow[0]
-          .mapper.body
-      );
+    res.status(OK).json(getTextBody(data));
   })
 );
 
@@ -253,9 +264,7 @@ router.route("/api/messaging/locations-to-drivers-text").get(
       res,
       "There was a problem fetching the '[NEW] Send Locations and POC details to volunteer drivers (only text, no email)' text."
     );
-    res
-      .status(OK)
-      .json(data.response.blueprint.flow[3].routes[0].flow[6].mapper.body);
+    res.status(OK).json(getTextBody(data));
   })
 );
 

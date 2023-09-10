@@ -8,6 +8,7 @@ import { ProcessedEvent, ProcessedSpecialGroup } from "../../../types";
 import check from "../../../assets/check.svg";
 import plus from "../../../assets/plus.svg";
 import { useSpecialGroups } from "../specialGroupsHooks";
+import { AirtableResponse } from "../../../../../server/types";
 
 interface Props {
   event: ProcessedEvent;
@@ -75,10 +76,11 @@ export const AddSpecialGroup: React.FC<Props> = ({
         "Data returned from POST /api/special-groups/add-special-group-to-event",
         data
       );
+
+      const typedData = data as AirtableResponse<any>;
       //TODO: We should maybe type the response?
       setNewlyAddedGroupSignUpLink(
-        data.records[0].fields["Shortened Link to Special Event Signup Form"] ||
-          data.records[0].fields["Link to Special Event Signup Form"] ||
+        data.records[0].fields["Fillout Special Event Signup"] ||
           "Uh oh, where is the link?"
       );
       specialGroupsQuery.refetch();

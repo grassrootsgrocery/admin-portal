@@ -272,7 +272,7 @@ router.route("/api/events/view-event-special-groups/").get(
             ? specialEvent.fields["Volunteer Group"][0]
             : "NO ID",
           eventSignUpLink:
-            specialEvent.fields["Jotform Special Event Sign-Up"] ||
+            specialEvent.fields["Fillout Special Event Signup"] ||
             "No sign up link",
         };
       });

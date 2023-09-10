@@ -178,7 +178,7 @@ export interface ProcessedSpecialGroup {
 
 export interface SpecialEvent {
   "Volunteer Group": string | undefined;
-  "Jotform Special Event Sign-Up": string | undefined;
+  "Fillout Special Event Signup": string | undefined;
 }
 
 export interface ProcessedSpecialEvent {

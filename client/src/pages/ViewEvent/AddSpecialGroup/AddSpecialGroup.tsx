@@ -8,7 +8,6 @@ import { ProcessedEvent, ProcessedSpecialGroup } from "../../../types";
 import check from "../../../assets/check.svg";
 import plus from "../../../assets/plus.svg";
 import { useSpecialGroups } from "../specialGroupsHooks";
-import { AirtableResponse } from "../../../../../server/types";
 
 interface Props {
   event: ProcessedEvent;

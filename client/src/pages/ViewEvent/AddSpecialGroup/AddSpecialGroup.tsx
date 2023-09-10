@@ -76,7 +76,6 @@ export const AddSpecialGroup: React.FC<Props> = ({
         data
       );
 
-      const typedData = data as AirtableResponse<any>;
       //TODO: We should maybe type the response?
       setNewlyAddedGroupSignUpLink(
         data.records[0].fields["Fillout Special Event Signup"] ||

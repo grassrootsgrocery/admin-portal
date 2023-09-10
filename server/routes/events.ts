@@ -252,7 +252,7 @@ router.route("/api/events/view-event-special-groups/").get(
       `filterByFormula=AND(SEARCH(RECORD_ID(), "${eventIds}") != "",` +
       `{Special Event})` + //  get events that are special events
       `&fields=Volunteer Group` + // Special Group
-      `&fields=Jotform Special Event Sign-Up`; // Special Event Link
+      `&fields=Fillout Special Event Signup`; // Special Event Link
 
     const specialEvents = await airtableGET<SpecialEvent>({ url: url });
 

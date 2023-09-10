@@ -43,7 +43,17 @@ function processSpecialGroups(
       1 "St. Augustine's"
       2 "https://bit.ly/3HohS3x"
     */
-    return [se.id, groupName, <a href={se.eventSignUpLink} target="_blank" className="text-blue-500 underline">se.eventSignUpLink</a>];
+    return [
+      se.id,
+      groupName,
+      <a
+        href={se.eventSignUpLink}
+        target="_blank"
+        className="text-blue-500 underline"
+      >
+        Link
+      </a>,
+    ];
   });
 }
 
@@ -89,17 +99,17 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
   return (
     <Popup
       className={cn(
-        "bg-softBeige fixed left-[50%] top-[50%] w-full w-full -translate-x-1/2 -translate-y-1/2 rounded-lg px-3 py-4",
+        "fixed left-[50%] top-[50%] w-full w-full -translate-x-1/2 -translate-y-1/2 rounded-lg bg-softBeige px-3 py-4",
         "md:w-[40rem] md:py-6 md:px-8"
       )}
       onOpenChange={() => refetchSpecialEvents()}
       trigger={
         <button
           className={
-            "bg-pumpkinOrange lg:shadow-newLeafGreen rounded-full px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:transition-all " +
+            "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all " +
             (disabled
               ? "opacity-50"
-              : "lg:hover:shadow-newLeafGreen lg:hover:-translate-y-1 lg:hover:shadow-lg")
+              : "lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen")
           }
           disabled={disabled}
           type="button"
@@ -109,7 +119,7 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
       }
     >
       <>
-        <Modal.Title className="text-newLeafGreen m-0 flex justify-center text-xl font-bold lg:px-16 lg:text-3xl">
+        <Modal.Title className="m-0 flex justify-center text-xl font-bold text-newLeafGreen lg:px-16 lg:text-3xl">
           View Event Special Groups
         </Modal.Title>
         <div className="h-3 md:h-6" />
@@ -126,7 +136,7 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
         <div className="flex justify-center">
           <Modal.Close
             className={cn(
-              "bg-newLeafGreen rounded-full px-3 py-2 text-xs font-semibold text-white hover:brightness-150 focus:brightness-150",
+              "rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-white hover:brightness-150 focus:brightness-150",
               "lg:px-5 lg:py-3 lg:text-base lg:font-bold"
             )}
           >

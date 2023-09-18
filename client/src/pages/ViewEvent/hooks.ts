@@ -28,7 +28,7 @@ export function useSpecialGroups() {
 
 // Retrieve Special Events for event. The naming is confusing 
 //Query keys
-const SPECIAL_EVENTS = "fetchViewEventSpecialEvents";
+const SPECIAL_EVENTS = "fetchViewEventSpecialEvents" as const;
 export const SPECIAL_EVENTS_QUERY_KEYS = {
   fetchSpecialEventsForEvent: (eventId: string) => [SPECIAL_EVENTS, eventId],
 }

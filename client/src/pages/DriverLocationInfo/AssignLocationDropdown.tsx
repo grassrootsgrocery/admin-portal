@@ -13,6 +13,8 @@ import check_icon from "../../assets/checkbox-icon.svg";
 import { toastNotify } from "../../utils/ui";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { queryClient } from "../../App";
+import { DRIVER_INFO_QUERY_KEYS } from "./hooks";
 interface DropdownItemProps {
   label: string;
   selected: boolean;
@@ -87,14 +89,12 @@ function getSelectedLocations(
 interface Props {
   locations: ProcessedDropoffLocation[];
   driver: ProcessedDriver;
-  refetchDrivers: any;
 }
 
 //TODO: Error handling on assigning a dropoff location doesn't work
 export const AssignLocationDropdown: React.FC<Props> = ({
   locations,
   driver,
-  refetchDrivers,
 }) => {
   const { token } = useAuth();
   if (!token) {
@@ -160,7 +160,9 @@ export const AssignLocationDropdown: React.FC<Props> = ({
                 const newSelectedLocations = [...selectedLocations];
                 newSelectedLocations[i] = !selectedLocations[i];
                 setSelectedLocations(newSelectedLocations);
-                refetchDrivers();
+                queryClient.invalidateQueries(
+                  DRIVER_INFO_QUERY_KEYS.fetchDriverInfo
+                );
                 toastNotify(
                   `Location ${
                     newSelectedLocations[i] ? "assigned" : "unassigned"

@@ -26,9 +26,9 @@ const EditFieldInput = ({
 }: EditFieldProps) => {
   return (
     <div className="flex flex-col gap-2 md:flex-row md:gap-8">
-      <p className="text-newLeafGreen shrink-0 font-bold lg:text-xl">{label}</p>
+      <p className="shrink-0 font-bold text-newLeafGreen lg:text-xl">{label}</p>
       <div className="relative grow">
-        <div className="border-softGrayWhite flex h-8 w-full rounded-lg border-2 px-2">
+        <div className="flex h-8 w-full rounded-lg border-2 border-softGrayWhite px-2">
           <div className="flex w-full flex-col space-y-1">
             <input
               autoFocus={autoFocus}
@@ -55,11 +55,11 @@ const EditFieldSelect = ({
   return (
     <>
       <div className="flex flex-col gap-2 md:flex-row md:gap-8">
-        <p className="text-newLeafGreen shrink-0 font-bold lg:text-xl">
+        <p className="shrink-0 font-bold text-newLeafGreen lg:text-xl">
           {label}
         </p>
         <div className="relative w-64 grow md:w-80">
-          <div className="border-softGrayWhite flex h-8 w-full rounded-lg border-2 px-2">
+          <div className="flex h-8 w-full rounded-lg border-2 border-softGrayWhite px-2">
             <div className="flex w-full flex-col space-y-1">
               <select
                 className="w-full border-0 outline-none"
@@ -88,7 +88,7 @@ interface Props {
   email: string;
   phoneNumber: string;
   participantType: string;
-  refetch: () => void;
+  onEditSuccess: () => void;
 }
 export const EditVolunteerPopup = (info: Props) => {
   const [formState, setFormState] = useState(info);
@@ -133,8 +133,7 @@ export const EditVolunteerPopup = (info: Props) => {
     onSuccess(data, variables, context) {
       toastNotify("Volunteer updated successfully", "success");
 
-      // refetch table
-      info.refetch();
+      info.onEditSuccess();
     },
     onError(error, variables, context) {
       // @ts-ignore
@@ -157,7 +156,7 @@ export const EditVolunteerPopup = (info: Props) => {
     >
       {/* title */}
       <Modal.Title className="flex h-[10%] justify-center">
-        <h1 className="text-newLeafGreen text-2xl font-bold">Edit Volunteer</h1>
+        <h1 className="text-2xl font-bold text-newLeafGreen">Edit Volunteer</h1>
       </Modal.Title>
       <div className="h-0 lg:h-[5%]" />
       <form
@@ -207,7 +206,7 @@ export const EditVolunteerPopup = (info: Props) => {
         </Modal.Close>
         <Modal.Close
           className={cn(
-            "bg-newLeafGreen rounded-full px-3 py-2 text-xs font-semibold text-white",
+            "rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-white",
             "lg:px-5 lg:py-3 lg:text-base lg:font-bold",
             "hover:cursor-pointer hover:brightness-150 focus:brightness-200"
           )}

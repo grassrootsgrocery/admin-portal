@@ -1,6 +1,6 @@
 import { Link, useParams, Navigate } from "react-router-dom";
 import { useQuery } from "react-query";
-import { useFutureEventById } from "../eventHooks";
+import { useFutureEventById, useVolunteersForEvent } from "../eventHooks";
 import React from "react";
 //Types
 import { ProcessedScheduledSlot } from "../../types";
@@ -40,31 +40,16 @@ export const ViewEvent = () => {
     return <Navigate to="/" />;
   }
   const { eventId } = useParams();
-  const eventQuery = useFutureEventById(eventId);
+  if (!eventId) {
+    return <div>Error...</div>;
+  }
 
-  const scheduledSlotsQuery = useQuery(
-    ["fetchVolunteersForEvent", eventId],
-    async () => {
-      if (typeof eventQuery.data === "undefined") {
-        return Promise.reject(new Error("Undefined event"));
-      }
-      const scheduledSlotsIds = eventQuery.data.scheduledSlots.join(",");
-      const response = await fetch(
-        `/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message);
-      }
-      return response.json() as Promise<ProcessedScheduledSlot[]>;
-    },
-    { enabled: eventQuery.status === "success" }
-  );
+  const eventQuery = useFutureEventById(eventId);
+  const scheduledSlotsQuery = useVolunteersForEvent({
+    enabled: eventQuery.status === "success",
+    eventId,
+    scheduledSlotIds: eventQuery.data ? eventQuery.data.scheduledSlots : [],
+  });
 
   if (eventQuery.status === "error" || scheduledSlotsQuery.status === "error") {
     const error = eventQuery.error || scheduledSlotsQuery.error;
@@ -169,7 +154,7 @@ export const ViewEvent = () => {
           </div>
 
           <div className="flex flex-col items-start justify-around gap-2 ">
-            <AddSpecialGroup event={event} refetchEvent={eventQuery.refetch} />
+            <AddSpecialGroup event={event} />
             <ViewSpecialGroups event={event} />
           </div>
         </div>
@@ -179,10 +164,7 @@ export const ViewEvent = () => {
           Participant Roster
         </h1>
         {/* Volunteer Table */}
-        <VolunteersTable
-          scheduledSlots={scheduledSlots}
-          refetchVolunteers={scheduledSlotsQuery.refetch}
-        />
+        <VolunteersTable scheduledSlots={scheduledSlots} eventId={eventId} />
         <div className="h-4" />
         <Link to={`/events/driver-location-info/${eventId}`}>
           <button

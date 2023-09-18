@@ -2,25 +2,33 @@ import { useQuery } from "react-query";
 import { Neighborhood, ProcessedDriver } from "../../types";
 import { useAuth } from "../../contexts/AuthContext";
 
+const DRIVERS = "drivers" as const;
+export const DRIVER_INFO_QUERY_KEYS = {
+  fetchDriverInfo: [DRIVERS],
+};
+
 export function useDriversInfo() {
   const { token } = useAuth();
   if (!token) {
     throw new Error("No token found in useDriversInfo hook");
   }
 
-  const driversQuery = useQuery(["fetchDriverInfo"], async () => {
-    const response = await fetch(`/api/volunteers/drivers`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message);
+  const driversQuery = useQuery(
+    DRIVER_INFO_QUERY_KEYS.fetchDriverInfo,
+    async () => {
+      const response = await fetch(`/api/volunteers/drivers`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
+      return response.json() as Promise<ProcessedDriver[]>;
     }
-    return response.json() as Promise<ProcessedDriver[]>;
-  });
+  );
 
   const neighborhoodsQuery = useQuery(
     ["fetchNeighborhoodNames"],
@@ -81,7 +89,6 @@ export function useDriversInfo() {
 
   return {
     data: driversWithNeighborhoodNames,
-    refetch: driversQuery.refetch,
     isLoading,
     isError,
     error: driversQuery.error || neighborhoodsQuery.error,
@@ -116,3 +123,31 @@ function processNeighborhoodsForDriver(
     return { ...driver, restrictedLocations: neighborhoodNames };
   });
 }
+
+
+const DROPOFF_LOCATIONS = "dropoffLocations" as const;
+export const DROPOFF_LOCATIONS_QUERY_KEY = {
+  fetchDropoffLocations: [DROPOFF_LOCATIONS],
+}
+export function useDropoffLocations() {
+  const { token } = useAuth();
+  if (!token) {
+    throw new Error("No token found in useDropoffLocations hook");
+  }
+  return useQuery(
+    DROPOFF_LOCATIONS_QUERY_KEY.fetchDropoffLocations,
+    async () => {
+      const resp = await fetch(`/api/dropoff-locations`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!resp.ok) {
+        const data = await resp.json();
+        throw new Error(data.messsage);
+      }
+      return resp.json();
+    }
+  );
+}
+

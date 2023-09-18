@@ -8,8 +8,9 @@ import {
 } from "../../types";
 import { useQuery } from "react-query";
 import { useAuth } from "../../contexts/AuthContext";
-import { useSpecialGroups } from "./specialGroupsHooks";
+import { SPECIAL_EVENTS_QUERY_KEYS, useSpecialEventsForEvent, useSpecialGroups } from "./hooks";
 import { cn } from "../../utils/ui";
+import { queryClient } from "../../App";
 
 interface Props {
   event: ProcessedEvent;
@@ -59,42 +60,19 @@ function processSpecialGroups(
 
 export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
   const { token } = useAuth();
-  const {
-    data: specialEvents,
-    refetch: refetchSpecialEvents,
-    status: specialEventsStatus,
-    error: specialEventsError,
-  } = useQuery(["fetchViewEventSpecialEvents", event.id], async () => {
-    const eventIds = event.allEventIds.join(",");
-    const response = await fetch(
-      `/api/events/view-event-special-groups?eventIds=${eventIds}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message);
-    }
-    return response.json() as Promise<ProcessedSpecialEvent[]>;
-  });
 
-  const {
-    data: specialGroups,
-    status: specialGroupsStatus,
-    error: specialGroupsError,
-  } = useSpecialGroups();
+  console.log("event", event);
+  const specialEventsForEventQuery = useSpecialEventsForEvent({ eventId: event.id, allEventIds: event.allEventIds });
+  console.log("specialEventsForEventQuery", specialEventsForEventQuery.status);
+  const specialGroupsQuery = useSpecialGroups();
 
   const disabled =
-    specialEventsStatus === "loading" ||
-    specialEventsStatus === "idle" ||
-    specialEventsStatus === "error" ||
-    specialGroupsStatus === "loading" ||
-    specialGroupsStatus === "idle" ||
-    specialGroupsStatus === "error";
+    specialEventsForEventQuery.status === "loading" ||
+    specialEventsForEventQuery.status === "idle" ||
+    specialEventsForEventQuery.status === "error" ||
+    specialGroupsQuery.status === "loading" ||
+    specialGroupsQuery.status === "idle" ||
+    specialGroupsQuery.status === "error";
 
   return (
     <Popup
@@ -102,15 +80,15 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
         "fixed left-[50%] top-[50%] w-full w-full -translate-x-1/2 -translate-y-1/2 rounded-lg bg-softBeige px-3 py-4",
         "md:w-[40rem] md:py-6 md:px-8"
       )}
-      onOpenChange={() => refetchSpecialEvents()}
+      onOpenChange={() => { queryClient.invalidateQueries(SPECIAL_EVENTS_QUERY_KEYS.fetchSpecialEventsForEvent(event.id)); }}
       trigger={
         <button
           className={
-            "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all " +
-            (disabled
-              ? "opacity-50"
-              : "lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen")
-          }
+            cn(
+              "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white outline-none",
+              "lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all",
+              disabled ? "opacity-50" : "lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen"
+            )}
           disabled={disabled}
           type="button"
         >
@@ -123,12 +101,12 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
           View Event Special Groups
         </Modal.Title>
         <div className="h-3 md:h-6" />
-        {!disabled && specialEvents && specialGroups && (
+        {!disabled && specialEventsForEventQuery.data && specialGroupsQuery.data && (
           <div className="h-96">
             <DataTable
               borderColor="newLeafGreen"
               columnHeaders={["Name", "Sign-up Link"]}
-              dataRows={processSpecialGroups(specialEvents, specialGroups)}
+              dataRows={processSpecialGroups(specialEventsForEventQuery.data, specialGroupsQuery.data)}
             />
           </div>
         )}

@@ -1,5 +1,5 @@
 import { Link, Navigate, useParams } from "react-router-dom";
-import { useDriversInfo } from "./driverInfoHooks";
+import { DROPOFF_LOCATIONS_QUERY_KEY, useDriversInfo, useDropoffLocations } from "./hooks";
 import { AssignLocationDropdown } from "./AssignLocationDropdown";
 import { useQuery } from "react-query";
 import { useFutureEventById } from "../eventHooks";
@@ -20,6 +20,7 @@ import { ContactPopup } from "../../components/ContactPopup";
 import { CoordinatorInfoPopup } from "./CoordinatorInfoPopup";
 import { LocationPopup } from "./LocationPopup";
 import { toastNotify } from "../../utils/ui";
+import { queryClient } from "../../App";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -28,8 +29,7 @@ in the VolunteersTable.tsx file.
 //Takes in ProcessedDriver array and formats data for DataTable component
 function processDriversForTable(
   drivers: ProcessedDriver[],
-  dropoffLocations: ProcessedDropoffLocation[],
-  refetchDrivers: any
+  dropoffLocations: ProcessedDropoffLocation[]
 ) {
   const dropoffLocationsSorted = dropoffLocations.sort((a, b) =>
     a.siteName < b.siteName ? -1 : 1
@@ -51,7 +51,6 @@ function processDriversForTable(
       <AssignLocationDropdown
         locations={dropoffLocationsSorted}
         driver={curDriver}
-        refetchDrivers={refetchDrivers}
       />,
       <LocationPopup dropoffLocations={dropoffLocationsForDriver} />,
       <ContactPopup
@@ -170,22 +169,7 @@ export function DriverLocationInfo() {
   const eventQuery = useFutureEventById(eventId);
   const driversInfoQuery = useDriversInfo();
 
-  const dropoffLocationsQuery = useQuery(
-    ["fetchEventDropOffLocations"],
-    async () => {
-      const resp = await fetch(`/api/dropoff-locations`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!resp.ok) {
-        const data = await resp.json();
-        throw new Error(data.messsage);
-      }
-      return resp.json();
-    }
-  );
-
+  const dropoffLocationsQuery = useDropoffLocations();
   if (
     driversInfoQuery.isLoading ||
     eventQuery.status === "loading" ||
@@ -288,8 +272,7 @@ export function DriverLocationInfo() {
             ]}
             dataRows={processDriversForTable(
               driversInfoQuery.data,
-              dropoffLocationsForEvent,
-              driversInfoQuery.refetch
+              dropoffLocationsForEvent
             )}
           />
         </div>
@@ -368,7 +351,7 @@ export function DriverLocationInfo() {
           <DropoffOrganizerPopup
             date={event.date}
             dropoffLocations={dropoffLocationsQuery.data}
-            refetchDropoffLocations={dropoffLocationsQuery.refetch}
+            onEditSuccess={() => { queryClient.invalidateQueries(DROPOFF_LOCATIONS_QUERY_KEY.fetchDropoffLocations); }} 
           />
         </div>
         <div className="h-16" />

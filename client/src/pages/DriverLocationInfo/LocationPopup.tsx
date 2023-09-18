@@ -29,20 +29,24 @@ export const LocationPopup: React.FC<Props> = ({ dropoffLocations }) => {
       open={isOpen}
       onOpenChange={() => {
         if (!disabled) {
-          setIsOpen(prev => !prev);
+          setIsOpen((prev) => !prev);
         }
       }}
       trigger={
         <div className="flex justify-center">
-          <img className={cn("w-8", disabled ? "opacity-50" : "hover:cursor-pointer")} src={location} alt="" />
+          <img
+            className={cn(
+              "w-8",
+              disabled ? "opacity-50" : "hover:cursor-pointer"
+            )}
+            src={location}
+            alt=""
+          />
         </div>
       }
     >
       <div className="relative">
-        <Modal.Close
-          className="absolute right-0 w-4 md:w-6 lg:w-8"
-          asChild
-        >
+        <Modal.Close className="absolute right-0 w-4 md:w-6 lg:w-8" asChild>
           <button className="hover:brightness-150">
             <img src={roundX} alt="Hello" />
           </button>

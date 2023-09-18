@@ -33,8 +33,8 @@ export const SPECIAL_EVENTS_QUERY_KEYS = {
   fetchSpecialEventsForEvent: (eventId: string) => [SPECIAL_EVENTS, eventId],
 }
 export function useSpecialEventsForEvent({ eventId, allEventIds }: { eventId: string, allEventIds: string[] }) {
+  const { token } = useAuth();
   return useQuery(SPECIAL_EVENTS_QUERY_KEYS.fetchSpecialEventsForEvent(eventId), async () => {
-    const { token } = useAuth();
     const eventIds = allEventIds.join(",");
     const response = await fetch(
       `/api/events/view-event-special-groups?eventIds=${eventIds}`,

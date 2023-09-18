@@ -61,9 +61,7 @@ function processSpecialGroups(
 export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
   const { token } = useAuth();
 
-  console.log("event", event);
   const specialEventsForEventQuery = useSpecialEventsForEvent({ eventId: event.id, allEventIds: event.allEventIds });
-  console.log("specialEventsForEventQuery", specialEventsForEventQuery.status);
   const specialGroupsQuery = useSpecialGroups();
 
   const disabled =

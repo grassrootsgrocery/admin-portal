@@ -146,7 +146,7 @@ export const ViewEvent = () => {
                 />
               </p>
             </div>
-            {/*            <HeaderValueDisplay
+            <HeaderValueDisplay
               header="Total # of Packers"
               value={event.numPackers}
             />
@@ -165,7 +165,7 @@ export const ViewEvent = () => {
             <HeaderValueDisplay
               header="# of Special Groups"
               value={event.numSpecialGroups}
-            />*/}
+            />
           </div>
 
           <div className="flex flex-col items-start justify-around gap-2 ">

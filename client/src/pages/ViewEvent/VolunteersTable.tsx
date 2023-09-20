@@ -1,3 +1,4 @@
+/*
 import { useEffect, useRef, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
@@ -19,9 +20,9 @@ import { ContactPopup } from "../../components/ContactPopup";
 import { EditVolunteerPopup } from "../../components/EditVolunteerPopup";
 import { HttpCheckbox } from "../../components/HttpCheckbox";
 
-/*
+/!*
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
-*/
+*!/
 
 interface FilterItemProps {
   onSelect: () => void;
@@ -204,15 +205,15 @@ export const VolunteersTable: React.FC<Props> = ({
     const { token } = useAuth();
     const rows = scheduledSlots.map((ss, i) => {
       return [
-        /* id */
+        /!* id *!/
         ss.id,
-        /* # */
+        /!* # *!/
         i + 1,
         ss.firstName,
         ss.lastName,
         ss.timeSlot,
         ss.participantType,
-        /* Confirmed Checkbox */
+        /!* Confirmed Checkbox *!/
         <HttpCheckbox
           checked={ss.confirmed}
           mutationFn={applyPatch(
@@ -229,7 +230,7 @@ export const VolunteersTable: React.FC<Props> = ({
           }}
           onError={() => toastNotify("Unable to confirm volunteer", "failure")}
         />,
-        /* Not Going Checkbox */
+        /!* Not Going Checkbox *!/
         <HttpCheckbox
           checked={ss.cantCome}
           mutationFn={applyPatch(
@@ -250,7 +251,7 @@ export const VolunteersTable: React.FC<Props> = ({
         />,
         ss.specialGroup ?? "N/A",
         typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
-        /* Contact Modal */
+        /!* Contact Modal *!/
         <ContactPopup phoneNumber={ss.phoneNumber} email={ss.email} />,
         <EditVolunteerPopup
           id={ss.id}
@@ -279,7 +280,7 @@ export const VolunteersTable: React.FC<Props> = ({
   // UI
   return (
     <div className="flex h-screen flex-col pt-6">
-      {/* Filtering */}
+      {/!* Filtering *!/}
       <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4">
         <DropdownMenu.Root
           open={isFilterDropdownOpen}
@@ -320,12 +321,12 @@ export const VolunteersTable: React.FC<Props> = ({
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
 
-        {/* Applied Filters Labels */}
+        {/!* Applied Filters Labels *!/}
         <h1 className="align-stretch shrink-0 font-semibold text-newLeafGreen lg:text-lg">
           Applied Filters:
         </h1>
 
-        {/* Buttons that pops up after filter is clicked */}
+        {/!* Buttons that pops up after filter is clicked *!/}
         <div className="scrollbar-thin flex h-11 max-w-full grow items-start gap-4 overflow-x-auto overscroll-x-auto py-1 px-2">
           {filters.map((item, i) => {
             if (!item.isSelected) return null;
@@ -339,7 +340,7 @@ export const VolunteersTable: React.FC<Props> = ({
           })}
         </div>
 
-        {/* Clear Filters button */}
+        {/!* Clear Filters button *!/}
         <button
           className="shrink-0 rounded-full bg-pumpkinOrange px-4 text-base font-semibold text-white md:px-10 md:py-1 lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
           type="button"
@@ -355,7 +356,7 @@ export const VolunteersTable: React.FC<Props> = ({
         </button>
       </div>
       <div className="h-16" />
-      {/* Table */}
+      {/!* Table *!/}
       <DataTable
         borderColor="softGrayWhite"
         columnHeaders={[
@@ -373,6 +374,129 @@ export const VolunteersTable: React.FC<Props> = ({
         ]}
         dataRows={processScheduledSlotsForTable(filtered)}
       />
+    </div>
+  );
+};
+*/
+
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
+import { ProcessedScheduledSlot } from "../../types";
+import React, { useState } from "react";
+
+const columnHelper = createColumnHelper<ProcessedScheduledSlot>();
+
+const columns = [
+  // Display Column
+  columnHelper.display({
+    id: "id",
+    header: () => <span>ID</span>,
+    cell: (props) => props.cell.row.id,
+  }),
+  columnHelper.accessor("firstName", {
+    cell: (info) => info.getValue(),
+    header: () => <span>First Name</span>,
+    footer: (props) => props.column.id,
+  }),
+  // Accessor Column
+  columnHelper.accessor((row) => row.lastName, {
+    id: "lastName",
+    cell: (info) => info.getValue(),
+    header: () => <span>Last Name</span>,
+    footer: (props) => props.column.id,
+  }),
+  columnHelper.accessor("confirmed", {
+    header: () => "Confirmed",
+    footer: (props) => props.column.id,
+  }),
+];
+
+interface Props {
+  scheduledSlots: ProcessedScheduledSlot[];
+  refetchVolunteers: () => void;
+}
+
+export const VolunteersTable: React.FC<Props> = ({
+  scheduledSlots,
+  refetchVolunteers,
+}: Props) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const table = useReactTable({
+    data: scheduledSlots,
+    columns,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    debugTable: true,
+  });
+
+  return (
+    <div className="flex h-screen flex-col pt-6">
+      <div className="h-16" />
+      <table className="table w-full border-separate border-spacing-0  rounded-lg">
+        <thead className="sticky top-0 z-10 border-b-2 border-newLeafGreen bg-softBeige">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <th key={header.id} colSpan={header.colSpan}>
+                    {header.isPlaceholder ? null : (
+                      <div
+                        {...{
+                          className: header.column.getCanSort()
+                            ? "cursor-pointer select-none"
+                            : "",
+                          onClick: header.column.getToggleSortingHandler(),
+                        }}
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {{
+                          asc: " 🔼",
+                          desc: " 🔽",
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                    )}
+                  </th>
+                );
+              })}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => {
+            return (
+              <tr key={row.id} className={"text-center"}>
+                {row.getVisibleCells().map((cell) => {
+                  return (
+                    <td
+                      key={cell.id}
+                      className="border-b-2 border-newLeafGreen bg-softBeige p-4 text-sm text-newLeafGreen md:text-base"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };

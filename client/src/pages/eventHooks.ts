@@ -6,7 +6,7 @@ import { ProcessedEvent, ProcessedScheduledSlot } from "../types";
 //Query key management
 const EVENTS = "events" as const;
 export const EVENT_QUERY_KEYS = {
-  getAllFutureEvents: EVENTS,
+  getAllFutureEvents: [EVENTS] as const
 };
 
 //Query all upcoming events

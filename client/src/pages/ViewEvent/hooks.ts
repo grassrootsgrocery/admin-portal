@@ -7,7 +7,7 @@ import { ProcessedSpecialEvent, ProcessedSpecialGroup } from "../../types";
 //Query keys
 const SPECIAL_GROUPS = "specialGroups" as const;
 export const SPECIAL_GROUPS_QUERY_KEYS = {
-  fetchSpecialGroups: [SPECIAL_GROUPS],
+  fetchSpecialGroups: [SPECIAL_GROUPS] as const,
 };
 
 export function useSpecialGroups() {
@@ -30,7 +30,7 @@ export function useSpecialGroups() {
 //Query keys
 const SPECIAL_EVENTS = "fetchViewEventSpecialEvents" as const;
 export const SPECIAL_EVENTS_QUERY_KEYS = {
-  fetchSpecialEventsForEvent: (eventId: string) => [SPECIAL_EVENTS, eventId],
+  fetchSpecialEventsForEvent: (eventId: string) => [SPECIAL_EVENTS, eventId] as const,
 }
 export function useSpecialEventsForEvent({ eventId, allEventIds }: { eventId: string, allEventIds: string[] }) {
   const { token } = useAuth();

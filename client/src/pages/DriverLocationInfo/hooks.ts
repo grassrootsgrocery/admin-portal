@@ -4,7 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const DRIVERS = "drivers" as const;
 export const DRIVER_INFO_QUERY_KEYS = {
-  fetchDriverInfo: [DRIVERS],
+  fetchDriverInfo: [DRIVERS] as const,
 };
 
 export function useDriversInfo() {

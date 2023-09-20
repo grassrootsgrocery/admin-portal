@@ -172,21 +172,8 @@ export function DriverLocationInfo() {
 
   const eventQuery = useFutureEventById(eventId);
   const driversInfoQuery = useDriversInfo();
-
   const dropoffLocationsQuery = useDropoffLocations();
-  if (
-    driversInfoQuery.isLoading ||
-    eventQuery.status === "loading" ||
-    eventQuery.status === "idle" ||
-    dropoffLocationsQuery.status === "loading" ||
-    dropoffLocationsQuery.status === "idle"
-  ) {
-    return (
-      <div className="relative h-full">
-        <Loading size="large" thickness="extra-thicc" />
-      </div>
-    );
-  }
+
   if (
     driversInfoQuery.isError ||
     dropoffLocationsQuery.status === "error" ||
@@ -202,6 +189,20 @@ export function DriverLocationInfo() {
     }
     console.error(error);
     return <div>Error...</div>;
+  }
+
+  if (
+    driversInfoQuery.isLoading ||
+    eventQuery.status === "loading" ||
+    eventQuery.status === "idle" ||
+    dropoffLocationsQuery.status === "loading" ||
+    dropoffLocationsQuery.status === "idle"
+  ) {
+    return (
+      <div className="relative h-full">
+        <Loading size="large" thickness="extra-thicc" />
+      </div>
+    );
   }
 
   const event = eventQuery.data;

@@ -547,14 +547,20 @@ export const VolunteersTable: React.FC<Props> = ({
   return (
     <div className="flex h-screen flex-col pt-6">
       <div className="h-16" />
-      <div className="softGrayWhite h-[calc(100vh-200px)] border-spacing-2 overflow-y-auto border-2 accent-newLeafGreen">
-        <table className="table w-full border-separate border-spacing-0  rounded-lg">
+      <div
+        className={`softGrayWhite h-[calc(100vh-200px)] border-spacing-2 overflow-y-auto rounded-lg border-2`}
+      >
+        <table className="table w-full border-collapse rounded-lg">
           <thead className="sticky top-0 z-10 border-b-2 border-newLeafGreen bg-softBeige">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <th key={header.id} colSpan={header.colSpan}>
+                    <th
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      className="border border-newLeafGreen bg-softBeige p-4 text-sm text-newLeafGreen md:text-base"
+                    >
                       {header.isPlaceholder ? null : (
                         <div
                           {...{
@@ -580,15 +586,15 @@ export const VolunteersTable: React.FC<Props> = ({
               </tr>
             ))}
           </thead>
-          <tbody className={"h-[calc(100vh-200px)] overflow-y-auto"}>
+          <tbody>
             {table.getRowModel().rows.map((row) => {
               return (
-                <tr key={row.id} className={"text-center"}>
+                <tr key={row.id} className="text-center">
                   {row.getVisibleCells().map((cell) => {
                     return (
                       <td
                         key={cell.id}
-                        className="border-b-2 border-newLeafGreen bg-softBeige p-4 text-sm text-newLeafGreen md:text-base"
+                        className="border border-newLeafGreen bg-softBeige px-2 py-2 text-center align-middle text-sm text-newLeafGreen md:text-base"
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

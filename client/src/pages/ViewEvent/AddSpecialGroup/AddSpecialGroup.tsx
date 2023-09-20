@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useAuth } from "../../../contexts/AuthContext";
 import * as Modal from "@radix-ui/react-dialog";
 import { Popup } from "../../../components/Popup";
@@ -8,7 +8,6 @@ import { ProcessedEvent, ProcessedSpecialGroup } from "../../../types";
 import check from "../../../assets/check.svg";
 import plus from "../../../assets/plus.svg";
 import { SPECIAL_GROUPS_QUERY_KEYS, useSpecialGroups } from "../hooks";
-import { queryClient } from "../../../App";
 import { EVENT_QUERY_KEYS } from "../../eventHooks";
 
 interface Props {
@@ -18,6 +17,7 @@ interface Props {
 export const AddSpecialGroup: React.FC<Props> = ({ event }: Props) => {
   const { token } = useAuth();
 
+  const queryClient = useQueryClient();
   const specialGroupsQuery = useSpecialGroups();
 
   const createSpecialGroupAndAddToEvent = useMutation({

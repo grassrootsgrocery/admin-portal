@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 
 import { ReactQueryDevtools } from "react-query/devtools";
 
-export const queryClient = new QueryClient({
+const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 180 } },
 }); //Set staleTime to 3 minutes since this is not the kind of application that needs to refetch data very often
 

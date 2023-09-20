@@ -1,7 +1,11 @@
 import { Link, Navigate, useParams } from "react-router-dom";
-import { DROPOFF_LOCATIONS_QUERY_KEY, useDriversInfo, useDropoffLocations } from "./hooks";
+import {
+  DROPOFF_LOCATIONS_QUERY_KEY,
+  useDriversInfo,
+  useDropoffLocations,
+} from "./hooks";
 import { AssignLocationDropdown } from "./AssignLocationDropdown";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useFutureEventById } from "../eventHooks";
 import { useAuth } from "../../contexts/AuthContext";
 //Types
@@ -20,7 +24,6 @@ import { ContactPopup } from "../../components/ContactPopup";
 import { CoordinatorInfoPopup } from "./CoordinatorInfoPopup";
 import { LocationPopup } from "./LocationPopup";
 import { toastNotify } from "../../utils/ui";
-import { queryClient } from "../../App";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -120,6 +123,7 @@ export function DriverLocationInfo() {
     return <Navigate to="/" />;
   }
   const { eventId } = useParams();
+  const queryClient = useQueryClient();
 
   const locationsToDriversTextQuery = useQuery(
     ["fetchLocationsToDriversText"],
@@ -351,7 +355,11 @@ export function DriverLocationInfo() {
           <DropoffOrganizerPopup
             date={event.date}
             dropoffLocations={dropoffLocationsQuery.data}
-            onEditSuccess={() => { queryClient.invalidateQueries(DROPOFF_LOCATIONS_QUERY_KEY.fetchDropoffLocations); }} 
+            onEditSuccess={() => {
+              queryClient.invalidateQueries(
+                DROPOFF_LOCATIONS_QUERY_KEY.fetchDropoffLocations
+              );
+            }}
           />
         </div>
         <div className="h-16" />

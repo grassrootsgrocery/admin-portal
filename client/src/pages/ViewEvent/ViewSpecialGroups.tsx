@@ -6,11 +6,14 @@ import {
   ProcessedSpecialEvent,
   ProcessedSpecialGroup,
 } from "../../types";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useAuth } from "../../contexts/AuthContext";
-import { SPECIAL_EVENTS_QUERY_KEYS, useSpecialEventsForEvent, useSpecialGroups } from "./hooks";
+import {
+  SPECIAL_EVENTS_QUERY_KEYS,
+  useSpecialEventsForEvent,
+  useSpecialGroups,
+} from "./hooks";
 import { cn } from "../../utils/ui";
-import { queryClient } from "../../App";
 
 interface Props {
   event: ProcessedEvent;
@@ -59,9 +62,11 @@ function processSpecialGroups(
 }
 
 export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
-  const { token } = useAuth();
-
-  const specialEventsForEventQuery = useSpecialEventsForEvent({ eventId: event.id, allEventIds: event.allEventIds });
+  const queryClient = useQueryClient();
+  const specialEventsForEventQuery = useSpecialEventsForEvent({
+    eventId: event.id,
+    allEventIds: event.allEventIds,
+  });
   const specialGroupsQuery = useSpecialGroups();
 
   const disabled =
@@ -78,15 +83,20 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
         "fixed left-[50%] top-[50%] w-full w-full -translate-x-1/2 -translate-y-1/2 rounded-lg bg-softBeige px-3 py-4",
         "md:w-[40rem] md:py-6 md:px-8"
       )}
-      onOpenChange={() => { queryClient.invalidateQueries(SPECIAL_EVENTS_QUERY_KEYS.fetchSpecialEventsForEvent(event.id)); }}
+      onOpenChange={() => {
+        queryClient.invalidateQueries(
+          SPECIAL_EVENTS_QUERY_KEYS.fetchSpecialEventsForEvent(event.id)
+        );
+      }}
       trigger={
         <button
-          className={
-            cn(
-              "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white outline-none",
-              "lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all",
-              disabled ? "opacity-50" : "lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen"
-            )}
+          className={cn(
+            "rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white outline-none",
+            "lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all",
+            disabled
+              ? "opacity-50"
+              : "lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen"
+          )}
           disabled={disabled}
           type="button"
         >
@@ -99,15 +109,20 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
           View Event Special Groups
         </Modal.Title>
         <div className="h-3 md:h-6" />
-        {!disabled && specialEventsForEventQuery.data && specialGroupsQuery.data && (
-          <div className="h-96">
-            <DataTable
-              borderColor="newLeafGreen"
-              columnHeaders={["Name", "Sign-up Link"]}
-              dataRows={processSpecialGroups(specialEventsForEventQuery.data, specialGroupsQuery.data)}
-            />
-          </div>
-        )}
+        {!disabled &&
+          specialEventsForEventQuery.data &&
+          specialGroupsQuery.data && (
+            <div className="h-96">
+              <DataTable
+                borderColor="newLeafGreen"
+                columnHeaders={["Name", "Sign-up Link"]}
+                dataRows={processSpecialGroups(
+                  specialEventsForEventQuery.data,
+                  specialGroupsQuery.data
+                )}
+              />
+            </div>
+          )}
         <div className="h-4" />
         <div className="flex justify-center">
           <Modal.Close

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { toastNotify } from "../../utils/ui";
 import { applyPatch } from "../../utils/http";
 //Components
@@ -18,7 +18,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { ContactPopup } from "../../components/ContactPopup";
 import { EditVolunteerPopup } from "../../components/EditVolunteerPopup";
 import { HttpCheckbox } from "../../components/HttpCheckbox";
-import { queryClient } from "../../App";
 import { VOLUNTEERS_FOR_EVENT_QUERY_KEYS } from "../eventHooks";
 
 /*
@@ -200,6 +199,7 @@ export const VolunteersTable: React.FC<{
     eventId: string
   ): (string | number | JSX.Element)[][] {
     const { token } = useAuth();
+    const queryClient = useQueryClient();
     const rows = scheduledSlots.map((ss, i) => {
       return [
         /* id */

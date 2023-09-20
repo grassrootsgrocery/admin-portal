@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
 //Components
@@ -10,44 +10,46 @@ import chevron_up from "../../assets/chevron-up.svg";
 import chevron_down from "../../assets/chevron-down.svg";
 import check_icon from "../../assets/checkbox-icon.svg";
 //Utils
-import { toastNotify } from "../../utils/ui";
+import { cn, toastNotify } from "../../utils/ui";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { queryClient } from "../../App";
 import { DRIVER_INFO_QUERY_KEYS } from "./hooks";
-interface DropdownItemProps {
+
+function AssignLocationDropdownItem({
+  label,
+  selected,
+  mutationFn,
+  onSuccess,
+  onError,
+}: {
   label: string;
   selected: boolean;
   mutationFn: any;
   onSuccess: () => void;
   onError: () => void;
-}
-const AssignLocationDropdownItem: React.FC<DropdownItemProps> = (
-  props: DropdownItemProps
-) => {
-  const { label, selected, mutationFn, onSuccess, onError } = props;
+}) {
   const [isChecked, setIsChecked] = useState(selected);
   const assign = useMutation({
     mutationFn: mutationFn,
-    onSuccess(data, variables, context) {
+    onSuccess: () => {
       setIsChecked((prevVal) => !prevVal);
       onSuccess();
     },
-    onError(error, variables, context) {
+    onError: (error) => {
       console.error(error);
       onError();
     },
   });
   return (
     <DropdownMenu.Item
-      className={`flex select-none items-center justify-between rounded-lg border  border-newLeafGreen 
-      p-2 font-semibold shadow-md outline-none 
-      hover:cursor-pointer data-[highlighted]:-m-[1px] data-[selected]:cursor-pointer 
-      data-[highlighted]:cursor-pointer data-[highlighted]:border-2 data-[highlighted]:brightness-110 ${
+      className={cn(
+        "border-newLeafGreen flex select-none items-center justify-between rounded-lg  border",
+        "p-2 font-semibold shadow-md outline-none hover:cursor-pointer data-[highlighted]:-m-[1px] data-[selected]:cursor-pointer",
+        "data-[highlighted]:cursor-pointer data-[highlighted]:border-2 data-[highlighted]:brightness-110",
         isChecked
-          ? "bg-newLeafGreen text-white data-[highlighted]:border-softBeige"
-          : "text-newLeafGreen  "
-      }`}
+          ? "bg-newLeafGreen data-[highlighted]:border-softBeige text-white"
+          : "text-newLeafGreen"
+      )}
       onSelect={(e) => {
         e.preventDefault(); //So that the dropdown doesn' close automatically when an item is selected
         assign.mutate();
@@ -61,7 +63,7 @@ const AssignLocationDropdownItem: React.FC<DropdownItemProps> = (
         </div>
       ) : (
         <RadixCheckbox.Root
-          className="flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 border-newLeafGreen bg-softGrayWhite shadow-md"
+          className="border-newLeafGreen bg-softGrayWhite flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 shadow-md"
           checked={isChecked}
         >
           <RadixCheckbox.Indicator>
@@ -71,7 +73,7 @@ const AssignLocationDropdownItem: React.FC<DropdownItemProps> = (
       )}
     </DropdownMenu.Item>
   );
-};
+}
 
 //TODO: The whole way that we are doing selection needs to be rethought
 function getSelectedLocations(
@@ -100,6 +102,8 @@ export const AssignLocationDropdown: React.FC<Props> = ({
   if (!token) {
     return <Navigate to="/" />;
   }
+
+  const queryClient = useQueryClient();
   const [selectedLocations, setSelectedLocations] = useState<boolean[]>(
     getSelectedLocations(locations, driver)
   );
@@ -135,7 +139,7 @@ export const AssignLocationDropdown: React.FC<Props> = ({
       modal={false}
     >
       <DropdownMenu.Trigger asChild>
-        <div className="flex w-80 select-none items-center justify-between rounded-lg border-2 bg-newLeafGreen px-2 py-1 font-semibold text-white hover:cursor-pointer hover:brightness-110">
+        <div className="bg-newLeafGreen flex w-80 select-none items-center justify-between rounded-lg border-2 px-2 py-1 font-semibold text-white hover:cursor-pointer hover:brightness-110">
           Assign Locations
           <img
             className="w-2 md:w-3"
@@ -146,7 +150,7 @@ export const AssignLocationDropdown: React.FC<Props> = ({
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="z-20 flex h-64 w-80 flex-col gap-3 overflow-auto rounded-lg border border-newLeafGreen bg-white px-4 py-2"
+          className="border-newLeafGreen z-20 flex h-64 w-80 flex-col gap-3 overflow-auto rounded-lg border bg-white px-4 py-2"
           avoidCollisions
           align="start"
         >

@@ -389,6 +389,10 @@ import {
 } from "@tanstack/react-table";
 import { ProcessedScheduledSlot } from "../../types";
 import React, { useState } from "react";
+import { HttpCheckbox } from "../../components/HttpCheckbox";
+import { applyPatch } from "../../utils/http";
+import { useAuth } from "../../contexts/AuthContext";
+import { toastNotify } from "../../utils/ui";
 
 const columnHelper = createColumnHelper<ProcessedScheduledSlot>();
 
@@ -412,6 +416,28 @@ const columns = [
     footer: (props) => props.column.id,
   }),
   columnHelper.accessor("confirmed", {
+    cell: (info) => {
+      const { token } = useAuth();
+      return (
+        <HttpCheckbox
+          checked={info.cell.getValue()}
+          mutationFn={applyPatch(
+            `/api/volunteers/confirm/${info.row.original.id}`,
+            { newConfirmationStatus: !info.row.original.confirmed },
+            token as string
+          )}
+          onSuccess={() => {
+            info.row.original.confirmed = !info.row.original.confirmed;
+            const toastMessage = `${info.row.original.firstName} ${
+              info.row.original.lastName
+            } ${info.row.original.confirmed ? "unconfirmed" : "confirmed"}`;
+            //refetchVolunteers();
+            toastNotify(toastMessage, "success");
+          }}
+          onError={() => toastNotify("Unable to confirm volunteer", "failure")}
+        />
+      );
+    },
     header: () => "Confirmed",
     footer: (props) => props.column.id,
   }),
@@ -443,60 +469,62 @@ export const VolunteersTable: React.FC<Props> = ({
   return (
     <div className="flex h-screen flex-col pt-6">
       <div className="h-16" />
-      <table className="table w-full border-separate border-spacing-0  rounded-lg">
-        <thead className="sticky top-0 z-10 border-b-2 border-newLeafGreen bg-softBeige">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <th key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder ? null : (
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? "cursor-pointer select-none"
-                            : "",
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: " 🔼",
-                          desc: " 🔽",
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    )}
-                  </th>
-                );
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => {
-            return (
-              <tr key={row.id} className={"text-center"}>
-                {row.getVisibleCells().map((cell) => {
+      <div className="h-[calc(100vh-200px)] overflow-y-auto">
+        <table className="table w-full border-separate border-spacing-0  rounded-lg">
+          <thead className="sticky top-0 z-10 border-b-2 border-newLeafGreen bg-softBeige">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
                   return (
-                    <td
-                      key={cell.id}
-                      className="border-b-2 border-newLeafGreen bg-softBeige p-4 text-sm text-newLeafGreen md:text-base"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+                    <th key={header.id} colSpan={header.colSpan}>
+                      {header.isPlaceholder ? null : (
+                        <div
+                          {...{
+                            className: header.column.getCanSort()
+                              ? "cursor-pointer select-none"
+                              : "",
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {{
+                            asc: " 🔼",
+                            desc: " 🔽",
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
                       )}
-                    </td>
+                    </th>
                   );
                 })}
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            ))}
+          </thead>
+          <tbody className={"h-[calc(100vh-200px)] overflow-y-auto"}>
+            {table.getRowModel().rows.map((row) => {
+              return (
+                <tr key={row.id} className={"text-center"}>
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <td
+                        key={cell.id}
+                        className="border-b-2 border-newLeafGreen bg-softBeige p-4 text-sm text-newLeafGreen md:text-base"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

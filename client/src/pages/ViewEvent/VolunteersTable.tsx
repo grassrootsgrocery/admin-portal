@@ -393,55 +393,10 @@ import { HttpCheckbox } from "../../components/HttpCheckbox";
 import { applyPatch } from "../../utils/http";
 import { useAuth } from "../../contexts/AuthContext";
 import { toastNotify } from "../../utils/ui";
+import { ContactPopup } from "../../components/ContactPopup";
+import { EditVolunteerPopup } from "../../components/EditVolunteerPopup";
 
 const columnHelper = createColumnHelper<ProcessedScheduledSlot>();
-
-const columns = [
-  // Display Column
-  columnHelper.display({
-    id: "id",
-    header: () => <span>ID</span>,
-    cell: (props) => props.cell.row.id,
-  }),
-  columnHelper.accessor("firstName", {
-    cell: (info) => info.getValue(),
-    header: () => <span>First Name</span>,
-    footer: (props) => props.column.id,
-  }),
-  // Accessor Column
-  columnHelper.accessor((row) => row.lastName, {
-    id: "lastName",
-    cell: (info) => info.getValue(),
-    header: () => <span>Last Name</span>,
-    footer: (props) => props.column.id,
-  }),
-  columnHelper.accessor("confirmed", {
-    cell: (info) => {
-      const { token } = useAuth();
-      return (
-        <HttpCheckbox
-          checked={info.cell.getValue()}
-          mutationFn={applyPatch(
-            `/api/volunteers/confirm/${info.row.original.id}`,
-            { newConfirmationStatus: !info.row.original.confirmed },
-            token as string
-          )}
-          onSuccess={() => {
-            info.row.original.confirmed = !info.row.original.confirmed;
-            const toastMessage = `${info.row.original.firstName} ${
-              info.row.original.lastName
-            } ${info.row.original.confirmed ? "unconfirmed" : "confirmed"}`;
-            //refetchVolunteers();
-            toastNotify(toastMessage, "success");
-          }}
-          onError={() => toastNotify("Unable to confirm volunteer", "failure")}
-        />
-      );
-    },
-    header: () => "Confirmed",
-    footer: (props) => props.column.id,
-  }),
-];
 
 interface Props {
   scheduledSlots: ProcessedScheduledSlot[];
@@ -452,7 +407,130 @@ export const VolunteersTable: React.FC<Props> = ({
   scheduledSlots,
   refetchVolunteers,
 }: Props) => {
+  const { token } = useAuth();
   const [sorting, setSorting] = useState<SortingState>([]);
+
+  const columns = [
+    // Display Column
+    columnHelper.display({
+      id: "id",
+      header: () => <span>ID</span>,
+      cell: (props) => props.cell.row.id,
+    }),
+    columnHelper.accessor("firstName", {
+      cell: (info) => info.getValue(),
+      header: () => <span>First Name</span>,
+      footer: (props) => props.column.id,
+    }),
+    // Accessor Column
+    columnHelper.accessor((row) => row.lastName, {
+      id: "lastName",
+      cell: (info) => info.getValue(),
+      header: () => <span>Last Name</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("timeSlot", {
+      cell: (info) => info.getValue(),
+      header: () => <span>Time Slot</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("participantType", {
+      cell: (info) => info.getValue(),
+      header: () => <span>Participant Type</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("confirmed", {
+      cell: (info) => {
+        return (
+          <HttpCheckbox
+            checked={info.cell.getValue()}
+            mutationFn={applyPatch(
+              `/api/volunteers/confirm/${info.row.original.id}`,
+              { newConfirmationStatus: !info.row.original.confirmed },
+              token as string
+            )}
+            onSuccess={() => {
+              const toastMessage = `${info.row.original.firstName} ${
+                info.row.original.lastName
+              } ${info.row.original.confirmed ? "unconfirmed" : "confirmed"}`;
+              refetchVolunteers();
+              toastNotify(toastMessage, "success");
+            }}
+            onError={() =>
+              toastNotify("Unable to confirm volunteer", "failure")
+            }
+          />
+        );
+      },
+      header: () => "Confirmed",
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("cantCome", {
+      cell: (info) => {
+        return (
+          <HttpCheckbox
+            checked={info.cell.getValue()}
+            mutationFn={applyPatch(
+              `/api/volunteers/going/${info.row.original.id}`,
+              { newGoingStatus: !info.row.original.cantCome },
+              token as string
+            )}
+            onSuccess={() => {
+              const toastMessage = `${info.row.original.firstName} ${
+                info.row.original.lastName
+              } ${
+                info.row.original.cantCome
+                  ? "is able to volunteer"
+                  : "is unable to volunteer"
+              }`;
+              refetchVolunteers();
+              toastNotify(toastMessage, "success");
+            }}
+            onError={() =>
+              toastNotify("Unable to modify availability", "failure")
+            }
+          />
+        );
+      },
+      header: () => "Can't Come",
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("specialGroup", {
+      cell: (info) => info.getValue(),
+      header: () => <span>Special Group</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("totalDeliveries", {
+      cell: (info) => info.getValue(),
+      header: () => <span>Delivery Count</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.display({
+      id: "contact",
+      header: () => <span>Contact</span>,
+      cell: (props) => (
+        <ContactPopup
+          phoneNumber={props.cell.row.original.phoneNumber}
+          email={props.cell.row.original.email}
+        />
+      ),
+    }),
+    columnHelper.display({
+      id: "edit",
+      header: () => <span>Edit</span>,
+      cell: (props) => (
+        <EditVolunteerPopup
+          id={props.cell.row.original.id}
+          email={props.cell.row.original.email}
+          phoneNumber={props.cell.row.original.phoneNumber}
+          firstName={props.cell.row.original.firstName}
+          lastName={props.cell.row.original.lastName}
+          participantType={props.cell.row.original.participantType}
+          refetch={refetchVolunteers}
+        />
+      ),
+    }),
+  ];
 
   const table = useReactTable({
     data: scheduledSlots,
@@ -469,7 +547,7 @@ export const VolunteersTable: React.FC<Props> = ({
   return (
     <div className="flex h-screen flex-col pt-6">
       <div className="h-16" />
-      <div className="h-[calc(100vh-200px)] overflow-y-auto">
+      <div className="softGrayWhite h-[calc(100vh-200px)] border-spacing-2 overflow-y-auto border-2 accent-newLeafGreen">
         <table className="table w-full border-separate border-spacing-0  rounded-lg">
           <thead className="sticky top-0 z-10 border-b-2 border-newLeafGreen bg-softBeige">
             {table.getHeaderGroups().map((headerGroup) => (

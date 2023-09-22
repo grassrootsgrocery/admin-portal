@@ -26,30 +26,39 @@ export function useSpecialGroups() {
   });
 }
 
-// Retrieve Special Events for event. The naming is confusing 
+// Retrieve Special Events for event. The naming is confusing
 //Query keys
 const SPECIAL_EVENTS = "fetchViewEventSpecialEvents" as const;
 export const SPECIAL_EVENTS_QUERY_KEYS = {
-  fetchSpecialEventsForEvent: (eventId: string) => [SPECIAL_EVENTS, eventId] as const,
-}
-export function useSpecialEventsForEvent({ eventId, allEventIds }: { eventId: string, allEventIds: string[] }) {
+  fetchSpecialEventsForEvent: (eventId: string) =>
+    [SPECIAL_EVENTS, eventId] as const,
+};
+export function useSpecialEventsForEvent({
+  eventId,
+  allEventIds,
+}: {
+  eventId: string;
+  allEventIds: string[];
+}) {
   const { token } = useAuth();
-  return useQuery(SPECIAL_EVENTS_QUERY_KEYS.fetchSpecialEventsForEvent(eventId), async () => {
-    const eventIds = allEventIds.join(",");
-    const response = await fetch(
-      `/api/events/view-event-special-groups?eventIds=${eventIds}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  return useQuery(
+    SPECIAL_EVENTS_QUERY_KEYS.fetchSpecialEventsForEvent(eventId),
+    async () => {
+      const eventIds = allEventIds.join(",");
+      const response = await fetch(
+        `/api/events/view-event-special-groups?eventIds=${eventIds}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message);
       }
-    );
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message);
+      return response.json() as Promise<ProcessedSpecialEvent[]>;
     }
-    return response.json() as Promise<ProcessedSpecialEvent[]>;
-  });
-
+  );
 }

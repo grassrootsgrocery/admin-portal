@@ -124,11 +124,10 @@ function processNeighborhoodsForDriver(
   });
 }
 
-
 const DROPOFF_LOCATIONS = "dropoffLocations" as const;
 export const DROPOFF_LOCATIONS_QUERY_KEY = {
   fetchDropoffLocations: [DROPOFF_LOCATIONS],
-}
+};
 export function useDropoffLocations() {
   const { token } = useAuth();
   if (!token) {
@@ -150,4 +149,3 @@ export function useDropoffLocations() {
     }
   );
 }
-

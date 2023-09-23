@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "../utils/ui";
 
 interface Props {
   columnHeaders: string[];
@@ -23,9 +24,10 @@ export const DataTable: React.FC<Props> = ({
 }: Props) => {
   return (
     <div
-      className={`hide-scroll h-full w-full overflow-scroll rounded-lg border-4 ${getBorderColorClassName(
-        borderColor
-      )}`}
+      className={cn(
+        "hide-scroll h-full w-full overflow-scroll rounded-lg border-4",
+        getBorderColorClassName(borderColor)
+      )}
     >
       {/* Note that you cannot do border-${borderColor} above because of how Tailwind purges classes at build time*/}
       <table className="table w-full border-separate border-spacing-0  rounded-lg">

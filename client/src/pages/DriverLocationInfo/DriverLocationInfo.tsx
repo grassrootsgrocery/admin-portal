@@ -22,8 +22,9 @@ import back from "../../assets/back-white.svg";
 import { SendTextMessageButton } from "../../components/SendTextMesssageButton";
 import { ContactPopup } from "../../components/ContactPopup";
 import { CoordinatorInfoPopup } from "./CoordinatorInfoPopup";
+import { NewAssignLocations } from "./NewAssignLocations";
 import { LocationPopup } from "./LocationPopup";
-import { toastNotify } from "../../utils/ui";
+import { cn, toastNotify } from "../../utils/ui";
 
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
@@ -51,6 +52,10 @@ function processDriversForTable(
       curDriver.zipCode,
       curDriver.vehicle,
       curDriver.restrictedLocations.join(", "),
+      <NewAssignLocations
+        drivers={drivers}
+        dropoffLocations={dropoffLocations}
+      />,
       <AssignLocationDropdown
         locations={dropoffLocationsSorted}
         driver={curDriver}
@@ -91,7 +96,11 @@ function processDropoffLocationsForTable(
             return (
               <li
                 key={i}
-                className="flex min-w-fit shrink-0 items-center gap-1 rounded-full bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white shadow-sm shadow-newLeafGreen sm:text-sm md:text-base"
+                className={cn(
+                  "flex min-w-fit shrink-0 items-center gap-1 rounded-full",
+                  "bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white shadow-sm",
+                  "shadow-newLeafGreen sm:text-sm md:text-base"
+                )}
               >
                 {d.firstName + " " + d.lastName}
               </li>
@@ -112,9 +121,9 @@ const getDropoffLocationsForEvent = (
 };
 //Tailwind classes
 const label = "text-sm md:text-base lg:text-xl ";
-const text = "text-sm font-bold text-newLeafGreen md:text-base lg:text-xl";
+const text = "text-newLeafGreen text-sm font-bold md:text-base lg:text-xl";
 const sectionHeader =
-  "flex items-start gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
+  "text-newLeafGreen flex items-start gap-2 text-lg font-bold lg:text-3xl";
 const sectionHeaderIcon = "w-6 lg:w-10";
 
 export function DriverLocationInfo() {
@@ -222,7 +231,11 @@ export function DriverLocationInfo() {
         {/* Not sure why inline-block on the Link is necessary */}
         <Link className="inline-block" to={`/events/${eventId}`}>
           <button
-            className="flex w-fit shrink-0 items-center gap-3 rounded-full bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white lg:px-4 lg:py-2 lg:text-lg lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
+            className={cn(
+              "bg-newLeafGreen flex w-fit shrink-0 items-center gap-3 rounded-full py-1 px-3 text-xs font-semibold text-white",
+              "lg:shadow-newLeafGreen lg:px-4 lg:py-2 lg:text-lg lg:shadow-sm lg:transition-all",
+              "lg:hover:shadow-newLeafGreen lg:hover:-translate-y-0.5 lg:hover:shadow-md"
+            )}
             type="button"
           >
             <img className="w-2 lg:w-4" src={back} alt="Go back" />
@@ -271,6 +284,7 @@ export function DriverLocationInfo() {
               "Zip Code",
               "Vehicle",
               "Restricted Locations",
+              "New Assign Locations",
               "Assign Location",
               "Location Information",
               "Contact",
@@ -285,12 +299,12 @@ export function DriverLocationInfo() {
         {/* Send locations info to drivers */}
         <div className="flex h-1/6 w-full flex-col items-start gap-4 lg:w-1/2">
           {locationsToDriversTextLoading ? (
-            <div className="relative w-full grow rounded-md border-4 border-softGrayWhite py-2 px-4">
+            <div className="border-softGrayWhite relative w-full grow rounded-md border-4 py-2 px-4">
               <Loading size="medium" thickness="thicc" />
             </div>
           ) : (
             <textarea
-              className="w-full grow resize-none overflow-scroll rounded-md border-4 border-softGrayWhite py-2 px-4 text-base lg:text-xl"
+              className="border-softGrayWhite w-full grow resize-none overflow-scroll rounded-md border-4 py-2 px-4 text-base lg:text-xl"
               readOnly
               defaultValue={locationsToDriversTextQuery.data}
             />
@@ -335,12 +349,12 @@ export function DriverLocationInfo() {
           {/* Send driver info to coordinators */}
           <div className="flex h-full w-full flex-col items-start gap-4 lg:w-1/2">
             {driverInfoToCoordinatorsLoading ? (
-              <div className="relative w-full grow rounded-md border-4 border-softGrayWhite py-2 px-4">
+              <div className="border-softGrayWhite relative w-full grow rounded-md border-4 py-2 px-4">
                 <Loading size="medium" thickness="thicc" />
               </div>
             ) : (
               <textarea
-                className="w-full grow resize-none overflow-scroll rounded-md border-4 border-softGrayWhite py-2 px-4 text-base lg:text-xl"
+                className="border-softGrayWhite w-full grow resize-none overflow-scroll rounded-md border-4 py-2 px-4 text-base lg:text-xl"
                 readOnly
                 defaultValue={driverInfoToCoordinatorsTextQuery.data}
               />

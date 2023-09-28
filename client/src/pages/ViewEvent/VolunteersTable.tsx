@@ -384,6 +384,7 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  Row,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
@@ -398,6 +399,34 @@ import { EditVolunteerPopup } from "../../components/EditVolunteerPopup";
 
 const columnHelper = createColumnHelper<ProcessedScheduledSlot>();
 
+const filterList: {
+  name: string;
+  filterFn: (e: ProcessedScheduledSlot) => boolean;
+}[] = [
+  {
+    name: "Drivers",
+    filterFn: (e: ProcessedScheduledSlot) =>
+      e.participantType.includes("Driver"),
+  },
+  {
+    name: "Packers",
+    filterFn: (e: ProcessedScheduledSlot) =>
+      e.participantType.includes("Packer"),
+  },
+  {
+    name: "Only Drivers",
+    filterFn: (e: ProcessedScheduledSlot) =>
+      e.participantType.includes("Driver") &&
+      !e.participantType.includes("Packer"),
+  },
+  {
+    name: "Only Packers",
+    filterFn: (e: ProcessedScheduledSlot) =>
+      e.participantType.includes("Packer") &&
+      !e.participantType.includes("Driver"),
+  },
+];
+
 interface Props {
   scheduledSlots: ProcessedScheduledSlot[];
   refetchVolunteers: () => void;
@@ -409,6 +438,7 @@ export const VolunteersTable: React.FC<Props> = ({
 }: Props) => {
   const { token } = useAuth();
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [enabledFilters, setEnabledFilters] = useState<string[]>([]);
 
   const columns = [
     // Display Column
@@ -538,10 +568,22 @@ export const VolunteersTable: React.FC<Props> = ({
     state: {
       sorting,
     },
+    filterFns: {
+      generalFilter: (row, columnId, filterValue) => {
+        /*        for (const filter in filterList) {
+          if (enabledFilters.includes(filter.name)) {
+            return filter.filterFn(row.getValue(columnId));
+          }
+        }
+
+        return filterList.forEach((filter) => {});*/
+
+        return true;
+      },
+    },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    debugTable: true,
   });
 
   return (

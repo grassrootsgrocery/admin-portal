@@ -1,7 +1,11 @@
 import { Link, Navigate, useParams } from "react-router-dom";
-import { useDriversInfo } from "./driverInfoHooks";
+import {
+  DROPOFF_LOCATIONS_QUERY_KEY,
+  useDriversInfo,
+  useDropoffLocations,
+} from "./hooks";
 import { AssignLocationDropdown } from "./AssignLocationDropdown";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useFutureEventById } from "../eventHooks";
 import { useAuth } from "../../contexts/AuthContext";
 //Types
@@ -28,8 +32,7 @@ in the VolunteersTable.tsx file.
 //Takes in ProcessedDriver array and formats data for DataTable component
 function processDriversForTable(
   drivers: ProcessedDriver[],
-  dropoffLocations: ProcessedDropoffLocation[],
-  refetchDrivers: any
+  dropoffLocations: ProcessedDropoffLocation[]
 ) {
   const dropoffLocationsSorted = dropoffLocations.sort((a, b) =>
     a.siteName < b.siteName ? -1 : 1
@@ -51,7 +54,6 @@ function processDriversForTable(
       <AssignLocationDropdown
         locations={dropoffLocationsSorted}
         driver={curDriver}
-        refetchDrivers={refetchDrivers}
       />,
       <LocationPopup dropoffLocations={dropoffLocationsForDriver} />,
       <ContactPopup
@@ -121,6 +123,7 @@ export function DriverLocationInfo() {
     return <Navigate to="/" />;
   }
   const { eventId } = useParams();
+  const queryClient = useQueryClient();
 
   const locationsToDriversTextQuery = useQuery(
     ["fetchLocationsToDriversText"],
@@ -169,36 +172,8 @@ export function DriverLocationInfo() {
 
   const eventQuery = useFutureEventById(eventId);
   const driversInfoQuery = useDriversInfo();
+  const dropoffLocationsQuery = useDropoffLocations();
 
-  const dropoffLocationsQuery = useQuery(
-    ["fetchEventDropOffLocations"],
-    async () => {
-      const resp = await fetch(`/api/dropoff-locations`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!resp.ok) {
-        const data = await resp.json();
-        throw new Error(data.messsage);
-      }
-      return resp.json();
-    }
-  );
-
-  if (
-    driversInfoQuery.isLoading ||
-    eventQuery.status === "loading" ||
-    eventQuery.status === "idle" ||
-    dropoffLocationsQuery.status === "loading" ||
-    dropoffLocationsQuery.status === "idle"
-  ) {
-    return (
-      <div className="relative h-full">
-        <Loading size="large" thickness="extra-thicc" />
-      </div>
-    );
-  }
   if (
     driversInfoQuery.isError ||
     dropoffLocationsQuery.status === "error" ||
@@ -214,6 +189,20 @@ export function DriverLocationInfo() {
     }
     console.error(error);
     return <div>Error...</div>;
+  }
+
+  if (
+    driversInfoQuery.isLoading ||
+    eventQuery.status === "loading" ||
+    eventQuery.status === "idle" ||
+    dropoffLocationsQuery.status === "loading" ||
+    dropoffLocationsQuery.status === "idle"
+  ) {
+    return (
+      <div className="relative h-full">
+        <Loading size="large" thickness="extra-thicc" />
+      </div>
+    );
   }
 
   const event = eventQuery.data;
@@ -288,8 +277,7 @@ export function DriverLocationInfo() {
             ]}
             dataRows={processDriversForTable(
               driversInfoQuery.data,
-              dropoffLocationsForEvent,
-              driversInfoQuery.refetch
+              dropoffLocationsForEvent
             )}
           />
         </div>
@@ -368,7 +356,11 @@ export function DriverLocationInfo() {
           <DropoffOrganizerPopup
             date={event.date}
             dropoffLocations={dropoffLocationsQuery.data}
-            refetchDropoffLocations={dropoffLocationsQuery.refetch}
+            onEditSuccess={() => {
+              queryClient.invalidateQueries(
+                DROPOFF_LOCATIONS_QUERY_KEY.fetchDropoffLocations
+              );
+            }}
           />
         </div>
         <div className="h-16" />

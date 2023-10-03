@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useAuth } from "../../../contexts/AuthContext";
 import * as Modal from "@radix-ui/react-dialog";
 import { Popup } from "../../../components/Popup";
@@ -7,19 +7,17 @@ import { cn, toastNotify } from "../../../utils/ui";
 import { ProcessedEvent, ProcessedSpecialGroup } from "../../../types";
 import check from "../../../assets/check.svg";
 import plus from "../../../assets/plus.svg";
-import { useSpecialGroups } from "../specialGroupsHooks";
+import { SPECIAL_GROUPS_QUERY_KEYS, useSpecialGroups } from "../hooks";
+import { EVENT_QUERY_KEYS } from "../../eventHooks";
 
 interface Props {
   event: ProcessedEvent;
-  refetchEvent: () => void;
 }
 
-export const AddSpecialGroup: React.FC<Props> = ({
-  event,
-  refetchEvent,
-}: Props) => {
+export const AddSpecialGroup: React.FC<Props> = ({ event }: Props) => {
   const { token } = useAuth();
 
+  const queryClient = useQueryClient();
   const specialGroupsQuery = useSpecialGroups();
 
   const createSpecialGroupAndAddToEvent = useMutation({
@@ -81,8 +79,10 @@ export const AddSpecialGroup: React.FC<Props> = ({
         data.records[0].fields["Fillout Special Event Signup"] ||
           "Uh oh, where is the link?"
       );
-      specialGroupsQuery.refetch();
-      refetchEvent();
+      queryClient.invalidateQueries(
+        SPECIAL_GROUPS_QUERY_KEYS.fetchSpecialGroups
+      );
+      queryClient.invalidateQueries(EVENT_QUERY_KEYS.getAllFutureEvents);
     },
     onError: (error, variables, context) => {
       toastNotify("Unable to add special to event group", "failure");

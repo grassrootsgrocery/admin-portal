@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { toastNotify } from "../../utils/ui";
 import { applyPatch } from "../../utils/http";
 //Components
@@ -18,6 +18,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { ContactPopup } from "../../components/ContactPopup";
 import { EditVolunteerPopup } from "../../components/EditVolunteerPopup";
 import { HttpCheckbox } from "../../components/HttpCheckbox";
+import { VOLUNTEERS_FOR_EVENT_QUERY_KEYS } from "../eventHooks";
 
 /*
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
@@ -151,11 +152,6 @@ function createDropdownFilters(scheduledSlots: ProcessedScheduledSlot[]) {
   return dropdownFilters;
 }
 
-interface Props {
-  scheduledSlots: ProcessedScheduledSlot[];
-  refetchVolunteers: () => void;
-}
-
 const applySelectedFilters = (
   selectedFilters: DropdownFilterOption[],
   scheduledSlots: ProcessedScheduledSlot[]
@@ -170,10 +166,10 @@ const applySelectedFilters = (
   return filteredItems;
 };
 
-export const VolunteersTable: React.FC<Props> = ({
-  scheduledSlots,
-  refetchVolunteers,
-}) => {
+export const VolunteersTable: React.FC<{
+  scheduledSlots: ProcessedScheduledSlot[];
+  eventId: string;
+}> = ({ scheduledSlots, eventId }) => {
   const [filters, setFilters] = useState<DropdownFilterOption[]>(
     createDropdownFilters(scheduledSlots)
   );
@@ -199,9 +195,11 @@ export const VolunteersTable: React.FC<Props> = ({
 
   //Takes in scheduledSlots array and formats data for DataTable component
   function processScheduledSlotsForTable(
-    scheduledSlots: ProcessedScheduledSlot[]
+    scheduledSlots: ProcessedScheduledSlot[],
+    eventId: string
   ): (string | number | JSX.Element)[][] {
     const { token } = useAuth();
+    const queryClient = useQueryClient();
     const rows = scheduledSlots.map((ss, i) => {
       return [
         /* id */
@@ -224,7 +222,9 @@ export const VolunteersTable: React.FC<Props> = ({
             const toastMessage = `${ss.firstName} ${ss.lastName} ${
               ss.confirmed ? "unconfirmed" : "confirmed"
             }`;
-            refetchVolunteers();
+            queryClient.invalidateQueries(
+              VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+            );
             toastNotify(toastMessage, "success");
           }}
           onError={() => toastNotify("Unable to confirm volunteer", "failure")}
@@ -241,7 +241,9 @@ export const VolunteersTable: React.FC<Props> = ({
             const toastMessage = `${ss.firstName} ${ss.lastName} ${
               ss.cantCome ? "is able to volunteer" : "is unable to volunteer"
             }`;
-            refetchVolunteers();
+            queryClient.invalidateQueries(
+              VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+            );
             toastNotify(toastMessage, "success");
           }}
           onError={() =>
@@ -259,7 +261,11 @@ export const VolunteersTable: React.FC<Props> = ({
           firstName={ss.firstName}
           lastName={ss.lastName}
           participantType={ss.participantType}
-          refetch={refetchVolunteers}
+          onEditSuccess={() => {
+            queryClient.invalidateQueries(
+              VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+            );
+          }}
         />,
       ];
     });
@@ -371,7 +377,7 @@ export const VolunteersTable: React.FC<Props> = ({
           "Contact",
           "Edit",
         ]}
-        dataRows={processScheduledSlotsForTable(filtered)}
+        dataRows={processScheduledSlotsForTable(filtered, eventId)}
       />
     </div>
   );

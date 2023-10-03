@@ -120,7 +120,7 @@ export const AssignLocationDropdown: React.FC<{
         updateDropoffLocationsUIStateList(prev, idx, "isLoading", true)
       );
       const url = `/api/volunteers/drivers/assign-location/${driver.id}`;
-      await fetch(url, {
+      const resp = await fetch(url, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -128,6 +128,9 @@ export const AssignLocationDropdown: React.FC<{
         },
         body: JSON.stringify({ locationIds: locationIds }),
       });
+      if (!resp.ok) {
+        throw new Error("Failed to assign driver location");
+      }
     },
     onSuccess: (data, { id, idx }) => {
       //Set the state for the newly selected/unselected location to not loading

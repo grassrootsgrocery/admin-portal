@@ -570,14 +570,6 @@ export const VolunteersTable: React.FC<Props> = ({
     },
     filterFns: {
       generalFilter: (row, columnId, filterValue) => {
-        /*        for (const filter in filterList) {
-          if (enabledFilters.includes(filter.name)) {
-            return filter.filterFn(row.getValue(columnId));
-          }
-        }
-
-        return filterList.forEach((filter) => {});*/
-
         return true;
       },
     },

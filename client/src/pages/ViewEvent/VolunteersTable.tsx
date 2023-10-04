@@ -396,6 +396,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { toastNotify } from "../../utils/ui";
 import { ContactPopup } from "../../components/ContactPopup";
 import { EditVolunteerPopup } from "../../components/EditVolunteerPopup";
+import { NewDataTable } from "../../components/NewDataTable";
 
 const columnHelper = createColumnHelper<ProcessedScheduledSlot>();
 
@@ -437,9 +438,6 @@ export const VolunteersTable: React.FC<Props> = ({
   refetchVolunteers,
 }: Props) => {
   const { token } = useAuth();
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [enabledFilters, setEnabledFilters] = useState<string[]>([]);
-
   const columns = [
     // Display Column
     columnHelper.display({
@@ -562,87 +560,11 @@ export const VolunteersTable: React.FC<Props> = ({
     }),
   ];
 
-  const table = useReactTable({
-    data: scheduledSlots,
-    columns,
-    state: {
-      sorting,
-    },
-    filterFns: {
-      generalFilter: (row, columnId, filterValue) => {
-        return true;
-      },
-    },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-  });
-
   return (
-    <div className="flex h-screen flex-col pt-6">
-      <div className="h-16" />
-      <div
-        className={`softGrayWhite h-[calc(100vh-200px)] border-spacing-2 overflow-y-auto rounded-lg border-2`}
-      >
-        <table className="table w-full border-collapse rounded-lg">
-          <thead className="sticky top-0 z-10 border-b-2 border-newLeafGreen bg-softBeige">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className="border border-newLeafGreen bg-softBeige p-4 text-sm text-newLeafGreen md:text-base"
-                    >
-                      {header.isPlaceholder ? null : (
-                        <div
-                          {...{
-                            className: header.column.getCanSort()
-                              ? "cursor-pointer select-none"
-                              : "",
-                            onClick: header.column.getToggleSortingHandler(),
-                          }}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                          {{
-                            asc: " 🔼",
-                            desc: " 🔽",
-                          }[header.column.getIsSorted() as string] ?? null}
-                        </div>
-                      )}
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => {
-              return (
-                <tr key={row.id} className="text-center">
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <td
-                        key={cell.id}
-                        className="border border-newLeafGreen bg-softBeige px-2 py-2 text-center align-middle text-sm text-newLeafGreen md:text-base"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <NewDataTable
+      columns={columns}
+      data={scheduledSlots}
+      filters={filterList}
+    />
   );
 };

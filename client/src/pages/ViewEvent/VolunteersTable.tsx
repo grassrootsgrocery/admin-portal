@@ -53,19 +53,20 @@ export const VolunteersTable: React.FC<Props> = ({
     }),
     columnHelper.accessor("confirmed", {
       cell: (info) => {
+        const cellValue = info.cell.getValue() as boolean;
         return (
           <>
             <HttpCheckbox
-              checked={info.cell.getValue() as boolean}
+              checked={cellValue}
               mutationFn={applyPatch(
                 `/api/volunteers/confirm/${info.row.original.id}`,
-                { newConfirmationStatus: !info.row.original.confirmed },
+                { newConfirmationStatus: !cellValue },
                 token as string
               )}
               onSuccess={() => {
                 const toastMessage = `${info.row.original.firstName} ${
                   info.row.original.lastName
-                } ${info.row.original.confirmed ? "unconfirmed" : "confirmed"}`;
+                } ${cellValue ? "unconfirmed" : "confirmed"}`;
                 refetchVolunteers();
                 toastNotify(toastMessage, "success");
               }}

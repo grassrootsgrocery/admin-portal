@@ -1,17 +1,21 @@
 import {
+  ColumnFiltersState,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   Row,
+  RowModel,
   SortingState,
+  TableOptions,
   useReactTable,
 } from "@tanstack/react-table";
 import chevron_up from "../assets/chevron-up.svg";
 import chevron_down from "../assets/chevron-down.svg";
 import { Root, Trigger, Content, Item } from "@radix-ui/react-dropdown-menu";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
 import check_icon from "../assets/checkbox-icon.svg";
@@ -88,13 +92,37 @@ export const NewDataTable = <T,>({
       : []
   );
 
+  const applyFilters = (
+    data: T[],
+    filters: {
+      isSelected: boolean;
+      name: string;
+      filterFn: (e: T) => boolean;
+    }[]
+  ) => {
+    return data.filter((row) => {
+      for (const filter of filters) {
+        if (filter.isSelected && !filter.filterFn(row)) {
+          return false;
+        }
+      }
+      return true;
+    });
+  };
+
+  const filteredData = useMemo(
+    () => applyFilters(data, filters),
+    [data, filters]
+  );
+
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     state: {
       sorting,
     },
     onSortingChange: setSorting,
+    enableFilters: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
@@ -171,19 +199,21 @@ export const NewDataTable = <T,>({
           </div>
 
           {/* Clear Filters button */}
-          <button
-            className="shrink-0 rounded-full bg-pumpkinOrange px-4 text-base font-semibold text-white md:px-10 md:py-1 lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
-            type="button"
-            onClick={() => {
-              let newFilters = filters.map((filter) => ({
-                ...filter,
-                isSelected: false,
-              }));
-              setFilters(newFilters);
-            }}
-          >
-            Clear Filters
-          </button>
+          {filters.filter((f) => f.isSelected).length > 0 && (
+            <button
+              className="shrink-0 rounded-full bg-pumpkinOrange px-4 text-base font-semibold text-white md:px-10 md:py-1 lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
+              type="button"
+              onClick={() => {
+                let newFilters = filters.map((filter) => ({
+                  ...filter,
+                  isSelected: false,
+                }));
+                setFilters(newFilters);
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
         </div>
       )}
       <div className="h-16" />

@@ -23,8 +23,8 @@ interface DropoffLocationForm {
 export const DropoffOrganizerPopup: React.FC<{
   date: Date;
   dropoffLocations: ProcessedDropoffLocation[];
-  refetchDropoffLocations: () => void;
-}> = ({ date, dropoffLocations, refetchDropoffLocations }) => {
+  onEditSuccess: () => void;
+}> = ({ date, dropoffLocations, onEditSuccess }) => {
   const { token } = useAuth();
   if (!token) {
     return <Navigate to="/" />;
@@ -146,7 +146,7 @@ export const DropoffOrganizerPopup: React.FC<{
               const toastMessage = `${curLocation.siteName} is now ${
                 curLocation.notavailable ? "Available" : "Not Available"
               }`;
-              refetchDropoffLocations();
+              onEditSuccess();
               toastNotify(toastMessage, "success");
             }}
             onError={() =>
@@ -254,7 +254,7 @@ export const DropoffOrganizerPopup: React.FC<{
     },
     onSuccess(data, variables, context) {
       toastNotify("Drop-off locations saved successfully", "success");
-      refetchDropoffLocations();
+      onEditSuccess();
     },
     onError(error, variables, context) {
       console.error(error);

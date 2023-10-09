@@ -2,58 +2,212 @@ import { Popup } from "../../components/Popup";
 import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 import roundX from "../../assets/roundX.svg";
 import * as Modal from "@radix-ui/react-dialog";
-import { cn } from "../../utils/ui";
+import * as RadixCheckbox from "@radix-ui/react-checkbox";
+import { cn, toastNotify } from "../../utils/ui";
 import { DataTable } from "../../components/DataTable";
 import { CoordinatorInfoPopup } from "./CoordinatorInfoPopup";
 import { HttpCheckbox } from "../../components/HttpCheckbox";
+import add_user_icon from "../../assets/add-user-svgrepo-com.svg";
+import check_icon from "../../assets/checkbox-icon.svg";
+import { useState } from "react";
+import { Loading } from "../../components/Loading";
+import { useMutation, useQueryClient } from "react-query";
+import { useAuth } from "../../contexts/AuthContext";
+import { DRIVER_INFO_QUERY_KEYS } from "./hooks";
 
+function AssignLocationCheckbox({
+  isSelected,
+  isLoading,
+}: {
+  isSelected: boolean;
+  isLoading: boolean;
+}) {
+  return (
+    <div className="relative flex h-full items-center justify-center">
+      {isLoading ? (
+        <div className="relative h-4 w-4">
+          <Loading size="xsmall" thickness="thin" />
+        </div>
+      ) : (
+        <RadixCheckbox.Root
+          className="border-newLeafGreen bg-softGrayWhite flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 shadow-md"
+          checked={isSelected}
+        >
+          <RadixCheckbox.Indicator>
+            <img src={check_icon} alt="" />
+          </RadixCheckbox.Indicator>
+        </RadixCheckbox.Root>
+      )}
+    </div>
+  );
+}
+function processRestrictedLocations(
+  neighborhoods: string[],
+  restrictedLocations: string[]
+) {
+  const restrictedLocationsSet = new Set(restrictedLocations);
+  return (
+    <div className="text-xs md:text-base">
+      {neighborhoods.map((neigh, i) => {
+        const className = restrictedLocationsSet.has(neigh)
+          ? "text-red-500"
+          : "";
+        return (
+          <p key={i} className={className}>
+            {neigh}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
 function processDropoffLocationsForTable(
-  drivers: ProcessedDriver[],
+  dropoffLocationsUIStateList: DropoffLocationUIState[],
+  driver: ProcessedDriver,
   processedDropOffLocations: ProcessedDropoffLocation[]
 ) {
   return processedDropOffLocations.map((curLocation, i) => {
     return [
       curLocation.id, //id
-      <HttpCheckbox
-        checked={true}
-        mutationFn={() => {}}
-        onSuccess={() => {}}
-        onError={() => {}}
+      <AssignLocationCheckbox
+        isSelected={dropoffLocationsUIStateList[i].isSelected}
+        isLoading={dropoffLocationsUIStateList[i].isLoading}
       />,
       curLocation.siteName,
       curLocation.address,
-      curLocation.neighborhoods.join(", "),
+      //curLocation.neighborhoods.join(", "),
+      processRestrictedLocations(
+        curLocation.neighborhoods,
+        driver.restrictedLocations
+      ),
       typeof curLocation.startTime === "string" ? curLocation.startTime : "N/A",
       typeof curLocation.endTime === "string" ? curLocation.endTime : "N/A",
       `${curLocation.deliveriesAssigned}/${curLocation.deliveriesNeeded}`,
     ];
   });
 }
-const jason_locations = [
-  "Washington Heights (Manhattan)",
-  "Central Harlem",
-  "Sugar Hill (Harlem)",
-  "South Bronx",
-  "East Harlem",
-  "Southeast Bronx",
-  "Inwood and Washington Heights (Manhattan)",
-];
-const is_valid = true;
+type DropoffLocationUIState = { isLoading: boolean; isSelected: boolean };
+function getDropoffLocationsUIStateList(
+  locations: ProcessedDropoffLocation[],
+  driver: ProcessedDriver
+): DropoffLocationUIState[] {
+  const idsOfDropoffLocationsAssignedToThisDriver = new Set(
+    driver.dropoffLocations
+  );
+  return locations.map((loc) => ({
+    isLoading: false,
+    isSelected: idsOfDropoffLocationsAssignedToThisDriver.has(loc.id),
+  }));
+}
+
+function updateDropoffLocationsUIStateList(
+  prevUIStateList: DropoffLocationUIState[],
+  idx: number,
+  field: keyof DropoffLocationUIState,
+  newState: boolean
+) {
+  const newLocationsUIStateList = [...prevUIStateList];
+  newLocationsUIStateList[idx][field] = newState;
+  return newLocationsUIStateList;
+}
 export function NewAssignLocations({
-  drivers,
+  driver,
   dropoffLocations,
 }: {
-  drivers: ProcessedDriver[];
+  driver: ProcessedDriver;
   dropoffLocations: ProcessedDropoffLocation[];
 }) {
+  const [dropoffLocationsUIStateList, setDropoffLocationsUIStateList] =
+    useState<DropoffLocationUIState[]>(
+      getDropoffLocationsUIStateList(dropoffLocations, driver)
+    );
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+
+  const assignLocationMutation = useMutation({
+    mutationFn: async ({ id, idx }: { id: string; idx: number }) => {
+      //Payload to update this driver's locations has to contain all of the selected locations for this driver.
+      //If the location was previously selected, then that means we are unassigning that location to this driver.
+      //If the location was NOT previously selected, then that means we are assigning that location to this driver.
+      const locationIds = dropoffLocationsUIStateList[idx].isSelected
+        ? []
+        : [id];
+      //Add the rest of the locations for this driver to the payload
+      for (let i = 0; i < dropoffLocationsUIStateList.length; i++) {
+        if (i != idx && dropoffLocationsUIStateList[i].isSelected) {
+          locationIds.push(dropoffLocations[i].id);
+        }
+      }
+      //Set the state for the newly selected/unselected location to loading
+      setDropoffLocationsUIStateList((prev) =>
+        updateDropoffLocationsUIStateList(prev, idx, "isLoading", true)
+      );
+      const url = `/api/volunteers/drivers/assign-location/${driver.id}`;
+      const resp = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ locationIds: locationIds }),
+      });
+      if (!resp.ok) {
+        throw new Error("Failed to assign driver location");
+      }
+    },
+    onSuccess: (data, { id, idx }) => {
+      //Set the state for the newly selected/unselected location to not loading
+      const uiStateWithUpdatedLoading = updateDropoffLocationsUIStateList(
+        dropoffLocationsUIStateList,
+        idx,
+        "isLoading",
+        false
+      );
+      //optimistically update selection state
+      const uiStateWithUpdatedLoadingAndSelection =
+        updateDropoffLocationsUIStateList(
+          uiStateWithUpdatedLoading,
+          idx,
+          "isSelected",
+          !uiStateWithUpdatedLoading[idx].isSelected
+        );
+      setDropoffLocationsUIStateList(uiStateWithUpdatedLoadingAndSelection); //Why did I do this?
+
+      //Invalidate driver info
+      queryClient.invalidateQueries(DRIVER_INFO_QUERY_KEYS.fetchDriverInfo);
+      toastNotify(
+        `Location ${
+          uiStateWithUpdatedLoadingAndSelection[idx].isSelected
+            ? "assigned"
+            : "unassigned"
+        }`,
+        "success"
+      );
+    },
+    onError: (error, { id, idx }) => {
+      console.error(error);
+      //Set state back to not loading
+      setDropoffLocationsUIStateList((prev) =>
+        updateDropoffLocationsUIStateList(prev, idx, "isLoading", false)
+      );
+      toastNotify("Unable to assign location", "failure");
+    },
+  });
   return (
     <Popup
       className={cn(
-        "bg-softBeige fixed left-[50%] top-0 h-[27rem] w-full -translate-x-1/2 p-4",
-        "md:top-[50%] md:w-[40rem] md:-translate-y-1/2 md:rounded-lg md:py-2 md:px-8",
-        "lg:h-[40rem] lg:w-[80rem]"
+        "bg-softBeige fixed left-[50%] top-[50%] h-full w-full -translate-x-1/2 -translate-y-1/2  px-3 py-4",
+        "md:h-[90%] md:w-[80%] md:rounded-lg md:py-6 md:px-8"
       )}
-      trigger={<button>Assign Location</button>}
+      trigger={
+        <div className="flex items-center justify-center hover:cursor-pointer hover:opacity-80">
+          <img
+            src={add_user_icon}
+            className="w-8 md:w-12"
+            alt="Assign Location"
+          />
+        </div>
+      }
     >
       <>
         <Modal.Close
@@ -64,120 +218,38 @@ export function NewAssignLocations({
             <img src={roundX} alt="Hello" />
           </button>
         </Modal.Close>
-        <Modal.Title className="text-newLeafGreen flex h-[10%] items-center justify-center text-lg font-bold lg:text-xl">
-          Assign Jason Cavanaugh
+        <Modal.Title className="text-newLeafGreen flex h-[5%] items-center font-bold lg:text-xl">
+          Assign {driver.firstName} {driver.lastName}
         </Modal.Title>
-        <div className="h-[88%]">
-          <div className="h-[100%] flex gap-3">
-            <div className="flex flex-col gap-2 w-[30%]">
-              <div className="flex flex-col h-[10%]">
-                <p className="italic">Time Slot</p>
-                <h2 className="font-semibold text-newLeafGreen">10:00 AM</h2>
-              </div>
-              <div className="flex flex-col h-[10%]">
-                <p className="italic">Delivery Count</p>
-                <h2 className="font-semibold text-newLeafGreen">1</h2>
-              </div>
-              <div className="flex flex-col h-[70%]">
-                <p className="italic">Restricted Locations</p>
-                <p className="overflow-scroll pr-2 scrollbar-thin flex flex-col gap-1">
-                  {jason_locations.map((l, i) => {
-                    return (
-                      <div className="border border-softGrayWhite rounded font-semibold bg-softBeige text-newLeafGreen p-1">
-                        {l}
-                      </div>
-                    );
-                  })}
-                </p>
-              </div>
-            </div>
-            <DataTable
-              borderColor="softGrayWhite"
-              columnHeaders={[
-                "Assign",
-                "Site Name",
-                "Address",
-                "Neighborhood",
-                "Start Time",
-                "End Time",
-                "Deliveries Assigned",
-              ]}
-              dataRows={processDropoffLocationsForTable(
-                drivers,
-                dropoffLocations
-              )}
-            />
-          </div>
+        <div className="mb-2 flex h-[5%] gap-2 md:m-0">
+          {" "}
+          {/* Kinda weird */}
+          <p className="text-sm italic lg:text-base">Deliveries: </p>
+          <h2 className="text-newLeafGreen text-sm font-semibold lg:text-base">
+            {driver.dropoffLocations.length}/{driver.deliveryCount}
+          </h2>
+        </div>
+        <div className="h-[90%]">
+          <DataTable
+            borderColor="softGrayWhite"
+            columnHeaders={[
+              "Assign",
+              "Site Name",
+              "Address",
+              "Neighborhood",
+              "Start Time",
+              "End Time",
+              "Deliveries Assigned",
+            ]}
+            dataRows={processDropoffLocationsForTable(
+              dropoffLocationsUIStateList,
+              driver,
+              dropoffLocations
+            )}
+          />
+          {/* </div> */}
         </div>
       </>
     </Popup>
   );
 }
-
-function getBorderColorClassName(
-  borderColor: "softGrayWhite" | "newLeafGreen"
-) {
-  switch (borderColor) {
-    case "newLeafGreen":
-      return "border-newLeafGreen";
-    case "softGrayWhite":
-      return "border-softGrayWhite";
-  }
-}
-export const JasonDataTable: React.FC<{
-  columnHeaders: string[];
-  dataRows: (string | number | JSX.Element)[][];
-  borderColor: "softGrayWhite" | "newLeafGreen";
-}> = ({ columnHeaders, dataRows, borderColor }) => {
-  return (
-    <div
-      className={cn(
-        "hide-scroll h-full w-full overflow-scroll rounded-lg border-4",
-        getBorderColorClassName(borderColor)
-      )}
-    >
-      {/* Note that you cannot do border-${borderColor} above because of how Tailwind purges classes at build time*/}
-      <table className="table w-full border-separate border-spacing-0  rounded-lg">
-        <thead className="sticky top-0 z-10 border-b-2 border-newLeafGreen bg-softBeige">
-          <tr>
-            {columnHeaders.map((h, i) => {
-              return (
-                <th
-                  key={i}
-                  className="border-b-2 border-newLeafGreen bg-softBeige p-4 text-newLeafGreen text-sm md:text-base"
-                >
-                  {h}
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {dataRows.map((row) => {
-            const [id, ...data] = row;
-            if (typeof id !== "string" && typeof id !== "number") {
-              console.error(
-                "Please provide an ID of type 'string' or 'number' as the first entry of each row."
-              );
-              return;
-            }
-            return (
-              <tr key={id}>
-                {data.map((datum, idx) => {
-                  return (
-                    <td
-                      key={idx}
-                      className="border border-newLeafGreen bg-softBeige px-2 py-2 text-center align-middle text-newLeafGreen text-sm md:text-base"
-                    >
-                      {datum}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
-};

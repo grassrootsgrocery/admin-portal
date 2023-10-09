@@ -26,6 +26,25 @@ import { NewAssignLocations } from "./NewAssignLocations";
 import { LocationPopup } from "./LocationPopup";
 import { cn, toastNotify } from "../../utils/ui";
 
+const DATA: ProcessedDriver[] = [
+  {
+    id: "jason",
+    firstName: "Jason",
+    lastName: "Cavanaugh",
+    timeSlot: "10:00AM",
+    deliveryCount: 4,
+    zipCode: "10021",
+    vehicle: "Toyota Scion",
+    restrictedLocations: [
+      "Harlem",
+      "East New York",
+      "Inwood and Washington Heights (Manhattan)",
+    ],
+    dropoffLocations: ["UES", "LIC", "Hell's Kitchen"],
+    phoneNumber: "301-832-7589",
+    email: "jascav418@gmail.com",
+  },
+];
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
 in the VolunteersTable.tsx file. 
@@ -53,12 +72,8 @@ function processDriversForTable(
       curDriver.vehicle,
       curDriver.restrictedLocations.join(", "),
       <NewAssignLocations
-        drivers={drivers}
-        dropoffLocations={dropoffLocations}
-      />,
-      <AssignLocationDropdown
-        locations={dropoffLocationsSorted}
         driver={curDriver}
+        dropoffLocations={dropoffLocations}
       />,
       <LocationPopup dropoffLocations={dropoffLocationsForDriver} />,
       <ContactPopup
@@ -284,13 +299,13 @@ export function DriverLocationInfo() {
               "Zip Code",
               "Vehicle",
               "Restricted Locations",
-              "New Assign Locations",
               "Assign Location",
               "Location Information",
               "Contact",
             ]}
             dataRows={processDriversForTable(
-              driversInfoQuery.data,
+              // driversInfoQuery.data,
+              DATA,
               dropoffLocationsForEvent
             )}
           />

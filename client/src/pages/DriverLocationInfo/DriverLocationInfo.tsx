@@ -4,13 +4,13 @@ import {
   useDriversInfo,
   useDropoffLocations,
 } from "./hooks";
-import { AssignLocationDropdown } from "./AssignLocationDropdown";
 import { useQuery, useQueryClient } from "react-query";
 import { useFutureEventById } from "../eventHooks";
 import { useAuth } from "../../contexts/AuthContext";
 //Types
 import { ProcessedDriver, ProcessedDropoffLocation } from "../../types";
 //Components
+import { AssignLocationsPopup } from "./AssignLocationsPopup";
 import { Navbar } from "../../components/Navbar";
 import { DataTable } from "../../components/DataTable";
 import { Loading } from "../../components/Loading";
@@ -22,29 +22,10 @@ import back from "../../assets/back-white.svg";
 import { SendTextMessageButton } from "../../components/SendTextMesssageButton";
 import { ContactPopup } from "../../components/ContactPopup";
 import { CoordinatorInfoPopup } from "./CoordinatorInfoPopup";
-import { NewAssignLocations } from "./NewAssignLocations";
 import { LocationPopup } from "./LocationPopup";
 import { cn, toastNotify } from "../../utils/ui";
 
-const DATA: ProcessedDriver[] = [
-  {
-    id: "jason",
-    firstName: "Jason",
-    lastName: "Cavanaugh",
-    timeSlot: "10:00AM",
-    deliveryCount: 4,
-    zipCode: "10021",
-    vehicle: "Toyota Scion",
-    restrictedLocations: [
-      "Harlem",
-      "East New York",
-      "Inwood and Washington Heights (Manhattan)",
-    ],
-    dropoffLocations: ["UES", "LIC", "Hell's Kitchen"],
-    phoneNumber: "301-832-7589",
-    email: "jascav418@gmail.com",
-  },
-];
+
 /* 
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
 in the VolunteersTable.tsx file. 
@@ -71,7 +52,7 @@ function processDriversForTable(
       curDriver.zipCode,
       curDriver.vehicle,
       curDriver.restrictedLocations.join(", "),
-      <NewAssignLocations
+      <AssignLocationsPopup
         driver={curDriver}
         dropoffLocations={dropoffLocations}
       />,
@@ -304,8 +285,7 @@ export function DriverLocationInfo() {
               "Contact",
             ]}
             dataRows={processDriversForTable(
-              // driversInfoQuery.data,
-              DATA,
+              driversInfoQuery.data,
               dropoffLocationsForEvent
             )}
           />

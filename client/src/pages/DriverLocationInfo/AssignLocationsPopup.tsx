@@ -11,16 +11,18 @@ import add_user_icon from "../../assets/add-user-svgrepo-com.svg";
 import check_icon from "../../assets/checkbox-icon.svg";
 import { useState } from "react";
 import { Loading } from "../../components/Loading";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, UseMutationResult, useQueryClient } from "react-query";
 import { useAuth } from "../../contexts/AuthContext";
-import { DRIVER_INFO_QUERY_KEYS } from "./hooks";
+import { DRIVER_INFO_QUERY_KEYS, DROPOFF_LOCATIONS_QUERY_KEY } from "./hooks";
 
 function AssignLocationCheckbox({
   isSelected,
   isLoading,
+  onClick
 }: {
   isSelected: boolean;
   isLoading: boolean;
+  onClick: () => void;
 }) {
   return (
     <div className="relative flex h-full items-center justify-center">
@@ -32,6 +34,7 @@ function AssignLocationCheckbox({
         <RadixCheckbox.Root
           className="border-newLeafGreen bg-softGrayWhite flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 shadow-md"
           checked={isSelected}
+          onClick={onClick}
         >
           <RadixCheckbox.Indicator>
             <img src={check_icon} alt="" />
@@ -64,7 +67,8 @@ function processRestrictedLocations(
 function processDropoffLocationsForTable(
   dropoffLocationsUIStateList: DropoffLocationUIState[],
   driver: ProcessedDriver,
-  processedDropOffLocations: ProcessedDropoffLocation[]
+  processedDropOffLocations: ProcessedDropoffLocation[],
+  assignLocationMutation: UseMutationResult<void, unknown, AssignLocationMutationPayload, unknown>
 ) {
   return processedDropOffLocations.map((curLocation, i) => {
     return [
@@ -72,6 +76,7 @@ function processDropoffLocationsForTable(
       <AssignLocationCheckbox
         isSelected={dropoffLocationsUIStateList[i].isSelected}
         isLoading={dropoffLocationsUIStateList[i].isLoading}
+        onClick={() => assignLocationMutation.mutate({ id: curLocation.id, idx: i })}
       />,
       curLocation.siteName,
       curLocation.address,
@@ -110,7 +115,8 @@ function updateDropoffLocationsUIStateList(
   newLocationsUIStateList[idx][field] = newState;
   return newLocationsUIStateList;
 }
-export function NewAssignLocations({
+type AssignLocationMutationPayload = { id: string; idx: number; }
+export function AssignLocationsPopup({
   driver,
   dropoffLocations,
 }: {
@@ -125,7 +131,7 @@ export function NewAssignLocations({
   const queryClient = useQueryClient();
 
   const assignLocationMutation = useMutation({
-    mutationFn: async ({ id, idx }: { id: string; idx: number }) => {
+    mutationFn: async ({ id, idx }: AssignLocationMutationPayload) => {
       //Payload to update this driver's locations has to contain all of the selected locations for this driver.
       //If the location was previously selected, then that means we are unassigning that location to this driver.
       //If the location was NOT previously selected, then that means we are assigning that location to this driver.
@@ -175,6 +181,7 @@ export function NewAssignLocations({
 
       //Invalidate driver info
       queryClient.invalidateQueries(DRIVER_INFO_QUERY_KEYS.fetchDriverInfo);
+      queryClient.invalidateQueries(DROPOFF_LOCATIONS_QUERY_KEY.fetchDropoffLocations);
       toastNotify(
         `Location ${
           uiStateWithUpdatedLoadingAndSelection[idx].isSelected
@@ -214,7 +221,7 @@ export function NewAssignLocations({
           className="absolute right-5 top-5 w-4 md:w-6 lg:w-8"
           asChild
         >
-          <button className="hover:brightness-150">
+          <button className="hover:brightness-150 w-7">
             <img src={roundX} alt="Hello" />
           </button>
         </Modal.Close>
@@ -224,9 +231,9 @@ export function NewAssignLocations({
         <div className="mb-2 flex h-[5%] gap-2 md:m-0">
           {" "}
           {/* Kinda weird */}
-          <p className="text-sm italic lg:text-base">Deliveries: </p>
+          <p className="text-sm italic lg:text-base">Deliveries assigned: </p>
           <h2 className="text-newLeafGreen text-sm font-semibold lg:text-base">
-            {driver.dropoffLocations.length}/{driver.deliveryCount}
+            {driver.deliveryCount}
           </h2>
         </div>
         <div className="h-[90%]">
@@ -244,7 +251,8 @@ export function NewAssignLocations({
             dataRows={processDropoffLocationsForTable(
               dropoffLocationsUIStateList,
               driver,
-              dropoffLocations
+              dropoffLocations,
+              assignLocationMutation
             )}
           />
           {/* </div> */}

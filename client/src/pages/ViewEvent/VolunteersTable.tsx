@@ -8,19 +8,22 @@ import { toastNotify } from "../../utils/ui";
 import { ContactPopup } from "../../components/ContactPopup";
 import { EditVolunteerPopup } from "../../components/EditVolunteerPopup";
 import { NewDataTable } from "../../components/NewDataTable";
+import { useQueryClient } from "react-query";
+import { VOLUNTEERS_FOR_EVENT_QUERY_KEYS } from "../eventHooks";
 
 const columnHelper = createColumnHelper<ProcessedScheduledSlot>();
 
 interface Props {
   scheduledSlots: ProcessedScheduledSlot[];
-  refetchVolunteers: () => void;
+  eventId: string;
 }
 
 export const VolunteersTable: React.FC<Props> = ({
   scheduledSlots,
-  refetchVolunteers,
+  eventId,
 }: Props) => {
   const { token } = useAuth();
+  const queryClient = useQueryClient();
 
   const columns = [
     // Display Column
@@ -53,21 +56,31 @@ export const VolunteersTable: React.FC<Props> = ({
     }),
     columnHelper.accessor("confirmed", {
       cell: (info) => {
-        const cellValue = info.cell.getValue() as boolean;
+        const confirmed = info.cell.getValue() as boolean;
+        const slot = info.row.getValue(
+          info.column.id
+        ) as ProcessedScheduledSlot;
         return (
           <>
+            <text>{confirmed.toString()}</text>
             <HttpCheckbox
-              checked={cellValue}
+              key={slot.id}
+              checked={confirmed}
               mutationFn={applyPatch(
-                `/api/volunteers/confirm/${info.row.original.id}`,
-                { newConfirmationStatus: !cellValue },
+                `/api/volunteers/confirm/${slot.id}`,
+                { newConfirmationStatus: !confirmed },
                 token as string
               )}
               onSuccess={() => {
-                const toastMessage = `${info.row.original.firstName} ${
-                  info.row.original.lastName
-                } ${cellValue ? "unconfirmed" : "confirmed"}`;
-                refetchVolunteers();
+                const toastMessage = `${slot.firstName} ${slot.lastName} ${
+                  confirmed ? "unconfirmed" : "confirmed"
+                }`;
+
+                queryClient.invalidateQueries(
+                  VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(
+                    eventId
+                  )
+                );
                 toastNotify(toastMessage, "success");
               }}
               onError={() =>
@@ -82,24 +95,33 @@ export const VolunteersTable: React.FC<Props> = ({
     }),
     columnHelper.accessor("cantCome", {
       cell: (info) => {
+        const cantCome = info.cell.getValue() as boolean;
+        const slot = info.row.getValue(
+          info.column.id
+        ) as ProcessedScheduledSlot;
         return (
           <>
+            <text>{cantCome.toString()}</text>
             <HttpCheckbox
-              checked={info.cell.getValue() as boolean}
+              key={slot.id}
+              checked={cantCome}
               mutationFn={applyPatch(
-                `/api/volunteers/going/${info.row.original.id}`,
-                { newGoingStatus: !info.row.original.cantCome },
+                `/api/volunteers/going/${slot.id}`,
+                { newGoingStatus: !cantCome },
                 token as string
               )}
               onSuccess={() => {
-                const toastMessage = `${info.row.original.firstName} ${
-                  info.row.original.lastName
-                } ${
-                  info.row.original.cantCome
+                const toastMessage = `${slot.firstName} ${slot.lastName} ${
+                  slot.cantCome
                     ? "is able to volunteer"
                     : "is unable to volunteer"
                 }`;
-                refetchVolunteers();
+
+                queryClient.invalidateQueries(
+                  VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(
+                    eventId
+                  )
+                );
                 toastNotify(toastMessage, "success");
               }}
               onError={() =>
@@ -143,7 +165,11 @@ export const VolunteersTable: React.FC<Props> = ({
           firstName={props.cell.row.original.firstName}
           lastName={props.cell.row.original.lastName}
           participantType={props.cell.row.original.participantType}
-          refetch={refetchVolunteers}
+          onEditSuccess={() => {
+            queryClient.invalidateQueries(
+              VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+            );
+          }}
         />
       ),
     }),

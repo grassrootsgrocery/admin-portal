@@ -10,6 +10,8 @@ import { cn, toastNotify } from "../../utils/ui";
 import { Loading } from "../../components/Loading";
 import { HttpCheckbox } from "../../components/HttpCheckbox";
 import { applyPatch } from "../../utils/http";
+import { createColumnHelper } from "@tanstack/react-table";
+import { NewDataTable } from "../../components/NewDataTable";
 
 interface DropoffLocationsStore {
   [id: string]: DropoffLocationForm;
@@ -20,6 +22,7 @@ interface DropoffLocationForm {
   endTime: [value: string, isValidEndTime: boolean];
   deliveriesNeeded: number | null;
 }
+
 export const DropoffOrganizerPopup: React.FC<{
   date: Date;
   dropoffLocations: ProcessedDropoffLocation[];
@@ -32,6 +35,52 @@ export const DropoffOrganizerPopup: React.FC<{
 
   //Regex for validating time
   const validTime = /^(0?[1-9]|1[012]):([0-5]\d)\s?([AaPp][Mm])$/;
+
+  const columnHelper = createColumnHelper<ProcessedDropoffLocation>();
+
+  const columns = [
+    // Display Column
+    columnHelper.display({
+      id: "id",
+      header: () => <span>ID</span>,
+      cell: (props) => props.cell.row.id,
+    }),
+    columnHelper.accessor("siteName", {
+      cell: (info) => info.getValue(),
+      header: () => <span>Site Name</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("address", {
+      cell: (info) => info.getValue(),
+      header: () => <span>Address</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("neighborhoods", {
+      cell: (info) => info.getValue(),
+      header: () => <span>Neighborhoods</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("startTime", {
+      cell: (info) => info.getValue(),
+      header: () => <span>Start Time</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("endTime", {
+      cell: (info) => info.getValue(),
+      header: () => <span>End Time</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("deliveriesNeeded", {
+      cell: (info) => info.getValue(),
+      header: () => <span>Deliveries Needed</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("notavailable", {
+      cell: (info) => info.getValue(),
+      header: () => <span>Not Available</span>,
+      footer: (props) => props.column.id,
+    }),
+  ];
 
   function processDropoffLocationsForTable(
     dropoffLocations: ProcessedDropoffLocation[] | undefined,
@@ -122,7 +171,7 @@ export const DropoffOrganizerPopup: React.FC<{
 
           // Deliveries Needed Input
           <input
-            className="border-softGrayWhite bg-softBeige text-newLeafGreen placeholder:text-newLeafGreen focus:outline-softGrayWhite h-10 w-20 rounded border p-1 text-center placeholder:text-opacity-50"
+            className="h-10 w-20 rounded border border-softGrayWhite bg-softBeige p-1 text-center text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-50 focus:outline-softGrayWhite"
             type="number"
             min="0"
             placeholder="0"
@@ -270,13 +319,13 @@ export const DropoffOrganizerPopup: React.FC<{
   return (
     <Popup
       className={cn(
-        "bg-softBeige fixed left-[50%] top-0 h-[27rem] w-full -translate-x-1/2 p-4",
+        "fixed left-[50%] top-0 h-[27rem] w-full -translate-x-1/2 bg-softBeige p-4",
         "md:top-[50%] md:w-[40rem] md:-translate-y-1/2 md:rounded-lg md:py-2 md:px-8",
         "lg:h-[40rem] lg:w-[80rem]"
       )}
       trigger={
         <button
-          className="bg-pumpkinOrange lg:shadow-newLeafGreen lg:hover:shadow-newLeafGreen rounded-full px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg"
+          className="rounded-full bg-pumpkinOrange px-3 py-2 text-sm font-semibold text-white outline-none lg:px-5 lg:py-3 lg:text-base lg:font-bold lg:shadow-md lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-1 lg:hover:shadow-lg lg:hover:shadow-newLeafGreen"
           type="button"
         >
           + Add Dropoff Location
@@ -284,10 +333,10 @@ export const DropoffOrganizerPopup: React.FC<{
       }
     >
       <>
-        <Modal.Title className="text-newLeafGreen flex h-[10%] items-center justify-center text-lg font-bold lg:text-3xl">
+        <Modal.Title className="flex h-[10%] items-center justify-center text-lg font-bold text-newLeafGreen lg:text-3xl">
           Drop-off Location Organizer
         </Modal.Title>
-        <div className="h-[80%]">
+        <div className="height-30 overflow-auto">
           <DataTable
             borderColor="newLeafGreen"
             columnHeaders={[
@@ -305,6 +354,7 @@ export const DropoffOrganizerPopup: React.FC<{
               setDropoffStore
             )}
           />
+          {/*<NewDataTable data={dropoffLocations} columns={columns} />*/}
         </div>
         <div className="flex h-[10%] items-center justify-center gap-10">
           <Modal.Close
@@ -323,7 +373,7 @@ export const DropoffOrganizerPopup: React.FC<{
               saveDropoffLocations.status === "loading"
             }
             className={cn(
-              "bg-newLeafGreen rounded-full px-3 py-2 text-xs font-semibold text-white",
+              "rounded-full bg-newLeafGreen px-3 py-2 text-xs font-semibold text-white",
               "lg:px-5 lg:py-3 lg:text-base lg:font-bold",
               isValidInput(dropoffStore) &&
                 saveDropoffLocations.status !== "loading"

@@ -29,6 +29,11 @@ export const HttpCheckbox: React.FC<HttpCheckboxProps> = ({
     },
   });
 
+  // fixes state issue in react-table
+  useEffect(() => {
+    setIsChecked(checked);
+  }, [checked]);
+
   //UI
   return (
     <div className="relative flex h-full items-center justify-center">

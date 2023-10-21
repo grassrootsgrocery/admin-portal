@@ -11,7 +11,7 @@ export const ContactPopup: React.FC<Props> = ({ phoneNumber, email }) => {
   return (
     <Popup
       trigger={
-        <div className="flex justify-center hover:cursor-pointer">
+        <div className="flex justify-center hover:cursor-pointer hover:opacity-80">
           <img className="w-8" src={speech_bubble} alt="" />
         </div>
       }

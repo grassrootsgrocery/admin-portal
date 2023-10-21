@@ -25,7 +25,6 @@ export const LocationPopup: React.FC<Props> = ({ dropoffLocations }) => {
       className={cn(
         "bg-softBeige fixed left-[50%] top-[50%] w-full -translate-x-1/2 -translate-y-1/2 rounded-lg p-8 h-[30rem] lg:w-[40rem] lg:h-[40rem]"
       )}
-      disabled={disabled}
       open={isOpen}
       onOpenChange={() => {
         if (!disabled) {

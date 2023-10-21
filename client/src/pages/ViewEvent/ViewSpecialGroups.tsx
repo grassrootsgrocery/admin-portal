@@ -80,7 +80,7 @@ export const ViewSpecialGroups: React.FC<Props> = ({ event }: Props) => {
   return (
     <Popup
       className={cn(
-        "fixed left-[50%] top-[50%] w-full w-full -translate-x-1/2 -translate-y-1/2 rounded-lg bg-softBeige px-3 py-4",
+        "fixed left-[50%] top-[50%] w-full -translate-x-1/2 -translate-y-1/2 rounded-lg bg-softBeige px-3 py-4",
         "md:w-[40rem] md:py-6 md:px-8"
       )}
       onOpenChange={() => {

@@ -15,7 +15,7 @@ import chevron_up from "../assets/chevron-up.svg";
 import chevron_down from "../assets/chevron-down.svg";
 import { Root, Trigger, Content, Item } from "@radix-ui/react-dropdown-menu";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
 import check_icon from "../assets/checkbox-icon.svg";
@@ -80,10 +80,11 @@ const FilterItem = ({ filterLabel, selected, onSelect }: FilterItemProps) => {
 };
 
 export const NewDataTable = <T,>({
-  data,
+  data: initialData,
   columns,
   filters: filterProps,
 }: Props<T>) => {
+  const [data, setData] = useState(initialData); // Here's where we initialize the state
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [filters, setFilters] = useState(
@@ -110,10 +111,13 @@ export const NewDataTable = <T,>({
     });
   };
 
-  const filteredData = useMemo(
-    () => applyFilters(data, filters),
-    [data, filters]
-  );
+  /*  useEffect(() => {
+      setData(applyFilters(initialData, filters));
+    }, [data, filters]);*/
+
+  const filteredData = useMemo(() => {
+    return applyFilters(initialData, filters);
+  }, [initialData, filters]);
 
   const table = useReactTable({
     data: filteredData,
@@ -134,7 +138,7 @@ export const NewDataTable = <T,>({
   };
 
   return (
-    <div className="flex h-screen flex-col pt-6">
+    <div className="hide-scroll flex h-full w-full flex-col overflow-scroll pt-6 ">
       {/* Filtering */}
       {filterProps && filterProps.length > 0 && (
         <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4">
@@ -216,9 +220,9 @@ export const NewDataTable = <T,>({
           )}
         </div>
       )}
-      <div className="h-16" />
+      <div className="h-10" />
       <div
-        className={`softGrayWhite h-[calc(100vh-200px)] border-spacing-2 overflow-y-auto rounded-lg border-2`}
+        className={`softGrayWhite border-spacing-2 overflow-y-auto rounded-lg border-2`}
       >
         <table className="table w-full border-collapse rounded-lg">
           <thead className="sticky top-0 z-10 border-b-2 border-newLeafGreen bg-softBeige">

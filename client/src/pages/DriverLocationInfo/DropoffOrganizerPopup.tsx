@@ -336,8 +336,8 @@ export const DropoffOrganizerPopup: React.FC<{
         <Modal.Title className="flex h-[10%] items-center justify-center text-lg font-bold text-newLeafGreen lg:text-3xl">
           Drop-off Location Organizer
         </Modal.Title>
-        <div className="height-30 overflow-auto">
-          <DataTable
+        <div className="h-[80%]">
+          {/*         <DataTable
             borderColor="newLeafGreen"
             columnHeaders={[
               "Site Location",
@@ -353,8 +353,9 @@ export const DropoffOrganizerPopup: React.FC<{
               dropoffStore,
               setDropoffStore
             )}
-          />
-          {/*<NewDataTable data={dropoffLocations} columns={columns} />*/}
+          />*/}
+          {/*restrict height of table to height of this component*/}
+          <NewDataTable data={dropoffLocations} columns={columns} />
         </div>
         <div className="flex h-[10%] items-center justify-center gap-10">
           <Modal.Close

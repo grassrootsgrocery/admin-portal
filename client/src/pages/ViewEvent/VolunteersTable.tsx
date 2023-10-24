@@ -61,33 +61,28 @@ export const VolunteersTable: React.FC<Props> = ({
           info.column.id
         ) as ProcessedScheduledSlot;
         return (
-          <>
-            <text>{confirmed.toString()}</text>
-            <HttpCheckbox
-              key={slot.id}
-              checked={confirmed}
-              mutationFn={applyPatch(
-                `/api/volunteers/confirm/${slot.id}`,
-                { newConfirmationStatus: !confirmed },
-                token as string
-              )}
-              onSuccess={() => {
-                const toastMessage = `${slot.firstName} ${slot.lastName} ${
-                  confirmed ? "unconfirmed" : "confirmed"
-                }`;
+          <HttpCheckbox
+            key={slot.id}
+            checked={confirmed}
+            mutationFn={applyPatch(
+              `/api/volunteers/confirm/${slot.id}`,
+              { newConfirmationStatus: !confirmed },
+              token as string
+            )}
+            onSuccess={() => {
+              const toastMessage = `${slot.firstName} ${slot.lastName} ${
+                confirmed ? "unconfirmed" : "confirmed"
+              }`;
 
-                queryClient.invalidateQueries(
-                  VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(
-                    eventId
-                  )
-                );
-                toastNotify(toastMessage, "success");
-              }}
-              onError={() =>
-                toastNotify("Unable to confirm volunteer", "failure")
-              }
-            />
-          </>
+              queryClient.invalidateQueries(
+                VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+              );
+              toastNotify(toastMessage, "success");
+            }}
+            onError={() =>
+              toastNotify("Unable to confirm volunteer", "failure")
+            }
+          />
         );
       },
       header: () => "Confirmed",
@@ -100,35 +95,30 @@ export const VolunteersTable: React.FC<Props> = ({
           info.column.id
         ) as ProcessedScheduledSlot;
         return (
-          <>
-            <text>{cantCome.toString()}</text>
-            <HttpCheckbox
-              key={slot.id}
-              checked={cantCome}
-              mutationFn={applyPatch(
-                `/api/volunteers/going/${slot.id}`,
-                { newGoingStatus: !cantCome },
-                token as string
-              )}
-              onSuccess={() => {
-                const toastMessage = `${slot.firstName} ${slot.lastName} ${
-                  slot.cantCome
-                    ? "is able to volunteer"
-                    : "is unable to volunteer"
-                }`;
+          <HttpCheckbox
+            key={slot.id}
+            checked={cantCome}
+            mutationFn={applyPatch(
+              `/api/volunteers/going/${slot.id}`,
+              { newGoingStatus: !cantCome },
+              token as string
+            )}
+            onSuccess={() => {
+              const toastMessage = `${slot.firstName} ${slot.lastName} ${
+                slot.cantCome
+                  ? "is able to volunteer"
+                  : "is unable to volunteer"
+              }`;
 
-                queryClient.invalidateQueries(
-                  VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(
-                    eventId
-                  )
-                );
-                toastNotify(toastMessage, "success");
-              }}
-              onError={() =>
-                toastNotify("Unable to modify availability", "failure")
-              }
-            />
-          </>
+              queryClient.invalidateQueries(
+                VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+              );
+              toastNotify(toastMessage, "success");
+            }}
+            onError={() =>
+              toastNotify("Unable to modify availability", "failure")
+            }
+          />
         );
       },
       header: () => "Can't Come",

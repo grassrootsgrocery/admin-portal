@@ -5,7 +5,7 @@ import { Navigate } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
 import { Popup } from "../../components/Popup";
 import * as Modal from "@radix-ui/react-dialog";
-import { ProcessedDropoffLocation } from "../../types";
+import { ProcessedDropoffLocation, ProcessedScheduledSlot } from "../../types";
 import { cn, toastNotify } from "../../utils/ui";
 import { Loading } from "../../components/Loading";
 import { HttpCheckbox } from "../../components/HttpCheckbox";
@@ -35,52 +35,6 @@ export const DropoffOrganizerPopup: React.FC<{
 
   //Regex for validating time
   const validTime = /^(0?[1-9]|1[012]):([0-5]\d)\s?([AaPp][Mm])$/;
-
-  const columnHelper = createColumnHelper<ProcessedDropoffLocation>();
-
-  const columns = [
-    // Display Column
-    columnHelper.display({
-      id: "id",
-      header: () => <span>ID</span>,
-      cell: (props) => props.cell.row.id,
-    }),
-    columnHelper.accessor("siteName", {
-      cell: (info) => info.getValue(),
-      header: () => <span>Site Name</span>,
-      footer: (props) => props.column.id,
-    }),
-    columnHelper.accessor("address", {
-      cell: (info) => info.getValue(),
-      header: () => <span>Address</span>,
-      footer: (props) => props.column.id,
-    }),
-    columnHelper.accessor("neighborhoods", {
-      cell: (info) => info.getValue(),
-      header: () => <span>Neighborhoods</span>,
-      footer: (props) => props.column.id,
-    }),
-    columnHelper.accessor("startTime", {
-      cell: (info) => info.getValue(),
-      header: () => <span>Start Time</span>,
-      footer: (props) => props.column.id,
-    }),
-    columnHelper.accessor("endTime", {
-      cell: (info) => info.getValue(),
-      header: () => <span>End Time</span>,
-      footer: (props) => props.column.id,
-    }),
-    columnHelper.accessor("deliveriesNeeded", {
-      cell: (info) => info.getValue(),
-      header: () => <span>Deliveries Needed</span>,
-      footer: (props) => props.column.id,
-    }),
-    columnHelper.accessor("notavailable", {
-      cell: (info) => info.getValue(),
-      header: () => <span>Not Available</span>,
-      footer: (props) => props.column.id,
-    }),
-  ];
 
   function processDropoffLocationsForTable(
     dropoffLocations: ProcessedDropoffLocation[] | undefined,
@@ -315,6 +269,150 @@ export const DropoffOrganizerPopup: React.FC<{
   useEffect(() => {
     setDropoffStore(populateStoreWithFetchedData(dropoffLocations));
   }, [dropoffLocations]);
+
+  const setDropoffValue = (
+    id: string,
+    fieldName: keyof DropoffLocationForm,
+    fieldValue: [string, boolean] | number | null
+  ) => {
+    setDropoffStore((prev: DropoffLocationsStore) => {
+      return {
+        ...prev,
+        [id]: {
+          ...prev[id],
+          [fieldName]: fieldValue,
+        },
+      };
+    });
+  };
+
+  const columnHelper = createColumnHelper<ProcessedDropoffLocation>();
+  const columns = [
+    // Display Column
+    columnHelper.display({
+      id: "id",
+      header: () => <span>ID</span>,
+      cell: (props) => props.cell.row.id,
+    }),
+    columnHelper.accessor("siteName", {
+      cell: (info) => info.getValue(),
+      header: () => <span>Site Name</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("address", {
+      cell: (info) => info.getValue(),
+      header: () => <span>Address</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("neighborhoods", {
+      cell: (info) => info.getValue().join(", "),
+      header: () => <span>Neighborhoods</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("startTime", {
+      cell: (info) => {
+        const location = info.row.getValue(
+          info.column.id
+        ) as ProcessedDropoffLocation;
+        const [startTime, isStartTimeValid] = dropoffStore[location.id]
+          ? dropoffStore[location.id].startTime
+          : [null, true];
+
+        return (
+          <input
+            className={`h-10 w-20 rounded border bg-softBeige p-1 ${
+              isStartTimeValid
+                ? "border-softGrayWhite focus:outline-softGrayWhite"
+                : "border-red-600 focus:outline-red-600"
+            } text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-50`}
+            type="text"
+            value={startTime || ""}
+            placeholder="00:00 AM"
+            onChange={(e) => {
+              const isTimeValid =
+                e.target.value === "" || validTime.test(e.target.value);
+              setDropoffValue(location.id, "startTime", [
+                e.target.value,
+                isTimeValid,
+              ]);
+            }}
+          ></input>
+        );
+      },
+      header: () => <span>Start Time</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("endTime", {
+      cell: (info) => {
+        const location = info.row.getValue(
+          info.column.id
+        ) as ProcessedDropoffLocation;
+        const [endTime, isEndTimeValid] = dropoffStore[location.id]
+          ? dropoffStore[location.id].endTime
+          : [null, true];
+
+        return (
+          <input
+            className={`h-10 w-20 rounded border bg-softBeige p-1 ${
+              isEndTimeValid
+                ? "border-softGrayWhite focus:outline-softGrayWhite"
+                : "border-red-600 focus:outline-red-600"
+            } text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-50`}
+            type="text"
+            value={endTime || ""}
+            placeholder="00:00 AM"
+            onChange={(e) => {
+              const isTimeValid =
+                e.target.value === "" || validTime.test(e.target.value);
+              setDropoffValue(location.id, "endTime", [
+                e.target.value,
+                isTimeValid,
+              ]);
+            }}
+          ></input>
+        );
+      },
+      header: () => <span>End Time</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("deliveriesNeeded", {
+      cell: (info) => {
+        const location = info.row.getValue(
+          info.column.id
+        ) as ProcessedDropoffLocation;
+        const deliveriesNeeded = dropoffStore[location.id]
+          ? dropoffStore[location.id].deliveriesNeeded
+          : null;
+
+        return (
+          // Deliveries Needed Input
+          <input
+            className="h-10 w-20 rounded border border-softGrayWhite bg-softBeige p-1 text-center text-newLeafGreen placeholder:text-newLeafGreen placeholder:text-opacity-50 focus:outline-softGrayWhite"
+            type="number"
+            min="0"
+            placeholder="0"
+            value={deliveriesNeeded ?? ""}
+            onChange={(e) => {
+              setDropoffValue(
+                location.id,
+                "deliveriesNeeded",
+                e.target.value ? parseInt(e.target.value, 10) : null
+              );
+            }}
+          ></input>
+        );
+      },
+      header: () => <span>Deliveries Needed</span>,
+      footer: (props) => props.column.id,
+    }),
+    columnHelper.accessor("notavailable", {
+      cell: (info) => {
+        return <text>{info.getValue() as boolean}</text>;
+      },
+      header: () => <span>Not Available</span>,
+      footer: (props) => props.column.id,
+    }),
+  ];
 
   return (
     <Popup

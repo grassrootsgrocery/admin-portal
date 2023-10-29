@@ -1,13 +1,19 @@
 //Types
-import express, { Request, Response } from "express";
+import express, {Request, Response} from "express";
 import asyncHandler from "express-async-handler";
-import { adminProtect, protect } from "../middleware/authMiddleware";
-import { fetch } from "../httpUtils/nodeFetch";
+import {adminProtect, protect} from "../middleware/authMiddleware";
+import {fetch} from "../httpUtils/nodeFetch";
 //Status codes
-import { INTERNAL_SERVER_ERROR, OK } from "../httpUtils/statusCodes";
-import { AIRTABLE_URL_BASE, airtableGET } from "../httpUtils/airtable";
-import { TextAutomation } from "../types";
-import { logger } from "../loggerUtils/logger";
+import {INTERNAL_SERVER_ERROR, OK} from "../httpUtils/statusCodes";
+import {AIRTABLE_URL_BASE, airtableGET} from "../httpUtils/airtable";
+import {TextAutomation} from "../types";
+import {logger} from "../loggerUtils/logger";
+
+import {Twilio} from "twilio";
+
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = new Twilio(accountSid, authToken);
 
 //Utils
 const sendTextWebhook = async (url: string, phoneNumber: string) => {
@@ -312,7 +318,7 @@ router.route("/api/messaging/last-texts-sent").get(
       `${AIRTABLE_URL_BASE}/Text Automation History` +
       `?filterByFormula=DATETIME_DIFF(NOW(), {Date}, 'days') <= 7`;
 
-    const data = await airtableGET<TextAutomation>({ url });
+    const data = await airtableGET<TextAutomation>({url});
 
     if (data.kind === "error") {
       res.status(500).json({
@@ -331,6 +337,80 @@ router.route("/api/messaging/last-texts-sent").get(
 
     // only sends fields of each one
     res.status(200).json(fields);
+  })
+);
+
+/**
+ * @description Gets a text conversation with a specific number.
+ * Number must be URL encoded in the query param due to the + country code.
+ * @route  GET /api/messaging/get-text-conversation
+ * @access Administrators only
+ */
+router.route("/api/messaging/get-text-conversation").get(
+  adminProtect,
+  asyncHandler(async (req: Request, res: Response) => {
+    const {targetNumber} = req.query;
+
+    logger.info(
+      `GET /api/messaging/get-text-conversation=${targetNumber}`
+    );
+
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+
+    const grassrootsNumber = res.locals.user["Twilio Number"] as string;
+
+    const client = new Twilio(accountSid, authToken);
+
+    const sentMessages = client.messages.list({
+      from: grassrootsNumber,
+      to: targetNumber as string,
+      dateSentAfter: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    })
+
+    const receivedMessages = client.messages.list({
+      from: targetNumber as string,
+      to: grassrootsNumber,
+      dateSentAfter: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    });
+
+    const [sent, received] = await Promise.all([sentMessages, receivedMessages]);
+
+    const messages = [...sent, ...received].sort((a, b) => {
+      return new Date(a.dateSent).getTime() - new Date(b.dateSent).getTime();
+    });
+
+    res.status(200).json(messages);
+  })
+);
+
+/**
+ * @description Send a text message to a specific number.
+ * @route  POST /api/messaging/get-text-conversation
+ * @access Administrators only
+ */
+router.route("/api/messaging/send-text-message").post(
+  adminProtect,
+  asyncHandler(async (req: Request, res: Response) => {
+    const {targetNumber, message} = req.body;
+
+    logger.info(
+      `POST /api/messaging/get-text-conversation`
+    );
+    logger.info(`Request body ${req.body}`);
+
+
+
+    const grassrootsNumber = res.locals.user["Twilio Number"] as string;
+
+
+    const sentMessage = await client.messages.create({
+      body: message,
+      from: grassrootsNumber,
+      to: targetNumber,
+    });
+
+    res.status(200).json(sentMessage);
   })
 );
 

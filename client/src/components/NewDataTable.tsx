@@ -79,12 +79,13 @@ const FilterItem = ({ filterLabel, selected, onSelect }: FilterItemProps) => {
   );
 };
 
+const HeaderMoveLabel = ({ label }: { label: string }) => {};
+
 export const NewDataTable = <T,>({
   data: initialData,
   columns,
   filters: filterProps,
 }: Props<T>) => {
-  const [data, setData] = useState(initialData); // Here's where we initialize the state
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [filters, setFilters] = useState(
@@ -92,6 +93,9 @@ export const NewDataTable = <T,>({
       ? filterProps.map((filter) => ({ ...filter, isSelected: false }))
       : []
   );
+  const [columnVisibility, setColumnVisibility] = React.useState({});
+  const [isColumnSelectionDropDownOpen, setColumnSelectionDropDownOpen] =
+    useState(false);
 
   const applyFilters = (
     data: T[],
@@ -111,10 +115,6 @@ export const NewDataTable = <T,>({
     });
   };
 
-  /*  useEffect(() => {
-      setData(applyFilters(initialData, filters));
-    }, [data, filters]);*/
-
   const filteredData = useMemo(() => {
     return applyFilters(initialData, filters);
   }, [initialData, filters]);
@@ -124,8 +124,10 @@ export const NewDataTable = <T,>({
     columns,
     state: {
       sorting,
+      columnVisibility,
     },
     onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
     enableFilters: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -137,89 +139,168 @@ export const NewDataTable = <T,>({
     setFilters(newFilters);
   };
 
+  let columnBeingDragged: number;
+
+  const onDragStart = (e: any, columnIndex: number): void => {
+    e.dataTransfer!.setData("text/plain", columnIndex.toString());
+  };
+
+  const onDrop = (e: any, newPosition: number): void => {
+    e.preventDefault();
+    const columnIndex = parseInt(e.dataTransfer.getData("text/plain"));
+
+    const currentCols = table.getVisibleLeafColumns().map((c) => c.id);
+    const colToBeMoved = currentCols.splice(columnIndex, 1);
+    currentCols.splice(newPosition, 0, colToBeMoved[0]);
+
+    table.setColumnOrder(currentCols);
+  };
+
   return (
     <div className="hide-scroll flex h-full w-full flex-col overflow-scroll pt-6 ">
-      {/* Filtering */}
-      {filterProps && filterProps.length > 0 && (
-        <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4">
-          <DropdownMenu.Root
-            open={isFilterDropdownOpen}
-            onOpenChange={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
-            modal={false}
-          >
-            <DropdownMenu.Trigger asChild>
-              <h1
-                className={`flex w-44 shrink-0 select-none items-center justify-between rounded-lg border bg-pumpkinOrange px-2 py-1 text-sm font-semibold text-white hover:cursor-pointer hover:brightness-110 md:text-base ${
-                  isFilterDropdownOpen ? " brightness-110" : ""
-                }`}
-              >
-                Filter
-                <img
-                  className="w-2 md:w-3"
-                  src={isFilterDropdownOpen ? chevron_up : chevron_down}
-                  alt="chevron-icon"
-                />
+      {/*drop down stuff */}
+      <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4">
+        {/* Column Visibility */}
+        <DropdownMenu.Root
+          open={isColumnSelectionDropDownOpen}
+          onOpenChange={() =>
+            setColumnSelectionDropDownOpen(!isColumnSelectionDropDownOpen)
+          }
+          modal={false}
+        >
+          <DropdownMenu.Trigger asChild>
+            <h1
+              className={`flex w-44 shrink-0 select-none items-center justify-between rounded-lg border bg-pumpkinOrange px-2 py-1 text-sm font-semibold text-white hover:cursor-pointer hover:brightness-110 md:text-base ${
+                isColumnSelectionDropDownOpen ? " brightness-110" : ""
+              }`}
+            >
+              Select Columns
+              <img
+                className="w-2 md:w-3"
+                src={isColumnSelectionDropDownOpen ? chevron_up : chevron_down}
+                alt="chevron-icon"
+              />
+            </h1>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              className={`absolute z-20 flex w-44 flex-col gap-2 rounded-lg border bg-softBeige shadow-md ${
+                isColumnSelectionDropDownOpen ? "py-2 px-2" : ""
+              }`}
+              avoidCollisions
+              align="start"
+            >
+              {[
+                <FilterItem
+                  key="toggleAll"
+                  filterLabel="Toggle All"
+                  onSelect={() =>
+                    table.toggleAllColumnsVisible(
+                      !table.getIsAllColumnsVisible()
+                    )
+                  }
+                  selected={table.getIsAllColumnsVisible()}
+                />,
+                ...table
+                  .getAllLeafColumns()
+                  .map((column) => (
+                    <FilterItem
+                      key={column.id}
+                      filterLabel={column.id}
+                      onSelect={() =>
+                        column.toggleVisibility(!column.getIsVisible())
+                      }
+                      selected={column.getIsVisible()}
+                    />
+                  )),
+              ]}
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+        {/* Filtering */}
+        {filterProps && filterProps.length > 0 && (
+          <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-4">
+            <DropdownMenu.Root
+              open={isFilterDropdownOpen}
+              onOpenChange={() =>
+                setIsFilterDropdownOpen(!isFilterDropdownOpen)
+              }
+              modal={false}
+            >
+              <DropdownMenu.Trigger asChild>
+                <h1
+                  className={`flex w-44 shrink-0 select-none items-center justify-between rounded-lg border bg-pumpkinOrange px-2 py-1 text-sm font-semibold text-white hover:cursor-pointer hover:brightness-110 md:text-base ${
+                    isFilterDropdownOpen ? " brightness-110" : ""
+                  }`}
+                >
+                  Filter
+                  <img
+                    className="w-2 md:w-3"
+                    src={isFilterDropdownOpen ? chevron_up : chevron_down}
+                    alt="chevron-icon"
+                  />
+                </h1>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  className={`absolute z-20 flex w-44 flex-col gap-2 rounded-lg border bg-softBeige shadow-md ${
+                    isFilterDropdownOpen ? "py-2 px-2" : ""
+                  }`}
+                  avoidCollisions
+                  align="start"
+                >
+                  {filters.map((item, i) => (
+                    <FilterItem
+                      key={i}
+                      selected={item.isSelected}
+                      onSelect={() => onFilterSelect(i)}
+                      filterLabel={item.name}
+                    />
+                  ))}
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+
+            {/* Applied Filters Labels */}
+            {filters.filter((f) => f.isSelected).length > 0 && (
+              <h1 className="align-stretch shrink-0 font-semibold text-newLeafGreen lg:text-lg">
+                Applied Filters:
               </h1>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content
-                className={`absolute z-20 flex w-44 flex-col gap-2 rounded-lg border bg-softBeige shadow-md ${
-                  isFilterDropdownOpen ? "py-2 px-2" : ""
-                }`}
-                avoidCollisions
-                align="start"
-              >
-                {filters.map((item, i) => (
-                  <FilterItem
+            )}
+
+            {/* Buttons that pops up after filter is clicked */}
+            <div className="scrollbar-thin flex h-11 max-w-full grow items-start gap-4 overflow-x-auto overscroll-x-auto py-1 px-2">
+              {filters.map((item, i) => {
+                if (!item.isSelected) return null;
+                return (
+                  <FilterButton
                     key={i}
-                    selected={item.isSelected}
                     onSelect={() => onFilterSelect(i)}
                     filterLabel={item.name}
                   />
-                ))}
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
+                );
+              })}
+            </div>
 
-          {/* Applied Filters Labels */}
-          {filters.filter((f) => f.isSelected).length > 0 && (
-            <h1 className="align-stretch shrink-0 font-semibold text-newLeafGreen lg:text-lg">
-              Applied Filters:
-            </h1>
-          )}
-
-          {/* Buttons that pops up after filter is clicked */}
-          <div className="scrollbar-thin flex h-11 max-w-full grow items-start gap-4 overflow-x-auto overscroll-x-auto py-1 px-2">
-            {filters.map((item, i) => {
-              if (!item.isSelected) return null;
-              return (
-                <FilterButton
-                  key={i}
-                  onSelect={() => onFilterSelect(i)}
-                  filterLabel={item.name}
-                />
-              );
-            })}
+            {/* Clear Filters button */}
+            {filters.filter((f) => f.isSelected).length > 0 && (
+              <button
+                className="shrink-0 rounded-full bg-pumpkinOrange px-4 text-base font-semibold text-white md:px-10 md:py-1 lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
+                type="button"
+                onClick={() => {
+                  let newFilters = filters.map((filter) => ({
+                    ...filter,
+                    isSelected: false,
+                  }));
+                  setFilters(newFilters);
+                }}
+              >
+                Clear Filters
+              </button>
+            )}
           </div>
-
-          {/* Clear Filters button */}
-          {filters.filter((f) => f.isSelected).length > 0 && (
-            <button
-              className="shrink-0 rounded-full bg-pumpkinOrange px-4 text-base font-semibold text-white md:px-10 md:py-1 lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
-              type="button"
-              onClick={() => {
-                let newFilters = filters.map((filter) => ({
-                  ...filter,
-                  isSelected: false,
-                }));
-                setFilters(newFilters);
-              }}
-            >
-              Clear Filters
-            </button>
-          )}
-        </div>
-      )}
+        )}
+      </div>
       <div className="h-10" />
       <div
         className={`softGrayWhite border-spacing-2 overflow-y-auto rounded-lg border-2`}
@@ -231,6 +312,16 @@ export const NewDataTable = <T,>({
                 {headerGroup.headers.map((header) => {
                   return (
                     <th
+                      draggable={true}
+                      onDragStart={(e) => {
+                        onDragStart(e, header.index);
+                      }}
+                      onDragOver={(e): void => {
+                        e.preventDefault();
+                      }}
+                      onDrop={(e) => {
+                        onDrop(e, header.index);
+                      }}
                       key={header.id}
                       colSpan={header.colSpan}
                       className="border border-newLeafGreen bg-softBeige p-4 text-sm text-newLeafGreen md:text-base"

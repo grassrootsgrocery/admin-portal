@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
@@ -12,6 +12,8 @@ import { HttpCheckbox } from "../../components/HttpCheckbox";
 import { applyPatch } from "../../utils/http";
 import { createColumnHelper } from "@tanstack/react-table";
 import { NewDataTable } from "../../components/NewDataTable";
+import { Simulate } from "react-dom/test-utils";
+import drop = Simulate.drop;
 
 interface DropoffLocationsStore {
   [id: string]: DropoffLocationForm;
@@ -435,7 +437,7 @@ export const DropoffOrganizerPopup: React.FC<{
           Drop-off Location Organizer
         </Modal.Title>
         <div className="h-[80%]">
-          {/*         <DataTable
+          <DataTable
             borderColor="newLeafGreen"
             columnHeaders={[
               "Site Location",
@@ -451,9 +453,9 @@ export const DropoffOrganizerPopup: React.FC<{
               dropoffStore,
               setDropoffStore
             )}
-          />*/}
+          />
           {/*restrict height of table to height of this component*/}
-          <NewDataTable data={dropoffLocations} columns={columns} />
+          {/*<NewDataTable data={dropoffLocations} columns={columnsRef} />*/}
         </div>
         <div className="flex h-[10%] items-center justify-center gap-10">
           <Modal.Close

@@ -85,6 +85,7 @@ function processScheduledSlots(
       email: ss.fields["Email"] ? ss.fields["Email"][0] : "None",
       phoneNumber: ss.fields["Phone Formula"] || "None",
       specialGroup: ss.fields["Volunteer Group (for MAKE)"] || null,
+      guestCount: ss.fields["Count of Volunteers"] || 0,
     };
 
     const isDriver = participantType.includes("Driver");
@@ -95,6 +96,41 @@ function processScheduledSlots(
   }
 
   return volunteerList;
+}
+
+async function getVolunteersForScheduledSlots(
+  slots: string
+): Promise<
+  | { error?: string, data?: ProcessedScheduledSlot[] }
+> {
+  const url =
+    `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
+    `filterByFormula=SEARCH(RECORD_ID(), "${slots}") != ""` +
+    `&fields=First Name` +
+    `&fields=Last Name` +
+    `&fields=Correct slot time` +
+    `&fields=Type` +
+    `&fields=Phone Formula` +
+    `&fields=Total Deliveries` +
+    `&fields=Confirmed?` +
+    `&fields=Volunteer Status` +
+    `&fields=Can't Come` +
+    `&fields=Email` +
+    `&fields=Volunteer Group (for MAKE)` +
+    `&fields=Count of Volunteers`;
+
+  const scheduledSlots = await airtableGET<ScheduledSlot>({ url: url });
+
+  if (scheduledSlots.kind === "error") {
+    return { error: scheduledSlots.error, data: undefined};
+  }
+
+  const volunteers = processScheduledSlots(scheduledSlots.records);
+
+  return {
+    error: undefined,
+    data: volunteers,
+  };
 }
 
 /**
@@ -117,34 +153,18 @@ router.route("/api/volunteers/").get(
       );
     }
 
-    const url =
-      `${AIRTABLE_URL_BASE}/📅 Scheduled Slots?` +
-      `filterByFormula=SEARCH(RECORD_ID(), "${scheduledSlotsIds}") != ""` +
-      `&fields=First Name` +
-      `&fields=Last Name` +
-      `&fields=Correct slot time` +
-      `&fields=Type` +
-      `&fields=Phone Formula` +
-      `&fields=Total Deliveries` +
-      `&fields=Confirmed?` +
-      `&fields=Volunteer Status` +
-      `&fields=Can't Come` +
-      `&fields=Email` +
-      `&fields=Volunteer Group (for MAKE)`;
+    let volunteers = await getVolunteersForScheduledSlots(scheduledSlotsIds);
+    console.log(volunteers);
 
-    const scheduledSlots = await airtableGET<ScheduledSlot>({ url: url });
-
-    if (scheduledSlots.kind === "error") {
+    if (volunteers.error) {
       res.status(INTERNAL_SERVER_ERROR).json({
-        message: scheduledSlots.error,
+        message: volunteers.error!,
       });
 
       return;
     }
 
-    const volunteers = processScheduledSlots(scheduledSlots.records);
-
-    res.status(OK).json(volunteers);
+    res.status(OK).json(volunteers.data!);
   })
 );
 

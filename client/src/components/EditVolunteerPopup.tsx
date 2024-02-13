@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Popup } from "./Popup";
 import pencil from "../assets/pencil.svg";
 import * as Modal from "@radix-ui/react-dialog";
@@ -90,6 +90,7 @@ interface Props {
   participantType: string;
   onEditSuccess: () => void;
 }
+
 export const EditVolunteerPopup = (info: Props) => {
   const [formState, setFormState] = useState(info);
 
@@ -106,6 +107,10 @@ export const EditVolunteerPopup = (info: Props) => {
       [e.target.name]: e.target.value,
     }));
   };
+
+  useEffect(() => {
+    setFormState(info);
+  }, [info]);
 
   const saveUpdatedVolunteer = useMutation({
     mutationFn: async (payload: {

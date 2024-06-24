@@ -30,18 +30,40 @@ import { cn, toastNotify } from "../../utils/ui";
 TODO: Clean this file up. The messaging cards perhaps should be shared with the messaging cards that are being used
 in the VolunteersTable.tsx file. 
 */
+
+
 //Takes in ProcessedDriver array and formats data for DataTable component
+    //Purpose: To map each driver to their respective data in a tabular format, 
+    //including popups for additional information.
+
 function processDriversForTable(
-  drivers: ProcessedDriver[],
+  drivers: ProcessedDriver[], 
   dropoffLocations: ProcessedDropoffLocation[]
 ) {
+  
   const dropoffLocationsSorted = dropoffLocations.sort((a, b) =>
     a.siteName < b.siteName ? -1 : 1
   );
-  return drivers.map((curDriver, i) => {
+  /*
+   map() function iterates over an array of drivers and maps each driver to a new array that 
+  includes details about their assigned dropoff locations. For each driver, it 
+  filters the dropoffLocations array to include only those locations where the 
+  driver is scheduled to make deliveries, based on matching location IDs.
+  */
+
+  //Old version of the drivers.map
+  // return drivers.map((curDriver, i) => {
+  //   //.filter makes a new array from the dropofflocations array 
+  //   const dropoffLocationsForDriver = dropoffLocations.filter((location) =>
+  //   //.icnludes checks the locations within the current driver's dropoff array
+  //   // matches one of the stored dropoff location
+  //     curDriver.dropoffLocations.includes(location.id)
+  //   );
+    return drivers.map((curDriver, i) => {
     const dropoffLocationsForDriver = dropoffLocations.filter((location) =>
       curDriver.dropoffLocations.includes(location.id)
     );
+
     return [
       curDriver.id, //id
       i + 1, //#
@@ -62,8 +84,12 @@ function processDriversForTable(
         phoneNumber={curDriver.phoneNumber}
       />,
     ];
+
   });
+  
 }
+
+
 
 //TODO: Make this code cleaner
 function processDropoffLocationsForTable(
@@ -71,9 +97,13 @@ function processDropoffLocationsForTable(
   processedDropOffLocations: ProcessedDropoffLocation[]
 ) {
   return processedDropOffLocations.map((curLocation, i) => {
+    const matchedDrivers = drivers.filter((d) =>
+      d.dropoffLocations.includes(curLocation.id)
+    );
+
     return [
-      curLocation.id, //id
-      i + 1, //#
+      curLocation.id, // id
+      i + 1, // #
       <CoordinatorInfoPopup
         coordinatorPOCNames={curLocation.pocNameList}
         coordinatorPOCPhoneNumbers={curLocation.pocPhoneNumberList}
@@ -85,27 +115,28 @@ function processDropoffLocationsForTable(
       typeof curLocation.startTime === "string" ? curLocation.startTime : "N/A",
       typeof curLocation.endTime === "string" ? curLocation.endTime : "N/A",
       `${curLocation.deliveriesAssigned}/${curLocation.deliveriesNeeded}`,
-      <ul className="scrollbar-thin flex w-[600px] gap-4 overflow-x-auto pb-2">
-        {drivers
-          .filter((d) => d.dropoffLocations.some((l) => l === curLocation.id))
-          .map((d, i) => {
-            return (
-              <li
-                key={i}
-                className={cn(
-                  "flex min-w-fit shrink-0 items-center gap-1 rounded-full",
-                  "bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white shadow-sm",
-                  "shadow-newLeafGreen sm:text-sm md:text-base"
-                )}
-              >
-                {d.firstName + " " + d.lastName}
-              </li>
-            );
-          })}
-      </ul>,
+      matchedDrivers.length > 0 ? (
+        <ul className="scrollbar-thin flex w-[600px] gap-4 overflow-x-auto pb-2">
+          {matchedDrivers.map((d, index) => (
+            <li
+              key={index}
+              className={cn(
+                "flex min-w-fit shrink-0 items-center gap-1 rounded-full",
+                "bg-newLeafGreen py-1 px-3 text-xs font-semibold text-white shadow-sm",
+                "shadow-newLeafGreen sm:text-sm md:text-base"
+              )}
+            >
+              {d.firstName + " " + d.lastName}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <span>No drivers assigned</span>
+      ),
     ];
   });
 }
+
 
 const getDropoffLocationsForEvent = (
   dropoffLocations: ProcessedDropoffLocation[]
@@ -284,10 +315,16 @@ export function DriverLocationInfo() {
               "Location Information",
               "Contact",
             ]}
+            //This is calling the processDriversForTable to store and display all the drivers information
+            //Entire site page stops functions without this
             dataRows={processDriversForTable(
               driversInfoQuery.data,
               dropoffLocationsForEvent
             )}
+
+            
+            
+
           />
         </div>
         <div className="h-12" />

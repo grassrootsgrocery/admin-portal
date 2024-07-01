@@ -85,6 +85,7 @@ export interface ScheduledSlot {
   "Phone Formula": string | undefined;
   Email: string[] | undefined;
   "Volunteer Group (for MAKE)": string | undefined;
+  "Count of Events Completed":number;
 }
 
 export interface ProcessedScheduledSlot {
@@ -100,6 +101,7 @@ export interface ProcessedScheduledSlot {
   email: string;
   phoneNumber: string;
   specialGroup: string | null;
+  countOfEventsCompleted:number;
 }
 
 export interface Driver {

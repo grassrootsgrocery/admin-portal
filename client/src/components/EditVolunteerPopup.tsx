@@ -7,6 +7,7 @@ import { cn, toastNotify } from "../utils/ui";
 import { useAuth } from "../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 
+
 interface EditFieldProps {
   label: string;
   fieldType: string;
@@ -46,12 +47,14 @@ const EditFieldInput = ({
 };
 
 const participantTypes: string[] = ["Driver", "Packer", "Driver & Packer"];
+//const timeSlots: string[]= ["9:30", "10:30"]
 
 const EditFieldSelect = ({
   label,
   handleChange,
   value,
-}: Pick<EditFieldProps, "label" | "handleChange" | "value">) => {
+  options,
+}: Pick<EditFieldProps, "label" | "handleChange" | "value"> & {options: string[] } )=> {
   return (
     <>
       <div className="flex flex-col gap-2 md:flex-row md:gap-8">
@@ -63,13 +66,13 @@ const EditFieldSelect = ({
             <div className="flex w-full flex-col space-y-1">
               <select
                 className="w-full border-0 outline-none"
-                name="participantType"
+                name={label}
                 value={value}
                 onChange={handleChange}
               >
-                {participantTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
+                {options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
                   </option>
                 ))}
               </select>
@@ -89,6 +92,7 @@ interface Props {
   phoneNumber: string;
   participantType: string;
   onEditSuccess: () => void;
+  //timeSlot: string;
 }
 export const EditVolunteerPopup = (info: Props) => {
   const [formState, setFormState] = useState(info);
@@ -115,6 +119,7 @@ export const EditVolunteerPopup = (info: Props) => {
       email: string;
       phoneNumber: string;
       participantType: string[];
+      //timeSlot:string;
     }) => {
       const resp = await fetch(`/api/volunteers/update/${payload.id}`, {
         method: "PATCH",
@@ -197,7 +202,14 @@ export const EditVolunteerPopup = (info: Props) => {
           label={"Volunteer Type:"}
           value={formState.participantType}
           handleChange={handleChange}
+          options={participantTypes}
         />
+        {/* <EditFieldSelect
+        label={"Time Slot"}
+        value={formState.participantType}
+        handleChange={handleChange}
+        options={timeSlots}
+      /> */}
       </form>
       <div className="h-[5%] lg:h-0" />
       <div className="flex h-[5%] items-center justify-center gap-5 lg:h-[10%]">

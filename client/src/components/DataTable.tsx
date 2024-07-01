@@ -29,6 +29,7 @@ export const DataTable: React.FC<Props> = ({
         getBorderColorClassName(borderColor)
       )}
     >
+      
       {/* Note that you cannot do border-${borderColor} above because of how Tailwind purges classes at build time*/}
       <table className="table w-full border-separate border-spacing-0  rounded-lg">
         <thead className="sticky top-0 z-10 border-b-2 border-newLeafGreen bg-softBeige">
@@ -45,30 +46,41 @@ export const DataTable: React.FC<Props> = ({
             })}
           </tr>
         </thead>
+        
         <tbody>
-          {dataRows.map((row) => {
-            const [id, ...data] = row;
-            if (typeof id !== "string" && typeof id !== "number") {
-              console.error(
-                "Please provide an ID of type 'string' or 'number' as the first entry of each row."
+          {dataRows.length === 0?(
+            
+            <tr>
+              <td colSpan={columnHeaders.length} className="text-center py-4 text-2xl font-sans " >
+                NO DATA AVAILABLE
+              </td>
+            </tr>
+          ) : 
+          ( 
+            dataRows.map((row) => {
+              const [id, ...data] = row;
+              if (typeof id !== "string" && typeof id !== "number") {
+                console.error(
+                  "Please provide an ID of type 'string' or 'number' as the first entry of each row."
+                );
+                return;
+              }
+              return (
+                <tr key={id}>
+                  {data.map((datum, idx) => {
+                    return (
+                      <td
+                        key={idx}
+                        className="border border-newLeafGreen bg-softBeige px-2 py-2 text-center align-middle text-newLeafGreen text-sm md:text-base"
+                      >
+                        {datum}
+                      </td>
+                    );
+                  })}
+                </tr>
               );
-              return;
-            }
-            return (
-              <tr key={id}>
-                {data.map((datum, idx) => {
-                  return (
-                    <td
-                      key={idx}
-                      className="border border-newLeafGreen bg-softBeige px-2 py-2 text-center align-middle text-newLeafGreen text-sm md:text-base"
-                    >
-                      {datum}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
+            })
+            )}
         </tbody>
       </table>
     </div>

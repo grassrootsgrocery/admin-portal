@@ -288,7 +288,7 @@ export function DriverLocationInfo() {
               driversInfoQuery.data,
               dropoffLocationsForEvent
             )}
-          />
+          />     
         </div>
         <div className="h-12" />
         {/* Send locations info to drivers */}

@@ -29,6 +29,7 @@ export interface ProcessedScheduledSlot {
   email: string;
   phoneNumber: string;
   specialGroup: string | null;
+  countOfEventsCompleted: number;
 }
 
 export interface ProcessedDriver {

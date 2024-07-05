@@ -3,9 +3,6 @@ module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['Roboto', 'sans-serif'], // This integrates the Roboto font throughout the Tailwind project
-      },
       colors: {
         pumpkinOrange: "#e65402",
         newLeafGreen: "#094343",

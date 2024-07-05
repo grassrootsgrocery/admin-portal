@@ -49,6 +49,8 @@ export const DataTable: React.FC<Props> = ({
           </tr>
         </thead>
         <tbody>
+          {/*Condtional to check if there's any data in the table,
+          displays a message if there's none*/}
           {dataRows.length === 0 ? (
             <tr>
               <td colSpan={columnHeaders.length} className="text-center py-4 text-2xl">

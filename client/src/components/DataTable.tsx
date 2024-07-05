@@ -2,7 +2,6 @@ import React from "react";
 import { cn } from "../utils/ui";
 
 
-
 interface Props {
   columnHeaders: string[];
   dataRows: (string | number | JSX.Element)[][];
@@ -29,7 +28,7 @@ export const DataTable: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "hide-scroll h-full w-full overflow-scroll rounded-lg border-4 font-roboto",
+        "hide-scroll h-full w-full overflow-scroll rounded-lg border-4",
         getBorderColorClassName(borderColor)
       )}
     >

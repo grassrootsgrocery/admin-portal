@@ -44,21 +44,7 @@ function processDriversForTable(
   const dropoffLocationsSorted = dropoffLocations.sort((a, b) =>
     a.siteName < b.siteName ? -1 : 1
   );
-  /*
-   map() function iterates over an array of drivers and maps each driver to a new array that 
-  includes details about their assigned dropoff locations. For each driver, it 
-  filters the dropoffLocations array to include only those locations where the 
-  driver is scheduled to make deliveries, based on matching location IDs.
-  */
 
-  //Old version of the drivers.map
-  // return drivers.map((curDriver, i) => {
-  //   //.filter makes a new array from the dropofflocations array 
-  //   const dropoffLocationsForDriver = dropoffLocations.filter((location) =>
-  //   //.icnludes checks the locations within the current driver's dropoff array
-  //   // matches one of the stored dropoff location
-  //     curDriver.dropoffLocations.includes(location.id)
-  //   );
     return drivers.map((curDriver, i) => {
     const dropoffLocationsForDriver = dropoffLocations.filter((location) =>
       curDriver.dropoffLocations.includes(location.id)

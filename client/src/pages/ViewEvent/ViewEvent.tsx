@@ -164,7 +164,9 @@ export const ViewEvent = () => {
           Participant Roster
         </h1>
         {/* Volunteer Table */}
-        <VolunteersTable scheduledSlots={scheduledSlots} eventId={eventId} />
+        <div className="h-[100vh]">
+          <VolunteersTable scheduledSlots={scheduledSlots} eventId={eventId} />
+        </div>
         <div className="h-4" />
         <Link to={`/events/driver-location-info/${eventId}`}>
           <button

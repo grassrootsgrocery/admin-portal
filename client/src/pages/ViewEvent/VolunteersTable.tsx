@@ -210,6 +210,8 @@ export const VolunteersTable: React.FC<{
         ss.lastName,
         ss.timeSlot,
         ss.participantType,
+        
+        
         /* Confirmed Checkbox */
         <HttpCheckbox
           checked={ss.confirmed}
@@ -374,10 +376,11 @@ export const VolunteersTable: React.FC<{
           "Confirmed",
           "Can't Come",
           "Past Events",
+          "Past Events",
           "Special Group",
           "Delivery Count",
           "Contact",
-          "Edit",
+          "Edit"  
         ]}
         dataRows={processScheduledSlotsForTable(filtered, eventId)}
       />

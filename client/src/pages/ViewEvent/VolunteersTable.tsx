@@ -376,11 +376,10 @@ export const VolunteersTable: React.FC<{
           "Confirmed",
           "Can't Come",
           "Past Events",
-          "Past Events",
           "Special Group",
           "Delivery Count",
           "Contact",
-          "Edit"  
+          "Edit",
         ]}
         dataRows={processScheduledSlotsForTable(filtered, eventId)}
       />

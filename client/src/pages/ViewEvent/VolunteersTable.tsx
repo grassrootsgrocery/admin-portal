@@ -252,6 +252,7 @@ export const VolunteersTable: React.FC<{
             toastNotify("Unable to modify availability", "failure")
           }
         />,
+        //new field:
         ss.countOfEventsCompleted,
         ss.specialGroup ?? "N/A",
         typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",

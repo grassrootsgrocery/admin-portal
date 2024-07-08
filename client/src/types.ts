@@ -29,6 +29,7 @@ export interface ProcessedScheduledSlot {
   email: string;
   phoneNumber: string;
   specialGroup: string | null;
+  //new field:
   countOfEventsCompleted: number;
 }
 

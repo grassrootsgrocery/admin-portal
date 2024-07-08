@@ -85,6 +85,7 @@ function processScheduledSlots(
       email: ss.fields["Email"] ? ss.fields["Email"][0] : "None",
       phoneNumber: ss.fields["Phone Formula"] || "None",
       specialGroup: ss.fields["Volunteer Group (for MAKE)"] || null,
+      //new field
       countOfEventsCompleted: ss.fields["Count of Events Completed"],
     };
 
@@ -132,6 +133,7 @@ router.route("/api/volunteers/").get(
       `&fields=Can't Come` +
       `&fields=Email` +
       `&fields=Volunteer Group (for MAKE)`+
+      //new field:
       `&fields=Count of Events Completed`;
 
     const scheduledSlots = await airtableGET<ScheduledSlot>({ url: url });

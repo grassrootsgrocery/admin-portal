@@ -19,6 +19,7 @@ import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
 import { ViewSpecialGroups } from "./ViewSpecialGroups";
 import { toastNotify } from "../../utils/ui";
+import { SearchButton } from "../../components/SearchButton";
 
 const HeaderValueDisplay: React.FC<{
   header: string;
@@ -153,6 +154,7 @@ export const ViewEvent = () => {
             />
           </div>
 
+
           <div className="flex flex-col items-start justify-around gap-2 ">
             <AddSpecialGroup event={event} />
             <ViewSpecialGroups event={event} />
@@ -163,6 +165,7 @@ export const ViewEvent = () => {
           <img className={sectionHeaderIcon} src={roster} alt="roster" />
           Participant Roster
         </h1>
+        <SearchButton></SearchButton>
         {/* Volunteer Table */}
         <VolunteersTable scheduledSlots={scheduledSlots} eventId={eventId} />
         <div className="h-4" />

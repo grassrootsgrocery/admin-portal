@@ -3,8 +3,9 @@ import { Loading } from "../../components/Loading";
 import { Navbar } from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
-import { useFutureEvents } from "../eventHooks";
+import { useFutureEvents, useVolunteersForEvent } from "../eventHooks";
 import { toastNotify } from "../../utils/ui";
+import { processVolunteerCount } from "../ViewEvent/VolunteersTable";
 
 const newEventLink =
   "https://airtable.com/shrETAYONKTJMVTnZ?prefill_Supplier=Rap+4+Bronx&prefill_Start+Time=01/01/2023+09:00am&prefill_End+Time=01/01/2023+01:00pm&prefill_First+Driving+Slot+Start+Time=01/01/2023+10:30am&prefill_How+long+should+each+Driver+Time+Slot+be?=0:15&prefill_Max+Count+of+Drivers+Per+Slot=30&prefill_How+long+should+the+Logistics+slot+be?=1:30&prefill_Maximum+number+of+drivers+needed+for+this+event+(usually+30)?=30&prefill_Max+Count+of+Distributors+Per+Slot=30";
@@ -59,6 +60,38 @@ export function Events() {
         <div className="h-5" />
         <ul className="flex h-0 grow flex-col gap-2 overflow-auto pr-2 sm:gap-7 md:pr-4">
           {futureEventsQuery.data.map((event) => {
+            const scheduledSlotsQuery = useVolunteersForEvent({
+              enabled: true,
+              eventId: event.id,
+              scheduledSlotIds: event.scheduledSlots,
+            });
+
+            if (
+              scheduledSlotsQuery.status === "loading" ||
+              scheduledSlotsQuery.status === "idle"
+            ) {
+              return (
+                <div className="relative h-full">
+                  <Loading size="large" thickness="extra-thicc" />
+                </div>
+              );
+            }
+
+            if (scheduledSlotsQuery.status === "error") {
+              const error = scheduledSlotsQuery.error;
+              if (error instanceof Error && error.message.includes("token")) {
+                setToken(null);
+                localStorage.removeItem("token");
+                toastNotify("Sorry, please login again");
+                return <Navigate to="/" />;
+              }
+              console.error(error);
+              return <div>Error...</div>;
+            }
+
+            const scheduledSlots = scheduledSlotsQuery.data;
+            const totalGuestCount = processVolunteerCount(scheduledSlots, event.id);
+
             return (
               <EventCard
                 key={event.id}
@@ -69,6 +102,8 @@ export function Events() {
                 participants={event.numTotalParticipants}
                 drivers={event.numDrivers}
                 packers={event.numPackers}
+                scheduledSlots={scheduledSlots} // Pass scheduledSlots to EventCard
+                guestCount={totalGuestCount} // Pass total guest count to EventCard
               />
             );
           })}

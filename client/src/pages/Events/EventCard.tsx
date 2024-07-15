@@ -2,6 +2,9 @@ import { Link } from "react-router-dom";
 //Assets
 import alert from "../../assets/alert.svg";
 import check from "../../assets/check.svg";
+// Find a way to import
+import { processVolunteerCount } from "/Users/jadenritchie/admin-portal/client/src/pages/ViewEvent/VolunteersTable";
+import { ProcessedScheduledSlot } from "../../types";
 
 interface Props {
   eventId: string;
@@ -11,6 +14,8 @@ interface Props {
   participants: number;
   drivers: number;
   packers: number;
+  scheduledSlots: ProcessedScheduledSlot[];
+  guestCount: number;
 }
 
 export const EventCard: React.FC<Props> = ({
@@ -21,11 +26,15 @@ export const EventCard: React.FC<Props> = ({
   eventId,
   drivers,
   packers,
+  scheduledSlots,
+  guestCount,
 }) => {
   // Tailwind classes
   const label = "text-sm md:text-base lg:text-xl";
   const labelBold =
     "text-sm font-semibold text-newLeafGreen md:text-base lg:text-xl";
+
+  const totalGuestCount = processVolunteerCount(scheduledSlots, eventId);
 
   return (
     <li className="mb-4 rounded-xl border-2 border-softGrayWhite bg-softBeige px-4 py-3 lg:border-4 lg:px-8 lg:py-7">
@@ -78,7 +87,7 @@ export const EventCard: React.FC<Props> = ({
             <p className="text-sm md:text-base lg:text-xl">
               Total Participants
             </p>
-            <h3 className={labelBold}>{participants}</h3>
+            <h3 className={labelBold}>{totalGuestCount}</h3>
           </div>
           <div className="flex grow items-center lg:justify-end">
             <Link to={`/events/${eventId}`}>

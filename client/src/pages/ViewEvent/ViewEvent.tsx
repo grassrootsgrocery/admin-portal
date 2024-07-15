@@ -19,6 +19,7 @@ import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
 import { ViewSpecialGroups } from "./ViewSpecialGroups";
 import { toastNotify } from "../../utils/ui";
+import { processVolunteerCount } from "./VolunteersTable";
 
 const HeaderValueDisplay: React.FC<{
   header: string;
@@ -85,6 +86,8 @@ export const ViewEvent = () => {
   const scheduledSlots = scheduledSlotsQuery.data;
   scheduledSlots.sort((a, b) => (a.firstName < b.firstName ? -1 : 1));
 
+  const totalVolunteerCount = processVolunteerCount(scheduledSlots, eventId);
+
   //Tailwind classes
   const sectionHeader =
     "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
@@ -150,6 +153,10 @@ export const ViewEvent = () => {
             <HeaderValueDisplay
               header="# of Special Groups"
               value={event.numSpecialGroups}
+            />
+            <HeaderValueDisplay
+              header="Total Count of Volunteers"
+              value={totalVolunteerCount}
             />
           </div>
 

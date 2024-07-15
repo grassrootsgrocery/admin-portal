@@ -24,6 +24,7 @@ import { VOLUNTEERS_FOR_EVENT_QUERY_KEYS } from "../eventHooks";
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
 */
 
+
 interface FilterItemProps {
   onSelect: () => void;
   filterLabel: string;
@@ -166,6 +167,82 @@ const applySelectedFilters = (
   return filteredItems;
 };
 
+// NEW FUNCTIONS FOR TOTAL VOLUNTEERS
+function sum(arr: number[]): number {
+  return arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+}
+//Allows filtering based on the following criteria
+function createFilters() {
+  return [
+    {
+      label: "Confirmed",
+      isSelected: false,
+      filter: (ss: ProcessedScheduledSlot) => ss.confirmed,
+    },
+    {
+      label: "Not Confirmed",
+      isSelected: false,
+      filter: (ss: ProcessedScheduledSlot) => !ss.confirmed,
+    },
+    {
+      label: "Only Packers",
+      isSelected: false,
+      filter: (ss: ProcessedScheduledSlot) =>
+        ss.participantType.includes("Packer") &&
+        !ss.participantType.includes("Driver"),
+    },
+    {
+      label: "Only Drivers",
+      isSelected: false,
+      filter: (ss: ProcessedScheduledSlot) =>
+        ss.participantType.includes("Driver") &&
+        !ss.participantType.includes("Packer"),
+    },
+    {
+      label: "Packers & Drivers",
+      isSelected: false,
+      filter: (ss: ProcessedScheduledSlot) =>
+        ss.participantType.includes("Packer") &&
+        ss.participantType.includes("Driver"),
+    },
+    {
+      label: "Signed Up",
+      isSelected: true,
+      filter: (ss: ProcessedScheduledSlot) => !ss.cantCome,
+    },
+    {
+      label: "Can't Come",
+      isSelected: false,
+      filter: (ss: ProcessedScheduledSlot) => ss.cantCome,
+    },
+  ];
+}
+
+//applies our filters
+function applyFilters(scheduledSlots: ProcessedScheduledSlot[], filters: any[]): ProcessedScheduledSlot[] {
+  let filteredItems = scheduledSlots;
+  filters.forEach((curFilter) => {
+    if (curFilter.isSelected) {
+      filteredItems = filteredItems.filter(curFilter.filter);
+    }
+  });
+  return filteredItems;
+}
+
+//new function to calculate the total participants
+export function processVolunteerCount(scheduledSlots: ProcessedScheduledSlot[], eventId: string): number {
+
+  const filters = createFilters();
+
+  const filteredSlots = applyFilters(scheduledSlots, filters);
+
+  const guestCounts = filteredSlots.map((ss) => ss.guestCount);
+
+  const totalGuestCount = sum(guestCounts);
+
+  return totalGuestCount;
+}
+
 export const VolunteersTable: React.FC<{
   scheduledSlots: ProcessedScheduledSlot[];
   eventId: string;
@@ -193,7 +270,10 @@ export const VolunteersTable: React.FC<{
     setFiltered(applySelectedFilters(newSelectedFilters, scheduledSlots));
   };
 
-  //Takes in scheduledSlots array and formats data for DataTable component
+  //for debugging
+  const volunteerCountData = processVolunteerCount(filtered, eventId);
+  console.log("Total:" + volunteerCountData);
+
   function processScheduledSlotsForTable(
     scheduledSlots: ProcessedScheduledSlot[],
     eventId: string
@@ -210,6 +290,8 @@ export const VolunteersTable: React.FC<{
         ss.lastName,
         ss.timeSlot,
         ss.participantType,
+        // Delete this, for debugging 
+        ss.guestCount,
         /* Confirmed Checkbox */
         <HttpCheckbox
           checked={ss.confirmed}
@@ -370,6 +452,7 @@ export const VolunteersTable: React.FC<{
           "Last",
           "Time Slot",
           "Participant Type",
+          "Test Guest Count",
           "Confirmed",
           "Can't Come",
           "Special Group",

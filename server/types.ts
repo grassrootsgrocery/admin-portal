@@ -42,6 +42,7 @@ export interface Event {
   "Only Distributor Count Including Unconfirmed": number | undefined;
   "Driver and Distributor Count Including Unconfirmed": number | undefined;
   "Special Event": boolean | undefined;
+  "Count of Volunteers": number;
   Supplier: string[] | undefined;
   "📅 Scheduled Slots": string[] | undefined;
 }
@@ -85,7 +86,7 @@ export interface ScheduledSlot {
   "Phone Formula": string | undefined;
   Email: string[] | undefined;
   "Volunteer Group (for MAKE)": string | undefined;
-  "Count of Volunteers": number | undefined;
+  "Count of Volunteers": number;
 }
 
 export interface ProcessedScheduledSlot {

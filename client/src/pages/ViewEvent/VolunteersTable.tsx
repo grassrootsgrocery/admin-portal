@@ -270,9 +270,7 @@ export const VolunteersTable: React.FC<{
     setFiltered(applySelectedFilters(newSelectedFilters, scheduledSlots));
   };
 
-  //for debugging
   const volunteerCountData = processVolunteerCount(filtered, eventId);
-  console.log("Total:" + volunteerCountData);
 
   function processScheduledSlotsForTable(
     scheduledSlots: ProcessedScheduledSlot[],

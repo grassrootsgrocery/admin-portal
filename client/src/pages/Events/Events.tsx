@@ -102,8 +102,8 @@ export function Events() {
                 participants={event.numTotalParticipants}
                 drivers={event.numDrivers}
                 packers={event.numPackers}
-                scheduledSlots={scheduledSlots} // Pass scheduledSlots to EventCard
-                guestCount={totalGuestCount} // Pass total guest count to EventCard
+                scheduledSlots={scheduledSlots}
+                guestCount={totalGuestCount} 
               />
             );
           })}

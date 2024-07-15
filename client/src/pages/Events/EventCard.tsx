@@ -87,7 +87,9 @@ export const EventCard: React.FC<Props> = ({
             <p className="text-sm md:text-base lg:text-xl">
               Total Participants
             </p>
-            <h3 className={labelBold}>{totalGuestCount}</h3>
+            <h3 className={labelBold}>
+              {totalGuestCount} ({totalGuestCount - participants} guests)
+            </h3>
           </div>
           <div className="flex grow items-center lg:justify-end">
             <Link to={`/events/${eventId}`}>

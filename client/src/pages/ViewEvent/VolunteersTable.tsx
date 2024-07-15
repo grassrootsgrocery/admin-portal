@@ -290,8 +290,6 @@ export const VolunteersTable: React.FC<{
         ss.lastName,
         ss.timeSlot,
         ss.participantType,
-        // Delete this, for debugging 
-        ss.guestCount,
         /* Confirmed Checkbox */
         <HttpCheckbox
           checked={ss.confirmed}
@@ -452,7 +450,6 @@ export const VolunteersTable: React.FC<{
           "Last",
           "Time Slot",
           "Participant Type",
-          "Test Guest Count",
           "Confirmed",
           "Can't Come",
           "Special Group",

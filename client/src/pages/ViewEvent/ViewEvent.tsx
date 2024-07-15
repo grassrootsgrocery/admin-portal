@@ -88,6 +88,8 @@ export const ViewEvent = () => {
 
   const totalVolunteerCount = processVolunteerCount(scheduledSlots, eventId);
 
+  const guestCount = totalVolunteerCount - event.numTotalParticipants
+
   //Tailwind classes
   const sectionHeader =
     "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
@@ -111,8 +113,9 @@ export const ViewEvent = () => {
           />
           <HeaderValueDisplay
             header="Total Participants"
-            value={event.numTotalParticipants}
+            value={totalVolunteerCount}
           />
+          
         </div>
         <div className="h-12" />
         {/* Participant Breakdown */}
@@ -154,9 +157,10 @@ export const ViewEvent = () => {
               header="# of Special Groups"
               value={event.numSpecialGroups}
             />
+
             <HeaderValueDisplay
-              header="Total Count of Volunteers"
-              value={totalVolunteerCount}
+              header="Guests"
+              value={guestCount}
             />
           </div>
 

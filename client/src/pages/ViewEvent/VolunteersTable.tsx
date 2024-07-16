@@ -230,7 +230,7 @@ function applyFilters(scheduledSlots: ProcessedScheduledSlot[], filters: any[]):
 }
 
 //new function to calculate the total participants
-export function processVolunteerCount(scheduledSlots: ProcessedScheduledSlot[], eventId: string): number {
+export function processVolunteerCount(scheduledSlots: ProcessedScheduledSlot[]): number {
 
   const filters = createFilters();
 
@@ -243,6 +243,7 @@ export function processVolunteerCount(scheduledSlots: ProcessedScheduledSlot[], 
   return totalGuestCount;
 }
 
+
 export const VolunteersTable: React.FC<{
   scheduledSlots: ProcessedScheduledSlot[];
   eventId: string;
@@ -254,7 +255,8 @@ export const VolunteersTable: React.FC<{
   const [filtered, setFiltered] = useState(
     applySelectedFilters(filters, scheduledSlots)
   );
-
+  
+  
   //Filter items on filter selection
   useEffect(() => {
     setFiltered(applySelectedFilters(filters, scheduledSlots));
@@ -270,7 +272,7 @@ export const VolunteersTable: React.FC<{
     setFiltered(applySelectedFilters(newSelectedFilters, scheduledSlots));
   };
 
-  const volunteerCountData = processVolunteerCount(filtered, eventId);
+  const volunteerCountData = processVolunteerCount(filtered);
 
   function processScheduledSlotsForTable(
     scheduledSlots: ProcessedScheduledSlot[],

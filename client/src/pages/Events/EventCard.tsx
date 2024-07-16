@@ -34,7 +34,7 @@ export const EventCard: React.FC<Props> = ({
   const labelBold =
     "text-sm font-semibold text-newLeafGreen md:text-base lg:text-xl";
 
-  const totalGuestCount = processVolunteerCount(scheduledSlots, eventId);
+  const totalVolunteerCount = processVolunteerCount(scheduledSlots);
 
   return (
     <li className="mb-4 rounded-xl border-2 border-softGrayWhite bg-softBeige px-4 py-3 lg:border-4 lg:px-8 lg:py-7">
@@ -88,7 +88,7 @@ export const EventCard: React.FC<Props> = ({
               Total Participants
             </p>
             <h3 className={labelBold}>
-              {totalGuestCount} ({totalGuestCount - participants} guests)
+              {totalVolunteerCount} ({totalVolunteerCount - participants} guests)
             </h3>
           </div>
           <div className="flex grow items-center lg:justify-end">

@@ -13,6 +13,7 @@ import {
   INTERNAL_SERVER_ERROR,
   OK,
 } from "../httpUtils/statusCodes";
+
 //Types
 import {
   AirtableResponse,
@@ -26,6 +27,7 @@ import {
   ParticipantType,
   AirtableParticipantType,
 } from "../types";
+
 //Error messages
 //Logger
 import { logger } from "../loggerUtils/logger";
@@ -126,6 +128,7 @@ async function getVolunteersForScheduledSlots(
   }
 
   const volunteers = processScheduledSlots(scheduledSlots.records);
+  console.log(volunteers);
 
   return {
     error: undefined,
@@ -154,7 +157,6 @@ router.route("/api/volunteers/").get(
     }
 
     let volunteers = await getVolunteersForScheduledSlots(scheduledSlotsIds);
-    console.log(volunteers);
 
     if (volunteers.error) {
       res.status(INTERNAL_SERVER_ERROR).json({

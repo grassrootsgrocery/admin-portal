@@ -10,6 +10,18 @@ import { processVolunteerCount } from "../ViewEvent/VolunteersTable";
 const newEventLink =
   "https://airtable.com/shrETAYONKTJMVTnZ?prefill_Supplier=Rap+4+Bronx&prefill_Start+Time=01/01/2023+09:00am&prefill_End+Time=01/01/2023+01:00pm&prefill_First+Driving+Slot+Start+Time=01/01/2023+10:30am&prefill_How+long+should+each+Driver+Time+Slot+be?=0:15&prefill_Max+Count+of+Drivers+Per+Slot=30&prefill_How+long+should+the+Logistics+slot+be?=1:30&prefill_Maximum+number+of+drivers+needed+for+this+event+(usually+30)?=30&prefill_Max+Count+of+Distributors+Per+Slot=30";
 
+//made to avoid implicit any type errors
+interface Event {
+  id: string;
+  dateDisplay: string;
+  time: string;
+  mainLocation: string;
+  numTotalParticipants: number;
+  numDrivers: number;
+  numPackers: number;
+  scheduledSlots: string[];
+}
+
 export function Events() {
   const { token, setToken } = useAuth();
   if (!token) {
@@ -59,56 +71,67 @@ export function Events() {
         </div>
         <div className="h-5" />
         <ul className="flex h-0 grow flex-col gap-2 overflow-auto pr-2 sm:gap-7 md:pr-4">
-          {futureEventsQuery.data.map((event) => {
-            const scheduledSlotsQuery = useVolunteersForEvent({
-              enabled: true,
-              eventId: event.id,
-              scheduledSlotIds: event.scheduledSlots,
-            });
-
-            if (
-              scheduledSlotsQuery.status === "loading" ||
-              scheduledSlotsQuery.status === "idle"
-            ) {
-              return (
-                <div className="relative h-full">
-                  <Loading size="large" thickness="extra-thicc" />
-                </div>
-              );
-            }
-
-            if (scheduledSlotsQuery.status === "error") {
-              const error = scheduledSlotsQuery.error;
-              if (error instanceof Error && error.message.includes("token")) {
-                setToken(null);
-                localStorage.removeItem("token");
-                toastNotify("Sorry, please login again");
-                return <Navigate to="/" />;
-              }
-              console.error(error);
-              return <div>Error...</div>;
-            }
-
-            const scheduledSlots = scheduledSlotsQuery.data;
-            const totalGuestCount = processVolunteerCount(scheduledSlots, event.id);
-
-            return (
-              <EventCard
-                key={event.id}
-                eventId={event.id}
-                date={event.dateDisplay}
-                time={event.time}
-                location={event.mainLocation}
-                participants={event.numTotalParticipants}
-                drivers={event.numDrivers}
-                packers={event.numPackers}
-                scheduledSlots={scheduledSlots}
-                guestCount={totalGuestCount} 
-              />
-            );
-          })}
+          {futureEventsQuery.data.map((event: Event) => (
+            <EventWithVolunteers key={event.id} event={event} />
+          ))}
         </ul>
       </div>
     </>
   );
 }
+
+//made a component to conatin the fetching volunteers logic
+//Circumvents an error occuring previously from the event card changes
+interface EventWithVolunteersProps {
+  event: Event;
+}
+
+const EventWithVolunteers: React.FC<EventWithVolunteersProps> = ({ event }) => {
+  const { token, setToken } = useAuth();
+  const scheduledSlotsQuery = useVolunteersForEvent({
+    enabled: true,
+    eventId: event.id,
+    scheduledSlotIds: event.scheduledSlots,
+  });
+
+  if (
+    scheduledSlotsQuery.status === "loading" ||
+    scheduledSlotsQuery.status === "idle"
+  ) {
+    return (
+      <div className="relative h-full" key={event.id}>
+        <Loading size="large" thickness="extra-thicc" />
+      </div>
+    );
+  }
+
+  if (scheduledSlotsQuery.status === "error") {
+    const error = scheduledSlotsQuery.error;
+    if (error instanceof Error && error.message.includes("token")) {
+      setToken(null);
+      localStorage.removeItem("token");
+      toastNotify("Sorry, please login again");
+      return <Navigate to="/" />;
+    }
+    console.error(error);
+    return <div key={event.id}>Error...</div>;
+  }
+
+  //ensured undefined cases are accounted for
+  const scheduledSlots = scheduledSlotsQuery.data || [];
+  const totalVolunteerCount = processVolunteerCount(scheduledSlots);
+
+  return (
+    <EventCard
+      eventId={event.id}
+      date={event.dateDisplay}
+      time={event.time}
+      location={event.mainLocation}
+      participants={event.numTotalParticipants}
+      drivers={event.numDrivers}
+      packers={event.numPackers}
+      scheduledSlots={scheduledSlots}
+      guestCount={totalVolunteerCount}
+    />
+  );
+};

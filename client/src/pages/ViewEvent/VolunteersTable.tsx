@@ -229,7 +229,7 @@ function applyFilters(scheduledSlots: ProcessedScheduledSlot[], filters: any[]):
   return filteredItems;
 }
 
-//new function to calculate the total participants
+//function to calculate the total participants
 export function processVolunteerCount(scheduledSlots: ProcessedScheduledSlot[]): number {
 
   const filters = createFilters();

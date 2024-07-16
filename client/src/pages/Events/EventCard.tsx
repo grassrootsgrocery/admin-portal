@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
+import { processVolunteerCount } from "../ViewEvent/VolunteersTable";
+import { ProcessedScheduledSlot } from "../../types";
 //Assets
 import alert from "../../assets/alert.svg";
 import check from "../../assets/check.svg";
-// Find a way to import
-import { processVolunteerCount } from "/Users/jadenritchie/admin-portal/client/src/pages/ViewEvent/VolunteersTable";
-import { ProcessedScheduledSlot } from "../../types";
+
 
 interface Props {
   eventId: string;

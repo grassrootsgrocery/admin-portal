@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "../utils/ui";
 
+
 interface Props {
   columnHeaders: string[];
   dataRows: (string | number | JSX.Element)[][];
@@ -22,6 +23,8 @@ export const DataTable: React.FC<Props> = ({
   dataRows,
   borderColor,
 }: Props) => {
+
+
   return (
     <div
       className={cn(
@@ -46,7 +49,16 @@ export const DataTable: React.FC<Props> = ({
           </tr>
         </thead>
         <tbody>
-          {dataRows.map((row) => {
+          {/*Condtional to check if there's any data in the table,
+          displays a message if there's none*/}
+          {dataRows.length === 0 ? (
+            <tr>
+              <td colSpan={columnHeaders.length} className="text-center py-4 text-2xl">
+                No Data Available 
+              </td>
+            </tr>) : (
+
+          dataRows.map((row) => {
             const [id, ...data] = row;
             if (typeof id !== "string" && typeof id !== "number") {
               console.error(
@@ -68,7 +80,8 @@ export const DataTable: React.FC<Props> = ({
                 })}
               </tr>
             );
-          })}
+          })
+        )}
         </tbody>
       </table>
     </div>

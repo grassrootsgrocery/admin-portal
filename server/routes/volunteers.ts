@@ -128,7 +128,6 @@ async function getVolunteersForScheduledSlots(
   }
 
   const volunteers = processScheduledSlots(scheduledSlots.records);
-  console.log(volunteers);
 
   return {
     error: undefined,

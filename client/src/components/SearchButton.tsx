@@ -8,7 +8,7 @@ export const SearchButton = () => {
     return (
         <div className="searchButton">
             <label>Search</label>
-            <input type="text" 
+            <input placeholder="Type to search.." type="text" 
             value = {input}
             onChange={e => setInput(e.target.value)}></input>
         </div>

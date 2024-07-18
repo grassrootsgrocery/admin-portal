@@ -176,15 +176,17 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       email,
       phoneNumber,
       participantType,
+      timeSlot,
     }: {
       firstName: string;
       lastName: string;
       email: string;
       phoneNumber: string;
       participantType: ParticipantType[];
+      timeSlot:string;
     } = req.body;
 
-    const stringFields = [firstName, lastName, email, phoneNumber];
+    const stringFields = [firstName, lastName, email, phoneNumber, timeSlot];
 
     const isValidRequest = stringFields.every((field) => {
       return typeof field === "string" && field.trim().length > 0;
@@ -334,6 +336,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
             "Last Name": lastName,
             "Email Address": email,
             "Phone Number": phoneNumber,
+            "Correct slot time":timeSlot,
           },
         },
       ],

@@ -46,38 +46,37 @@ const EditFieldInput = ({
 };
 
 const participantTypes: string[] = ["Driver", "Packer", "Driver & Packer"];
+const timeSlotCategories: string[] = ["9:00","10:30"];
 
 const EditFieldSelect = ({
   label,
   handleChange,
   value,
-}: Pick<EditFieldProps, "label" | "handleChange" | "value">) => {
+  name,
+}: Pick<EditFieldProps, "label" | "handleChange" | "value"> & { name: string }) => {
+  const options = name === "participantType" ? participantTypes : timeSlotCategories;
   return (
-    <>
-      <div className="flex flex-col gap-2 md:flex-row md:gap-8">
-        <p className="shrink-0 font-bold text-newLeafGreen lg:text-xl">
-          {label}
-        </p>
-        <div className="relative w-64 grow md:w-80">
-          <div className="flex h-8 w-full rounded-lg border-2 border-softGrayWhite px-2">
-            <div className="flex w-full flex-col space-y-1">
-              <select
-                className="w-full border-0 outline-none"
-                name="participantType"
-                value={value}
-                onChange={handleChange}
-              >
-                {participantTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
+    <div className="flex flex-col gap-2 md:flex-row md:gap-8">
+      <p className="shrink-0 font-bold text-newLeafGreen lg:text-xl">{label}</p>
+      <div className="relative w-64 grow md:w-80">
+        <div className="flex h-8 w-full rounded-lg border-2 border-softGrayWhite px-2">
+          <div className="flex w-full flex-col space-y-1">
+            <select
+              className="w-full border-0 outline-none"
+              name={name}
+              value={value}
+              onChange={handleChange}
+            >
+              {options.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -91,7 +90,10 @@ interface Props {
   onEditSuccess: () => void;
 }
 export const EditVolunteerPopup = (info: Props) => {
-  const [formState, setFormState] = useState(info);
+  const [formState, setFormState] = useState({
+    ...info,
+    timeSlot: "",
+  });
 
   const { token } = useAuth();
   if (!token) {
@@ -115,6 +117,7 @@ export const EditVolunteerPopup = (info: Props) => {
       email: string;
       phoneNumber: string;
       participantType: string[];
+      timeSlot: string;
     }) => {
       const resp = await fetch(`/api/volunteers/update/${payload.id}`, {
         method: "PATCH",
@@ -132,7 +135,6 @@ export const EditVolunteerPopup = (info: Props) => {
     },
     onSuccess(data, variables, context) {
       toastNotify("Volunteer updated successfully", "success");
-
       info.onEditSuccess();
     },
     onError(error, variables, context) {
@@ -197,7 +199,16 @@ export const EditVolunteerPopup = (info: Props) => {
           label={"Volunteer Type:"}
           value={formState.participantType}
           handleChange={handleChange}
+          name="participantType"
         />
+        {(formState.participantType === "Driver" || formState.participantType === "Driver & Packer") && (
+          <EditFieldSelect
+            label={"time slot:"}
+            value={formState.timeSlot}
+            handleChange={handleChange}
+            name="timeSlot"
+          />
+        )}
       </form>
       <div className="h-[5%] lg:h-0" />
       <div className="flex h-[5%] items-center justify-center gap-5 lg:h-[10%]">
@@ -221,6 +232,7 @@ export const EditVolunteerPopup = (info: Props) => {
                 formState.participantType === "Driver & Packer"
                   ? ["Driver", "Packer"]
                   : [formState.participantType],
+              timeSlot: formState.timeSlot,
             });
           }}
         >

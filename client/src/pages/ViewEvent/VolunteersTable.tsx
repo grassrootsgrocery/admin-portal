@@ -167,7 +167,100 @@ const applySelectedFilters = (
   return filteredItems;
 };
 
-export const WarningsCounter = { count: 0 };
+export function WarningsUpdater(
+  scheduledSlots: ProcessedScheduledSlot[],
+  eventId: string
+): number {
+  const WarningsCounter = { count: 0 };
+  const { token } = useAuth();
+  const getWarningSymbol = (fieldName: string) => {
+    WarningsCounter.count = WarningsCounter.count + 1;
+    return `⚠️ ${fieldName}`;
+  };
+  WarningsCounter.count = 0;
+
+  const queryClient = useQueryClient();
+  const rows = scheduledSlots.map((ss, i) => {
+    let firstName = ss.firstName;
+    //Warning sign next to name works, need to fix warnings count and create red component for warning count and add to main event page as well.
+
+    if (
+      typeof ss.firstName === "undefined" ||
+      typeof ss.lastName === "undefined" ||
+      typeof ss.timeSlot === "undefined" ||
+      ss.participantType === "Driver" ||
+      typeof ss.phoneNumber === "undefined" ||
+      typeof ss.email === "undefined"
+    ) {
+      firstName = getWarningSymbol(firstName);
+    }
+
+    return [
+      ss.id,
+      i + 1,
+      firstName,
+      ss.lastName,
+      ss.timeSlot,
+      ss.participantType,
+      /* Confirmed Checkbox */
+      <HttpCheckbox
+        checked={ss.confirmed}
+        mutationFn={applyPatch(
+          `/api/volunteers/confirm/${ss.id}`,
+          { newConfirmationStatus: !ss.confirmed },
+          token as string
+        )}
+        onSuccess={() => {
+          const toastMessage = `${ss.firstName} ${ss.lastName} ${
+            ss.confirmed ? "unconfirmed" : "confirmed"
+          }`;
+          queryClient.invalidateQueries(
+            VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+          );
+          toastNotify(toastMessage, "success");
+        }}
+        onError={() => toastNotify("Unable to confirm volunteer", "failure")}
+      />,
+      /* Not Going Checkbox */
+      <HttpCheckbox
+        checked={ss.cantCome}
+        mutationFn={applyPatch(
+          `/api/volunteers/going/${ss.id}`,
+          { newGoingStatus: !ss.cantCome },
+          token as string
+        )}
+        onSuccess={() => {
+          const toastMessage = `${ss.firstName} ${ss.lastName} ${
+            ss.cantCome ? "is able to volunteer" : "is unable to volunteer"
+          }`;
+          queryClient.invalidateQueries(
+            VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+          );
+          toastNotify(toastMessage, "success");
+        }}
+        onError={() => toastNotify("Unable to modify availability", "failure")}
+      />,
+      ss.specialGroup ?? "N/A",
+      typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
+      /* Contact Modal */
+      <ContactPopup phoneNumber={ss.phoneNumber} email={ss.email} />,
+      <EditVolunteerPopup
+        id={ss.id}
+        email={ss.email}
+        phoneNumber={ss.phoneNumber}
+        firstName={ss.firstName}
+        lastName={ss.lastName}
+        participantType={ss.participantType}
+        onEditSuccess={() => {
+          queryClient.invalidateQueries(
+            VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+          );
+        }}
+      />,
+    ];
+  });
+  return WarningsCounter.count;
+}
 
 export const VolunteersTable: React.FC<{
   scheduledSlots: ProcessedScheduledSlot[];
@@ -195,39 +288,30 @@ export const VolunteersTable: React.FC<{
     setFilters(newSelectedFilters);
     setFiltered(applySelectedFilters(newSelectedFilters, scheduledSlots));
   };
-
-  
   //Takes in scheduledSlots array and formats data for DataTable component
   function processScheduledSlotsForTable(
     scheduledSlots: ProcessedScheduledSlot[],
     eventId: string
   ): (string | number | JSX.Element)[][] {
-  
-    const { token } = useAuth();
-    const getWarningSymbol = (fieldName: string) => {
-        WarningsCounter.count=WarningsCounter.count+1;
-        return `⚠️ ${fieldName}`;
-    };
-    WarningsCounter.count = 0;
-    
-    const queryClient = useQueryClient();
-    const rows = scheduledSlots.map((ss, i) => {
-      let firstName=ss.firstName;
-      //Warning sign next to name works, need to fix warnings count and create red component for warning count and add to main event page as well.
-      if (typeof ss.firstName === "undefined") {
-      firstName = getWarningSymbol(firstName);
-    } else if (typeof ss.lastName === "undefined") {
-       firstName = getWarningSymbol(firstName);
-    } else if (typeof ss.timeSlot === "undefined") {
-       firstName = getWarningSymbol(firstName);
-    } else if (ss.participantType === "Driver") {
-       firstName = getWarningSymbol(firstName);
-    } else if (typeof ss.phoneNumber === "undefined") {
-       firstName = getWarningSymbol(firstName);
-    } else if (typeof ss.email === "undefined") {
-       firstName = getWarningSymbol(firstName);
-    }
+  const { token } = useAuth();
+  const getWarningSymbol = (fieldName: string) => {
+    return `⚠️ ${fieldName}`;
+  };
+  const queryClient = useQueryClient();
+  const rows = scheduledSlots.map((ss, i) => {
+    let firstName = ss.firstName;
+    //Warning sign next to name works, need to fix warnings count and create red component for warning count and add to main event page as well.
 
+    if (
+      typeof ss.firstName === "undefined" ||
+      typeof ss.lastName === "undefined" ||
+      typeof ss.timeSlot === "undefined" ||
+      ss.participantType === "Driver" ||
+      typeof ss.phoneNumber === "undefined" ||
+      typeof ss.email === "undefined"
+    ) {
+      firstName = getWarningSymbol(firstName);
+    }
     return [
       ss.id,
       i + 1,
@@ -235,65 +319,63 @@ export const VolunteersTable: React.FC<{
       ss.lastName,
       ss.timeSlot,
       ss.participantType,
-        /* Confirmed Checkbox */
-        <HttpCheckbox
-          checked={ss.confirmed}
-          mutationFn={applyPatch(
-            `/api/volunteers/confirm/${ss.id}`,
-            { newConfirmationStatus: !ss.confirmed },
-            token as string
-          )}
-          onSuccess={() => {
-            const toastMessage = `${ss.firstName} ${ss.lastName} ${
-              ss.confirmed ? "unconfirmed" : "confirmed"
-            }`;
-            queryClient.invalidateQueries(
-              VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
-            );
-            toastNotify(toastMessage, "success");
-          }}
-          onError={() => toastNotify("Unable to confirm volunteer", "failure")}
-        />,
-        /* Not Going Checkbox */
-        <HttpCheckbox
-          checked={ss.cantCome}
-          mutationFn={applyPatch(
-            `/api/volunteers/going/${ss.id}`,
-            { newGoingStatus: !ss.cantCome },
-            token as string
-          )}
-          onSuccess={() => {
-            const toastMessage = `${ss.firstName} ${ss.lastName} ${
-              ss.cantCome ? "is able to volunteer" : "is unable to volunteer"
-            }`;
-            queryClient.invalidateQueries(
-              VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
-            );
-            toastNotify(toastMessage, "success");
-          }}
-          onError={() =>
-            toastNotify("Unable to modify availability", "failure")
-          }
-        />,
-        ss.specialGroup ?? "N/A",
-        typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
-        /* Contact Modal */
-        <ContactPopup phoneNumber={ss.phoneNumber} email={ss.email} />,
-        <EditVolunteerPopup
-          id={ss.id}
-          email={ss.email}
-          phoneNumber={ss.phoneNumber}
-          firstName={ss.firstName}
-          lastName={ss.lastName}
-          participantType={ss.participantType}
-          onEditSuccess={() => {
-            queryClient.invalidateQueries(
-              VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
-            );
-          }}
-        />,
-      ];
-    });
+      /* Confirmed Checkbox */
+      <HttpCheckbox
+        checked={ss.confirmed}
+        mutationFn={applyPatch(
+          `/api/volunteers/confirm/${ss.id}`,
+          { newConfirmationStatus: !ss.confirmed },
+          token as string
+        )}
+        onSuccess={() => {
+          const toastMessage = `${ss.firstName} ${ss.lastName} ${
+            ss.confirmed ? "unconfirmed" : "confirmed"
+          }`;
+          queryClient.invalidateQueries(
+            VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+          );
+          toastNotify(toastMessage, "success");
+        }}
+        onError={() => toastNotify("Unable to confirm volunteer", "failure")}
+      />,
+      /* Not Going Checkbox */
+      <HttpCheckbox
+        checked={ss.cantCome}
+        mutationFn={applyPatch(
+          `/api/volunteers/going/${ss.id}`,
+          { newGoingStatus: !ss.cantCome },
+          token as string
+        )}
+        onSuccess={() => {
+          const toastMessage = `${ss.firstName} ${ss.lastName} ${
+            ss.cantCome ? "is able to volunteer" : "is unable to volunteer"
+          }`;
+          queryClient.invalidateQueries(
+            VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+          );
+          toastNotify(toastMessage, "success");
+        }}
+        onError={() => toastNotify("Unable to modify availability", "failure")}
+      />,
+      ss.specialGroup ?? "N/A",
+      typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
+      /* Contact Modal */
+      <ContactPopup phoneNumber={ss.phoneNumber} email={ss.email} />,
+      <EditVolunteerPopup
+        id={ss.id}
+        email={ss.email}
+        phoneNumber={ss.phoneNumber}
+        firstName={ss.firstName}
+        lastName={ss.lastName}
+        participantType={ss.participantType}
+        onEditSuccess={() => {
+          queryClient.invalidateQueries(
+            VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+          );
+        }}
+      />,
+    ];
+  });
     return rows;
 
   }

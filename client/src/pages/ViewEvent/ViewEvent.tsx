@@ -19,7 +19,7 @@ import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
 import { ViewSpecialGroups } from "./ViewSpecialGroups";
 import { toastNotify } from "../../utils/ui";
-import { WarningsCounter } from "./VolunteersTable";
+import { WarningsUpdater } from "./VolunteersTable";
 
 const HeaderValueDisplay: React.FC<{
   header: string;
@@ -102,12 +102,16 @@ export const ViewEvent = () => {
             <img className={sectionHeaderIcon} src={calendar} alt="calendar" />
             {event.dateDisplay}
           </h1>
+          {/* Warnings Count */}
           <div className="ml-12 flex flex-grow flex-wrap items-center justify-center">
-            <div className="flex items-center border-2 border-red-600 p-2">
-              <p className="font-bold text-red-600 lg:text-xl">
-                Warnings: {WarningsCounter.count} volunteer(s) missing info
-              </p>
-            </div>
+            {WarningsUpdater(scheduledSlots, eventId) > 0 && (
+              <div className="flex items-center border-2 border-red-600 p-2">
+                <p className="font-bold text-red-600 lg:text-xl">
+                  ⚠️ {WarningsUpdater(scheduledSlots, eventId)} volunteer(s)
+                  missing info
+                </p>
+              </div>
+            )}
           </div>
         </div>
         <div className="h-4" />
@@ -163,7 +167,6 @@ export const ViewEvent = () => {
               header="# of Special Groups"
               value={event.numSpecialGroups}
             />
-    
           </div>
 
           <div className="flex flex-col items-start justify-around gap-2 ">

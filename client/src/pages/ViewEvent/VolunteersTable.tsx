@@ -24,6 +24,7 @@ import { VOLUNTEERS_FOR_EVENT_QUERY_KEYS } from "../eventHooks";
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
 */
 
+
 interface FilterItemProps {
   onSelect: () => void;
   filterLabel: string;
@@ -166,6 +167,8 @@ const applySelectedFilters = (
   return filteredItems;
 };
 
+export const WarningsCounter = { count: 0 };
+
 export const VolunteersTable: React.FC<{
   scheduledSlots: ProcessedScheduledSlot[];
   eventId: string;
@@ -193,23 +196,45 @@ export const VolunteersTable: React.FC<{
     setFiltered(applySelectedFilters(newSelectedFilters, scheduledSlots));
   };
 
+  
   //Takes in scheduledSlots array and formats data for DataTable component
   function processScheduledSlotsForTable(
     scheduledSlots: ProcessedScheduledSlot[],
     eventId: string
   ): (string | number | JSX.Element)[][] {
+  
     const { token } = useAuth();
+    const getWarningSymbol = (fieldName: string) => {
+        WarningsCounter.count=WarningsCounter.count+1;
+        return `⚠️ ${fieldName}`;
+    };
+    WarningsCounter.count = 0;
+    
     const queryClient = useQueryClient();
     const rows = scheduledSlots.map((ss, i) => {
-      return [
-        /* id */
-        ss.id,
-        /* # */
-        i + 1,
-        ss.firstName,
-        ss.lastName,
-        ss.timeSlot,
-        ss.participantType,
+      let firstName=ss.firstName;
+      //Warning sign next to name works, need to fix warnings count and create red component for warning count and add to main event page as well.
+      if (typeof ss.firstName === "undefined") {
+      firstName = getWarningSymbol(firstName);
+    } else if (typeof ss.lastName === "undefined") {
+       firstName = getWarningSymbol(firstName);
+    } else if (typeof ss.timeSlot === "undefined") {
+       firstName = getWarningSymbol(firstName);
+    } else if (ss.participantType === "Driver") {
+       firstName = getWarningSymbol(firstName);
+    } else if (typeof ss.phoneNumber === "undefined") {
+       firstName = getWarningSymbol(firstName);
+    } else if (typeof ss.email === "undefined") {
+       firstName = getWarningSymbol(firstName);
+    }
+
+    return [
+      ss.id,
+      i + 1,
+      firstName,
+      ss.lastName,
+      ss.timeSlot,
+      ss.participantType,
         /* Confirmed Checkbox */
         <HttpCheckbox
           checked={ss.confirmed}
@@ -269,8 +294,8 @@ export const VolunteersTable: React.FC<{
         />,
       ];
     });
-
     return rows;
+
   }
 
   filtered.sort((a, b) => {
@@ -382,3 +407,4 @@ export const VolunteersTable: React.FC<{
     </div>
   );
 };
+

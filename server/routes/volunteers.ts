@@ -85,6 +85,7 @@ function processScheduledSlots(
       email: ss.fields["Email"] ? ss.fields["Email"][0] : "None",
       phoneNumber: ss.fields["Phone Formula"] || "None",
       specialGroup: ss.fields["Volunteer Group (for MAKE)"] || null,
+      countOfEventsCompleted:ss.fields["Count of Events Completed"],
     };
 
     const isDriver = participantType.includes("Driver");
@@ -130,7 +131,8 @@ router.route("/api/volunteers/").get(
       `&fields=Volunteer Status` +
       `&fields=Can't Come` +
       `&fields=Email` +
-      `&fields=Volunteer Group (for MAKE)`;
+      `&fields=Volunteer Group (for MAKE)`+
+      `&fields=Count of Events Completed`;
 
     const scheduledSlots = await airtableGET<ScheduledSlot>({ url: url });
 

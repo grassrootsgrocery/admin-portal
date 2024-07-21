@@ -210,6 +210,8 @@ export const VolunteersTable: React.FC<{
         ss.lastName,
         ss.timeSlot,
         ss.participantType,
+        
+        
         /* Confirmed Checkbox */
         <HttpCheckbox
           checked={ss.confirmed}
@@ -250,6 +252,7 @@ export const VolunteersTable: React.FC<{
             toastNotify("Unable to modify availability", "failure")
           }
         />,
+        ss.countOfEventsCompleted,
         ss.specialGroup ?? "N/A",
         typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
         /* Contact Modal */
@@ -372,6 +375,7 @@ export const VolunteersTable: React.FC<{
           "Participant Type",
           "Confirmed",
           "Can't Come",
+          "Past Events",
           "Special Group",
           "Delivery Count",
           "Contact",

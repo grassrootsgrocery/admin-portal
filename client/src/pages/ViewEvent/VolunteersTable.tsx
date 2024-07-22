@@ -290,6 +290,8 @@ export const VolunteersTable: React.FC<{
         ss.lastName,
         ss.timeSlot,
         ss.participantType,
+        
+        
         /* Confirmed Checkbox */
         <HttpCheckbox
           checked={ss.confirmed}

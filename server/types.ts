@@ -105,7 +105,6 @@ export interface ProcessedScheduledSlot {
   specialGroup: string | null;
   guestCount: number;
   countOfEventsCompleted:number;
-
 }
 
 export interface Driver {

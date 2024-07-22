@@ -87,6 +87,7 @@ export interface ScheduledSlot {
   Email: string[] | undefined;
   "Volunteer Group (for MAKE)": string | undefined;
   "Count of Volunteers": number;
+  "Count of Events Completed":number;
 }
 
 export interface ProcessedScheduledSlot {
@@ -103,6 +104,8 @@ export interface ProcessedScheduledSlot {
   phoneNumber: string;
   specialGroup: string | null;
   guestCount: number;
+  countOfEventsCompleted:number;
+
 }
 
 export interface Driver {

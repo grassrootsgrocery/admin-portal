@@ -30,6 +30,7 @@ export interface ProcessedScheduledSlot {
   phoneNumber: string;
   specialGroup: string | null;
   guestCount: number;
+  countOfEventsCompleted:number;
 }
 
 export interface ProcessedDriver {

@@ -330,6 +330,7 @@ export const VolunteersTable: React.FC<{
             toastNotify("Unable to modify availability", "failure")
           }
         />,
+        ss.countOfEventsCompleted,
         ss.specialGroup ?? "N/A",
         typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
         /* Contact Modal */
@@ -452,6 +453,7 @@ export const VolunteersTable: React.FC<{
           "Participant Type",
           "Confirmed",
           "Can't Come",
+          "Past Events",
           "Special Group",
           "Delivery Count",
           "Contact",

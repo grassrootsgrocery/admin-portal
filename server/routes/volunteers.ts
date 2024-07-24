@@ -72,6 +72,7 @@ function processScheduledSlots(
         : "Error!";
 
     const volunteer: ProcessedScheduledSlot = {
+      unformatted:ss.fields["Correct slot time"],
       id: ss.id,
       firstName: ss.fields["First Name"] ? ss.fields["First Name"][0] : "",
       lastName: ss.fields["Last Name"] ? ss.fields["Last Name"][0] : "",
@@ -93,6 +94,8 @@ function processScheduledSlots(
     }
     volunteerList.push(volunteer);
   }
+  
+
 
   return volunteerList;
 }
@@ -234,6 +237,7 @@ router.route("/api/volunteers/update/:volunteerId").patch(
       "Logistics Slot": string;
       "Driving Slot": string;
       Type: AirtableParticipantType[];
+      "Correct slot time":string;
     }>({
       url: originalRecord,
     });
@@ -336,7 +340,6 @@ router.route("/api/volunteers/update/:volunteerId").patch(
             "Last Name": lastName,
             "Email Address": email,
             "Phone Number": phoneNumber,
-            "Correct slot time":timeSlot,
           },
         },
       ],

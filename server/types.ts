@@ -88,6 +88,7 @@ export interface ScheduledSlot {
 }
 
 export interface ProcessedScheduledSlot {
+  unformatted:string;
   id: string;
   firstName: string;
   lastName: string;

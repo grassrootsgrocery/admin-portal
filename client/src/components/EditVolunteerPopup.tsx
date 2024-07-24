@@ -203,7 +203,7 @@ export const EditVolunteerPopup = (info: Props) => {
         />
         {(formState.participantType === "Driver" || formState.participantType === "Driver & Packer") && (
           <EditFieldSelect
-            label={"time slot:"}
+            label={"Time Slot:"}
             value={formState.timeSlot}
             handleChange={handleChange}
             name="timeSlot"

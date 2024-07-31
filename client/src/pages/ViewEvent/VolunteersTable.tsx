@@ -24,7 +24,6 @@ import { VOLUNTEERS_FOR_EVENT_QUERY_KEYS } from "../eventHooks";
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
 */
 
-
 interface FilterItemProps {
   onSelect: () => void;
   filterLabel: string;
@@ -188,7 +187,7 @@ export function WarningsUpdater(
       typeof ss.firstName === "undefined" ||
       typeof ss.lastName === "undefined" ||
       typeof ss.timeSlot === "undefined" ||
-      ss.participantType === "Driver" ||
+      typeof ss.participantType === "undefined" ||
       typeof ss.phoneNumber === "undefined" ||
       typeof ss.email === "undefined"
     ) {
@@ -294,23 +293,18 @@ export const VolunteersTable: React.FC<{
     eventId: string
   ): (string | number | JSX.Element)[][] {
   const { token } = useAuth();
-  const getWarningSymbol = (fieldName: string) => {
-    return `⚠️ ${fieldName}`;
-  };
   const queryClient = useQueryClient();
   const rows = scheduledSlots.map((ss, i) => {
     let firstName = ss.firstName;
-    //Warning sign next to name works, need to fix warnings count and create red component for warning count and add to main event page as well.
-
     if (
       typeof ss.firstName === "undefined" ||
       typeof ss.lastName === "undefined" ||
       typeof ss.timeSlot === "undefined" ||
-      ss.participantType === "Driver" ||
+      typeof ss.participantType === "undefined" ||
       typeof ss.phoneNumber === "undefined" ||
       typeof ss.email === "undefined"
     ) {
-      firstName = getWarningSymbol(firstName);
+      firstName = `⚠️ ${firstName}`;
     }
     return [
       ss.id,

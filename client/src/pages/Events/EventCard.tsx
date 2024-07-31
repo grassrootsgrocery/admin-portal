@@ -11,7 +11,6 @@ interface Props {
   participants: number;
   drivers: number;
   packers: number;
-  warnings: number;
 }
 
 export const EventCard: React.FC<Props> = ({
@@ -22,7 +21,6 @@ export const EventCard: React.FC<Props> = ({
   eventId,
   drivers,
   packers,
-  warnings,
 }) => {
   // Tailwind classes
   const label = "text-sm md:text-base lg:text-xl";
@@ -81,16 +79,6 @@ export const EventCard: React.FC<Props> = ({
               Total Participants
             </p>
             <h3 className={labelBold}>{participants}</h3>
-          </div>
-          {/* Warnings Count */}
-          <div className="ml-12 flex flex-grow flex-wrap items-center justify-center">
-            {warnings > 0 && (
-              <div className="flex items-center p-2">
-                <p className="font-bold text-red-600 lg:text-xl">
-                  ⚠️ {warnings} volunteer(s) missing info
-                </p>
-              </div>
-            )}
           </div>
           <div className="flex grow items-center lg:justify-end">
             <Link to={`/events/${eventId}`}>

@@ -19,7 +19,6 @@ import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
 import { ViewSpecialGroups } from "./ViewSpecialGroups";
 import { toastNotify } from "../../utils/ui";
-import { SearchButton } from "../../components/SearchButton";
 
 const HeaderValueDisplay: React.FC<{
   header: string;
@@ -90,7 +89,6 @@ export const ViewEvent = () => {
   const sectionHeader =
     "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
   const sectionHeaderIcon = "w-6 lg:w-10";
-
 
   return (
     <>

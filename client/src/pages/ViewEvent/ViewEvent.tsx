@@ -91,6 +91,7 @@ export const ViewEvent = () => {
     "flex items-center gap-2 text-lg font-bold text-newLeafGreen lg:text-3xl";
   const sectionHeaderIcon = "w-6 lg:w-10";
 
+
   return (
     <>
       <Navbar />
@@ -165,7 +166,6 @@ export const ViewEvent = () => {
           <img className={sectionHeaderIcon} src={roster} alt="roster" />
           Participant Roster
         </h1>
-        <SearchButton></SearchButton>
         {/* Volunteer Table */}
         <VolunteersTable scheduledSlots={scheduledSlots} eventId={eventId} />
         <div className="h-4" />

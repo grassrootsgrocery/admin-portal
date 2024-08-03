@@ -1,17 +1,22 @@
 import { useQuery } from "react-query";
 import { useAuth } from "../contexts/AuthContext";
-//Types
 import { ProcessedEvent, ProcessedScheduledSlot } from "../types";
+import { processVolunteerCount } from "./ViewEvent/VolunteersTable";
 
-//Query key management
+// Query key management
 const EVENTS = "events" as const;
+const VOLUNTEERS = "volunteers" as const;
+
 export const EVENT_QUERY_KEYS = {
   getAllFutureEvents: [EVENTS] as const,
 };
 
-//Query all upcoming events
+export const VOLUNTEERS_FOR_EVENT_QUERY_KEYS = {
+  fetchVolunteersForEvent: (eventId: string) => [VOLUNTEERS, eventId],
+};
+
+// Query all upcoming events
 export function useFutureEvents() {
-  //I'm not sure if this is a good pattern honestly
   const { token } = useAuth();
   if (!token) {
     throw new Error("No token found in useFutureEvents hook");
@@ -30,14 +35,14 @@ export function useFutureEvents() {
 }
 
 /* Get a future event by the event id.
- * Uses useFuturePickupEvents under the hood, and then returns the future event whose id matches the eventId parameter.
- * */
+ * Uses useFutureEvents under the hood, and then returns the future event whose id matches the eventId parameter.
+ */
 export function useFutureEventById(eventId: string | undefined) {
   const futureEventsQuery = useFutureEvents();
 
-  let event = undefined;
+  let event: ProcessedEvent | undefined = undefined;
   if (futureEventsQuery.status === "success") {
-    event = futureEventsQuery.data.filter((fe) => eventId === fe.id)[0];
+    event = futureEventsQuery.data.find((fe) => eventId === fe.id);
   }
 
   return {
@@ -46,11 +51,6 @@ export function useFutureEventById(eventId: string | undefined) {
     error: futureEventsQuery.error,
   };
 }
-
-const VOLUNTEERS = "volunteers" as const;
-export const VOLUNTEERS_FOR_EVENT_QUERY_KEYS = {
-  fetchVolunteersForEvent: (eventId: string) => [VOLUNTEERS, eventId],
-};
 
 export function useVolunteersForEvent({
   enabled,
@@ -85,4 +85,47 @@ export function useVolunteersForEvent({
     },
     { enabled: enabled }
   );
+}
+
+// Custom hook to fetch future events with volunteers
+export function useFutureEventsWithVolunteers() {
+  const { token } = useAuth();
+  if (!token) {
+    throw new Error("No token found in useFutureEventsWithVolunteers hook");
+  }
+
+  return useQuery(EVENT_QUERY_KEYS.getAllFutureEvents, async () => {
+    const response = await fetch(`/api/events`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message);
+    }
+    const futureEvents: ProcessedEvent[] = await response.json();
+
+    const eventsWithVolunteers = await Promise.all(
+      futureEvents.map(async (event: ProcessedEvent) => {
+        const scheduledSlotsIds = event.scheduledSlots.join(",");
+        const volunteerResponse = await fetch(
+          `/api/volunteers/?scheduledSlotsIds=${scheduledSlotsIds}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!volunteerResponse.ok) {
+          const data = await volunteerResponse.json();
+          throw new Error(data.message);
+        }
+        const scheduledSlots: ProcessedScheduledSlot[] =
+          await volunteerResponse.json();
+        const totalVolunteerCount = processVolunteerCount(scheduledSlots);
+        return { ...event, scheduledSlots, totalVolunteerCount };
+      })
+    );
+
+    return eventsWithVolunteers;
+  });
 }

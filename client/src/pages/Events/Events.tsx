@@ -36,7 +36,7 @@ export function Events() {
   const futureEventsQuery = useFutureEvents();
   const [eventsData, setEventsData] = useState<EventWithVolunteersData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [displayCount, setDisplayCount] = useState(10);
+  const [displayCount, setDisplayCount] = useState(8);
 
   useEffect(() => {
     const fetchVolunteersForEvent = async (event: Event, token: string) => {

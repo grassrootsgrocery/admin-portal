@@ -91,7 +91,7 @@ async function airtableFetch<T>({
 
     if (!resp.ok) {
       const data = await resp.json();
-      logger.error(`Airtable error ${data}`);
+      logger.error(`Airtable error ${JSON.stringify(data)}`);
       return { kind: "error", error: data };
     }
 

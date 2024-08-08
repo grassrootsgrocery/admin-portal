@@ -36,6 +36,7 @@ export function Events() {
   const futureEventsQuery = useFutureEvents();
   const [eventsData, setEventsData] = useState<EventWithVolunteersData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [displayCount, setDisplayCount] = useState(10);
 
   useEffect(() => {
     const fetchVolunteersForEvent = async (event: Event, token: string) => {
@@ -53,18 +54,22 @@ export function Events() {
     };
 
     const fetchVolunteersForAllEvents = async () => {
-      if (futureEventsQuery.status === "success") {
+      if (futureEventsQuery.status === "success" && futureEventsQuery.data) {
         try {
           const eventsWithVolunteers: EventWithVolunteersData[] =
             await Promise.all(
-              futureEventsQuery.data.slice(0, 10).map(async (event) => {
-                // Limiting to first 10 events
-                const volunteers = await fetchVolunteersForEvent(event, token);
-                return {
-                  ...event,
-                  volunteers,
-                };
-              })
+              futureEventsQuery.data
+                .slice(0, displayCount)
+                .map(async (event) => {
+                  const volunteers = await fetchVolunteersForEvent(
+                    event,
+                    token
+                  );
+                  return {
+                    ...event,
+                    volunteers,
+                  };
+                })
             );
           setEventsData(eventsWithVolunteers);
           setLoading(false);
@@ -76,7 +81,11 @@ export function Events() {
     };
 
     fetchVolunteersForAllEvents();
-  }, [futureEventsQuery.status, token]);
+  }, [futureEventsQuery.status, futureEventsQuery.data, token, displayCount]);
+
+  const loadMoreEvents = () => {
+    setDisplayCount((prevCount) => prevCount + 10);
+  };
 
   if (loading) {
     return (
@@ -133,6 +142,18 @@ export function Events() {
             />
           ))}
         </ul>
+        {futureEventsQuery.data &&
+          displayCount < futureEventsQuery.data.length && (
+            <div className="mt-4 flex justify-center">
+              <button
+                className="rounded-full bg-pumpkinOrange px-4 py-2 text-base font-semibold text-white md:px-10 md:py-3 lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
+                type="button"
+                onClick={loadMoreEvents}
+              >
+                Load More
+              </button>
+            </div>
+          )}
       </div>
     </>
   );

@@ -287,91 +287,91 @@ export const VolunteersTable: React.FC<{
     setFilters(newSelectedFilters);
     setFiltered(applySelectedFilters(newSelectedFilters, scheduledSlots));
   };
-
   //Takes in scheduledSlots array and formats data for DataTable component
   function processScheduledSlotsForTable(
     scheduledSlots: ProcessedScheduledSlot[],
     eventId: string
   ): (string | number | JSX.Element)[][] {
-    const { token } = useAuth();
-    const queryClient = useQueryClient();
-    const rows = scheduledSlots.map((ss, i) => {
-      let firstName = ss.firstName;
-      if (
-        typeof ss.firstName === "undefined" ||
-        typeof ss.lastName === "undefined" ||
-        typeof ss.timeSlot === "undefined" ||
-        typeof ss.participantType === "undefined" ||
-        typeof ss.phoneNumber === "undefined" ||
-        typeof ss.email === "undefined"
-      ) {
-        firstName = `⚠️ ${firstName}`;
-      }
-      return [
-        ss.id,
-        i + 1,
-        firstName,
-        ss.lastName,
-        ss.timeSlot,
-        ss.participantType,
-        /* Confirmed Checkbox */
-        <HttpCheckbox
-          checked={ss.confirmed}
-          mutationFn={applyPatch(
-            `/api/volunteers/confirm/${ss.id}`,
-            { newConfirmationStatus: !ss.confirmed },
-            token as string
-          )}
-          onSuccess={() => {
-            const toastMessage = `${ss.firstName} ${ss.lastName} ${
-              ss.confirmed ? "unconfirmed" : "confirmed"
-            }`;
-            queryClient.invalidateQueries(
-              VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
-            );
-            toastNotify(toastMessage, "success");
-          }}
-          onError={() => toastNotify("Unable to confirm volunteer", "failure")}
-        />,
-        /* Not Going Checkbox */
-        <HttpCheckbox
-          checked={ss.cantCome}
-          mutationFn={applyPatch(
-            `/api/volunteers/going/${ss.id}`,
-            { newGoingStatus: !ss.cantCome },
-            token as string
-          )}
-          onSuccess={() => {
-            const toastMessage = `${ss.firstName} ${ss.lastName} ${
-              ss.cantCome ? "is able to volunteer" : "is unable to volunteer"
-            }`;
-            queryClient.invalidateQueries(
-              VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
-            );
-            toastNotify(toastMessage, "success");
-          }}
-          onError={() => toastNotify("Unable to modify availability", "failure")}
-        />,
-        ss.specialGroup ?? "N/A",
-        typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
-        /* Contact Modal */
-        <ContactPopup phoneNumber={ss.phoneNumber} email={ss.email} />,
-        <EditVolunteerPopup
-          id={ss.id}
-          email={ss.email}
-          phoneNumber={ss.phoneNumber}
-          firstName={ss.firstName}
-          lastName={ss.lastName}
-          participantType={ss.participantType}
-          onEditSuccess={() => {
-            queryClient.invalidateQueries(
-              VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
-            );
-          }}
-        />,
-      ];
-    });
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+  const rows = scheduledSlots.map((ss, i) => {
+    let firstName = ss.firstName;
+    if (
+      typeof ss.firstName === "undefined" ||
+      typeof ss.lastName === "undefined" ||
+      typeof ss.timeSlot === "undefined" ||
+      typeof ss.participantType === "undefined" ||
+      typeof ss.phoneNumber === "undefined" ||
+      typeof ss.email === "undefined"
+    ) {
+      firstName = `⚠️ ${firstName}`;
+    }
+    return [
+      ss.id,
+      i + 1,
+      firstName,
+      ss.lastName,
+      ss.timeSlot,
+      ss.participantType,
+      /* Confirmed Checkbox */
+      <HttpCheckbox
+        checked={ss.confirmed}
+        mutationFn={applyPatch(
+          `/api/volunteers/confirm/${ss.id}`,
+          { newConfirmationStatus: !ss.confirmed },
+          token as string
+        )}
+        onSuccess={() => {
+          const toastMessage = `${ss.firstName} ${ss.lastName} ${
+            ss.confirmed ? "unconfirmed" : "confirmed"
+          }`;
+          queryClient.invalidateQueries(
+            VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+          );
+          toastNotify(toastMessage, "success");
+        }}
+        onError={() => toastNotify("Unable to confirm volunteer", "failure")}
+      />,
+      /* Not Going Checkbox */
+      <HttpCheckbox
+        checked={ss.cantCome}
+        mutationFn={applyPatch(
+          `/api/volunteers/going/${ss.id}`,
+          { newGoingStatus: !ss.cantCome },
+          token as string
+        )}
+        onSuccess={() => {
+          const toastMessage = `${ss.firstName} ${ss.lastName} ${
+            ss.cantCome ? "is able to volunteer" : "is unable to volunteer"
+          }`;
+          queryClient.invalidateQueries(
+            VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+          );
+          toastNotify(toastMessage, "success");
+        }}
+        onError={() => toastNotify("Unable to modify availability", "failure")}
+      />,
+      ss.specialGroup ?? "N/A",
+      typeof ss.totalDeliveries === "number" ? ss.totalDeliveries : "N/A",
+      /* Contact Modal */
+      <ContactPopup phoneNumber={ss.phoneNumber} email={ss.email} />,
+      <EditVolunteerPopup
+        id={ss.id}
+        email={ss.email}
+        phoneNumber={ss.phoneNumber}
+        firstName={ss.firstName}
+        lastName={ss.lastName}
+        participantType={ss.participantType}
+        onEditSuccess={() => {
+          queryClient.invalidateQueries(
+            VOLUNTEERS_FOR_EVENT_QUERY_KEYS.fetchVolunteersForEvent(eventId)
+          );
+        }}
+      />,
+    ];
+  });
     return rows;
+
   }
 
   filtered.sort((a, b) => {
@@ -383,7 +383,6 @@ export const VolunteersTable: React.FC<{
     }
     return a.firstName < b.firstName ? -1 : 1;
   });
-
   // UI
   return (
     <div className="flex h-screen flex-col pt-6">
@@ -474,7 +473,6 @@ export const VolunteersTable: React.FC<{
           "Participant Type",
           "Confirmed",
           "Can't Come",
-          "Past Events",
           "Special Group",
           "Delivery Count",
           "Contact",

@@ -141,19 +141,19 @@ export function Events() {
               guestCount={processVolunteerCount(event.volunteers)}
             />
           ))}
+          {futureEventsQuery.data &&
+            displayCount < futureEventsQuery.data.length && (
+              <li className="mt-4 flex justify-center">
+                <button
+                  className="rounded-full bg-pumpkinOrange px-4 py-2 text-base font-semibold text-white md:px-10 md:py-3 lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
+                  type="button"
+                  onClick={loadMoreEvents}
+                >
+                  Load More
+                </button>
+              </li>
+            )}
         </ul>
-        {futureEventsQuery.data &&
-          displayCount < futureEventsQuery.data.length && (
-            <div className="mt-4 flex justify-center">
-              <button
-                className="rounded-full bg-pumpkinOrange px-4 py-2 text-base font-semibold text-white md:px-10 md:py-3 lg:shadow-sm lg:shadow-newLeafGreen lg:transition-all lg:hover:-translate-y-0.5 lg:hover:shadow-md lg:hover:shadow-newLeafGreen"
-                type="button"
-                onClick={loadMoreEvents}
-              >
-                Load More
-              </button>
-            </div>
-          )}
       </div>
     </>
   );

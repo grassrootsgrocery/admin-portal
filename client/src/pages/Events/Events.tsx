@@ -57,7 +57,8 @@ export function Events() {
         try {
           const eventsWithVolunteers: EventWithVolunteersData[] =
             await Promise.all(
-              futureEventsQuery.data.map(async (event) => {
+              futureEventsQuery.data.slice(0, 10).map(async (event) => {
+                // Limiting to first 10 events
                 const volunteers = await fetchVolunteersForEvent(event, token);
                 return {
                   ...event,

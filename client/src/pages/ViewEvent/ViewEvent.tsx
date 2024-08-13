@@ -19,6 +19,7 @@ import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
 import { ViewSpecialGroups } from "./ViewSpecialGroups";
 import { toastNotify } from "../../utils/ui";
+import { WarningsUpdater } from "./VolunteersTable";
 
 const HeaderValueDisplay: React.FC<{
   header: string;
@@ -81,6 +82,7 @@ export const ViewEvent = () => {
     return <div>Error...</div>;
   }
 
+  
   const event = eventQuery.data;
   const scheduledSlots = scheduledSlotsQuery.data;
   scheduledSlots.sort((a, b) => (a.firstName < b.firstName ? -1 : 1));
@@ -95,10 +97,23 @@ export const ViewEvent = () => {
       <Navbar />
       <div className="p-6 lg:px-14 lg:py-10">
         {/* Event Info */}
-        <h1 className={sectionHeader}>
-          <img className={sectionHeaderIcon} src={calendar} alt="calendar" />
-          {event.dateDisplay}
-        </h1>
+        <div className="flex justify-between">
+          <h1 className={sectionHeader}>
+            <img className={sectionHeaderIcon} src={calendar} alt="calendar" />
+            {event.dateDisplay}
+          </h1>
+          {/* Warnings Count */}
+          <div className="ml-12 flex flex-grow flex-wrap items-center justify-center">
+            {WarningsUpdater(scheduledSlots, eventId) > 0 && (
+              <div className="flex items-center border-2 border-red-600 p-2">
+                <p className="font-bold text-red-600 lg:text-xl">
+                  ⚠️ {WarningsUpdater(scheduledSlots, eventId)} volunteer(s)
+                  missing info
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
         <div className="h-4" />
         <div className="flex flex-col gap-3 md:flex-row md:gap-10">
           <HeaderValueDisplay header="Time" value={event.time} />
@@ -111,6 +126,7 @@ export const ViewEvent = () => {
             value={event.numTotalParticipants}
           />
         </div>
+
         <div className="h-12" />
         {/* Participant Breakdown */}
         <h1 className={sectionHeader}>

@@ -2,7 +2,7 @@ import { EventCard } from "./EventCard";
 import { Loading } from "../../components/Loading";
 import { Navbar } from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthContext";
-import { Navigate} from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useFutureEvents } from "../eventHooks";
 import { toastNotify } from "../../utils/ui";
 const newEventLink =
@@ -55,6 +55,7 @@ export function Events() {
             </button>
           </a>
         </div>
+        <div className="h-5" />
         <ul className="flex h-0 grow flex-col gap-2 overflow-auto pr-2 sm:gap-7 md:pr-4">
           {futureEventsQuery.data.map((event) => {
             return (

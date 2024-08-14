@@ -19,20 +19,33 @@ import { AddSpecialGroup } from "./AddSpecialGroup";
 import { useAuth } from "../../contexts/AuthContext";
 import { ViewSpecialGroups } from "./ViewSpecialGroups";
 import { toastNotify } from "../../utils/ui";
+import { processVolunteerCount } from "./VolunteersTable";
 
+//edited to have more options for text and values
 const HeaderValueDisplay: React.FC<{
   header: string;
   value: string | number;
-}> = (props: { header: string; value: string | number }) => {
+  optionalValue?: string | number;
+  optionaltext1?: string;
+  optionaltext2?: string;
+}> = (props) => {
   return (
     <div className="flex flex-col">
       <p className="lg:text-xl">{props.header}</p>
       <p className="font-semibold text-newLeafGreen lg:text-xl">
-        {props.value}
+        {props.value}{" "}
+        {props.optionalValue && (
+          <span className="text-sm text-gray-500">
+            {props.optionaltext1}
+            {props.optionalValue}
+            {props.optionaltext2}
+          </span>
+        )}
       </p>
     </div>
   );
 };
+
 
 export const ViewEvent = () => {
   const { token, setToken } = useAuth();
@@ -82,8 +95,15 @@ export const ViewEvent = () => {
   }
 
   const event = eventQuery.data;
+
+  //originally was not a variable
+  //made it a variable to use in processVolunteerCount
   const scheduledSlots = scheduledSlotsQuery.data;
   scheduledSlots.sort((a, b) => (a.firstName < b.firstName ? -1 : 1));
+
+  const totalVolunteerCount = processVolunteerCount(scheduledSlots);
+
+  const guestCount = totalVolunteerCount - event.numTotalParticipants
 
   //Tailwind classes
   const sectionHeader =
@@ -108,8 +128,12 @@ export const ViewEvent = () => {
           />
           <HeaderValueDisplay
             header="Total Participants"
-            value={event.numTotalParticipants}
+            value={totalVolunteerCount}
+            optionaltext1="("
+            optionalValue={guestCount}
+            optionaltext2=" guests)"
           />
+          
         </div>
         <div className="h-12" />
         {/* Participant Breakdown */}
@@ -181,3 +205,4 @@ export const ViewEvent = () => {
     </>
   );
 };
+

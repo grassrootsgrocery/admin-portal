@@ -5,25 +5,34 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { useFutureEvents } from "../eventHooks";
 import { toastNotify } from "../../utils/ui";
-import { SearchButton } from "../../components/SearchButton";
-import { useState } from "react";
-import magnifyingGlass from "../../assets/magnifying-glass-3-48.png"
-
+import { useState, useMemo } from "react";
+import { useDebounce } from "use-debounce";
+import magnifyingGlass from "../../assets/magnifying-glass-3-48.png";
 
 const newEventLink =
   "https://airtable.com/shrETAYONKTJMVTnZ?prefill_Supplier=Rap+4+Bronx&prefill_Start+Time=01/01/2023+09:00am&prefill_End+Time=01/01/2023+01:00pm&prefill_First+Driving+Slot+Start+Time=01/01/2023+10:30am&prefill_How+long+should+each+Driver+Time+Slot+be?=0:15&prefill_Max+Count+of+Drivers+Per+Slot=30&prefill_How+long+should+the+Logistics+slot+be?=1:30&prefill_Maximum+number+of+drivers+needed+for+this+event+(usually+30)?=30&prefill_Max+Count+of+Distributors+Per+Slot=30";
 
 export function Events() {
   const { token, setToken } = useAuth();
-
   const [searchValue, setSearchValue] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [debouncedSearchValue] = useDebounce(searchValue, 300);
+
+  const futureEventsQuery = useFutureEvents();
+
+  const filteredEvents = useMemo(() => {
+    return (
+      futureEventsQuery.data?.filter((event) =>
+        `${event.id} ${event.dateDisplay} ${event.mainLocation}`
+          .toLowerCase()
+          .includes(debouncedSearchValue.toLowerCase())
+      ) || []
+    );
+  }, [debouncedSearchValue, futureEventsQuery.data]);
 
   if (!token) {
     return <Navigate to="/" />;
   }
-
-  const futureEventsQuery = useFutureEvents();
 
   if (
     futureEventsQuery.status === "loading" ||
@@ -35,6 +44,7 @@ export function Events() {
       </div>
     );
   }
+
   if (futureEventsQuery.status === "error") {
     const error = futureEventsQuery.error;
     if (error instanceof Error && error.message.includes("token")) {
@@ -46,11 +56,6 @@ export function Events() {
     console.error(error);
     return <div>Error...</div>;
   }
-  const filteredEvents = futureEventsQuery.data.filter((event) =>
-    `${event.id} ${event.dateDisplay} ${event.mainLocation}`
-      .toLowerCase()
-      .includes(searchValue.toLowerCase())
-  );
 
   return (
     <>

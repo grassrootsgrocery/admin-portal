@@ -153,6 +153,7 @@ export const ViewEvent = () => {
             />
           </div>
 
+
           <div className="flex flex-col items-start justify-around gap-2 ">
             <AddSpecialGroup event={event} />
             <ViewSpecialGroups event={event} />

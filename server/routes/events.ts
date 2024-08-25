@@ -42,6 +42,10 @@ function processGeneralEventData(event: AirtableRecord<Event>): ProcessedEvent {
     day: "numeric",
     timeZone: "America/New_York",
   } as const;
+  const optionsYear = {
+    year: "numeric",
+    timeZone: "America/New_York",
+  } as const;
   const optionsTime = {
     hour: "numeric",
     minute: "numeric",
@@ -89,7 +93,8 @@ function processGeneralEventData(event: AirtableRecord<Event>): ProcessedEvent {
     date: eventDate,
     dateDisplay:
       eventDate.toLocaleDateString("en-US", optionsDay) +
-      getOrdinal(new Date(event.fields["Start Time"]).getDate()), // start day in Weekday, Month Day format
+      getOrdinal(new Date(event.fields["Start Time"]).getDate()) + ", " +
+      eventDate.toLocaleDateString("en-US", optionsYear), // start day in Weekday, Month Day format
 
     time: eventDate.toLocaleString("en-US", optionsTime), // start time in HH:MM AM/PM format
     mainLocation: event.fields["Pickup Address"]

@@ -19,6 +19,7 @@ import { ContactPopup } from "../../components/ContactPopup";
 import { EditVolunteerPopup } from "../../components/EditVolunteerPopup";
 import { HttpCheckbox } from "../../components/HttpCheckbox";
 import { VOLUNTEERS_FOR_EVENT_QUERY_KEYS } from "../eventHooks";
+import { SearchButton } from "../../components/SearchButton";
 
 /*
 TODO: There is a lot of stuff going on in this component, and we should perhaps look into refactoring at some point. 
@@ -133,7 +134,7 @@ function createDropdownFilters(scheduledSlots: ProcessedScheduledSlot[]) {
 
   let specialGroupsList: string[] = [];
   scheduledSlots.forEach((schedSlot) => {
-    let curSpecialGroup = schedSlot.specialGroup;
+  let curSpecialGroup = schedSlot.specialGroup;
 
     // Check for a unique special group
     if (curSpecialGroup && !specialGroupsList.includes(curSpecialGroup)) {
@@ -154,9 +155,19 @@ function createDropdownFilters(scheduledSlots: ProcessedScheduledSlot[]) {
 
 const applySelectedFilters = (
   selectedFilters: DropdownFilterOption[],
-  scheduledSlots: ProcessedScheduledSlot[]
+  scheduledSlots: ProcessedScheduledSlot[],
+  searchValue: string
+  
 ) => {
   let filteredItems = scheduledSlots;
+  if (searchValue) {
+    filteredItems = filteredItems.filter((slot) =>
+      `${slot.firstName} ${slot.lastName} ${slot.specialGroup} ${slot.participantType} ${slot.timeSlot}`
+        .toLowerCase()
+        .includes(searchValue.toLowerCase())
+    );
+  }
+  
   selectedFilters.forEach((curFilter) => {
     if (curFilter.isSelected) {
       //It's rather unfortunate that 'filter' is both a noun and a verb
@@ -269,14 +280,16 @@ export const VolunteersTable: React.FC<{
     createDropdownFilters(scheduledSlots)
   );
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const [filtered, setFiltered] = useState(
-    applySelectedFilters(filters, scheduledSlots)
+    applySelectedFilters(filters, scheduledSlots, searchValue)
   );
+
 
   //Filter items on filter selection
   useEffect(() => {
-    setFiltered(applySelectedFilters(filters, scheduledSlots));
-  }, [scheduledSlots]);
+    setFiltered(applySelectedFilters(filters, scheduledSlots, searchValue));
+  }, [scheduledSlots, filters, searchValue]);
 
   const onFilterSelect = (i: number) => {
     let newSelectedFilters = [...filters];
@@ -285,7 +298,7 @@ export const VolunteersTable: React.FC<{
       isSelected: !filters[i].isSelected,
     };
     setFilters(newSelectedFilters);
-    setFiltered(applySelectedFilters(newSelectedFilters, scheduledSlots));
+    setFiltered(applySelectedFilters(newSelectedFilters, scheduledSlots,searchValue));
   };
   //Takes in scheduledSlots array and formats data for DataTable component
   function processScheduledSlotsForTable(
@@ -445,6 +458,7 @@ export const VolunteersTable: React.FC<{
             );
           })}
         </div>
+        <SearchButton value={searchValue} onChange={setSearchValue} />
 
         {/* Clear Filters button */}
         <button

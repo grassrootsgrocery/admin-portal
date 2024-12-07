@@ -14,6 +14,7 @@ export interface ProcessedEvent {
   scheduledSlots: string[];
   supplierId: string;
   allEventIds: string[];
+  numGuests: number;
 }
 
 export interface ProcessedScheduledSlot {

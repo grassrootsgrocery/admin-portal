@@ -44,6 +44,7 @@ export interface Event {
   "Special Event": boolean | undefined;
   Supplier: string[] | undefined;
   "📅 Scheduled Slots": string[] | undefined;
+  "totalGuestsOnDate": number | undefined;
 }
 
 export interface TextAutomation {
@@ -71,6 +72,7 @@ export interface ProcessedEvent {
   scheduledSlots: string[];
   supplierId: string;
   allEventIds: string[];
+  numGuests: number;
 }
 
 export interface ScheduledSlot {

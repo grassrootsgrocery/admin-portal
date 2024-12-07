@@ -113,6 +113,7 @@ export function Events() {
                 participants={event.numTotalParticipants}
                 drivers={event.numDrivers}
                 packers={event.numPackers}
+                guests={event.numGuests}
               />
             );
           })}

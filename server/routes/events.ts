@@ -87,6 +87,9 @@ function processGeneralEventData(event: AirtableRecord<Event>): ProcessedEvent {
 
   const numDriversAndPackers =
     event.fields["Driver and Distributor Count Including Unconfirmed"] || 0; // all driver and distr participants for event
+ 
+  const numGuests =
+    Number(event.fields["totalGuestsOnDate"] || 0); // all guests for event
 
   return {
     id: event.id,
@@ -112,6 +115,7 @@ function processGeneralEventData(event: AirtableRecord<Event>): ProcessedEvent {
       ? event.fields.Supplier[0]
       : "No supplier",
     allEventIds: [event.id],
+    numGuests: numGuests,
   };
 }
 
@@ -172,7 +176,8 @@ router.route("/api/events").get(
       `&fields=Total Count of Volunteers for Event` + // Total Participants
       `&fields=Special Event` + // isSpecialEvent
       `&fields=Supplier` +
-      `&fields=📅 Scheduled Slots`; //Scheduled slots -> list of participants for event
+      `&fields=📅 Scheduled Slots` + //Scheduled slots -> list of participants for event
+      `&fields=totalGuestsOnDate`; 
 
     const futureEventsAirtableResp = await airtableGET<Event>({ url: url });
 

@@ -210,9 +210,9 @@ router.route("/api/events").get(
       for (const se of specialEventsForThisGeneralEvent) {
         processedGeneralEvent.numSpecialGroups += 1;
         processedGeneralEvent.numOnlyPackers +=
-          se.fields["Only Distributor Count"] || 0;
+          se.fields["Only Distributor Count Including Unconfirmed"] || 0;
         processedGeneralEvent.numOnlyDrivers +=
-          se.fields["Only Driver Count"] || 0;
+          se.fields["Only Driver Count Including Unconfirmed"] || 0;
         processedGeneralEvent.numDrivers +=
           se.fields["Total Count of Drivers for Event"] || 0;
         processedGeneralEvent.numPackers +=
@@ -220,7 +220,7 @@ router.route("/api/events").get(
         processedGeneralEvent.numTotalParticipants +=
           se.fields["Total Count of Volunteers for Event"] || 0;
         processedGeneralEvent.numBothDriversAndPackers +=
-          se.fields["Driver and Distributor Count"] || 0;
+          se.fields["Driver and Distributor Count Including Unconfirmed"] || 0;
         processedGeneralEvent.scheduledSlots =
           processedGeneralEvent.scheduledSlots.concat(
             se.fields["📅 Scheduled Slots"] || []

@@ -136,16 +136,16 @@ export const ViewEvent = () => {
               value={event.numPackers + event.numGuests}
             />
             <HeaderValueDisplay
-              header="# Driving & Packing"
-              value={event.numBothDriversAndPackers}
+              header="Expected Sign-ins"
+              value={event.numTotalParticipants}
             />
             <HeaderValueDisplay
               header="Drivers Only"
               value={event.numOnlyDrivers}
             />
             <HeaderValueDisplay
-              header="Packers Only"
-              value={event.numOnlyPackers + event.numGuests}
+              header="Drivers also Packing"
+              value={event.numBothDriversAndPackers}
             />
             <HeaderValueDisplay
               header="# of Special Groups"

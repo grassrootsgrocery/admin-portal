@@ -108,7 +108,7 @@ export const ViewEvent = () => {
           />
           <HeaderValueDisplay
             header="Total Participants"
-            value={event.numTotalParticipants}
+            value={`${event.numTotalParticipants + event.numGuests} (${event.numGuests} guests)`}
           />
         </div>
         <div className="h-12" />
@@ -133,19 +133,19 @@ export const ViewEvent = () => {
             </div>
             <HeaderValueDisplay
               header="Total # of Packers"
-              value={event.numPackers}
+              value={event.numPackers + event.numGuests}
             />
             <HeaderValueDisplay
-              header="# Driving & Packing"
-              value={event.numBothDriversAndPackers}
+              header="Expected Sign-ins"
+              value={event.numTotalParticipants}
             />
             <HeaderValueDisplay
               header="Drivers Only"
               value={event.numOnlyDrivers}
             />
             <HeaderValueDisplay
-              header="Packers Only"
-              value={event.numOnlyPackers}
+              header="Drivers also Packing"
+              value={event.numBothDriversAndPackers}
             />
             <HeaderValueDisplay
               header="# of Special Groups"
